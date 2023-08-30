@@ -1,0 +1,99 @@
+/* SidebarMenu.css */
+.sidebar-menu {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    /* Add subtle right border with shadow */
+    border-right: 1px solid rgba(0, 0, 0, 0.08); /* White border */
+    box-shadow: -1px 0 0 rgba(0, 0, 0, 0.08); /* Shadow effect */
+}
+
+.top-section {
+    padding: 40px 20px 20px;
+    text-align: center;
+    margin-top: 10px;
+}
+
+.middle-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.middle-section ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.middle-section li {
+    margin: 10px 0;
+    position: relative;
+    /* Add */
+    display: flex;
+    align-items: center;
+    width: 40px;
+    height: 40px;
+}
+
+.middle-section li:hover::after {
+    content: attr(data-tooltip);
+    background-color: #000;
+    color: #fff;
+    font-size: 14px;
+    padding: 5px 10px;
+    border-radius: 5px;
+    position: absolute;
+    top: 50%;
+    left: calc(100% + 10px);
+    transform: translateY(-50%);
+    white-space: nowrap;
+}
+
+.middle-section a {
+    text-decoration: none;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* Add */
+    width: 100%; /* Make the link take full width of the list item */
+}
+
+.middle-section a img {
+    border: 2px solid transparent;
+    border-radius: 50%;
+    width: 24px; /* Set width and height */
+    height: 24px;
+}
+
+.middle-section li.active {
+    /* Add */
+    border: 1px solid #d2d2d2;
+    border-radius: 8px;
+}
+
+.middle-section li.active a .sidebar-icon {
+    border-color: transparent; /* Remove the border from the img */
+    filter: invert(52%) sepia(74%) saturate(2470%) hue-rotate(193deg) brightness(86%) contrast(93%);
+}
+
+.bottom-section {
+    padding: 20px;
+    text-align: left;
+    display: flex;
+    justify-content: center;
+}
+
+
+/* Hamburger menu button styles */
+.bottom-section button {
+    background: transparent;
+    border: none;
+    color: #fff;
+    font-size: 24px;
+    cursor: pointer;
+    outline: none;
+}
