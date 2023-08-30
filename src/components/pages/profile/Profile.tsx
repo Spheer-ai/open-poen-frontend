@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { logoutUser } from "../../middleware/Api";
 import { useNavigate } from "react-router-dom";
 import ProfileContent from "./ProfileContent";
-import TopNavigationBar from "../../TopnavigationBar";
+import TopNavigationBar from "../../TopNavigationBar";
 import LoadingSkeleton from "../../animation/LoadingSkeleton"; // Import the LoadingSkeleton component
 
 function Profile() {
