@@ -1,16 +1,16 @@
 /* AppRoutes.css */
 .app-container {
-    display: flex; /* Use flexbox layout */
-    width: 100%; /* Full width */
-    height: 100vh;
+  display: flex; /* Use flexbox layout */
+  width: 100%; /* Full width */
+  height: 100vh;
 }
 
 .sidebar {
-    width: 250px; /* Fixed width for the sidebar menu */
-    background-color: #333; /* Sidebar background color */
-    color: white;
+  width: 250px; /* Fixed width for the sidebar menu */
+  background-color: #333; /* Sidebar background color */
+  color: white;
 }
 
 .page-content {
-    flex-grow: 1; /* Take up remaining space */
+  flex-grow: 1; /* Take up remaining space */
 }

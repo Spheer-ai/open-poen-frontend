@@ -12,9 +12,10 @@ function Funds() {
   const handleCloseModal = () => {
     setIsModalOpen(false);
   };
-  
-  return <div>
-          <TopNavigationBar
+
+  return (
+    <div>
+      <TopNavigationBar
         title="Funds"
         showSettings={true} // Set to true to display settings button
         showCta={true} // Set to true to display call-to-action button
@@ -29,6 +30,7 @@ function Funds() {
         <p>This is the modal content.</p>
       </AddItemModal>
     </div>
-};
+  );
+}
 
 export default Funds;

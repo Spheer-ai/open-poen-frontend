@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import TopNavigationBar from "../TopnavigationBar";
 import AddItemModal from "../modals/AddItemModal";
 
-
 function Tutors() {
   const [isModalOpen, setIsModalOpen] = useState(false);
 

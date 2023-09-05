@@ -1,5 +1,5 @@
 body {
-    font-family: "Inter", sans-serif;
+  font-family: "Inter", sans-serif;
 }
 
 h1,
@@ -7,24 +7,24 @@ h2,
 h3,
 h4,
 h5 {
-    font-weight: 200;
+  font-weight: 200;
 }
 
 .inline-modal-layout {
-    display: block;
-    width: fit-content;
-    margin-left: 90px;
-    padding-top: 20px;
-    padding-right: 30px;
-    border-right: 1px solid rgba(0, 0, 0, 0.08);
-    height: 100%;
+  display: block;
+  width: fit-content;
+  margin-left: 90px;
+  padding-top: 20px;
+  padding-right: 30px;
+  border-right: 1px solid rgba(0, 0, 0, 0.08);
+  height: 100%;
 }
 
 .top-navigation-bar {
-    display: flex;
+  display: flex;
 }
 
 .full-width-layout {
-    margin-left: 90px;
-    padding-top: 20px;
+  margin-left: 90px;
+  padding-top: 20px;
 }

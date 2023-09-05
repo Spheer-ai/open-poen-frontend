@@ -46,63 +46,63 @@ function AppRoutes() {
       {!isLoginPage && <SidebarMenu />}
       <div className="page-content">
         <Routes>
-        <Route
-        path="/"
-        element={
-          <InlineModalLayout>
-            <Profile />
-          </InlineModalLayout>
-        }
-      />
-        <Route
-        path="/cards"
-        element={
-          <InlineModalLayout>
-            <Cards />
-          </InlineModalLayout>
-        }
-      />
-        <Route
-        path="/contacts"
-        element={
-          <InlineModalLayout>
-            <Contacts />
-          </InlineModalLayout>
-        }
-      />
-        <Route
-        path="/funds"
-        element={
-          <InlineModalLayout>
-            <Funds />
-          </InlineModalLayout>
-        }
-      />
+          <Route
+            path="/"
+            element={
+              <InlineModalLayout>
+                <Profile />
+              </InlineModalLayout>
+            }
+          />
+          <Route
+            path="/cards"
+            element={
+              <InlineModalLayout>
+                <Cards />
+              </InlineModalLayout>
+            }
+          />
+          <Route
+            path="/contacts"
+            element={
+              <InlineModalLayout>
+                <Contacts />
+              </InlineModalLayout>
+            }
+          />
+          <Route
+            path="/funds"
+            element={
+              <InlineModalLayout>
+                <Funds />
+              </InlineModalLayout>
+            }
+          />
 
-<Route
-        path="/profile"
-        element={
-          <FullWidthLayout>
-            <Profile />
-          </FullWidthLayout>
-        }
-      />
-        <Route
-        path="/transactions"
-        element={
-          <InlineModalLayout>
-            <Transactions />
-          </InlineModalLayout>
-        }
-      />
-        <Route
-        path="/tutors"
-        element={
-          <InlineModalLayout>
-            <Tutors />
-          </InlineModalLayout>
-        }
-      />
+          <Route
+            path="/profile"
+            element={
+              <FullWidthLayout>
+                <Profile />
+              </FullWidthLayout>
+            }
+          />
+          <Route
+            path="/transactions"
+            element={
+              <InlineModalLayout>
+                <Transactions />
+              </InlineModalLayout>
+            }
+          />
+          <Route
+            path="/tutors"
+            element={
+              <InlineModalLayout>
+                <Tutors />
+              </InlineModalLayout>
+            }
+          />
 
           <Route
             path="/login"

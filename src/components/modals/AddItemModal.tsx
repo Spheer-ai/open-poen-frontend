@@ -7,7 +7,11 @@ interface AddItemModalProps {
   children: React.ReactNode;
 }
 
-const AddItemModal: React.FC<AddItemModalProps> = ({ isOpen, onClose, children }) => {
+const AddItemModal: React.FC<AddItemModalProps> = ({
+  isOpen,
+  onClose,
+  children,
+}) => {
   if (!isOpen) {
     return null;
   }

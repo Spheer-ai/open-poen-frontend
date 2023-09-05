@@ -20,7 +20,11 @@ const SidebarMenu = () => {
     <div className="sidebar-menu">
       <div className="top-section">
         <Link to="/">
-          <img className="logo" src="/open-poen-logo-blue.svg" alt="Home Logo" />
+          <img
+            className="logo"
+            src="/open-poen-logo-blue.svg"
+            alt="Home Logo"
+          />
         </Link>
       </div>
       <div className="middle-section">
@@ -28,7 +32,11 @@ const SidebarMenu = () => {
           {linkData.map((linkInfo) => (
             <li
               key={linkInfo.name}
-              className={location.pathname === `/${linkInfo.name.toLowerCase()}` ? "active" : ""}
+              className={
+                location.pathname === `/${linkInfo.name.toLowerCase()}`
+                  ? "active"
+                  : ""
+              }
               data-tooltip={linkInfo.tooltip} // Data-tooltip attribute
             >
               <Link to={`/${linkInfo.name.toLowerCase()}`}>

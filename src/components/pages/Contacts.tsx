@@ -41,14 +41,14 @@ function Contacts() {
       <AddItemModal isOpen={isModalOpen} onClose={handleCloseModal}>
         {/* Content for the modal */}
         <AddUserForm
-  onContinue={() => {
-    // Handle the continue action
-    // This can include validation and sending data to the server
-    // After that, close the modal
-    setIsModalOpen(false);
-  }}
-  onCancel={handleCancel}
-/>
+          onContinue={() => {
+            // Handle the continue action
+            // This can include validation and sending data to the server
+            // After that, close the modal
+            setIsModalOpen(false);
+          }}
+          onCancel={handleCancel}
+        />
       </AddItemModal>
     </div>
   );

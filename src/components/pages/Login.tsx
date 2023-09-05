@@ -49,50 +49,50 @@ function Login({ onLogin }: LoginProps) {
 
   return (
     <div
-    className="login-container"
-    style={{ backgroundImage: `url(${backgroundImage})` }}
-  >
-    <div className="login-container">
-      <div className="login-box">
-        <div className="logo">
-          <img src="/open-poen-logo-gradient.svg" alt="Project Logo" />
-        </div>
-        <div className="project-title">
-          <img src="/login-openpoen-logo.svg" alt="Project Name" />
-        </div>
-        <div className="input-container">
-          <span className="icon">
-            <img
-              src="/input-username.svg"
-              alt="Username"
-              width="20"
-              height="20"
+      className="login-container"
+      style={{ backgroundImage: `url(${backgroundImage})` }}
+    >
+      <div className="login-container">
+        <div className="login-box">
+          <div className="logo">
+            <img src="/open-poen-logo-gradient.svg" alt="Project Logo" />
+          </div>
+          <div className="project-title">
+            <img src="/login-openpoen-logo.svg" alt="Project Name" />
+          </div>
+          <div className="input-container">
+            <span className="icon">
+              <img
+                src="/input-username.svg"
+                alt="Username"
+                width="20"
+                height="20"
+              />
+            </span>
+            <input
+              type="text"
+              placeholder="Username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
             />
-          </span>
-          <input
-            type="text"
-            placeholder="Username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-          />
-        </div>
-        <div className="input-container">
-          <span className="icon">
-            <img
-              src="/input-password.svg"
-              alt="Password"
-              width="20"
-              height="20"
+          </div>
+          <div className="input-container">
+            <span className="icon">
+              <img
+                src="/input-password.svg"
+                alt="Password"
+                width="20"
+                height="20"
+              />
+            </span>
+            <input
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
             />
-          </span>
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-        </div>
-        <button
+          </div>
+          <button
             className="login-button"
             onClick={handleLogin}
             disabled={isLoading}

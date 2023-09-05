@@ -12,7 +12,6 @@ function Cards() {
     setIsModalOpen(false);
   };
 
-
   return (
     <div>
       <TopNavigationBar

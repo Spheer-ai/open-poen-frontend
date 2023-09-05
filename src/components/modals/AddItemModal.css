@@ -1,50 +1,50 @@
 .right-modal {
-    position: fixed;
-    top: 0;
-    right: -100%; /* Initially hidden off the screen */
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.7); /* Black transparent backdrop */
-    transition: right 5s ease-in-out; /* Add animation */
-    z-index: 1000; /* Place it above other content */
-    display: flex;
-    justify-content: flex-end; /* Align content to the right */
+  position: fixed;
+  top: 0;
+  right: -100%; /* Initially hidden off the screen */
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7); /* Black transparent backdrop */
+  transition: right 5s ease-in-out; /* Add animation */
+  z-index: 1000; /* Place it above other content */
+  display: flex;
+  justify-content: flex-end; /* Align content to the right */
 }
 
 .right-modal .open {
-    right: 0; /* Slide in from the right when open */
+  right: 0; /* Slide in from the right when open */
 }
 
 .modal {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    transition: right 5s ease-in-out; /* Add animation */
-    top: 0;
-    left: 0;
-    right: 0;
-    right: -100%; /* Initially hidden off the screen */
-    background: #00000054;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  transition: right 5s ease-in-out; /* Add animation */
+  top: 0;
+  left: 0;
+  right: 0;
+  right: -100%; /* Initially hidden off the screen */
+  background: #00000054;
 }
 
 .modal-content {
-    width: 400px;
-    right: -400px;
-    height: 100%;
-    background: #fff;
-    padding: 20px;
-    overflow-y: auto;
-    float: right;
-    transition: right 4s ease-in-out; /* Add animation */
+  width: 400px;
+  right: -400px;
+  height: 100%;
+  background: #fff;
+  padding: 20px;
+  overflow-y: auto;
+  float: right;
+  transition: right 4s ease-in-out; /* Add animation */
 }
 
 .close-button {
-    background: none;
-    border: none;
-    color: #333;
-    font-size: 24px;
-    cursor: pointer;
-    position: absolute;
-    right: 10px;
-    top: 10px;
+  background: none;
+  border: none;
+  color: #333;
+  font-size: 24px;
+  cursor: pointer;
+  position: absolute;
+  right: 10px;
+  top: 10px;
 }
