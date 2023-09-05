@@ -13,16 +13,13 @@ import FullWidthLayout from "../components/layout/FullWidthLayout";
 import "./Routes.css";
 
 function AppRoutes() {
-  // Get the current location using useLocation
   const location = useLocation();
 
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  // Check if the current location is the login page
   const isLoginPage = location.pathname === "/login";
 
   useEffect(() => {
-    // Check if the user is authenticated
     const token = localStorage.getItem("token");
     if (token) {
       setIsAuthenticated(true);
@@ -39,9 +36,13 @@ function AppRoutes() {
           <Route
             path="/"
             element={
-              <InlineModalLayout>
-                <Profile />
-              </InlineModalLayout>
+              isAuthenticated ? (
+                <InlineModalLayout>
+                  <Profile token={localStorage.getItem("token")} />
+                </InlineModalLayout>
+              ) : (
+                <Navigate to="/login" />
+              )
             }
           />
           <Route
@@ -73,7 +74,7 @@ function AppRoutes() {
             path="/profile"
             element={
               <FullWidthLayout>
-                <Profile />
+                <Profile token={localStorage.getItem("token")} />
               </FullWidthLayout>
             }
           />
@@ -96,15 +97,10 @@ function AppRoutes() {
 
           <Route
             path="/login"
-            element={
-              <Login/>
-            }
+            element={isAuthenticated ? <Navigate to="/profile" /> : <Login />}
           />
 
-          <Route
-            path="*"
-            element={<Navigate to={isAuthenticated ? "/profile" : "/login"} />}
-          />
+          <Route path="*" element={<Navigate to="/login" />} />
         </Routes>
       </div>
     </div>

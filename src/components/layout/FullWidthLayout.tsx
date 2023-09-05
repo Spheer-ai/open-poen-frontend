@@ -1,5 +1,5 @@
 // FullWidthLayout.tsx
-import React, { ReactNode } from "react";
+import { ReactNode } from "react";
 
 interface FullWidthLayoutProps {
   children: ReactNode;

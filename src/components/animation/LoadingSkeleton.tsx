@@ -1,5 +1,4 @@
-// LoadingSkeleton.js
-import React from "react";
+// LoadingSkeleton.tsx
 import "./LoadingSkeleton.css";
 
 const LoadingSkeleton = () => {

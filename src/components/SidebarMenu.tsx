@@ -1,12 +1,9 @@
-import React from "react";
 import { Link, useLocation } from "react-router-dom";
-import "./SidebarMenu.css"; // Import your CSS file for styling
+import "./SidebarMenu.css";
 
 const SidebarMenu = () => {
-  // Get the current location using useLocation
   const location = useLocation();
 
-  // Define a mapping of link names to their corresponding SVG icons and tooltip text
   const linkData = [
     { name: "Cards", icon: "cards.svg", tooltip: "Cards" },
     { name: "Contacts", icon: "contacts.svg", tooltip: "Contacts" },
@@ -37,7 +34,7 @@ const SidebarMenu = () => {
                   ? "active"
                   : ""
               }
-              data-tooltip={linkInfo.tooltip} // Data-tooltip attribute
+              data-tooltip={linkInfo.tooltip}
             >
               <Link to={`/${linkInfo.name.toLowerCase()}`}>
                 <img

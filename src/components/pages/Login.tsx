@@ -19,17 +19,13 @@ function Login() {
         return;
       }
 
-      // Set loading state to true when login starts
       setIsLoading(true);
 
-      // Call the login function from your API file
       const response = await login(username, password);
 
-      // Handle the response as needed
       const token = response.access_token;
       localStorage.setItem("token", token);
 
-      // Loading animation
       setTimeout(() => {
         setIsLoading(false);
         navigate("/profile");
