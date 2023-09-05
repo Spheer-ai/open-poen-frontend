@@ -6,25 +6,21 @@ const api = axios.create({
 });
 
 export const login = async (username: string, password: string) => {
-  try {
-    const formData = new URLSearchParams();
-    formData.append("username", username);
-    formData.append("password", password);
-    formData.append("grant_type", "password");
+  const formData = new URLSearchParams();
+  formData.append("username", username);
+  formData.append("password", password);
+  formData.append("grant_type", "password");
 
-    const response = await api.post("/auth/jwt/login", formData, {
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-    });
+  const response = await api.post("/auth/jwt/login", formData, {
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+  });
 
-    return response.data; // Assuming your API returns data on successful login
-  } catch (error) {
-    throw error;
-  }
+  return response.data;
 };
 
-export const getUserData = async (token: any) => {
+export const getUserData = async (token: string) => {
   const userId = 1; // Hardcoded user ID 1
 
   try {
@@ -41,7 +37,7 @@ export const getUserData = async (token: any) => {
   }
 };
 
-export const logoutUser = async (token: any) => {
+export const logoutUser = async (token: string) => {
   try {
     const response = await api.post("/auth/jwt/logout", null, {
       headers: {

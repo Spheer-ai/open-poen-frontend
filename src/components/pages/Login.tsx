@@ -1,18 +1,11 @@
 // Login.tsx
-import axios from "axios";
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { login } from "../middleware/Api";
 import "./Login.css";
 import backgroundImage from "../../assets/open-poen-background.jpg";
 
-interface LoginProps {
-  onLogin: () => void;
-  isAuthenticated: boolean;
-  onLogout: () => void;
-}
-
-function Login({ onLogin }: LoginProps) {
+function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -102,7 +95,6 @@ function Login({ onLogin }: LoginProps) {
 
           {error && <p className="error-message">{error}</p>}
 
-          {/* Loading animation */}
           {isLoading && (
             <div className="loading-animation">
               <div className="spinner"></div>

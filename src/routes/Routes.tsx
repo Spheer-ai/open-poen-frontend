@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import SidebarMenu from "../components/SidebarMenu";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
-import Home from "../components/pages/Home";
 import Cards from "../components/pages/Cards";
 import Contacts from "../components/pages/Contacts";
 import Funds from "../components/pages/Funds";
@@ -31,15 +30,6 @@ function AppRoutes() {
       setIsAuthenticated(false);
     }
   }, []);
-
-  const handleLogin = () => {
-    setIsAuthenticated(true);
-  };
-
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    setIsAuthenticated(false);
-  };
 
   return (
     <div className="app-container">
@@ -107,11 +97,7 @@ function AppRoutes() {
           <Route
             path="/login"
             element={
-              <Login
-                onLogin={handleLogin}
-                isAuthenticated={isAuthenticated}
-                onLogout={handleLogout}
-              />
+              <Login/>
             }
           />
 

@@ -14,15 +14,7 @@ function Contacts() {
     setIsModalOpen(false);
   };
 
-  const handleContinue = () => {
-    // Handle the form submission
-    // This can include validation and sending data to the server
-    // After that, close the modal
-    setIsModalOpen(false);
-  };
-
   const handleCancel = () => {
-    // Handle cancel action
     setIsModalOpen(false);
   };
 
@@ -36,15 +28,9 @@ function Contacts() {
         onCtaClick={handleCtaClick}
       />
 
-      {/* Your page content here */}
-
       <AddItemModal isOpen={isModalOpen} onClose={handleCloseModal}>
-        {/* Content for the modal */}
         <AddUserForm
           onContinue={() => {
-            // Handle the continue action
-            // This can include validation and sending data to the server
-            // After that, close the modal
             setIsModalOpen(false);
           }}
           onCancel={handleCancel}

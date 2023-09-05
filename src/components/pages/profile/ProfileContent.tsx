@@ -1,5 +1,5 @@
 // ProfileContent.tsx
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { getUserData } from "../../middleware/Api";
 import "./ProfileContent.css";
 import LoadingSkeleton from "../../animation/LoadingSkeleton";
@@ -25,7 +25,9 @@ function ProfileContent({
         try {
           const userDataResponse = await getUserData(token);
           setUserData(userDataResponse);
-        } catch (error) {}
+        } catch (error) {
+          // Error handling
+        }
       }
     };
 
