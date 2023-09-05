@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import SidebarMenu from "../components/SidebarMenu";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
-import Home from "../components/pages/Home";
+import Home from "../components/pages/Home"";
 import Cards from "../components/pages/Cards";
 import Contacts from "../components/pages/Contacts";
 import Funds from "../components/pages/Funds";
