@@ -1,23 +1,22 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import SidebarMenu from "../components/SidebarMenu";
-import { Routes, Route, Navigate, useLocation } from "react-router-dom";
-import Cards from "../components/pages/Cards";
+import { Routes, Route, useNavigate, Navigate } from "react-router-dom";
 import Contacts from "../components/pages/Contacts";
 import Funds from "../components/pages/Funds";
 import Profile from "../components/pages/profile/Profile";
 import Transactions from "../components/pages/Transactions";
 import Login from "../components/pages/Login";
-import Tutors from "../components/pages/Tutors";
+import Sponsors from "../components/pages/Sponsors";
 import InlineModalLayout from "../components/layout/InlideModalLayout";
 import FullWidthLayout from "../components/layout/FullWidthLayout";
+import LoginModal from "../components/modals/LoginModal";
 import "./Routes.css";
 
 function AppRoutes() {
-  const location = useLocation();
+  const navigate = useNavigate();
 
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-
-  const isLoginPage = location.pathname === "/login";
+  const [showLoginModal, setShowLoginModal] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -28,81 +27,87 @@ function AppRoutes() {
     }
   }, []);
 
+  // Function to handle user login
+  const handleLogin = () => {
+    setIsAuthenticated(true);
+    navigate("/profile");
+    setShowLoginModal(false);
+  };
+
+  // Function to handle user logout
+  const handleLogout = () => {
+    setIsAuthenticated(false);
+    navigate("/funds");
+  };
+
+  // Function to hide the login modal
+  const hideLogin = () => {
+    setShowLoginModal(false);
+  };
+
+  const closeModal = () => {
+    setShowLoginModal(false);
+  };
+
   return (
     <div className="app-container">
-      {!isLoginPage && <SidebarMenu />}
+      <SidebarMenu isAuthenticated={isAuthenticated} onLogout={handleLogout} />
       <div className="page-content">
         <Routes>
           <Route
             path="/"
-            element={
-              isAuthenticated ? (
-                <InlineModalLayout>
-                  <Profile token={localStorage.getItem("token")} />
-                </InlineModalLayout>
-              ) : (
-                <Navigate to="/login" />
-              )
-            }
-          />
-          <Route
-            path="/cards"
-            element={
-              <InlineModalLayout>
-                <Cards />
-              </InlineModalLayout>
-            }
+            element={<InlineModalLayout>{<Funds />}</InlineModalLayout>}
           />
           <Route
             path="/contacts"
-            element={
-              <InlineModalLayout>
-                <Contacts />
-              </InlineModalLayout>
-            }
+            element={<InlineModalLayout>{<Contacts />}</InlineModalLayout>}
           />
           <Route
             path="/funds"
-            element={
-              <InlineModalLayout>
-                <Funds />
-              </InlineModalLayout>
-            }
+            element={<InlineModalLayout>{<Funds />}</InlineModalLayout>}
           />
-
           <Route
             path="/profile"
             element={
               <FullWidthLayout>
-                <Profile token={localStorage.getItem("token")} />
+                {<Profile token={localStorage.getItem("token")} />}
               </FullWidthLayout>
             }
           />
-          <Route
-            path="/transactions"
-            element={
-              <InlineModalLayout>
-                <Transactions />
-              </InlineModalLayout>
-            }
-          />
-          <Route
-            path="/tutors"
-            element={
-              <InlineModalLayout>
-                <Tutors />
-              </InlineModalLayout>
-            }
-          />
-
+          {isAuthenticated && (
+            <>
+              <Route
+                path="/transactions"
+                element={
+                  <InlineModalLayout>{<Transactions />}</InlineModalLayout>
+                }
+              />
+              <Route
+                path="/contacts"
+                element={<InlineModalLayout>{<Contacts />}</InlineModalLayout>}
+              />
+              <Route
+                path="/sponsors"
+                element={<InlineModalLayout>{<Sponsors />}</InlineModalLayout>}
+              />
+            </>
+          )}
           <Route
             path="/login"
-            element={isAuthenticated ? <Navigate to="/profile" /> : <Login />}
+            element={
+              isAuthenticated ? (
+                <Navigate to="/profile" />
+              ) : (
+                <Login onLogin={handleLogin} onClose={closeModal} />
+              )
+            }
           />
-
           <Route path="*" element={<Navigate to="/login" />} />
         </Routes>
       </div>
+      {showLoginModal && (
+        <LoginModal onClose={hideLogin} onLogin={handleLogin} />
+      )}{" "}
     </div>
   );
 }

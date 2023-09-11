@@ -12,12 +12,12 @@ const Logout: React.FC<LogoutProps> = ({ onLogout, token }) => {
 
   const handleLogout = async () => {
     try {
-
+      console.log("Logging out...");
       await logoutUser(token);
-
+      console.log("Logout successful");
+      localStorage.removeItem("token");
       onLogout();
-
-      navigate("/login");
+      navigate("/funds");
     } catch (error) {
       console.error("Logout error:", error);
     }

@@ -18,7 +18,7 @@ const AddItemModal: React.FC<AddItemModalProps> = ({
   }
 
   return (
-    <div className="modal">
+    <div className="modal" onClick={onClose}>
       <div className="modal-content">
         <button className="close-button" onClick={onClose}>
           &times;

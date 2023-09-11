@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import TopNavigationBar from "../TopNavigationBar";
 import AddItemModal from "../modals/AddItemModal";
 
-function Tutors() {
+function Sponsors() {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleCtaClick = () => {
@@ -16,7 +16,7 @@ function Tutors() {
   return (
     <div>
       <TopNavigationBar
-        title="Tutors"
+        title="Sponsors"
         showSettings={true}
         showCta={true}
         onSettingsClick={() => {}}
@@ -30,4 +30,4 @@ function Tutors() {
   );
 }
 
-export default Tutors;
+export default Sponsors;

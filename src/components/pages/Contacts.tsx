@@ -21,7 +21,7 @@ function Contacts() {
   return (
     <div>
       <TopNavigationBar
-        title="Users"
+        title="Contacts"
         showSettings={true}
         showCta={true}
         onSettingsClick={() => {}}

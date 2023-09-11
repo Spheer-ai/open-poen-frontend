@@ -1,29 +1,28 @@
 .right-modal {
   position: fixed;
   top: 0;
-  right: -100%; /* Initially hidden off the screen */
-  width: 100%;
+  right: -100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.7); /* Black transparent backdrop */
-  transition: right 5s ease-in-out; /* Add animation */
-  z-index: 1000; /* Place it above other content */
+  background: rgba(0, 0, 0, 0.7);
+  transition: right 5s ease-in-out;
+  z-index: 1000;
   display: flex;
-  justify-content: flex-end; /* Align content to the right */
+  justify-content: flex-end;
 }
 
 .right-modal .open {
-  right: 0; /* Slide in from the right when open */
+  right: 0;
 }
 
 .modal {
   position: absolute;
   width: 100%;
   height: 100%;
-  transition: right 5s ease-in-out; /* Add animation */
+  transition: right 5s ease-in-out;
   top: 0;
   left: 0;
   right: 0;
-  right: -100%; /* Initially hidden off the screen */
+  right: -100%;
   background: #00000054;
 }
 
@@ -35,7 +34,7 @@
   padding: 20px;
   overflow-y: auto;
   float: right;
-  transition: right 4s ease-in-out; /* Add animation */
+  transition: right 4s ease-in-out;
 }
 
 .close-button {
