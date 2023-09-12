@@ -1,13 +1,11 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 import ProfileContent from "./ProfileContent";
 import TopNavigationBar from "../../TopNavigationBar";
+import { useAuth } from "../../../contexts/AuthContext";
 
-interface ProfileProps {
-  token: string | null;
-}
-
-function Profile({ token }: ProfileProps) {
+function Profile() {
+  const { user } = useAuth();
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -18,11 +16,15 @@ function Profile({ token }: ProfileProps) {
     return () => clearTimeout(timer);
   }, []);
 
-  const handleSettingsClick = () => {};
+  const handleSettingsClick = () => {
+    // Handle settings click
+  };
 
-  const handleCtaClick = () => {};
+  const handleCtaClick = () => {
+    // Handle CTA click
+  };
 
-  if (token === null) {
+  if (!user || user.token === null) {
     return <Navigate to="/login" />;
   }
 
@@ -35,7 +37,7 @@ function Profile({ token }: ProfileProps) {
         onSettingsClick={handleSettingsClick}
         onCtaClick={handleCtaClick}
       />
-      <ProfileContent token={token} isLoading={isLoading} />
+      <ProfileContent />
     </div>
   );
 }

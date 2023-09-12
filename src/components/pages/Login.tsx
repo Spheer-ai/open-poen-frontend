@@ -1,33 +1,26 @@
 import { useState } from "react";
-import { login } from "../middleware/Api";
+import { useAuth } from "../../contexts/AuthContext";
 import "./Login.css";
 
 function Login({ onLogin }: { onLogin: () => void; onClose: () => void }) {
+  const { login, isLoading } = useAuth();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
 
   const handleLogin = async () => {
     try {
-      if (!username || !password) {
-        setError("Gebruikersnaam en wachtwoord zijn verplicht.");
-        return;
+      const success = await login(username, password);
+
+      if (success) {
+        onLogin();
+      } else {
+        setError("Verkeerde gebruikersnaam en wachtwoord");
       }
-
-      setIsLoading(true);
-
-      const response = await login(username, password);
-
-      const token = response.access_token;
-      localStorage.setItem("token", token);
-
-      setIsLoading(false);
-
-      onLogin();
     } catch (error) {
-      setError("Verkeerde gebruikersnaam en wachtwoord");
-      setIsLoading(false);
+      setError(
+        error.message || "Er is een fout opgetreden tijdens het inloggen.",
+      );
     }
   };
   return (

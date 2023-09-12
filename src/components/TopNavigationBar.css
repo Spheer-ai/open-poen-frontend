@@ -32,6 +32,7 @@
   margin: 10px;
   margin-left: 0;
   margin-top: 0;
+  z-index: 1000;
 }
 
 .title {

@@ -1,40 +1,47 @@
+/* AddItemModal.css */
 .right-modal {
   position: fixed;
   top: 0;
-  right: -100%;
+  right: 0;
   height: 100%;
+  width: 100%;
   background: rgba(0, 0, 0, 0.7);
-  transition: right 5s ease-in-out;
   z-index: 1000;
   display: flex;
+  align-items: center;
   justify-content: flex-end;
+  overflow: hidden;
+  transition: background-color 0.3s ease-in-out; /* Add a background-color transition */
 }
-
-.right-modal .open {
-  right: 0;
-}
-
+  
 .modal {
   position: absolute;
   width: 100%;
   height: 100%;
-  transition: right 5s ease-in-out;
   top: 0;
   left: 0;
   right: 0;
-  right: -100%;
-  background: #00000054;
+  background: rgba(0, 0, 0, 0.54);
+  z-index: 100000;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  overflow: hidden;
+  transition: background-color 0.3s ease-in-out; /* Add a background-color transition */
 }
 
 .modal-content {
   width: 400px;
-  right: -400px;
   height: 100%;
   background: #fff;
   padding: 20px;
   overflow-y: auto;
-  float: right;
-  transition: right 4s ease-in-out;
+  transition: transform 0.3s ease-in-out; /* Add a transform transition */
+}
+
+.modal-content.open {
+  transform: translateX(0%); /* Start modal content off-screen to the right */
+  transition: transform 0.0s ease-in-out; /* Add a transform transition */
 }
 
 .close-button {

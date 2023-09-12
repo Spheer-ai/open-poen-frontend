@@ -70,7 +70,7 @@ function AppRoutes() {
             path="/profile"
             element={
               <FullWidthLayout>
-                {<Profile token={localStorage.getItem("token")} />}
+                <Profile />
               </FullWidthLayout>
             }
           />

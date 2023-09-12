@@ -1,38 +1,35 @@
-// ProfileContent.tsx
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { getUserData } from "../../middleware/Api";
 import "./ProfileContent.css";
 import LoadingSkeleton from "../../animation/LoadingSkeleton";
+import { useAuth } from "../../../contexts/AuthContext";
 
-function ProfileContent({
-  token,
-  isLoading,
-}: {
-  token: string | null;
-  isLoading: boolean;
-}) {
+function ProfileContent() {
+  const { user, isLoading } = useAuth();
   const [userData, setUserData] = useState<{
     name: string;
-    last_name: string;
+    last_name?: string | null;
     first_name: string;
-    email: string;
-    biography: string;
+    email?: string | null;
+    biography?: string | null;
   } | null>(null);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      if (token) {
-        try {
-          const userDataResponse = await getUserData(token);
-          setUserData(userDataResponse);
-        } catch (error) {
-          // Error handling
-        }
+  const fetchData = async (token: string): Promise<void> => {
+    if (token) {
+      try {
+        const userDataResponse = await getUserData(token);
+        setUserData(userDataResponse);
+      } catch (error) {
+        // Handle the error appropriately
       }
-    };
+    }
+  };
 
-    fetchData();
-  }, [token]);
+  useEffect(() => {
+    if (user && user.token) {
+      fetchData(user.token); // Pass the token as an argument
+    }
+  }, [user]);
 
   return (
     <div className="profile-container">

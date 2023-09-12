@@ -5,6 +5,7 @@
   height: 100%;
   border-right: 1px solid rgba(0, 0, 0, 0.08);
   box-shadow: -1px 0 0 rgba(0, 0, 0, 0.08);
+  z-index: 500;
 }
 
 .top-section {
@@ -92,4 +93,54 @@
   font-size: 24px;
   cursor: pointer;
   outline: none;
+}
+
+/* Add a media query for mobile screens (e.g., screens with a maximum width of 768px) */
+@media (max-width: 768px) {
+  .sidebar-menu {
+    /* Modify the styles for the sidebar menu on mobile */
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: auto;
+    background-color: #333;
+    box-shadow: none;
+    border: none;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    background: white;
+  }
+
+  /* Reset styles for the sections within the sidebar menu */
+  .top-section,
+  .middle-section,
+  .bottom-section {
+    padding: 0; /* Remove padding on mobile */
+    text-align: center; /* Center-align items on mobile */
+  }
+
+  /* Adjust individual item styles (you may need to customize these further) */
+  .middle-section ul {
+    flex-direction: row;
+    display: flex;
+  }
+
+  .middle-section li {
+    margin: 0 10px;
+    width: auto;
+    height: auto;
+  }
+
+  .middle-section li:hover::after {
+    display: none; /* Hide the tooltip on mobile */
+  }
+  
+  .middle-section a img {
+    border: 2px solid transparent;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+  }
 }

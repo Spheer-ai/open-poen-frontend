@@ -1,7 +1,7 @@
-// AddUserForm.tsx
 import React, { useState } from "react";
 import axios from "axios";
 import "../forms/AddUserform.css";
+import { useAuth } from "../../contexts/AuthContext"; // Import the useAuth hook from your authentication context
 
 interface AddUserFormProps {
   onContinue: () => void;
@@ -21,6 +21,8 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onContinue, onCancel }) => {
     hidden: false,
   });
 
+  const { user } = useAuth(); // Access the authenticated user's token
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
@@ -30,9 +32,8 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onContinue, onCancel }) => {
     try {
       // Perform form validation here if needed
 
-      // Get the authentication token (You may have this logic in another component)
-      const token =
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiYXVkIjpbImZhc3RhcGktdXNlcnM6YXV0aCJdLCJleHAiOjE2OTQ1MzI4OTF9.9x_2ld7atrhYX3Glz8lDz-JolMWnjCjlnQo5_gJ41z4"; // Replace with your actual token
+      // Use the authenticated user's token
+      const token = user?.token || ""; // Replace with your actual token or a default value
 
       // Send the formData to the server via Axios POST request with authentication headers
       const response = await axios.post(
