@@ -30,8 +30,8 @@ function Profile({ token }: ProfileProps) {
     <div>
       <TopNavigationBar
         title="Accountinstellingen"
-        showSettings={true}
-        showCta={true}
+        showSettings={false}
+        showCta={false}
         onSettingsClick={handleSettingsClick}
         onCtaClick={handleCtaClick}
       />

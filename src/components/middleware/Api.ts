@@ -37,6 +37,21 @@ export const getUserData = async (token: string) => {
   }
 };
 
+export const getUsers = async (token: string) => {
+  try {
+    const response = await api.get(`/users`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    console.log("getUsers response:", response.data); // Log the response data
+    return response.data;
+  } catch (error) {
+    console.error("getUsers error:", error); // Log any errors
+    throw error;
+  }
+};
+
 export const logoutUser = async (token: string) => {
   try {
     const response = await api.post("/auth/jwt/logout", null, {

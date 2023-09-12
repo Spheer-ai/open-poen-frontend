@@ -1,0 +1,37 @@
+/* Contacts.css */
+ul {
+  list-style-type: none; /* Remove list-style type */
+  padding: 0; /* Remove default padding */
+}
+
+.profile {
+  display: flex; /* Use flexbox to align items horizontally */
+  align-items: center; /* Center items vertically */
+}
+
+.profile-image {
+  width: 50px; /* Set the width of the profile image */
+  height: 50px; /* Set the height of the profile image */
+  border-radius: 50%; /* Make the image round (assuming it's square) */
+  margin-right: 16px; /* Add space between image and text */
+}
+
+.user-info {
+  flex-grow: 1; /* Allow the user info to expand and take remaining space */
+}
+
+.user-info {
+  margin: 0; /* Remove default margin */
+  font-weight: 700; /* Make the name text bold */
+  font-size: 16px;
+  margin: 0px;
+}
+
+.user-info p {
+  margin: 10px;
+}
+
+.profile-email {
+  font-size: 14px;
+  font-weight: 300;
+}
