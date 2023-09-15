@@ -1,13 +1,18 @@
 import React, { useState, useEffect } from "react";
+import { Link, Outlet, useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import jwtDecode from "jwt-decode";
 import TopNavigationBar from "../../components/TopNavigationBar";
 import AddItemModal from "../../components/modals/AddItemModal";
 import AddUserForm from "../forms/AddUserForm";
 import "./Contacts.css";
+import LoadingDot from "../animation/LoadingDot";
+import UserDetailsPage from "./UserDetailPage";
+import ProfileIcon from "../../assets/profile-icon.svg";
 
 interface UserData {
-  id: number;
+  email: string;
+  id: string;
   first_name: string;
   last_name: string;
 }
@@ -17,7 +22,13 @@ function Contacts() {
   const [userData, setUserData] = useState<UserData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
-  const [loggedInUserId, setLoggedInUserId] = useState<number | null>(null);
+  const [loggedInUserId, setLoggedInUserId] = useState<string | null>(null);
+  const [activeUserId, setActiveUserId] = useState<string | null>(null);
+  const [userListLoaded, setUserListLoaded] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  const { userId } = useParams();
+  const navigate = useNavigate();
 
   const handleCtaClick = () => {
     setIsModalOpen(true);
@@ -31,41 +42,60 @@ function Contacts() {
     setIsModalOpen(false);
   };
 
-  let decodedToken: any = { sub: null };
+  const handleUserClick = (clickedUserId: string) => {
+    console.log("Clicked User ID:", clickedUserId);
+    setActiveUserId(clickedUserId);
+  };
 
   useEffect(() => {
-    async function fetchUserData() {
+    async function fetchData() {
       try {
         const token = localStorage.getItem("token");
-        const loggedIn = !!token; // Check if a user is logged in
+        const loggedIn = !!token;
+
+        setIsLoggedIn(loggedIn);
 
         if (loggedIn) {
-          decodedToken = jwtDecode(token);
-          setLoggedInUserId(decodedToken.sub); // Set the logged-in user's ID
-          console.log("Decoded Token:", decodedToken);
-        }
+          const decodedToken: any = jwtDecode(token);
+          const userId = decodedToken.sub;
 
-        const response = await axios.get("/api/users/?ordering=-id", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        const data = response.data;
-        console.log("API response data:", data);
+          setLoggedInUserId(userId);
 
-        // If a user is logged in, sort the users with the logged-in user at the top
-        if (loggedIn) {
-          data.users.sort((a, b) => {
-            if (a.id === decodedToken.sub) {
-              return -1; // Place the logged-in user at the top
-            } else if (b.id === decodedToken.sub) {
-              return 1;
-            }
-            return 0;
+          const loggedInUserResponse = await axios.get(`/api/user/${userId}`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
           });
+
+          const usersResponse = await axios.get("/api/users", {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+            params: {
+              ordering: `-${userId}`,
+            },
+          });
+
+          const sortedUsers = [
+            loggedInUserResponse.data,
+            ...usersResponse.data.users,
+          ];
+
+          const filteredUsers = sortedUsers.reduce((uniqueUsers, user) => {
+            if (!uniqueUsers.some((u) => u.id === user.id)) {
+              uniqueUsers.push(user);
+            }
+            return uniqueUsers;
+          }, []);
+
+          setUserData(filteredUsers);
+          setUserListLoaded(true);
+        } else {
+          const usersResponse = await axios.get("/api/users");
+          setUserData(usersResponse.data.users);
+          setUserListLoaded(true);
         }
 
-        setUserData(data.users);
         setIsLoading(false);
       } catch (error) {
         setError(error);
@@ -73,13 +103,32 @@ function Contacts() {
       }
     }
 
-    fetchUserData();
+    fetchData();
   }, []);
 
+  useEffect(() => {
+    if (userListLoaded && userData.length > 0) {
+      if (userData[0].id === loggedInUserId) {
+        setActiveUserId(loggedInUserId);
+      } else {
+        setActiveUserId(userData[0].id);
+      }
+    }
+  }, [userListLoaded, userData, loggedInUserId]);
+
+  useEffect(() => {
+    if (activeUserId) {
+      if (isLoggedIn) {
+        // Only navigate if the user is logged in
+        navigate(`/contacts/user/${activeUserId}`);
+      }
+    }
+  }, [activeUserId, navigate, isLoggedIn]);
+
   return (
-    <div>
+    <div className="side-panel">
       <TopNavigationBar
-        title="Contacts"
+        title={`Contacts ${userData.length}`}
         showSettings={true}
         showCta={true}
         onSettingsClick={() => {}}
@@ -96,49 +145,159 @@ function Contacts() {
       </AddItemModal>
 
       {isLoading ? (
-        <p></p>
+        <div className="loading-container">
+          <div className="loading-dots-container">
+            <LoadingDot delay={0} />
+            <LoadingDot delay={0.1} />
+            <LoadingDot delay={0.1} />
+            <LoadingDot delay={0.2} />
+            <LoadingDot delay={0.2} />
+          </div>
+        </div>
       ) : error ? (
         <p>Error: {error.message}</p>
       ) : (
         <div>
           {userData.length === 0 ? (
-  <p>Data could not be loaded.</p>
-) : (
-  <ul>
-    {userData.map((user, index) => (
-      <li
-        key={user.id}
-        onClick={() =>
-          console.log("User ID:", user.id, "LoggedInUserID:", loggedInUserId)
-        }
-        className={`${
-          user.id === loggedInUserId ? "logged-in-user" : ""
-        } fade-in`}
-        style={{
-          animationName: "fadeIn",
-          animationDuration: "0.5s",
-          animationTimingFunction: "ease-in-out",
-          animationFillMode: "both",
-          animationDelay: `${index * 0.15}s`,
-        }}
-      >
-        <div className="profile">
-          <img
-            src="profile-placeholder.png"
-            alt="Profile"
-            className="profile-image"
-          />
-          <div className="user-info">
-            <p>
-              {user.first_name} {user.last_name}
-            </p>
-            <p className="profile-email">example@example.com</p>
-          </div>
-        </div>
-      </li>
-    ))}
-  </ul>
-)}
+            <p>Data could not be loaded.</p>
+          ) : (
+            <ul>
+              {userData.map((user, index) => {
+                const userItemId = user.id;
+                const loggedInId = loggedInUserId;
+
+                const isActive = activeUserId === userItemId;
+                const isLoggedActiveUser =
+                  isActive && loggedInId === userItemId;
+
+                return (
+                  <li
+                    key={userItemId}
+                    onClick={() => handleUserClick(userItemId)}
+                    className={`${isActive ? "active-user" : ""}`}
+                    style={{
+                      animationName: "fadeIn",
+                      animationDuration: "0.5s",
+                      animationTimingFunction: "ease-in-out",
+                      animationFillMode: "both",
+                      backgroundColor:
+                        isActive && loggedInId === userItemId
+                          ? "gray"
+                          : "white",
+                      animationDelay: `${index * 0.1}s`,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      padding: "10px",
+                    }}
+                  >
+                    {isLoggedIn ? (
+                      <Link
+                        to={`/contacts/user/${userItemId}`}
+                        className={`user-link ${
+                          isLoggedActiveUser ? "logged-in" : ""
+                        }`}
+                        style={{
+                          textDecoration: "none",
+                          display: "flex",
+                          padding: "10px",
+                          width: "100%",
+                          alignItems: "center",
+                        }}
+                      >
+                        <div className="profile">
+                          <img
+                            src="../../../profile-placeholder.png"
+                            alt="Profile"
+                            className="profile-image"
+                          />
+                          <div className="user-info">
+                            <p>
+                              {user.first_name} {user.last_name}
+                            </p>
+                            <p className="profile-email">{user.email}</p>
+                          </div>
+                        </div>
+                        {loggedInId == userItemId && (
+                          <div>
+                            <img
+                              src={ProfileIcon}
+                              alt="Profile Icon"
+                              className="profile-icon"
+                              style={{ marginRight: "15px" }}
+                            />
+                          </div>
+                        )}
+                        <div
+                          style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            alignItems: "center",
+                            justifyContent: "center",
+                          }}
+                        >
+                          <div className="dot" />
+                          <div className="dot" />
+                          <div className="dot" />
+                        </div>
+                      </Link>
+                    ) : (
+                      // Render a placeholder without link when logged out
+                      <div
+                        className={`user-link ${
+                          isLoggedActiveUser ? "logged-in" : ""
+                        }`}
+                        style={{
+                          textDecoration: "none",
+                          display: "flex",
+                          padding: "10px",
+                          width: "100%",
+                          alignItems: "center",
+                        }}
+                      >
+                        <div className="profile">
+                          <img
+                            src="../../../profile-placeholder.png"
+                            alt="Profile"
+                            className="profile-image"
+                          />
+                          <div className="user-info">
+                            <p>
+                              {user.first_name} {user.last_name}
+                            </p>
+                            <p className="profile-email">{user.email}</p>
+                          </div>
+                        </div>
+                        {loggedInId == userItemId && (
+                          <div>
+                            <img
+                              src={ProfileIcon}
+                              alt="Profile Icon"
+                              className="profile-icon"
+                              style={{ marginRight: "15px" }}
+                            />
+                          </div>
+                        )}
+                        <div
+                          style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            alignItems: "center",
+                            justifyContent: "center",
+                          }}
+                        >
+                          <div className="dot" />
+                          <div className="dot" />
+                          <div className="dot" />
+                        </div>
+                      </div>
+                    )}
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+          <Outlet />
         </div>
       )}
     </div>

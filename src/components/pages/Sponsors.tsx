@@ -14,7 +14,7 @@ function Sponsors() {
   };
 
   return (
-    <div>
+    <div className="side-panel">
       <TopNavigationBar
         title="Sponsors"
         showSettings={true}

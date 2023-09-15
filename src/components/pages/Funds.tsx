@@ -14,7 +14,7 @@ function Funds() {
   };
 
   return (
-    <div>
+    <div className="side-panel">
       <TopNavigationBar
         title="Funds"
         showSettings={true}

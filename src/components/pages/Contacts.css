@@ -7,6 +7,7 @@ ul {
 .profile {
   display: flex; /* Use flexbox to align items horizontally */
   align-items: center; /* Center items vertically */
+  width: 100%;
 }
 
 .profile-image {
@@ -25,33 +26,65 @@ ul {
   font-weight: 700; /* Make the name text bold */
   font-size: 16px;
   margin: 0px;
+  text-decoration: none !important;
 }
 
 .user-info p {
   margin: 10px;
+  color: rgba(16, 18, 19, 1);
+  text-decoration: none !important;
 }
 
 .profile-email {
   font-size: 14px;
   font-weight: 300;
+  color: rgba(106, 113, 120, 1);
 }
 
-.logged-in-user {
-    background-color: rgba(0, 0, 0, 0.08);
-  }
+.user-list-item {
+  animation-name: fadeIn;
+  animation-duration: 0.5s;
+  animation-timing-function: ease-in-out;
+  animation-fill-mode: both;
+  background-color: white; /* Default background color */
+}
 
-  @keyframes fadeIn {
-    0% {
-      opacity: 0;
-      transform: translateY(10px);
-    }
-    100% {
-      opacity: 1;
-      transform: translateY(0);
-    }
+.user-list-item.logged-in {
+  background-color: gray; /* Background color for logged-in user */
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
   }
-  
-  .fade-in {
-    animation: fadeIn 0.5s ease-in-out;
-    animation-fill-mode: both;
+  100% {
+    opacity: 1;
+    transform: translateY(0);
   }
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease-in-out;
+  animation-fill-mode: both;
+}
+
+.user-link .profile {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px;
+}
+
+.dot {
+  width: 4px;
+  height: 4px;
+  background-color: rgba(56, 56, 56, 1);
+  border-radius: 50%;
+  margin: 2px 0;
+}
+
+.active-user {
+  background-color: rgba(0, 0, 0, 0.08) !important;
+  /* Add any other styling you want for active users */
+}

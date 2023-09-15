@@ -13,7 +13,7 @@ function Cards() {
   };
 
   return (
-    <div>
+    <div className="side-panel">
       <TopNavigationBar
         title="Cards"
         showSettings={true}

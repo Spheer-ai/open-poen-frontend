@@ -1,0 +1,43 @@
+.loading-dot {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: inline-block;
+  margin: 0.3rem;
+  animation: loading 1s ease-in-out infinite;
+  align-content: center; /* Remove the extra display properties */
+  justify-content: center;
+  align-items: center;
+}
+
+@keyframes loading {
+  0%,
+  100% {
+    transform: scale(0.3);
+    background-color: rgb(236, 172, 132);
+  }
+  42% {
+    transform: scale(1);
+    background-color: rgba(241, 139, 76, 1);
+  }
+  50% {
+    transform: scale(0.3);
+    background-color: rgb(236, 124, 54);
+  }
+}
+
+.loading-dots-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
+  height: 100%;
+}
+
+.loading-container {
+  display: flex;
+  align-items: center;
+  height: 100vh;
+  justify-content: center;
+  align-content: center;
+}

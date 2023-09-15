@@ -1,6 +1,13 @@
 import { useState, useEffect } from "react";
 import SidebarMenu from "../components/SidebarMenu";
-import { Routes, Route, useNavigate, Navigate } from "react-router-dom";
+import {
+  Routes,
+  Route,
+  useNavigate,
+  Navigate,
+  useParams,
+  Outlet,
+} from "react-router-dom";
 import Contacts from "../components/pages/Contacts";
 import Funds from "../components/pages/Funds";
 import Profile from "../components/pages/profile/Profile";
@@ -11,6 +18,7 @@ import InlineModalLayout from "../components/layout/InlideModalLayout";
 import FullWidthLayout from "../components/layout/FullWidthLayout";
 import LoginModal from "../components/modals/LoginModal";
 import "./Routes.css";
+import UserDetailsPage from "../components/pages/UserDetailPage";
 
 function AppRoutes() {
   const navigate = useNavigate();
@@ -59,8 +67,18 @@ function AppRoutes() {
             element={<InlineModalLayout>{<Funds />}</InlineModalLayout>}
           />
           <Route
-            path="/contacts"
-            element={<InlineModalLayout>{<Contacts />}</InlineModalLayout>}
+            path="/contacts/*"
+            element={
+              <InlineModalLayout>
+                <Contacts />
+                <Routes>
+                  <Route
+                    path="user/:userId"
+                    element={<UserDetailsPage navigate={undefined} />}
+                  />
+                </Routes>
+              </InlineModalLayout>
+            }
           />
           <Route
             path="/funds"
@@ -83,10 +101,6 @@ function AppRoutes() {
                 }
               />
               <Route
-                path="/contacts"
-                element={<InlineModalLayout>{<Contacts />}</InlineModalLayout>}
-              />
-              <Route
                 path="/sponsors"
                 element={<InlineModalLayout>{<Sponsors />}</InlineModalLayout>}
               />
@@ -96,7 +110,7 @@ function AppRoutes() {
             path="/login"
             element={
               isAuthenticated ? (
-                <Navigate to="/profile" />
+                <Navigate to="/contacts" />
               ) : (
                 <Login onLogin={handleLogin} onClose={closeModal} />
               )

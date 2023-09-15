@@ -10,10 +10,30 @@ h5 {
   font-weight: 200;
 }
 
-.inline-modal-layout {
+.app-layout {
+  display: flex;
+  height: 100vh;
+  position: fixed;
+}
+
+.content {
   background-color: #fff;
   border-right: 1px solid #dee2e6;
   height: 100%;
+  max-width: 440px;
+  min-width: 360px;
+  z-index: 1;
+  overflow-y: scroll;
+}
+
+.inline-modal-layout {
+  display: flex;
+}
+
+.side-panel {
+  background-color: #fff;
+  border-right: 1px solid #dee2e6;
+  height: 100vh;
   max-width: 440px;
   min-width: 360px;
   z-index: 1;

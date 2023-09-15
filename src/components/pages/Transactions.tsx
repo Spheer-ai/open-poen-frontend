@@ -14,7 +14,7 @@ function Transactions() {
   };
 
   return (
-    <div>
+    <div className="side-panel">
       <TopNavigationBar
         title="Transactions"
         showSettings={true}

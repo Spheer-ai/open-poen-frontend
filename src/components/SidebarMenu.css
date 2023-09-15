@@ -136,7 +136,7 @@
   .middle-section li:hover::after {
     display: none; /* Hide the tooltip on mobile */
   }
-  
+
   .middle-section a img {
     border: 2px solid transparent;
     border-radius: 50%;
