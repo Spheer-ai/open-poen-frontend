@@ -27,6 +27,10 @@ function Profile() {
   if (!user || user.token === null) {
     return <Navigate to="/login" />;
   }
+  const handleSearch = (query) => {
+    // Handle the search logic specific to this component
+    console.log("Search query in UserDetailsPage:", query);
+  };
 
   return (
     <div>
@@ -36,6 +40,7 @@ function Profile() {
         showCta={false}
         onSettingsClick={handleSettingsClick}
         onCtaClick={handleCtaClick}
+        onSearch={handleSearch}
       />
       <ProfileContent />
     </div>

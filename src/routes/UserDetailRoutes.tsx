@@ -8,7 +8,7 @@ function UserDetailRoutes() {
     <Routes>
       <Route
         path="`/user/${userId}`"
-        element={<UserDetailsPage navigate={undefined} />}
+        element={<UserDetailsPage></UserDetailsPage>}
       />
       {/* ...other user-related routes... */}
     </Routes>

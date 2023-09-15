@@ -74,7 +74,7 @@ function AppRoutes() {
                 <Routes>
                   <Route
                     path="user/:userId"
-                    element={<UserDetailsPage navigate={undefined} />}
+                    element={<UserDetailsPage></UserDetailsPage>}
                   />
                 </Routes>
               </InlineModalLayout>

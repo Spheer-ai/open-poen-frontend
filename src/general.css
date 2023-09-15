@@ -35,7 +35,7 @@ h5 {
   border-right: 1px solid #dee2e6;
   height: 100vh;
   max-width: 440px;
-  min-width: 360px;
+  min-width: 400px;
   z-index: 1;
   overflow: scroll;
 }
@@ -62,10 +62,6 @@ h5 {
   width: 100%;
 }
 
-.top-navigation-bar {
-  display: flex;
-}
-
 *,
 :after,
 :before {
@@ -81,4 +77,25 @@ h5 {
 ul {
   margin-top: -20px;
   padding: 20px;
+}
+
+.initiative-list {
+  padding: 0;
+  margin: 0;
+  list-style-type: disc !important;
+}
+
+.initiative-list ul {
+  list-style-type: disc !important;
+}
+
+.initiative-list li {
+  border: none;
+  padding: 0;
+  list-style: disc;
+  color: #2760d5;
+  font-family: Inter, sans-serif;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
 }

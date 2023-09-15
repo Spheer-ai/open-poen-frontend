@@ -13,6 +13,11 @@ function Sponsors() {
     setIsModalOpen(false);
   };
 
+  const handleSearch = (query) => {
+    // Handle the search logic specific to this component
+    console.log("Search query in UserDetailsPage:", query);
+  };
+
   return (
     <div className="side-panel">
       <TopNavigationBar
@@ -21,6 +26,7 @@ function Sponsors() {
         showCta={true}
         onSettingsClick={() => {}}
         onCtaClick={handleCtaClick}
+        onSearch={handleSearch}
       />
 
       <AddItemModal isOpen={isModalOpen} onClose={handleCloseModal}>

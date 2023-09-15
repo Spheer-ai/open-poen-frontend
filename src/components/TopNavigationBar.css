@@ -24,6 +24,7 @@
   gap: 15px;
   justify-content: space-between;
   padding: 0 20px;
+  padding-bottom: 20px;
   position: sticky;
   min-width: inherit;
   top: 0;
@@ -102,4 +103,52 @@ h2 {
 .svg-logo {
   display: flex;
   align-items: center;
+}
+
+.search-bar {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  align-items: center;
+  border-radius: 8px;
+  background: var(--neutral-200, #f1f3f5);
+  padding: 8px;
+}
+
+.search-icon {
+  width: 22px;
+  height: 22px;
+  margin-right: 8px;
+}
+
+.search-input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  color: var(--neutral-neutral-700, var(--neutral-700, #6a7178));
+  font-family: Inter, sans-serif;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 20px;
+  letter-spacing: -0.001px;
+  outline: none;
+}
+
+.search-button {
+  background-color: transparent;
+  border: none;
+  color: var(--neutral-neutral-700, var(--neutral-700, #6a7178));
+  cursor: pointer;
+  outline: none;
+  transition: color 0.2s ease;
+}
+
+.search-button:hover {
+  color: #000; /* Change the color on hover */
+}
+
+.bar-items {
+  display: flex;
+  justify-content: space-between;
 }

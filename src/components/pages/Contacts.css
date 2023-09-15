@@ -88,3 +88,7 @@ ul {
   background-color: rgba(0, 0, 0, 0.08) !important;
   /* Add any other styling you want for active users */
 }
+
+.profile-icon {
+  margin-left: -15px;
+}

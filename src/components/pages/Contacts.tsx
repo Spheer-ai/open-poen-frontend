@@ -7,8 +7,8 @@ import AddItemModal from "../../components/modals/AddItemModal";
 import AddUserForm from "../forms/AddUserForm";
 import "./Contacts.css";
 import LoadingDot from "../animation/LoadingDot";
-import UserDetailsPage from "./UserDetailPage";
 import ProfileIcon from "../../assets/profile-icon.svg";
+import DropdownMenu from "../DropDownMenu"; // Import the DropdownMenu component
 
 interface UserData {
   email: string;
@@ -26,6 +26,8 @@ function Contacts() {
   const [activeUserId, setActiveUserId] = useState<string | null>(null);
   const [userListLoaded, setUserListLoaded] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false); // State to track the dropdown
 
   const { userId } = useParams();
   const navigate = useNavigate();
@@ -45,6 +47,20 @@ function Contacts() {
   const handleUserClick = (clickedUserId: string) => {
     console.log("Clicked User ID:", clickedUserId);
     setActiveUserId(clickedUserId);
+  };
+
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+  };
+
+  const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
+  const handleToggleDropdown = (event: React.MouseEvent<HTMLDivElement>) => {
+    const dotPosition = event.currentTarget.getBoundingClientRect();
+    setDropdownPosition({
+      top: dotPosition.bottom + window.scrollY,
+      left: dotPosition.left + window.scrollX,
+    });
+    setIsDropdownOpen(!isDropdownOpen);
   };
 
   useEffect(() => {
@@ -133,6 +149,7 @@ function Contacts() {
         showCta={true}
         onSettingsClick={() => {}}
         onCtaClick={handleCtaClick}
+        onSearch={handleSearch}
       />
 
       <AddItemModal isOpen={isModalOpen} onClose={handleCloseModal}>
@@ -162,142 +179,164 @@ function Contacts() {
             <p>Data could not be loaded.</p>
           ) : (
             <ul>
-              {userData.map((user, index) => {
-                const userItemId = user.id;
-                const loggedInId = loggedInUserId;
+              {userData
+                .filter((user) => {
+                  const fullName = `${user.first_name} ${user.last_name}`;
+                  const email = user.email;
+                  const keywords = searchQuery.toLowerCase().split(" ");
+                  return keywords.every(
+                    (keyword) =>
+                      fullName.toLowerCase().includes(keyword) ||
+                      email.toLowerCase().includes(keyword),
+                  );
+                })
+                .map((user, index) => {
+                  const userItemId = user.id;
+                  const loggedInId = loggedInUserId;
+                  const isActive = activeUserId === userItemId;
+                  const isLoggedActiveUser =
+                    isActive && loggedInId === userItemId;
 
-                const isActive = activeUserId === userItemId;
-                const isLoggedActiveUser =
-                  isActive && loggedInId === userItemId;
-
-                return (
-                  <li
-                    key={userItemId}
-                    onClick={() => handleUserClick(userItemId)}
-                    className={`${isActive ? "active-user" : ""}`}
-                    style={{
-                      animationName: "fadeIn",
-                      animationDuration: "0.5s",
-                      animationTimingFunction: "ease-in-out",
-                      animationFillMode: "both",
-                      backgroundColor:
-                        isActive && loggedInId === userItemId
-                          ? "gray"
-                          : "white",
-                      animationDelay: `${index * 0.1}s`,
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                      padding: "10px",
-                    }}
-                  >
-                    {isLoggedIn ? (
-                      <Link
-                        to={`/contacts/user/${userItemId}`}
-                        className={`user-link ${
-                          isLoggedActiveUser ? "logged-in" : ""
-                        }`}
-                        style={{
-                          textDecoration: "none",
-                          display: "flex",
-                          padding: "10px",
-                          width: "100%",
-                          alignItems: "center",
-                        }}
-                      >
-                        <div className="profile">
-                          <img
-                            src="../../../profile-placeholder.png"
-                            alt="Profile"
-                            className="profile-image"
-                          />
-                          <div className="user-info">
-                            <p>
-                              {user.first_name} {user.last_name}
-                            </p>
-                            <p className="profile-email">{user.email}</p>
-                          </div>
-                        </div>
-                        {loggedInId == userItemId && (
-                          <div>
-                            <img
-                              src={ProfileIcon}
-                              alt="Profile Icon"
-                              className="profile-icon"
-                              style={{ marginRight: "15px" }}
-                            />
-                          </div>
-                        )}
-                        <div
+                  return (
+                    <li
+                      key={userItemId}
+                      onClick={() => handleUserClick(userItemId)}
+                      className={`${isActive ? "active-user" : ""}`}
+                      style={{
+                        animationName: "fadeIn",
+                        animationDuration: "0.5s",
+                        animationTimingFunction: "ease-in-out",
+                        animationFillMode: "both",
+                        backgroundColor:
+                          isActive && loggedInId === userItemId
+                            ? "gray"
+                            : "white",
+                        animationDelay: `${index * 0.2}s`,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        padding: "10px",
+                      }}
+                    >
+                      {isLoggedIn ? (
+                        <Link
+                          to={`/contacts/user/${userItemId}`}
+                          className={`user-link ${
+                            isLoggedActiveUser ? "logged-in" : ""
+                          }`}
                           style={{
+                            textDecoration: "none",
                             display: "flex",
-                            flexDirection: "column",
+                            padding: "10px",
+                            width: "100%",
                             alignItems: "center",
-                            justifyContent: "center",
                           }}
                         >
-                          <div className="dot" />
-                          <div className="dot" />
-                          <div className="dot" />
-                        </div>
-                      </Link>
-                    ) : (
-                      // Render a placeholder without link when logged out
-                      <div
-                        className={`user-link ${
-                          isLoggedActiveUser ? "logged-in" : ""
-                        }`}
-                        style={{
-                          textDecoration: "none",
-                          display: "flex",
-                          padding: "10px",
-                          width: "100%",
-                          alignItems: "center",
-                        }}
-                      >
-                        <div className="profile">
-                          <img
-                            src="../../../profile-placeholder.png"
-                            alt="Profile"
-                            className="profile-image"
-                          />
-                          <div className="user-info">
-                            <p>
-                              {user.first_name} {user.last_name}
-                            </p>
-                            <p className="profile-email">{user.email}</p>
-                          </div>
-                        </div>
-                        {loggedInId == userItemId && (
-                          <div>
+                          <div className="profile">
                             <img
-                              src={ProfileIcon}
-                              alt="Profile Icon"
-                              className="profile-icon"
-                              style={{ marginRight: "15px" }}
+                              src="../../../profile-placeholder.png"
+                              alt="Profile"
+                              className="profile-image"
                             />
+                            <div className="user-info">
+                              <p>
+                                {user.first_name} {user.last_name}
+                              </p>
+                              <p className="profile-email">{user.email}</p>
+                            </div>
                           </div>
-                        )}
+                          {loggedInId == userItemId && (
+                            <div>
+                              <img
+                                src={ProfileIcon}
+                                alt="Profile Icon"
+                                className="profile-icon"
+                              />
+                            </div>
+                          )}
+                          <div
+                            className="three-dots"
+                            onClick={(event) => handleToggleDropdown(event)}
+                          >
+                            {/* Add your three dots icon here */}
+                            <div className="dot"></div>
+                            <div className="dot"></div>
+                            <div className="dot"></div>
+                          </div>
+                        </Link>
+                      ) : (
                         <div
+                          className={`user-link ${
+                            isLoggedActiveUser ? "logged-in" : ""
+                          }`}
                           style={{
+                            textDecoration: "none",
                             display: "flex",
-                            flexDirection: "column",
+                            padding: "10px",
+                            width: "100%",
                             alignItems: "center",
-                            justifyContent: "center",
                           }}
                         >
-                          <div className="dot" />
-                          <div className="dot" />
-                          <div className="dot" />
+                          <div className="profile">
+                            <img
+                              src="../../../profile-placeholder.png"
+                              alt="Profile"
+                              className="profile-image"
+                            />
+                            <div className="user-info">
+                              <p>
+                                {user.first_name} {user.last_name}
+                              </p>
+                              <p className="profile-email">{user.email}</p>
+                            </div>
+                          </div>
+                          {loggedInId == userItemId && (
+                            <div>
+                              <img
+                                src={ProfileIcon}
+                                alt="Profile Icon"
+                                className="profile-icon"
+                                style={{ marginRight: "15px" }}
+                              />
+                            </div>
+                          )}
+                          <div
+                            className="three-dots"
+                            onClick={(event) => handleToggleDropdown(event)}
+                          >
+                            {/* Add your three dots icon here */}
+                            <div className="dot"></div>
+                            <div className="dot"></div>
+                            <div className="dot"></div>
+                          </div>
                         </div>
-                      </div>
-                    )}
-                  </li>
-                );
-              })}
+                      )}
+                    </li>
+                  );
+                })}
             </ul>
           )}
           <Outlet />
+        </div>
+      )}
+      {isDropdownOpen && (
+        <div
+          className="dropdown-container"
+          style={{
+            position: "absolute",
+            top: `${dropdownPosition.top}px`,
+            left: `${dropdownPosition.left}px`,
+          }}
+        >
+<DropdownMenu
+  isOpen={isDropdownOpen}
+  onEditClick={() => {
+    console.log("Edit clicked for user:", activeUserId);
+  }}
+  onDeleteClick={() => {
+    console.log("Delete clicked for user:", activeUserId);
+  }}
+/>
         </div>
       )}
     </div>
