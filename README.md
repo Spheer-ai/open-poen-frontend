@@ -58,7 +58,7 @@ export default {
 ## Start the Development Server
 1. Build the frontend and connect it with the API via a proxy using Vite:
 
-`npm rund dev`
+`npm run dev`
 
 This command will start the development server, and the open-poen-frontend will be available locally.
 
