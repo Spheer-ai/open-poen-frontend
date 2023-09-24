@@ -1,5 +1,6 @@
-import React, { useState } from "react";
-import SearchIcon from "/search-icon.svg"; // Import the search icon SVG
+import { useState } from "react";
+import SearchIcon from "/search-icon.svg";
+import styles from "./Search.module.scss";
 
 const Search = ({ onSearch }) => {
   const [query, setQuery] = useState("");
@@ -7,13 +8,12 @@ const Search = ({ onSearch }) => {
   const handleInputChange = (e) => {
     const value = e.target.value;
     setQuery(value);
-    onSearch(value); // Call onSearch with the updated query value
+    onSearch(value);
   };
 
   return (
-    <div className="search-bar">
-      {/* Search icon */}
-      <div className="search-icon">
+    <div className={styles["search-bar"]}>
+      <div className={styles["search-icon"]}>
         <img src={SearchIcon} alt="Search Icon" />
       </div>
 
@@ -22,7 +22,7 @@ const Search = ({ onSearch }) => {
         placeholder="Zoekopdracht"
         value={query}
         onChange={handleInputChange}
-        className="search-input"
+        className={styles["search-input"]}
       />
     </div>
   );

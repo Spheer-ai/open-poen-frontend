@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import "./SidebarMenu.css";
+import styles from "./SidebarMenu.module.scss";
 import { logoutUser } from "./middleware/Api";
 
 interface SidebarMenuProps {
@@ -34,17 +34,17 @@ const SidebarMenu = ({ isAuthenticated, onLogout }: SidebarMenuProps) => {
   };
 
   return (
-    <div className="sidebar-menu">
-      <div className="top-section">
+    <div className={styles["sidebar-menu"]}>
+      <div className={styles["top-section"]}>
         <Link to="/funds">
           <img
-            className="logo"
+            className={styles["logo"]}
             src="/open-poen-logo-blue.svg"
             alt="Home Logo"
           />
         </Link>
       </div>
-      <div className="middle-section">
+      <div className={styles["middle-section"]}>
         <ul>
           {linkData.map((linkInfo) => (
             <li
@@ -58,7 +58,7 @@ const SidebarMenu = ({ isAuthenticated, onLogout }: SidebarMenuProps) => {
             >
               <Link to={`/${linkInfo.name.toLowerCase()}`}>
                 <img
-                  className="sidebar-icon"
+                  className={styles["sidebar-icon"]}
                   src={`/${linkInfo.icon}`}
                   alt={`${linkInfo.name} Icon`}
                 />
@@ -78,7 +78,7 @@ const SidebarMenu = ({ isAuthenticated, onLogout }: SidebarMenuProps) => {
               >
                 <Link to={`/${linkInfo.name.toLowerCase()}`}>
                   <img
-                    className="sidebar-icon"
+                    className={styles["sidebar-icon"]}
                     src={`/${linkInfo.icon}`}
                     alt={`${linkInfo.name} Icon`}
                   />
@@ -87,10 +87,10 @@ const SidebarMenu = ({ isAuthenticated, onLogout }: SidebarMenuProps) => {
             ))}
         </ul>
       </div>
-      <div className="bottom-section">
+      <div className={styles["bottom-section"]}>
         <Link to={isAuthenticated ? "/" : "/login"}>
           <img
-            className="hamburger-icon"
+            className={styles["hamburger-icon"]}
             src={isAuthenticated ? "/logout.svg" : "/login.svg"}
             alt={isAuthenticated ? "Logout Icon" : "Login Icon"}
             onClick={handleLogout}

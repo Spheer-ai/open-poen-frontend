@@ -1,23 +1,25 @@
 import React from "react";
 import { ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
+import styles from "./InlineModalLayout.module.scss";
 
 interface InlineModalProps {
   children: ReactNode;
 }
 
 function InlineModalLayout({ children }: InlineModalProps) {
-  const navigate = useNavigate(); // Use navigate instead of routerNavigate
+  const navigate = useNavigate();
 
-  // Pass navigate down to children
   const childrenWithProps = React.Children.map(children, (child) => {
     if (React.isValidElement(child)) {
-      return React.cloneElement(child, { navigate }); // Pass navigate as a prop
+      return React.cloneElement(child, { navigate });
     }
     return child;
   });
 
-  return <div className="inline-modal-layout">{childrenWithProps}</div>;
+  return (
+    <div className={styles["inline-modal-layout"]}>{childrenWithProps}</div>
+  );
 }
 
 export default InlineModalLayout;

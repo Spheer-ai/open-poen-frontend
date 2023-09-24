@@ -1,10 +1,11 @@
-// userTypes.ts
 interface UserDetails {
-  [x: string]: any;
+  activities: string;
+  biography: string;
+  x: string;
   first_name: string;
   last_name: string;
   email: string;
-  // Add more fields as needed
+  role: string;
 }
 
 export default UserDetails;

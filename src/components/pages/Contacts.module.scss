@@ -1,0 +1,138 @@
+ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.profile {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.profile-image {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  margin-right: 16px;
+}
+
+.user-info {
+  flex-grow: 1;
+}
+
+.user-info {
+  margin: 0;
+  font-weight: 700;
+  font-size: 16px;
+  margin: 0px;
+  text-decoration: none !important;
+}
+
+.user-info p {
+  margin: 10px;
+  color: rgba(16, 18, 19, 1);
+  text-decoration: none !important;
+}
+
+.profile-email {
+  font-size: 14px;
+  font-weight: 300;
+  color: rgba(106, 113, 120, 1);
+}
+
+.user-list-item.logged-in {
+  background-color: gray;
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease-in-out;
+  animation-fill-mode: both;
+}
+
+.user-link .profile {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px;
+}
+
+.user-link {
+  text-decoration: none;
+  display: flex;
+  width: 100%;
+  align-items: center;
+  padding: 10px;
+  justify-content: space-between;
+}
+
+.dot {
+  width: 4px;
+  height: 4px;
+  background-color: rgba(56, 56, 56, 1);
+  border-radius: 50%;
+  margin: 2px 0;
+}
+
+.active-user {
+  background-color: rgba(0, 0, 0, 0.08) !important;
+}
+
+.profile-icon {
+  margin-left: -15px;
+}
+
+.side-panel {
+  background-color: #fff;
+  border-right: 1px solid #dee2e6;
+  height: 100vh;
+  max-width: 440px;
+  min-width: 400px;
+  z-index: 1;
+  overflow: scroll;
+}
+
+li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px;
+}
+
+.logged-in {
+  text-decoration: none;
+  display: flex;
+  padding: 10px;
+  width: 100%;
+  align-items: center;
+}
+
+.three-dots {
+  padding: 20px;
+}
+
+.loading-dots-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
+  height: 100%;
+}
+
+.loading-container {
+  display: flex;
+  align-items: center;
+  height: 100vh;
+  justify-content: center;
+  align-content: center;
+}

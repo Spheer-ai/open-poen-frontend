@@ -5,7 +5,7 @@
   display: inline-block;
   margin: 0.3rem;
   animation: loading 1s ease-in-out infinite;
-  align-content: center; /* Remove the extra display properties */
+  align-content: center;
   justify-content: center;
   align-items: center;
 }
@@ -24,20 +24,4 @@
     transform: scale(0.3);
     background-color: rgb(236, 124, 54);
   }
-}
-
-.loading-dots-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  align-content: center;
-  height: 100%;
-}
-
-.loading-container {
-  display: flex;
-  align-items: center;
-  height: 100vh;
-  justify-content: center;
-  align-content: center;
 }

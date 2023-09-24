@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
-import "../forms/AddUserform.css";
-import { useAuth } from "../../contexts/AuthContext"; // Import the useAuth hook from your authentication context
+import styles from "../forms/AddUserform.module.scss";
+import { useAuth } from "../../contexts/AuthContext";
 
 interface AddUserFormProps {
   onContinue: () => void;
@@ -21,7 +21,7 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onContinue, onCancel }) => {
     hidden: false,
   });
 
-  const { user } = useAuth(); // Access the authenticated user's token
+  const { user } = useAuth();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -30,12 +30,8 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onContinue, onCancel }) => {
 
   const handleSubmit = async () => {
     try {
-      // Perform form validation here if needed
+      const token = user?.token || "";
 
-      // Use the authenticated user's token
-      const token = user?.token || ""; // Replace with your actual token or a default value
-
-      // Send the formData to the server via Axios POST request with authentication headers
       const response = await axios.post(
         "http://127.0.0.1:8000/user",
         formData,
@@ -49,10 +45,8 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onContinue, onCancel }) => {
 
       console.log("User created:", response.data);
 
-      // Close the modal or perform other actions
       onContinue();
     } catch (error) {
-      // Handle any errors, such as validation errors or network issues
       console.error("Failed to create user:", error);
     }
   };
@@ -62,7 +56,7 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onContinue, onCancel }) => {
       <h2>Add User</h2>
       <hr />
       <form>
-        <div className="form-group">
+        <div className={styles["form-group"]}>
           <label htmlFor="email">Email Address:</label>
           <input
             type="email"
@@ -71,9 +65,11 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onContinue, onCancel }) => {
             value={formData.email}
             onChange={handleChange}
           />
-          <p className="description">Enter the email address of the user.</p>
+          <p className={styles["description"]}>
+            Enter the email address of the user.
+          </p>
         </div>
-        <div className="form-group">
+        <div className={styles["form-group"]}>
           <label htmlFor="first_name">First Name:</label>
           <input
             type="text"
@@ -83,7 +79,7 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onContinue, onCancel }) => {
             onChange={handleChange}
           />
         </div>
-        <div className="form-group">
+        <div className={styles["form-group"]}>
           <label htmlFor="last_name">Last Name:</label>
           <input
             type="text"
@@ -93,7 +89,7 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onContinue, onCancel }) => {
             onChange={handleChange}
           />
         </div>
-        <div className="form-group">
+        <div className={styles["form-group"]}>
           <label htmlFor="biography">Biography:</label>
           <input
             type="text"
@@ -103,13 +99,12 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onContinue, onCancel }) => {
             onChange={handleChange}
           />
         </div>
-        {/* Add more form fields for other user data here */}
       </form>
-      <div className="button-container">
-        <button className="continue-button" onClick={handleSubmit}>
+      <div className={styles["button-container"]}>
+        <button className={styles["continue-button"]} onClick={handleSubmit}>
           Continue
         </button>
-        <button className="cancel-button" onClick={onCancel}>
+        <button className={styles["cancel-button"]} onClick={onCancel}>
           Cancel
         </button>
       </div>

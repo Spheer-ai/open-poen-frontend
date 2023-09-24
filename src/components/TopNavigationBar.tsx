@@ -1,6 +1,6 @@
 import React from "react";
-import "./TopNavigationBar.css";
-import Search from "./Search"; // Import the Search component
+import styles from "./TopNavigationBar.module.scss";
+import Search from "./Search";
 
 interface TopNavigationBarProps {
   title: string;
@@ -8,7 +8,7 @@ interface TopNavigationBarProps {
   showCta: boolean;
   onSettingsClick?: () => void;
   onCtaClick?: () => void;
-  onSearch: (query: string) => void; // Add a prop for the search callback
+  onSearch: (query: string) => void;
 }
 
 const TopNavigationBar: React.FC<TopNavigationBarProps> = ({
@@ -17,23 +17,23 @@ const TopNavigationBar: React.FC<TopNavigationBarProps> = ({
   onSettingsClick,
   showCta,
   onCtaClick,
-  onSearch, // Pass the onSearch prop
+  onSearch,
 }) => {
   return (
-    <div className="top-navigation-bar">
-      <div className="bar-items">
-        <div className="title">
+    <div className={styles["top-navigation-bar"]}>
+      <div className={styles["bar-items"]}>
+        <div className={styles["title"]}>
           <h2>{title}</h2>
         </div>
-        <div className="icons">
+        <div className={styles["icons"]}>
           {showSettings && (
-            <div className="settings-icon" onClick={onSettingsClick}>
+            <div className={styles["settings-icon"]} onClick={onSettingsClick}>
               <img src="/profile-settings.svg" alt="Profile Settings" />
             </div>
           )}
           {showCta && (
-            <div className="cta-button" onClick={onCtaClick}>
-              <button className="cta-button">+</button>
+            <div className={styles["cta-button"]} onClick={onCtaClick}>
+              <button className={styles["cta-button"]}>+</button>
             </div>
           )}
         </div>

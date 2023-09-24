@@ -1,5 +1,5 @@
 import React from "react";
-import "./AddItemModal.css";
+import styles from "./AddItemModal.module.scss";
 
 interface AddItemModalProps {
   isOpen: boolean;
@@ -17,9 +17,9 @@ const AddItemModal: React.FC<AddItemModalProps> = ({
   }
 
   return (
-    <div className="modal">
-      <div className="modal-content">
-        <button className="close-button" onClick={onClose}>
+    <div className={styles["modal"]}>
+      <div className={styles["modal-content"]}>
+        <button className={styles["close-button"]} onClick={onClose}>
           &times;
         </button>
         {children}

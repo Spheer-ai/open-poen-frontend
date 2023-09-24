@@ -1,12 +1,10 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { login as apiLogin } from "../components/middleware/Api";
 
-// Define a type for your user data
 interface UserData {
   token: string | null;
 }
 
-// Define a type for your context value
 interface AuthContextValue {
   user: UserData | null;
   login: (username: string, password: string) => Promise<boolean>;

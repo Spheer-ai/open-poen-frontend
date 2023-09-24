@@ -1,4 +1,3 @@
-// Api.ts
 import axios from "axios";
 
 import jwtDecode from "jwt-decode";
@@ -27,8 +26,7 @@ export const getUserData = async (token: string) => {
     throw new Error("User not authenticated");
   }
 
-  // Extract user ID from JWT token
-  const decodedToken: any = jwtDecode(token); // You may need to adjust the type of decodedToken
+  const decodedToken: string = jwtDecode(token);
 
   try {
     const response = await api.get(`/user/${decodedToken.sub}`, {
@@ -50,8 +48,7 @@ export const getUsers = async (token: string) => {
       throw new Error("User not authenticated");
     }
 
-    // Extract user ID from JWT token
-    const decodedToken: any = jwtDecode(token);
+    const decodedToken: string = jwtDecode(token);
 
     const response = await api.get(`/users`, {
       headers: {
@@ -60,11 +57,10 @@ export const getUsers = async (token: string) => {
     });
     console.log("getUsers response:", response.data);
 
-    // Sort users based on the logged-in user's ID
-    const sortedUsers = response.data.users.slice(); // Create a copy of the users array
+    const sortedUsers = response.data.users.slice();
     sortedUsers.sort((a, b) => {
       if (a.id === decodedToken.sub) {
-        return -1; // Place the logged-in user at the top
+        return -1;
       } else if (b.id === decodedToken.sub) {
         return 1;
       }

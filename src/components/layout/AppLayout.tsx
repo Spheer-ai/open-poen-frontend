@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from "react";
-import SidebarMenu from "../SidebarMenu";
+import styles from "./AppLayout.module.scss";
 
 import { ReactNode } from "react";
 
@@ -8,8 +7,8 @@ interface AppLayoutProps {
 }
 
 function AppLayout({ children }: AppLayoutProps) {
-  <div className="app-layout">
-    <div className="content">{children}</div>
+  <div className={styles["app-layout"]}>
+    <div className={styles["content"]}>{children}</div>
   </div>;
 }
 

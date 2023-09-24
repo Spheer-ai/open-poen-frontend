@@ -1,15 +1,14 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
-import { useParams, Link } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import UserDetails from "../types/UserTypes";
 import ProfilePlaceholder from "/profile-placeholder.png";
-import "./UserDetailPage.css";
-import InitiativeList from "../lists/InitiativeList"; // Import the InitiativeList component
+import styles from "./UserDetailPage.module.scss";
+import InitiativeList from "../lists/InitiativeList";
 import LoadingDot from "../animation/LoadingDot";
 
 function UserDetailsPage() {
   const { userId } = useParams<{ userId: string }>();
-
   const [userDetails, setUserDetails] = useState<UserDetails | null>(null);
   const [initiatives, setInitiatives] = useState([]);
 
@@ -34,73 +33,62 @@ function UserDetailsPage() {
 
     if (userId) {
       fetchUserDetails();
-      fetchInitiatives(); // Fetch initiatives data
+      fetchInitiatives();
     }
   }, [userId]);
 
   return (
-    <div className="user-details-container">
-      <div className="user-details-content">
+    <div className={styles["user-details-container"]}>
+      <div className={styles["user-details-content"]}>
         {userDetails ? (
-          <div className="user-details">
-            <div className="user-profile">
+          <div className={styles["user-details"]}>
+            <div className={styles["user-profile"]}>
               <div>
                 <img
                   src={ProfilePlaceholder}
                   alt="Profile"
-                  className="user-image circular"
+                  className={styles["user-image circular"]}
                 />
               </div>
-              <div className="user-info">
-                <p className="user-name">
+              <div className={styles["user-info"]}>
+                <p className={styles["user-name"]}>
                   {userDetails.first_name} {userDetails.last_name}
                 </p>
                 {userDetails.email && (
-                  <p className="user-email">Email: {userDetails.email}</p>
+                  <p className={styles["user-email"]}>
+                    Email: {userDetails.email}
+                  </p>
                 )}
-                <div className="user-role-label">
-                  <p className="user-role">{userDetails.role}</p>
+                <div className={styles["user-role-label"]}>
+                  <p className={styles["user-role"]}>{userDetails.role}</p>
                 </div>
               </div>
             </div>
 
-            <div className="user-description">
-              <h3 className="section-title">Description</h3>
-              <p className="section-content">{userDetails.biography}</p>
+            <div className={styles["user-description"]}>
+              <h3 className={styles["section-title"]}>Description</h3>
+              <p className={styles["section-content"]}>
+                {userDetails.biography}
+              </p>
             </div>
 
-            <div className="user-initiatives">
-              <h3 className="section-title">Initiatives</h3>
+            <div className={styles["user-initiatives"]}>
+              <h3 className={styles["section-title"]}>Initiatives</h3>
               <InitiativeList initiatives={initiatives} />
             </div>
-            <div className="user-activities">
-              <h3 className="section-title">Activities</h3>
+            <div className={styles["user-activities"]}>
+              <h3 className={styles["section-title"]}>Activities</h3>
               {userDetails.activities.length > 0 ? (
-                <ul>
-                  {userDetails.activities.map((activity) => (
-                    <li key={activity.id}>
-                      <h4>{activity.name}</h4>
-                      <p className="section-content">
-                        Description: {activity.description}
-                      </p>
-                      <p className="section-content">
-                        Finished: {activity.finished ? "Yes" : "No"}
-                      </p>
-                      {activity.finished && (
-                        <p className="section-content">
-                          Finished Description: {activity.finished_description}
-                        </p>
-                      )}
-                    </li>
-                  ))}
-                </ul>
+                <></>
               ) : (
-                <p className="section-content">No activities available.</p>
+                <p className={styles["section-content"]}>
+                  No activities available.
+                </p>
               )}
             </div>
           </div>
         ) : (
-          <div className="loading-container">
+          <div className={styles["loading-container"]}>
             <LoadingDot delay={0} />
             <LoadingDot delay={0.1} />
             <LoadingDot delay={0.1} />

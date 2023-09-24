@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import TopNavigationBar from "../TopNavigationBar";
 import AddItemModal from "../modals/AddItemModal";
+import styles from "./Sponsors.module.scss";
 
 function Sponsors() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -14,12 +15,11 @@ function Sponsors() {
   };
 
   const handleSearch = (query) => {
-    // Handle the search logic specific to this component
     console.log("Search query in UserDetailsPage:", query);
   };
 
   return (
-    <div className="side-panel">
+    <div className={styles["side-panel"]}>
       <TopNavigationBar
         title="Sponsors"
         showSettings={true}

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useAuth } from "../../contexts/AuthContext";
-import "./Login.css";
+import styles from "./Login.module.scss";
 
 function Login({ onLogin }: { onLogin: () => void; onClose: () => void }) {
   const { login, isLoading } = useAuth();
@@ -24,18 +24,18 @@ function Login({ onLogin }: { onLogin: () => void; onClose: () => void }) {
     }
   };
   return (
-    <div className="login-modal">
-      <div className="login-modal-content">
-        <div className="login-container">
-          <div className="login-box">
-            <div className="logo">
+    <div className={styles["login-modal"]}>
+      <div className={styles["login-modal-content"]}>
+        <div className={styles["login-container"]}>
+          <div className={styles["login-box"]}>
+            <div className={styles["logo"]}>
               <img src="/open-poen-logo-gradient.svg" alt="Project Logo" />
             </div>
-            <div className="project-title">
+            <div className={styles["project-title"]}>
               <img src="/login-openpoen-logo.svg" alt="Project Name" />
             </div>
-            <div className="input-container">
-              <span className="icon">
+            <div className={styles["input-container"]}>
+              <span className={styles["icon"]}>
                 <img
                   src="/input-username.svg"
                   alt="Username"
@@ -50,8 +50,8 @@ function Login({ onLogin }: { onLogin: () => void; onClose: () => void }) {
                 onChange={(e) => setUsername(e.target.value)}
               />
             </div>
-            <div className="input-container">
-              <span className="icon">
+            <div className={styles["input-container"]}>
+              <span className={styles["icon"]}>
                 <img
                   src="/input-password.svg"
                   alt="Password"
@@ -67,18 +67,18 @@ function Login({ onLogin }: { onLogin: () => void; onClose: () => void }) {
               />
             </div>
             <button
-              className="login-button"
+              className={styles["login-button"]}
               onClick={handleLogin}
               disabled={isLoading}
             >
               {isLoading ? "Inloggen..." : "Login"}
             </button>
 
-            {error && <p className="error-message">{error}</p>}
+            {error && <p className={styles["error-message"]}>{error}</p>}
 
             {isLoading && (
-              <div className="loading-animation">
-                <div className="spinner"></div>
+              <div className={styles["loading-animation"]}>
+                <div className={styles["spinner"]}></div>
               </div>
             )}
           </div>

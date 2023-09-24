@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { Link, Outlet, useParams, useNavigate } from "react-router-dom";
+import { Link, Outlet, useNavigate } from "react-router-dom";
 import axios from "axios";
 import jwtDecode from "jwt-decode";
 import TopNavigationBar from "../../components/TopNavigationBar";
 import AddItemModal from "../../components/modals/AddItemModal";
 import AddUserForm from "../forms/AddUserForm";
-import "./Contacts.css";
+import styles from "./Contacts.module.scss";
 import LoadingDot from "../animation/LoadingDot";
 import ProfileIcon from "../../assets/profile-icon.svg";
-import DropdownMenu from "../DropDownMenu"; // Import the DropdownMenu component
+import DropdownMenu from "../DropDownMenu";
 
 interface UserData {
   email: string;
@@ -27,9 +27,8 @@ function Contacts() {
   const [userListLoaded, setUserListLoaded] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false); // State to track the dropdown
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-  const { userId } = useParams();
   const navigate = useNavigate();
 
   const handleCtaClick = () => {
@@ -72,7 +71,7 @@ function Contacts() {
         setIsLoggedIn(loggedIn);
 
         if (loggedIn) {
-          const decodedToken: any = jwtDecode(token);
+          const decodedToken: string = jwtDecode(token);
           const userId = decodedToken.sub;
 
           setLoggedInUserId(userId);
@@ -135,14 +134,13 @@ function Contacts() {
   useEffect(() => {
     if (activeUserId) {
       if (isLoggedIn) {
-        // Only navigate if the user is logged in
         navigate(`/contacts/user/${activeUserId}`);
       }
     }
   }, [activeUserId, navigate, isLoggedIn]);
 
   return (
-    <div className="side-panel">
+    <div className={styles["side-panel"]}>
       <TopNavigationBar
         title={`Contacts ${userData.length}`}
         showSettings={true}
@@ -162,8 +160,8 @@ function Contacts() {
       </AddItemModal>
 
       {isLoading ? (
-        <div className="loading-container">
-          <div className="loading-dots-container">
+        <div className={styles["loading-container"]}>
+          <div className={styles["loading-dots-container"]}>
             <LoadingDot delay={0} />
             <LoadingDot delay={0.1} />
             <LoadingDot delay={0.1} />
@@ -190,7 +188,7 @@ function Contacts() {
                       email.toLowerCase().includes(keyword),
                   );
                 })
-                .map((user, index) => {
+                .map((user) => {
                   const userItemId = user.id;
                   const loggedInId = loggedInUserId;
                   const isActive = activeUserId === userItemId;
@@ -201,48 +199,34 @@ function Contacts() {
                     <li
                       key={userItemId}
                       onClick={() => handleUserClick(userItemId)}
-                      className={`${isActive ? "active-user" : ""}`}
+                      className={`${isActive ? styles["active-user"] : ""}`}
                       style={{
-                        animationName: "fadeIn",
-                        animationDuration: "0.5s",
-                        animationTimingFunction: "ease-in-out",
-                        animationFillMode: "both",
                         backgroundColor:
                           isActive && loggedInId === userItemId
                             ? "gray"
                             : "white",
-                        animationDelay: `${index * 0.2}s`,
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "space-between",
-                        padding: "10px",
                       }}
                     >
                       {isLoggedIn ? (
                         <Link
                           to={`/contacts/user/${userItemId}`}
-                          className={`user-link ${
-                            isLoggedActiveUser ? "logged-in" : ""
+                          className={`${styles["user-link"]} ${
+                            isLoggedActiveUser ? styles["logged-in"] : ""
                           }`}
-                          style={{
-                            textDecoration: "none",
-                            display: "flex",
-                            padding: "10px",
-                            width: "100%",
-                            alignItems: "center",
-                          }}
                         >
-                          <div className="profile">
+                          <div className={styles["profile"]}>
                             <img
                               src="../../../profile-placeholder.png"
                               alt="Profile"
-                              className="profile-image"
+                              className={styles["profile-image"]}
                             />
-                            <div className="user-info">
+                            <div className={styles["user-info"]}>
                               <p>
                                 {user.first_name} {user.last_name}
                               </p>
-                              <p className="profile-email">{user.email}</p>
+                              <p className={styles["profile-email"]}>
+                                {user.email}
+                              </p>
                             </div>
                           </div>
                           {loggedInId == userItemId && (
@@ -250,44 +234,38 @@ function Contacts() {
                               <img
                                 src={ProfileIcon}
                                 alt="Profile Icon"
-                                className="profile-icon"
+                                className={styles["profile-icon"]}
                               />
                             </div>
                           )}
                           <div
-                            className="three-dots"
+                            className={styles["three-dots"]}
                             onClick={(event) => handleToggleDropdown(event)}
                           >
-                            {/* Add your three dots icon here */}
-                            <div className="dot"></div>
-                            <div className="dot"></div>
-                            <div className="dot"></div>
+                            <div className={styles["dot"]}></div>{" "}
+                            <div className={styles["dot"]}></div>{" "}
+                            <div className={styles["dot"]}></div>{" "}
                           </div>
                         </Link>
                       ) : (
                         <div
-                          className={`user-link ${
-                            isLoggedActiveUser ? "logged-in" : ""
+                          className={`${styles["user-link"]} ${
+                            isLoggedActiveUser ? styles["logged-in"] : ""
                           }`}
-                          style={{
-                            textDecoration: "none",
-                            display: "flex",
-                            padding: "10px",
-                            width: "100%",
-                            alignItems: "center",
-                          }}
                         >
-                          <div className="profile">
+                          <div className={styles["profile"]}>
                             <img
                               src="../../../profile-placeholder.png"
                               alt="Profile"
-                              className="profile-image"
+                              className={styles["profile-image"]}
                             />
-                            <div className="user-info">
+                            <div className={styles["user-info"]}>
                               <p>
                                 {user.first_name} {user.last_name}
                               </p>
-                              <p className="profile-email">{user.email}</p>
+                              <p className={styles["profile-email"]}>
+                                {user.email}
+                              </p>
                             </div>
                           </div>
                           {loggedInId == userItemId && (
@@ -295,19 +273,17 @@ function Contacts() {
                               <img
                                 src={ProfileIcon}
                                 alt="Profile Icon"
-                                className="profile-icon"
-                                style={{ marginRight: "15px" }}
+                                className={styles["profile-icon"]}
                               />
                             </div>
                           )}
                           <div
-                            className="three-dots"
+                            className={styles["three-dots"]}
                             onClick={(event) => handleToggleDropdown(event)}
                           >
-                            {/* Add your three dots icon here */}
-                            <div className="dot"></div>
-                            <div className="dot"></div>
-                            <div className="dot"></div>
+                            <div className={styles["dot"]}></div>{" "}
+                            <div className={styles["dot"]}></div>{" "}
+                            <div className={styles["dot"]}></div>{" "}
                           </div>
                         </div>
                       )}
@@ -321,22 +297,22 @@ function Contacts() {
       )}
       {isDropdownOpen && (
         <div
-          className="dropdown-container"
+          className={styles["dropdown-container"]}
           style={{
             position: "absolute",
             top: `${dropdownPosition.top}px`,
             left: `${dropdownPosition.left}px`,
           }}
         >
-<DropdownMenu
-  isOpen={isDropdownOpen}
-  onEditClick={() => {
-    console.log("Edit clicked for user:", activeUserId);
-  }}
-  onDeleteClick={() => {
-    console.log("Delete clicked for user:", activeUserId);
-  }}
-/>
+          <DropdownMenu
+            isOpen={isDropdownOpen}
+            onEditClick={() => {
+              console.log("Edit clicked for user:", activeUserId);
+            }}
+            onDeleteClick={() => {
+              console.log("Delete clicked for user:", activeUserId);
+            }}
+          />
         </div>
       )}
     </div>

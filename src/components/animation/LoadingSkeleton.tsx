@@ -1,8 +1,7 @@
-// LoadingSkeleton.tsx
-import "./LoadingSkeleton.css";
+import styles from "./LoadingSkeleton.module.scss";
 
 const LoadingSkeleton = () => {
-  return <div className="loading-skeleton"></div>;
+  return <div className={styles["loading-skeleton"]}></div>;
 };
 
 export default LoadingSkeleton;

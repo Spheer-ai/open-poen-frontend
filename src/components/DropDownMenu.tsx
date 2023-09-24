@@ -1,6 +1,6 @@
 // DropdownMenu.js
 import React from "react";
-import "../components/DropDownMenu.css";
+import styles from "../components/DropDownMenu.module.scss";
 
 interface DropdownMenuProps {
   isOpen: boolean;
@@ -18,11 +18,11 @@ const DropdownMenu: React.FC<DropdownMenuProps> = ({
   }
 
   return (
-    <div className="dropdown-menu">
-      <button className="menu-option" onClick={onEditClick}>
+    <div className={styles["dropdown-menu"]}>
+      <button className={styles["menu-option"]} onClick={onEditClick}>
         Bewerken
       </button>
-      <button className="menu-option delete" onClick={onDeleteClick}>
+      <button className={styles["menu-option-delete"]} onClick={onDeleteClick}>
         Verwijderen
       </button>
     </div>
