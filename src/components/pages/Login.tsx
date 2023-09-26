@@ -1,8 +1,13 @@
 import { useState } from "react";
 import { useAuth } from "../../contexts/AuthContext";
-import styles from "./Login.module.scss";
+import styles from "../../assets/scss/Login.module.scss";
 
-function Login({ onLogin }: { onLogin: () => void; onClose: () => void }) {
+export default function Login({
+  onLogin,
+}: {
+  onLogin: () => void;
+  onClose: () => void;
+}) {
   const { login, isLoading } = useAuth();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -87,5 +92,3 @@ function Login({ onLogin }: { onLogin: () => void; onClose: () => void }) {
     </div>
   );
 }
-
-export default Login;

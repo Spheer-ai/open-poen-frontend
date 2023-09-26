@@ -2,22 +2,17 @@ import React, { useState, useEffect } from "react";
 import { Link, Outlet, useNavigate } from "react-router-dom";
 import axios from "axios";
 import jwtDecode from "jwt-decode";
-import TopNavigationBar from "../../components/TopNavigationBar";
+import TopNavigationBar from "../ui/top-navigation-bar/TopNavigationBar";
 import AddItemModal from "../../components/modals/AddItemModal";
 import AddUserForm from "../forms/AddUserForm";
-import styles from "./Contacts.module.scss";
+import styles from "../../assets/scss/Contacts.module.scss";
 import LoadingDot from "../animation/LoadingDot";
 import ProfileIcon from "../../assets/profile-icon.svg";
-import DropdownMenu from "../DropDownMenu";
+import DropdownMenu from "../elements/dropdown-menu/DropDownMenu";
+import { UserData } from "../../types/ContactsTypes";
+import EditUserForm from "../forms/EditUserForm";
 
-interface UserData {
-  email: string;
-  id: string;
-  first_name: string;
-  last_name: string;
-}
-
-function Contacts() {
+export default function Contacts() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [userData, setUserData] = useState<UserData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -28,6 +23,7 @@ function Contacts() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   const navigate = useNavigate();
 
@@ -60,6 +56,14 @@ function Contacts() {
       left: dotPosition.left + window.scrollX,
     });
     setIsDropdownOpen(!isDropdownOpen);
+  };
+
+  const handleOpenEditModal = () => {
+    setIsEditModalOpen(true);
+  };
+
+  const handleEditButtonClick = () => {
+    handleOpenEditModal();
   };
 
   useEffect(() => {
@@ -158,6 +162,22 @@ function Contacts() {
           onCancel={handleCancel}
         />
       </AddItemModal>
+
+      {isEditModalOpen && (
+        <AddItemModal
+          isOpen={isEditModalOpen}
+          onClose={() => setIsEditModalOpen(false)}
+        >
+          <EditUserForm
+            onCancel={() => {
+              setIsEditModalOpen(false);
+            }}
+            onContinue={() => {
+              setIsEditModalOpen(false);
+            }}
+          />
+        </AddItemModal>
+      )}
 
       {isLoading ? (
         <div className={styles["loading-container"]}>
@@ -306,9 +326,7 @@ function Contacts() {
         >
           <DropdownMenu
             isOpen={isDropdownOpen}
-            onEditClick={() => {
-              console.log("Edit clicked for user:", activeUserId);
-            }}
+            onEditClick={handleEditButtonClick}
             onDeleteClick={() => {
               console.log("Delete clicked for user:", activeUserId);
             }}
@@ -318,5 +336,3 @@ function Contacts() {
     </div>
   );
 }
-
-export default Contacts;

@@ -1,11 +1,6 @@
 import React from "react";
-import styles from "./AddItemModal.module.scss";
-
-interface AddItemModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  children: React.ReactNode;
-}
+import styles from "../../assets/scss/AddItemModal.module.scss";
+import { AddItemModalProps } from "../../types/AddItemModalTypes";
 
 const AddItemModal: React.FC<AddItemModalProps> = ({
   isOpen,

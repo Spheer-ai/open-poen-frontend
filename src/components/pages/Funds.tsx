@@ -1,9 +1,9 @@
 import { useState } from "react";
-import TopNavigationBar from "../TopNavigationBar";
+import TopNavigationBar from "../ui/top-navigation-bar/TopNavigationBar";
 import AddItemModal from "../modals/AddItemModal";
-import styles from "./Funds.module.scss";
+import styles from "../../assets/scss/Funds.module.scss";
 
-function Funds() {
+export default function Funds() {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleCtaClick = () => {
@@ -35,5 +35,3 @@ function Funds() {
     </div>
   );
 }
-
-export default Funds;

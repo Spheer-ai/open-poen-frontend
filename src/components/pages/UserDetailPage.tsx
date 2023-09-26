@@ -1,13 +1,13 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
-import UserDetails from "../types/UserTypes";
+import UserDetails from "../../types/UserTypes";
 import ProfilePlaceholder from "/profile-placeholder.png";
-import styles from "./UserDetailPage.module.scss";
+import styles from "../../assets/scss/UserDetailPage.module.scss";
 import InitiativeList from "../lists/InitiativeList";
 import LoadingDot from "../animation/LoadingDot";
 
-function UserDetailsPage() {
+export default function UserDetailsPage() {
   const { userId } = useParams<{ userId: string }>();
   const [userDetails, setUserDetails] = useState<UserDetails | null>(null);
   const [initiatives, setInitiatives] = useState([]);
@@ -100,5 +100,3 @@ function UserDetailsPage() {
     </div>
   );
 }
-
-export default UserDetailsPage;

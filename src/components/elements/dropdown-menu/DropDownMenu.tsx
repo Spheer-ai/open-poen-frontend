@@ -1,12 +1,6 @@
-// DropdownMenu.js
 import React from "react";
-import styles from "../components/DropDownMenu.module.scss";
-
-interface DropdownMenuProps {
-  isOpen: boolean;
-  onEditClick: () => void;
-  onDeleteClick: () => void;
-}
+import styles from "../../../assets/scss/DropDownMenu.module.scss";
+import { DropdownMenuProps } from "../../../types/DropDownMenuTypes";
 
 const DropdownMenu: React.FC<DropdownMenuProps> = ({
   isOpen,

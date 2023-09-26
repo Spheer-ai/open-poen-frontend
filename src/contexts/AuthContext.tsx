@@ -1,16 +1,6 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { login as apiLogin } from "../components/middleware/Api";
-
-interface UserData {
-  token: string | null;
-}
-
-interface AuthContextValue {
-  user: UserData | null;
-  login: (username: string, password: string) => Promise<boolean>;
-  logout: () => void;
-  isLoading: boolean;
-}
+import { UserData, AuthContextValue } from "../types/AuthContextTypes";
 
 const AuthContext = createContext<AuthContextValue>({
   user: null,

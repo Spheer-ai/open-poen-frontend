@@ -1,4 +1,4 @@
-import styles from "./LoadingDot.module.scss";
+import styles from "../../assets/scss/LoadingDot.module.scss";
 
 const LoadingDot = ({ delay }) => {
   return (

@@ -1,4 +1,4 @@
-interface UserDetails {
+export interface UserDetails {
   activities: string;
   biography: string;
   x: string;

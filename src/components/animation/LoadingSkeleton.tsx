@@ -1,4 +1,4 @@
-import styles from "./LoadingSkeleton.module.scss";
+import styles from "../../../assets/scss/LoadingSkeleton.module.scss";
 
 const LoadingSkeleton = () => {
   return <div className={styles["loading-skeleton"]}></div>;

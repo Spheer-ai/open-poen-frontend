@@ -1,6 +1,6 @@
 import { useState } from "react";
 import SearchIcon from "/search-icon.svg";
-import styles from "./Search.module.scss";
+import styles from "../../../assets/scss/Search.module.scss";
 
 const Search = ({ onSearch }) => {
   const [query, setQuery] = useState("");

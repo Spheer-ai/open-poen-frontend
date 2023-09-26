@@ -1,16 +1,17 @@
 import { useState, useEffect } from "react";
-import SidebarMenu from "../components/SidebarMenu";
+import SidebarMenu from "../components/ui/sidebar-menu/SidebarMenu";
 import { Routes, Route, useNavigate, Navigate } from "react-router-dom";
 import Contacts from "../components/pages/Contacts";
 import Funds from "../components/pages/Funds";
 import Transactions from "../components/pages/Transactions";
 import Login from "../components/pages/Login";
 import Sponsors from "../components/pages/Sponsors";
-import InlineModalLayout from "../components/layout/InlideModalLayout";
-import styles from "./Routes.module.scss";
+import InlineModalLayout from "../components/ui/layout/InlideModalLayout";
+import styles from "../assets/scss/Routes.module.scss";
 import UserDetailsPage from "../components/pages/UserDetailPage";
+import EditUserForm from "../components/forms/EditUserForm";
 
-function AppRoutes() {
+export default function AppRoutes() {
   const navigate = useNavigate();
 
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -64,6 +65,14 @@ function AppRoutes() {
             }
           />
           <Route
+            path="/edit/user/:user_id"
+            element={
+              <InlineModalLayout>
+                <EditUserForm onCancel={() => {}} onContinue={() => {}} />
+              </InlineModalLayout>
+            }
+          />
+          <Route
             path="/funds"
             element={<InlineModalLayout>{<Funds />}</InlineModalLayout>}
           />
@@ -97,5 +106,3 @@ function AppRoutes() {
     </div>
   );
 }
-
-export default AppRoutes;

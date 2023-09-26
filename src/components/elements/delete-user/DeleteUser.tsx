@@ -1,4 +1,4 @@
-import styles from "./DeleteUser.module.scss";
+import styles from "../../../assets/scss/DeleteUser.module.scss";
 
 const DeleteUser = ({ userId, onDelete, onCancel }) => {
   const handleConfirm = () => {

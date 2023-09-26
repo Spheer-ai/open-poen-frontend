@@ -1,9 +1,9 @@
 import { useState } from "react";
-import TopNavigationBar from "../TopNavigationBar";
+import TopNavigationBar from "../ui/top-navigation-bar/TopNavigationBar";
 import AddItemModal from "../modals/AddItemModal";
-import styles from "./Transactions.module.scss";
+import styles from "../../assets/scss/Transactions.module.scss";
 
-function Transactions() {
+export default function Transactions() {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleCtaClick = () => {
@@ -35,5 +35,3 @@ function Transactions() {
     </div>
   );
 }
-
-export default Transactions;

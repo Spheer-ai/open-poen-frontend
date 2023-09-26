@@ -1,9 +1,9 @@
 import { useState } from "react";
-import TopNavigationBar from "../TopNavigationBar";
+import TopNavigationBar from "../ui/top-navigation-bar/TopNavigationBar";
 import AddItemModal from "../modals/AddItemModal";
-import styles from "./Sponsors.module.scss";
+import styles from "../../assets/scss/Sponsors.module.scss";
 
-function Sponsors() {
+export default function Sponsors() {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleCtaClick = () => {
@@ -35,5 +35,3 @@ function Sponsors() {
     </div>
   );
 }
-
-export default Sponsors;

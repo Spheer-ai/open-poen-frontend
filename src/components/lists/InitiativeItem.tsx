@@ -1,6 +1,6 @@
-import styles from "./InitiativeItem.module.scss";
+import styles from "../../../assets/scss/InitiativeItem.module.scss";
 
-function InitiativeItem({ initiative }) {
+export default function InitiativeItem({ initiative }) {
   return (
     <div className={styles["initiative-item"]}>
       <h4>{initiative.name}</h4>
@@ -10,5 +10,3 @@ function InitiativeItem({ initiative }) {
     </div>
   );
 }
-
-export default InitiativeItem;

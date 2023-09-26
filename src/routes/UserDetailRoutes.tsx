@@ -1,7 +1,7 @@
 import { Routes, Route } from "react-router-dom";
 import UserDetailsPage from "../components/pages/UserDetailPage";
 
-function UserDetailRoutes() {
+export default function UserDetailRoutes() {
   return (
     <Routes>
       <Route
@@ -11,5 +11,3 @@ function UserDetailRoutes() {
     </Routes>
   );
 }
-
-export default UserDetailRoutes;

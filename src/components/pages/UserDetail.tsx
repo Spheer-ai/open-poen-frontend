@@ -1,11 +1,6 @@
 import axios from "axios";
 import { useState, useEffect } from "react";
-
-interface UserDetails {
-  first_name: string;
-  last_name: string;
-  email: string;
-}
+import { UserDetails } from "../../types/UserDetailTypes";
 
 const getUserDataWithUserId = async (
   token: string | null,

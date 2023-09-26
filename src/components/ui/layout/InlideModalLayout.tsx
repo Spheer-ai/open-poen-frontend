@@ -1,13 +1,13 @@
 import React from "react";
 import { ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
-import styles from "./InlineModalLayout.module.scss";
+import styles from "../../../assets/scss/InlineModalLayout.module.scss";
 
 interface InlineModalProps {
   children: ReactNode;
 }
 
-function InlineModalLayout({ children }: InlineModalProps) {
+export default function InlineModalLayout({ children }: InlineModalProps) {
   const navigate = useNavigate();
 
   const childrenWithProps = React.Children.map(children, (child) => {
@@ -21,5 +21,3 @@ function InlineModalLayout({ children }: InlineModalProps) {
     <div className={styles["inline-modal-layout"]}>{childrenWithProps}</div>
   );
 }
-
-export default InlineModalLayout;

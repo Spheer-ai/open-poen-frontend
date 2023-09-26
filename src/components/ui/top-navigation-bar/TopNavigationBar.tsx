@@ -1,15 +1,7 @@
 import React from "react";
-import styles from "./TopNavigationBar.module.scss";
-import Search from "./Search";
-
-interface TopNavigationBarProps {
-  title: string;
-  showSettings: boolean;
-  showCta: boolean;
-  onSettingsClick?: () => void;
-  onCtaClick?: () => void;
-  onSearch: (query: string) => void;
-}
+import styles from "../../../assets/scss/TopNavigationBar.module.scss";
+import Search from "../../elements/search/Search";
+import { TopNavigationBarProps } from "../../../types/TopNavigationBarType";
 
 const TopNavigationBar: React.FC<TopNavigationBarProps> = ({
   title,

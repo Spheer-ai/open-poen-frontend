@@ -1,6 +1,6 @@
-import styles from "./InitiativeList.module.scss";
+import styles from "../../assets/scss//InitiativeList.module.scss";
 
-function InitiativeList({ initiatives }) {
+export default function InitiativeList({ initiatives }) {
   return (
     <ul className={styles["initiative-list"]}>
       {initiatives.map((initiative) => (
@@ -9,5 +9,3 @@ function InitiativeList({ initiatives }) {
     </ul>
   );
 }
-
-export default InitiativeList;
