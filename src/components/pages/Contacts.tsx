@@ -11,6 +11,7 @@ import ProfileIcon from "../../assets/profile-icon.svg";
 import DropdownMenu from "../elements/dropdown-menu/DropDownMenu";
 import { UserData } from "../../types/ContactsTypes";
 import EditUserForm from "../forms/EditUserForm";
+import DeleteUserForm from "../forms/DeleteUserForm";
 
 export default function Contacts() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -24,6 +25,7 @@ export default function Contacts() {
   const [searchQuery, setSearchQuery] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   const navigate = useNavigate();
 
@@ -40,8 +42,9 @@ export default function Contacts() {
   };
 
   const handleUserClick = (clickedUserId: string) => {
-    console.log("Clicked User ID:", clickedUserId);
+    console.log("Clicked User ID (before update):", clickedUserId);
     setActiveUserId(clickedUserId);
+    console.log("activeUserId (after update):", activeUserId);
   };
 
   const handleSearch = (query: string) => {
@@ -64,6 +67,10 @@ export default function Contacts() {
 
   const handleEditButtonClick = () => {
     handleOpenEditModal();
+  };
+
+  const handleOpenDeleteModal = () => {
+    setIsDeleteModalOpen(true);
   };
 
   useEffect(() => {
@@ -143,6 +150,9 @@ export default function Contacts() {
     }
   }, [activeUserId, navigate, isLoggedIn]);
 
+  console.log("isEditModalOpen:", isEditModalOpen);
+  console.log("activeUserId:", activeUserId);
+
   return (
     <div className={styles["side-panel"]}>
       <TopNavigationBar
@@ -153,7 +163,6 @@ export default function Contacts() {
         onCtaClick={handleCtaClick}
         onSearch={handleSearch}
       />
-
       <AddItemModal isOpen={isModalOpen} onClose={handleCloseModal}>
         <AddUserForm
           onContinue={() => {
@@ -163,12 +172,13 @@ export default function Contacts() {
         />
       </AddItemModal>
 
-      {isEditModalOpen && (
+      {isEditModalOpen && activeUserId && (
         <AddItemModal
           isOpen={isEditModalOpen}
           onClose={() => setIsEditModalOpen(false)}
         >
           <EditUserForm
+            userId={activeUserId}
             onCancel={() => {
               setIsEditModalOpen(false);
             }}
@@ -178,7 +188,22 @@ export default function Contacts() {
           />
         </AddItemModal>
       )}
-
+      {isDeleteModalOpen && activeUserId && (
+        <AddItemModal
+          isOpen={isDeleteModalOpen}
+          onClose={() => setIsDeleteModalOpen(false)}
+        >
+          <DeleteUserForm
+            userId={activeUserId}
+            onCancel={() => {
+              setIsDeleteModalOpen(false);
+            }}
+            onContinue={() => {
+              setIsDeleteModalOpen(false);
+            }}
+          />
+        </AddItemModal>
+      )}
       {isLoading ? (
         <div className={styles["loading-container"]}>
           <div className={styles["loading-dots-container"]}>
@@ -326,10 +351,8 @@ export default function Contacts() {
         >
           <DropdownMenu
             isOpen={isDropdownOpen}
-            onEditClick={handleEditButtonClick}
-            onDeleteClick={() => {
-              console.log("Delete clicked for user:", activeUserId);
-            }}
+            onEditClick={handleEditButtonClick} // Add it here
+            onDeleteClick={handleOpenDeleteModal}
           />
         </div>
       )}

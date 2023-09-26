@@ -56,19 +56,20 @@ export default function AppRoutes() {
               <InlineModalLayout>
                 <Contacts />
                 <Routes>
+                  <Route path="user/:userId" element={<UserDetailsPage />} />
                   <Route
-                    path="user/:userId"
-                    element={<UserDetailsPage></UserDetailsPage>}
+                    path="/edit/user/:user_id"
+                    element={
+                      <InlineModalLayout>
+                        <EditUserForm
+                          onCancel={() => {}}
+                          onContinue={() => {}}
+                          userId={""}
+                        />
+                      </InlineModalLayout>
+                    }
                   />
                 </Routes>
-              </InlineModalLayout>
-            }
-          />
-          <Route
-            path="/edit/user/:user_id"
-            element={
-              <InlineModalLayout>
-                <EditUserForm onCancel={() => {}} onContinue={() => {}} />
               </InlineModalLayout>
             }
           />

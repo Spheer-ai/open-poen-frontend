@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { useParams } from "react-router-dom";
 import styles from "../../assets/scss/EditUserForm.module.scss";
 import { useAuth } from "../../contexts/AuthContext";
 import { EditUserFormProps } from "../../types/EditUserFormType";
 
-const EditUserForm: React.FC<EditUserFormProps> = ({ onCancel }) => {
+const EditUserForm: React.FC<EditUserFormProps> = ({
+  userId,
+  onCancel,
+  onContinue,
+}) => {
   const { user } = useAuth();
-  const { user_id } = useParams();
-  console.log("User ID:", user_id);
+  console.log("User ID:", userId);
 
   const [formData, setFormData] = useState({
     email: "",
@@ -23,7 +25,7 @@ const EditUserForm: React.FC<EditUserFormProps> = ({ onCancel }) => {
       try {
         const token = user?.token || "";
         const response = await axios.get(
-          `http://127.0.0.1:8000/user/${user_id}`,
+          `http://127.0.0.1:8000/user/${userId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -47,21 +49,19 @@ const EditUserForm: React.FC<EditUserFormProps> = ({ onCancel }) => {
     };
 
     fetchUserData();
-  }, [user?.token, user_id]);
+  }, [user?.token, userId]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  
-
   const handleSubmit = async () => {
     try {
       const token = user?.token || "";
 
       const response = await axios.patch(
-        `http://127.0.0.1:8000/user/${user_id}`,
+        `http://127.0.0.1:8000/user/${userId}`,
         formData,
         {
           headers: {
@@ -72,6 +72,7 @@ const EditUserForm: React.FC<EditUserFormProps> = ({ onCancel }) => {
       );
 
       console.log("User updated:", response.data);
+      onContinue();
     } catch (error) {
       console.error("Failed to update user:", error);
     }
