@@ -3,11 +3,13 @@ import axios from "axios";
 import { useAuth } from "../../contexts/AuthContext";
 import { DeleteUserFormProps } from "../../types/DeleteUserForm";
 import styles from "../../assets/scss/DeleteUserForm.module.scss";
+import FormButtons from "./buttons/FormButton";
+import FormLayout from "./FormLayout";
 
 const DeleteUserForm: React.FC<DeleteUserFormProps> = ({
   userId,
   onCancel,
-  onContinue,
+  onContinue
 }) => {
   const { user } = useAuth();
   console.log("User ID:", userId);
@@ -40,16 +42,15 @@ const DeleteUserForm: React.FC<DeleteUserFormProps> = ({
 
   return (
     <div>
-      <h2>Delete User</h2>
+    <FormLayout title="Delete User">
       <p>Are you sure you want to delete this user?</p>
-      <div className={styles["button-container"]}>
-        <button className={styles["delete-button"]} onClick={handleDelete}>
-          Delete
-        </button>
-        <button className={styles["cancel-button"]} onClick={onCancel}>
-          Cancel
-        </button>
-      </div>
+      <FormButtons
+        continueLabel="Delete" // Customize the button labels here
+        cancelLabel="Cancel"
+        onContinue={handleDelete}
+        onCancel={onCancel}
+      />
+    </FormLayout>
     </div>
   );
 };

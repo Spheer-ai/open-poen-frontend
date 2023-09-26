@@ -3,6 +3,8 @@ import axios from "axios";
 import styles from "../../assets/scss/AddUserform.module.scss";
 import { useAuth } from "../../contexts/AuthContext";
 import { AddUserFormProps } from "../../types/AddUserFormType";
+import FormButtons from "./buttons/FormButton";
+import FormLayout from "./FormLayout";
 
 const AddUserForm: React.FC<AddUserFormProps> = ({ onContinue, onCancel }) => {
   const [formData, setFormData] = useState({
@@ -49,20 +51,21 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onContinue, onCancel }) => {
 
   return (
     <div>
-      <h2>Add User</h2>
-      <hr />
+      <FormLayout title="Gebruiker aanmaken">
       <form>
         <div className={styles["form-group"]}>
-          <label htmlFor="email">Email Address:</label>
+          <h3>Info</h3>
+          <label htmlFor="email">E-mail</label>
           <input
             type="email"
             id="email"
             name="email"
+            placeholder="Voer het e-mailadres in"
             value={formData.email}
             onChange={handleChange}
           />
           <p className={styles["description"]}>
-            Enter the email address of the user.
+            Als er nog geen gebruiker bestaat met dit e-mailadres, ontvangt deze een uitnodigingsmail met daarin een link om een wachtwoord aan te maken. Indien er al een gebruiker bestaat met dit e-mailadres, krijgt deze gebruiker de toegewezen rechten (hierover wordt geen e-mail verzonden).
           </p>
         </div>
         <div className={styles["form-group"]}>
@@ -96,14 +99,13 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onContinue, onCancel }) => {
           />
         </div>
       </form>
-      <div className={styles["button-container"]}>
-        <button className={styles["continue-button"]} onClick={handleSubmit}>
-          Continue
-        </button>
-        <button className={styles["cancel-button"]} onClick={onCancel}>
-          Cancel
-        </button>
-      </div>
+      <FormButtons
+        continueLabel="Continue" // Customize the button labels here
+        cancelLabel="Cancel"
+        onContinue={handleSubmit}
+        onCancel={onCancel}
+      />
+      </FormLayout>
     </div>
   );
 };

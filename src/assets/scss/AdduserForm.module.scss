@@ -4,6 +4,7 @@
 
 label {
   font-weight: bold;
+  font-size: 14px;
 }
 
 input[type="email"] {
@@ -11,51 +12,27 @@ input[type="email"] {
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 5px;
+  margin-top: 10px;
 }
 
 .description {
   font-size: 14px;
-  color: #777;
-}
-
-.button-container {
-  display: flex;
-  justify-content: space-between;
+  color: rgba(105, 105, 105, 1);
   margin-top: 20px;
-}
 
-.continue-button {
-  background-color: #007bff;
-  color: #fff;
-  border: none;
-  border-radius: 5px;
-  padding: 10px 20px;
-  cursor: pointer;
-}
-
-.cancel-button {
-  background-color: #dc3545;
-  color: #fff;
-  border: none;
-  border-radius: 5px;
-  padding: 10px 20px;
-  cursor: pointer;
 }
 
 .add-user-form {
   position: relative;
 }
 
-.button-container {
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  display: flex;
-  justify-content: flex-end;
-  padding: 10px;
+h3 {
+  font-weight: 700;
+  font-size: 20px;
 }
 
-.continue-button,
-.cancel-button {
-  margin-left: 10px;
+hr {
+  border: none; /* Remove the default border */
+  border-top: 1px solid #ccc; /* Add a new top border with a color of your choice */
+  margin: 10px 0; /* Add margin to create space around the hr element */
 }

@@ -1,7 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
 import styles from "../../../assets/scss/SidebarMenu.module.scss";
 import { logoutUser } from "../../middleware/Api";
-import { SidebarMenuProps } from "../../../types/SideBarMenuTypes";
+import { SidebarMenuProps } from "../../../types/SidebarMenuTypes";
 
 const SidebarMenu = ({ isAuthenticated, onLogout }: SidebarMenuProps) => {
   const location = useLocation();

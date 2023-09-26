@@ -3,11 +3,13 @@ import axios from "axios";
 import styles from "../../assets/scss/EditUserForm.module.scss";
 import { useAuth } from "../../contexts/AuthContext";
 import { EditUserFormProps } from "../../types/EditUserFormType";
+import FormButtons from "./buttons/FormButton";
+import FormLayout from "./FormLayout";
 
 const EditUserForm: React.FC<EditUserFormProps> = ({
   userId,
   onCancel,
-  onContinue,
+  onContinue
 }) => {
   const { user } = useAuth();
   console.log("User ID:", userId);
@@ -80,8 +82,7 @@ const EditUserForm: React.FC<EditUserFormProps> = ({
 
   return (
     <div>
-      <h2>Edit User</h2>
-      <hr />
+<FormLayout title={`Bewerk ${formData.first_name ? formData.first_name : 'E-mailadres'}`}>
       <form>
         <div className={styles["form-group"]}>
           <label htmlFor="first_name">First Name:</label>
@@ -124,14 +125,13 @@ const EditUserForm: React.FC<EditUserFormProps> = ({
           />
         </div>
       </form>
-      <div className={styles["button-container"]}>
-        <button className={styles["save-button"]} onClick={handleSubmit}>
-          Save
-        </button>
-        <button className={styles["cancel-button"]} onClick={onCancel}>
-          Cancel
-        </button>
-      </div>
+      <FormButtons
+        continueLabel="Save" // Customize the button labels here
+        cancelLabel="Cancel"
+        onContinue={handleSubmit}
+        onCancel={onCancel}
+      />
+    </FormLayout>
     </div>
   );
 };
