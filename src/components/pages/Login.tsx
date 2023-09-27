@@ -50,7 +50,7 @@ export default function Login({
               </span>
               <input
                 type="text"
-                placeholder="Username"
+                placeholder="E-mailadres"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
               />
@@ -59,7 +59,7 @@ export default function Login({
               <span className={styles["icon"]}>
                 <img
                   src="/input-password.svg"
-                  alt="Password"
+                  alt="Wachtwoord"
                   width="20"
                   height="20"
                 />
