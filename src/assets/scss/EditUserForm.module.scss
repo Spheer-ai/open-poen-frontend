@@ -1,145 +1,145 @@
 /* EditUserForm.module.scss */
 
 .form-group {
-    margin-bottom: 20px;
-    display: flex;
-    flex-direction: column;
-  }
-
-  .form-group-roles {
-      display: flex;
-      flex-direction: column;
-  }
-  
-  label {
-    font-size: 14px;
-  }
-  
-  input[type="text"],
-  input[type="email"] {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    margin-top: 10px;
-  }
-  
-  .description {
-    font-size: 14px;
-    color: rgba(105, 105, 105, 1);
-    margin-top: 20px;
-  }
-  
-  .add-user-form {
-    position: relative;
-  }
-  
-  h3 {
-    font-weight: 700;
-    font-size: 20px;
-  }
-  
-  hr {
-    border: none;
-    border-top: 1px solid #ccc;
-    margin: 10px 0;
-  }
-  
-  .role-options {
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .role-options label {
-    font-size: 12px;
-    font-weight: 400;
-    color: #101213;
-  }
-  
-  h2 {
-    font-size: 22px;
-  }
-
-  .form-group {
-    margin-bottom: 20px;
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .form-group-roles {
-    display: flex;
-    flex-direction: column;
-  }
-  
-  label {
-    font-size: 14px;
-  }
-  
-  input[type="text"],
-  input[type="email"],
-  input[type="radio"],
-  input[type="checkbox"] {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    margin-top: 10px;
-  }
-  
-  .description {
-    font-size: 14px;
-    color: rgba(105, 105, 105, 1);
-    margin-top: 20px;
-  }
-  
-  .add-user-form {
-    position: relative;
-  }
-  
-  h3 {
-    font-weight: 700;
-    font-size: 20px;
-  }
-  
-  hr {
-    border: none;
-    border-top: 1px solid #ccc;
-    margin: 10px 0;
-  }
-  
-  .role-options {
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .role-options {
-    display: inline-flex;
-    flex-direction: column;
-    align-items: center;
-  }
-
-  label {
-    font-weight: 400;
-    display: inline-flex;
-    align-items: center;
-    font-size: 14px;
-    color: #696969;
-    width: fit-content;
-
-    input {
-        width: 24px !important;
-        height: 24px !important;
-        margin-top: 5px !important;
-        margin-right: 10px;
-    }
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
 }
-  
-.label-email {
-    font-size: 14px;
-    font-weight: 700;
-    color: inherit;
-  }
 
-  h2 {
-    font-size: 22px;
+.form-group-roles {
+  display: flex;
+  flex-direction: column;
+}
+
+label {
+  font-size: 14px;
+}
+
+input[type="text"],
+input[type="email"] {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin-top: 10px;
+}
+
+.description {
+  font-size: 14px;
+  color: rgba(105, 105, 105, 1);
+  margin-top: 20px;
+}
+
+.add-user-form {
+  position: relative;
+}
+
+h3 {
+  font-weight: 700;
+  font-size: 20px;
+}
+
+hr {
+  border: none;
+  border-top: 1px solid #ccc;
+  margin: 10px 0;
+}
+
+.role-options {
+  display: flex;
+  flex-direction: column;
+}
+
+.role-options label {
+  font-size: 12px;
+  font-weight: 400;
+  color: #101213;
+}
+
+h2 {
+  font-size: 22px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group-roles {
+  display: flex;
+  flex-direction: column;
+}
+
+label {
+  font-size: 14px;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="radio"],
+input[type="checkbox"] {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin-top: 10px;
+}
+
+.description {
+  font-size: 14px;
+  color: rgba(105, 105, 105, 1);
+  margin-top: 20px;
+}
+
+.add-user-form {
+  position: relative;
+}
+
+h3 {
+  font-weight: 700;
+  font-size: 20px;
+}
+
+hr {
+  border: none;
+  border-top: 1px solid #ccc;
+  margin: 10px 0;
+}
+
+.role-options {
+  display: flex;
+  flex-direction: column;
+}
+
+.role-options {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+label {
+  font-weight: 400;
+  display: inline-flex;
+  align-items: center;
+  font-size: 14px;
+  color: #696969;
+  width: fit-content;
+
+  input {
+    width: 24px !important;
+    height: 24px !important;
+    margin-top: 5px !important;
+    margin-right: 10px;
   }
+}
+
+.label-email {
+  font-size: 14px;
+  font-weight: 700;
+  color: inherit;
+}
+
+h2 {
+  font-size: 22px;
+}

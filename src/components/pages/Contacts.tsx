@@ -178,13 +178,14 @@ export default function Contacts() {
           onClose={() => setIsEditModalOpen(false)}
         >
           <EditUserForm
-            userId={activeUserId}
+            userId={activeUserId} // Pass activeUserId as userId
             onCancel={() => {
               setIsEditModalOpen(false);
             }}
             onContinue={() => {
               setIsEditModalOpen(false);
             }}
+            navigate={navigate}
           />
         </AddItemModal>
       )}

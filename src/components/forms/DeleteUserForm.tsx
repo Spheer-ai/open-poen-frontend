@@ -1,10 +1,9 @@
 import React from "react";
-import axios from "axios";
 import { useAuth } from "../../contexts/AuthContext";
 import { DeleteUserFormProps } from "../../types/DeleteUserForm";
-import styles from "../../assets/scss/DeleteUserForm.module.scss";
 import FormButtons from "./buttons/FormButton";
 import FormLayout from "./FormLayout";
+import { deleteUser } from "../middleware/Api";
 
 const DeleteUserForm: React.FC<DeleteUserFormProps> = ({
   userId,
@@ -12,7 +11,6 @@ const DeleteUserForm: React.FC<DeleteUserFormProps> = ({
   onContinue,
 }) => {
   const { user } = useAuth();
-  console.log("User ID:", userId);
 
   if (!userId) {
     console.error("userId is undefined or null");
@@ -22,18 +20,8 @@ const DeleteUserForm: React.FC<DeleteUserFormProps> = ({
   const handleDelete = async () => {
     try {
       const token = user?.token || "";
-
-      const response = await axios.delete(
-        `http://127.0.0.1:8000/user/${userId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        },
-      );
-
-      console.log("User deleted:", response.data);
+      const response = await deleteUser(userId, token);
+      console.log("User deleted:", response);
       onContinue();
       window.location.reload();
     } catch (error) {
@@ -44,7 +32,10 @@ const DeleteUserForm: React.FC<DeleteUserFormProps> = ({
   return (
     <div>
       <FormLayout title="Delete User" showIcon={true}>
-        <p>Je staat op het punt deze gebruiker te verwijderen. Dit kan niet ongedaan gemaakt worden. Weet je het zeker?</p>
+        <p>
+          Je staat op het punt deze gebruiker te verwijderen. Dit kan niet
+          ongedaan gemaakt worden. Weet je het zeker?
+        </p>
         <FormButtons
           continueLabel="Delete" // Customize the button labels here
           cancelLabel="Cancel"

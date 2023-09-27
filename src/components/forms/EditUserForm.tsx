@@ -9,13 +9,13 @@ import { EditUserFormProps } from "../../types/EditUserFormType";
 const EditUserForm: React.FC<EditUserFormProps> = ({
   userId,
   onCancel,
-  onContinue,
+  onContinue
 }) => {
   const { user } = useAuth();
 
   const [formData, setFormData] = useState({
     email: "",
-    role: "", // Remove the initial role value
+    role: "",
     is_active: false,
     hidden: false,
   });
@@ -29,7 +29,7 @@ const EditUserForm: React.FC<EditUserFormProps> = ({
   const fetchUserData = async () => {
     try {
       const token = user?.token || "";
-      const response = await axios.get(`http://127.0.0.1:8000/user/${userId}`, {
+      const response = await axios.get(`/api/user/${userId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
@@ -52,7 +52,6 @@ const EditUserForm: React.FC<EditUserFormProps> = ({
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
 
-    // Handle checkboxes separately
     if (type === "checkbox") {
       setFormData({ ...formData, [name]: checked });
     } else {
@@ -64,16 +63,12 @@ const EditUserForm: React.FC<EditUserFormProps> = ({
     try {
       const token = user?.token || "";
 
-      const response = await axios.patch(
-        `http://127.0.0.1:8000/user/${userId}`,
-        formData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
+      const response = await axios.patch(`/api/user/${userId}`, formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
         },
-      );
+      });
 
       console.log("User updated:", response.data);
       onContinue();
@@ -87,9 +82,11 @@ const EditUserForm: React.FC<EditUserFormProps> = ({
     <div>
       <FormLayout title={`Bewerk ${"gebruiker"}`} showIcon={false}>
         <form>
-            <h3>Info</h3>
+          <h3>Info</h3>
           <div className={styles["form-group"]}>
-          <label className={styles["label-email"]}htmlFor="email">E-mail</label>
+            <label className={styles["label-email"]} htmlFor="email">
+              E-mail
+            </label>
             <input
               type="email"
               id="email"

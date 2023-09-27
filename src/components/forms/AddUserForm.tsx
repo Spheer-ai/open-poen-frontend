@@ -1,26 +1,40 @@
 import React, { useState } from "react";
-import axios from "axios";
 import styles from "../../assets/scss/AddUserForm.module.scss";
 import { useAuth } from "../../contexts/AuthContext";
-import { AddUserFormProps } from "../../types/AddUserFormType";
 import FormButtons from "./buttons/FormButton";
 import FormLayout from "./FormLayout";
+import { createUser } from "../middleware/Api";
 
-const AddUserForm: React.FC<AddUserFormProps> = ({ onContinue, onCancel }) => {
-  const [formData, setFormData] = useState({
-    email: "",
-    first_name: "",
-    last_name: "",
-    biography: "",
-    role: "",
-    is_active: true,
-    is_superuser: false,
-    is_verified: true,
-    hidden: false,
-  });
+export type UserFormData = {
+  email: string;
+  first_name: string;
+  last_name: string;
+  biography: string;
+  role: string;
+  is_active: boolean;
+  is_superuser: boolean;
+  is_verified: boolean;
+  hidden: boolean;
+};
 
-  const [showPersonalInfo, setShowPersonalInfo] = useState(false);
+const initialFormData: UserFormData = {
+  email: "",
+  first_name: "",
+  last_name: "",
+  biography: "",
+  role: "",
+  is_active: true,
+  is_superuser: false,
+  is_verified: true,
+  hidden: false,
+};
 
+const AddUserForm: React.FC<{
+  onContinue: () => void;
+  onCancel: () => void;
+}> = ({ onContinue, onCancel }) => {
+  const [formData, setFormData] = useState<UserFormData>(initialFormData);
+  const [showPersonalInfo] = useState(false);
   const { user } = useAuth();
 
   const roleLabels = {
@@ -29,7 +43,7 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onContinue, onCancel }) => {
     user: "Gebruiker",
   };
 
-  const handleCheckboxChange = (event) => {
+  const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, checked } = event.target;
 
     // If a checkbox is checked, update the role field accordingly
@@ -50,19 +64,14 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onContinue, onCancel }) => {
     try {
       const token = user?.token || "";
 
-      const response = await axios.post(
-        "http://127.0.0.1:8000/user",
-        formData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        },
-      );
+      // Convert UserFormData to FormData
+      const formDataToSend = new FormData();
+      for (const key in formData) {
+        formDataToSend.append(key, formData[key]);
+      }
 
-      console.log("User created:", response.data);
-
+      const response = await createUser(formDataToSend, token);
+      console.log("User created:", response);
       onContinue();
     } catch (error) {
       console.error("Failed to create user:", error);
@@ -71,11 +80,13 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onContinue, onCancel }) => {
 
   return (
     <div>
-      <FormLayout title="Gebruiker aanmaken" showIcon={true}> 
+      <FormLayout title="Gebruiker aanmaken" showIcon={false}>
         <form>
           <div className={styles["form-group"]}>
             <h3>Info</h3>
-            <label className={styles["label-email"]}htmlFor="email">E-mail</label>
+            <label className={styles["label-email"]} htmlFor="email">
+              E-mail
+            </label>
             <input
               type="email"
               id="email"

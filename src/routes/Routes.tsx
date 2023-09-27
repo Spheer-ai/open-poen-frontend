@@ -48,23 +48,28 @@ export default function AppRoutes() {
         <Routes>
           <Route
             path="/"
-            element={<InlineModalLayout>{<Funds />}</InlineModalLayout>}
+            element={
+              <InlineModalLayout navigate={navigate}>
+                {<Funds />}
+              </InlineModalLayout>
+            }
           />
           <Route
             path="/contacts/*"
             element={
-              <InlineModalLayout>
+              <InlineModalLayout navigate={navigate}>
                 <Contacts />
                 <Routes>
                   <Route path="user/:userId" element={<UserDetailsPage />} />
                   <Route
                     path="/edit/user/:user_id"
                     element={
-                      <InlineModalLayout>
+                      <InlineModalLayout navigate={navigate}>
                         <EditUserForm
                           onCancel={() => {}}
                           onContinue={() => {}}
                           userId={""}
+                          navigate={navigate}
                         />
                       </InlineModalLayout>
                     }
@@ -75,19 +80,29 @@ export default function AppRoutes() {
           />
           <Route
             path="/funds"
-            element={<InlineModalLayout>{<Funds />}</InlineModalLayout>}
+            element={
+              <InlineModalLayout navigate={navigate}>
+                {<Funds />}
+              </InlineModalLayout>
+            }
           />
           {isAuthenticated && (
             <>
               <Route
                 path="/transactions"
                 element={
-                  <InlineModalLayout>{<Transactions />}</InlineModalLayout>
+                  <InlineModalLayout navigate={navigate}>
+                    {<Transactions />}
+                  </InlineModalLayout>
                 }
               />
               <Route
                 path="/sponsors"
-                element={<InlineModalLayout>{<Sponsors />}</InlineModalLayout>}
+                element={
+                  <InlineModalLayout navigate={navigate}>
+                    {<Sponsors />}
+                  </InlineModalLayout>
+                }
               />
             </>
           )}

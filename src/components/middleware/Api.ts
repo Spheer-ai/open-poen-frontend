@@ -2,8 +2,10 @@ import axios from "axios";
 
 import jwtDecode from "jwt-decode";
 
+const apiUrl = import.meta.env.VITE_API_URL;
+
 const api = axios.create({
-  baseURL: "http://127.0.0.1:8000",
+  baseURL: apiUrl,
 });
 
 export const login = async (username: string, password: string) => {
@@ -38,6 +40,22 @@ export const getUserData = async (token: string) => {
     return response.data;
   } catch (error) {
     console.error("getUserData error:", error);
+    throw error;
+  }
+};
+
+export const fetchUserData = async (token: string, userId: string) => {
+  try {
+    const response = await api.get(`/user/${userId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error("Failed to fetch user data:", error);
     throw error;
   }
 };
@@ -84,6 +102,54 @@ export const logoutUser = async (token: string) => {
     return response.data;
   } catch (error) {
     console.error("logoutUser error:", error);
+    throw error;
+  }
+};
+
+export const createUser = async (formData: FormData, token: string) => {
+  try {
+    const response = await api.post("/user", formData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const deleteUser = async (userId: string, token: string) => {
+  try {
+    const response = await api.delete(`/user/${userId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const updateUser = async (
+  userId: string,
+  formData: any,
+  token: string,
+) => {
+  try {
+    const response = await api.patch(`/user/${userId}`, formData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+    return response.data;
+  } catch (error) {
     throw error;
   }
 };
