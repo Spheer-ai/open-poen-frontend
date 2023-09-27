@@ -1,0 +1,45 @@
+.dropdown-menu {
+  display: inline-flex;
+  flex-direction: column;
+  position: absolute;
+  padding: 20px;
+  align-items: flex-start;
+  gap: 16px;
+  border-radius: 11px;
+  border: 1px solid var(--Litegrey, #d2d2d2);
+  background: var(--neutral-0, #fff);
+  box-shadow: 0px 4px 16px 0px rgba(0, 0, 0, 0.16);
+}
+
+.menu-option {
+  background-color: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  font-size: 16px;
+  color: black;
+}
+
+.menu-option-delete {
+  background-color: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  font-size: 16px;
+  color: red;
+}
+
+.menu-option:hover {
+  text-decoration: underline;
+}
+
+.three-dots {
+  width: 40px;
+  display: inline-flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+  align-items: center;
+}

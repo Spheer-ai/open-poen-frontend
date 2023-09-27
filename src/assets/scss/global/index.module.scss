@@ -1,0 +1,19 @@
+:global {
+  body {
+    margin: 0 auto;
+    font-family: "Inter", sans-serif;
+  }
+
+  *,
+  :after,
+  :before {
+    box-sizing: border-box;
+    scrollbar-color: #f18b4c transparent;
+    scrollbar-width: thin;
+  }
+
+  ul {
+    margin-top: -20px;
+    padding: 20px;
+  }
+}

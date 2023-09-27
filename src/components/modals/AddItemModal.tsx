@@ -1,21 +1,20 @@
 import React from "react";
-import "./AddItemModal.css";
+import styles from "../../assets/scss/AddItemModal.module.scss";
+import { AddItemModalProps } from "../../types/AddItemModalTypes";
 
-interface AddItemModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  children: React.ReactNode;
-}
-
-const AddItemModal: React.FC<AddItemModalProps> = ({ isOpen, onClose, children }) => {
+const AddItemModal: React.FC<AddItemModalProps> = ({
+  isOpen,
+  onClose,
+  children,
+}) => {
   if (!isOpen) {
     return null;
   }
 
   return (
-    <div className="modal">
-      <div className="modal-content">
-        <button className="close-button" onClick={onClose}>
+    <div className={styles["modal"]}>
+      <div className={styles["modal-content"]}>
+        <button className={styles["close-button"]} onClick={onClose}>
           &times;
         </button>
         {children}

@@ -1,29 +1,23 @@
-import React, { useState, useEffect } from "react";
-import SidebarMenu from "../components/SidebarMenu";
-import { Routes, Route, Navigate, useLocation } from "react-router-dom";
-import Home from "../components/pages/Home";
-import Cards from "../components/pages/Cards";
+import { useState, useEffect } from "react";
+import SidebarMenu from "../components/ui/sidebar-menu/SidebarMenu";
+import { Routes, Route, useNavigate, Navigate } from "react-router-dom";
 import Contacts from "../components/pages/Contacts";
 import Funds from "../components/pages/Funds";
-import Profile from "../components/pages/profile/Profile";
 import Transactions from "../components/pages/Transactions";
 import Login from "../components/pages/Login";
-import Tutors from "../components/pages/Tutors";
-import InlineModalLayout from "../components/layout/InlideModalLayout";
-import FullWidthLayout from "../components/layout/FullWidthLayout";
-import "./Routes.css";
+import Sponsors from "../components/pages/Sponsors";
+import InlineModalLayout from "../components/ui/layout/InlideModalLayout";
+import styles from "../assets/scss/Routes.module.scss";
+import UserDetailsPage from "../components/pages/UserDetailPage";
+import EditUserForm from "../components/forms/EditUserForm";
 
-function AppRoutes() {
-  // Get the current location using useLocation
-  const location = useLocation();
+export default function AppRoutes() {
+  const navigate = useNavigate();
 
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-
-  // Check if the current location is the login page
-  const isLoginPage = location.pathname === "/login";
+  const [, setShowLoginModal] = useState(false);
 
   useEffect(() => {
-    // Check if the user is authenticated
     const token = localStorage.getItem("token");
     if (token) {
       setIsAuthenticated(true);
@@ -34,95 +28,97 @@ function AppRoutes() {
 
   const handleLogin = () => {
     setIsAuthenticated(true);
+    navigate("/funds");
+    setShowLoginModal(false);
   };
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
     setIsAuthenticated(false);
+    navigate("/funds");
+  };
+
+  const closeModal = () => {
+    setShowLoginModal(false);
   };
 
   return (
-    <div className="app-container">
-      {!isLoginPage && <SidebarMenu />}
-      <div className="page-content">
+    <div className={styles["app-container"]}>
+      <SidebarMenu isAuthenticated={isAuthenticated} onLogout={handleLogout} />
+      <div className={styles["page-content"]}>
         <Routes>
-        <Route
-        path="/"
-        element={
-          <InlineModalLayout>
-            <Profile />
-          </InlineModalLayout>
-        }
-      />
-        <Route
-        path="/cards"
-        element={
-          <InlineModalLayout>
-            <Cards />
-          </InlineModalLayout>
-        }
-      />
-        <Route
-        path="/contacts"
-        element={
-          <InlineModalLayout>
-            <Contacts />
-          </InlineModalLayout>
-        }
-      />
-        <Route
-        path="/funds"
-        element={
-          <InlineModalLayout>
-            <Funds />
-          </InlineModalLayout>
-        }
-      />
-
-<Route
-        path="/profile"
-        element={
-          <FullWidthLayout>
-            <Profile />
-          </FullWidthLayout>
-        }
-      />
-        <Route
-        path="/transactions"
-        element={
-          <InlineModalLayout>
-            <Transactions />
-          </InlineModalLayout>
-        }
-      />
-        <Route
-        path="/tutors"
-        element={
-          <InlineModalLayout>
-            <Tutors />
-          </InlineModalLayout>
-        }
-      />
-
+          <Route
+            path="/"
+            element={
+              <InlineModalLayout navigate={navigate}>
+                {<Funds />}
+              </InlineModalLayout>
+            }
+          />
+          <Route
+            path="/contacts/*"
+            element={
+              <InlineModalLayout navigate={navigate}>
+                <Contacts />
+                <Routes>
+                  <Route path="user/:userId" element={<UserDetailsPage />} />
+                  <Route
+                    path="/edit/user/:user_id"
+                    element={
+                      <InlineModalLayout navigate={navigate}>
+                        <EditUserForm
+                          onCancel={() => {}}
+                          onContinue={() => {}}
+                          userId={""}
+                          navigate={navigate}
+                        />
+                      </InlineModalLayout>
+                    }
+                  />
+                </Routes>
+              </InlineModalLayout>
+            }
+          />
+          <Route
+            path="/funds"
+            element={
+              <InlineModalLayout navigate={navigate}>
+                {<Funds />}
+              </InlineModalLayout>
+            }
+          />
+          {isAuthenticated && (
+            <>
+              <Route
+                path="/transactions"
+                element={
+                  <InlineModalLayout navigate={navigate}>
+                    {<Transactions />}
+                  </InlineModalLayout>
+                }
+              />
+              <Route
+                path="/sponsors"
+                element={
+                  <InlineModalLayout navigate={navigate}>
+                    {<Sponsors />}
+                  </InlineModalLayout>
+                }
+              />
+            </>
+          )}
           <Route
             path="/login"
             element={
-              <Login
-                onLogin={handleLogin}
-                isAuthenticated={isAuthenticated}
-                onLogout={handleLogout}
-              />
+              isAuthenticated ? (
+                <Navigate to="/contacts" />
+              ) : (
+                <Login onLogin={handleLogin} onClose={closeModal} />
+              )
             }
           />
-
-          <Route
-            path="*"
-            element={<Navigate to={isAuthenticated ? "/profile" : "/login"} />}
-          />
+          <Route path="*" element={<Navigate to="/login" />} />
         </Routes>
       </div>
     </div>
   );
 }
-
-export default AppRoutes;

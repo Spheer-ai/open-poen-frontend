@@ -1,8 +1,9 @@
-import React, { useState } from "react";
-import TopNavigationBar from "../TopnavigationBar";
+import { useState } from "react";
+import TopNavigationBar from "../ui/top-navigation-bar/TopNavigationBar";
 import AddItemModal from "../modals/AddItemModal";
+import styles from "../../assets/scss/Funds.module.scss";
 
-function Funds() {
+export default function Funds() {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleCtaClick = () => {
@@ -12,23 +13,25 @@ function Funds() {
   const handleCloseModal = () => {
     setIsModalOpen(false);
   };
-  
-  return <div>
-          <TopNavigationBar
+
+  const handleSearch = (query) => {
+    console.log("Search query in UserDetailsPage:", query);
+  };
+
+  return (
+    <div className={styles["side-panel"]}>
+      <TopNavigationBar
         title="Funds"
-        showSettings={true} // Set to true to display settings button
-        showCta={true} // Set to true to display call-to-action button
+        showSettings={true}
+        showCta={true}
         onSettingsClick={() => {}}
         onCtaClick={handleCtaClick}
+        onSearch={handleSearch}
       />
 
-      {/* Your page content here */}
-
       <AddItemModal isOpen={isModalOpen} onClose={handleCloseModal}>
-        {/* Content for the modal */}
         <p>This is the modal content.</p>
       </AddItemModal>
     </div>
-};
-
-export default Funds;
+  );
+}

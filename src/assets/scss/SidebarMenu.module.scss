@@ -1,0 +1,140 @@
+/* SidebarMenu.css */
+.sidebar-menu {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  border-right: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: -1px 0 0 rgba(0, 0, 0, 0.08);
+  z-index: 500;
+}
+
+.top-section {
+  padding: 35px 20px 20px;
+  text-align: center;
+}
+
+.middle-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.middle-section ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.middle-section li {
+  margin: 10px 0;
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 40px;
+  height: 40px;
+}
+
+.middle-section li:hover::after {
+  content: attr(data-tooltip);
+  background-color: #000;
+  color: #fff;
+  font-size: 14px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  position: absolute;
+  top: 50%;
+  left: calc(100% + 10px);
+  transform: translateY(-50%);
+  white-space: nowrap;
+}
+
+.middle-section a {
+  text-decoration: none;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.middle-section a img {
+  border: 2px solid transparent;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+}
+
+.middle-section li.active {
+  border: 1px solid #d2d2d2;
+  border-radius: 8px;
+}
+
+.middle-section li.active a .sidebar-icon {
+  border-color: transparent;
+  filter: invert(52%) sepia(74%) saturate(2470%) hue-rotate(193deg)
+    brightness(86%) contrast(93%);
+}
+
+.bottom-section {
+  padding: 20px;
+  text-align: left;
+  display: flex;
+  justify-content: center;
+}
+
+.bottom-section button {
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-size: 24px;
+  cursor: pointer;
+  outline: none;
+}
+
+@media (max-width: 768px) {
+  .sidebar-menu {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: auto;
+    background-color: #333;
+    box-shadow: none;
+    border: none;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    background: white;
+  }
+
+  .top-section,
+  .middle-section,
+  .bottom-section {
+    padding: 0;
+    text-align: center;
+  }
+
+  .middle-section ul {
+    flex-direction: row;
+    display: flex;
+  }
+
+  .middle-section li {
+    margin: 0 10px;
+    width: auto;
+    height: auto;
+  }
+
+  .middle-section li:hover::after {
+    display: none;
+  }
+
+  .middle-section a img {
+    border: 2px solid transparent;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+  }
+}

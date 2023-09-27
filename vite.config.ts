@@ -1,15 +1,18 @@
 import react from '@vitejs/plugin-react';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 export default {
   plugins: [react()],
   server: {
     host: '127.0.0.1',
-    port: 8000, // Change the port to 8000
+    port: 8000,
     proxy: {
       '/api': {
-        target: 'http://127.0.0.1:8000', // Your API server address
+        target: process.env.VITE_API_URL,
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, ''), // Remove '/api' prefix
+        rewrite: (path) => path.replace(/^\/api/, ''),
       },
     },
   },
