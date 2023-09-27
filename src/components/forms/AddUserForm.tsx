@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
-import styles from "../../assets/scss/AddUserform.module.scss";
+import styles from "../../assets/scss/AddUserForm.module.scss";
 import { useAuth } from "../../contexts/AuthContext";
 import { AddUserFormProps } from "../../types/AddUserFormType";
 import FormButtons from "./buttons/FormButton";
