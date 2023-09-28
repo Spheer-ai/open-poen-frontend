@@ -12,14 +12,17 @@ const AddItemModal: React.FC<AddItemModalProps> = ({
   }
 
   return (
-    <div className={styles["modal"]}>
-      <div className={styles["modal-content"]}>
-        <button className={styles["close-button"]} onClick={onClose}>
-          &times;
-        </button>
-        {children}
+    <>
+      <div className={styles["modal-overlay"]}></div>
+      <div className={styles["modal"]}>
+        <div className={styles["modal-content"]}>
+          <button className={styles["close-button"]} onClick={onClose}>
+            &times;
+          </button>
+          {children}
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

@@ -94,33 +94,36 @@ const EditUserProfileForm: React.FC<EditUserProfileFormProps> = ({
   };
 
   return (
-    <div className={styles["modal-overlay"]}>
-        <FormLayout
-          title={`Bewerk Profiel`}
-          showIcon={false}
-          showOverviewButton={isConfirmed}
-          reloadWindow={reloadWindow}
-        >
-          {isConfirmed ? (
-            <div className={styles["confirmation-container"]}>
-              <p>Confirmation message here.</p>
+    <>
+      <FormLayout
+        title={`Bewerk Profiel`}
+        showIcon={false}
+        showOverviewButton={isConfirmed}
+        reloadWindow={reloadWindow}
+      >
+        {isConfirmed ? (
+          <div className={styles["confirmation-container"]}>
+            <p>Confirmation message here.</p>
+          </div>
+        ) : (
+          <form>
+            <h3>Personal Information</h3>
+            <div className={styles["form-group"]}>
+              <label
+                className={styles["label-first_name"]}
+                htmlFor="first_name"
+              >
+                Voornaam
+              </label>
+              <input
+                type="text"
+                id="first_name"
+                name="first_name"
+                placeholder="Voer de voornaam in"
+                value={formData.first_name}
+                onChange={handleChange}
+              />
             </div>
-          ) : (
-            <form>
-              <h3>Personal Information</h3>
-              <div className={styles["form-group"]}>
-                <label className={styles["label-first_name"]} htmlFor="first_name">
-                  Voornaam
-                </label>
-                <input
-                  type="text"
-                  id="first_name"
-                  name="first_name"
-                  placeholder="Voer de voornaam in"
-                  value={formData.first_name}
-                  onChange={handleChange}
-                />
-              </div>
             <div className={styles["form-group"]}>
               <label className={styles["label-last_name"]} htmlFor="last_name">
                 Achternaam
@@ -159,18 +162,18 @@ const EditUserProfileForm: React.FC<EditUserProfileFormProps> = ({
                 Gebruiker verbergen in overzicht
               </label>
             </div>
-            </form>
-          )}
-          {!isConfirmed && (
-            <FormButtons
-              continueLabel="Opslaan"
-              cancelLabel="Annuleren"
-              onContinue={handleSubmit}
-              onCancel={handleCancel}
-            />
-          )}
-        </FormLayout>
-      </div>
+          </form>
+        )}
+        {!isConfirmed && (
+          <FormButtons
+            continueLabel="Opslaan"
+            cancelLabel="Annuleren"
+            onContinue={handleSubmit}
+            onCancel={handleCancel}
+          />
+        )}
+      </FormLayout>
+    </>
   );
 };
 

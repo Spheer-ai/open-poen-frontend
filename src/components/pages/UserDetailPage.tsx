@@ -45,70 +45,72 @@ export default function UserDetailsPage() {
   };
 
   return (
-    <div className={styles["user-details-container"]}>
-      <div className={styles["user-details-content"]}>
-        {userDetails ? (
-          <div className={styles["user-details"]}>
-            <div className={styles["user-profile"]}>
-              <div>
-                <img
-                  src={ProfilePlaceholder}
-                  alt="Profile"
-                  className={styles["user-image circular"]}
-                />
-              </div>
-              <div className={styles["user-info"]}>
-                <p className={styles["user-name"]}>
-                  {userDetails.first_name} {userDetails.last_name}
-                </p>
-                {userDetails.email && (
-                  <p className={styles["user-email"]}>
-                    Email: {userDetails.email}
+    <>
+      <div className={styles["user-details-container"]}>
+        <div className={styles["user-details-content"]}>
+          {userDetails ? (
+            <div className={styles["user-details"]}>
+              <div className={styles["user-profile"]}>
+                <div>
+                  <img
+                    src={ProfilePlaceholder}
+                    alt="Profile"
+                    className={styles["user-image circular"]}
+                  />
+                </div>
+                <div className={styles["user-info"]}>
+                  <p className={styles["user-name"]}>
+                    {userDetails.first_name} {userDetails.last_name}
                   </p>
-                )}
-                <div className={styles["user-role-label"]}>
-                  <p className={styles["user-role"]}>{userDetails.role}</p>
+                  {userDetails.email && (
+                    <p className={styles["user-email"]}>
+                      Email: {userDetails.email}
+                    </p>
+                  )}
+                  <div className={styles["user-role-label"]}>
+                    <p className={styles["user-role"]}>{userDetails.role}</p>
+                  </div>
+                </div>
+                <div
+                  className={styles["top-right-button"]}
+                  onClick={toggleEditForm}
+                >
+                  Edit
                 </div>
               </div>
-              <div
-                className={styles["top-right-button"]}
-                onClick={toggleEditForm}
-              >
-                Edit
+
+              <div className={styles["user-description"]}>
+                <h3 className={styles["section-title"]}>Description</h3>
+                <p className={styles["section-content"]}>
+                  {userDetails.biography}
+                </p>
+              </div>
+
+              <div className={styles["user-initiatives"]}>
+                <h3 className={styles["section-title"]}>Initiatives</h3>
+                <InitiativeList initiatives={initiatives} />
+              </div>
+              <div className={styles["user-activities"]}>
+                <h3 className={styles["section-title"]}>Activities</h3>
+                {userDetails.activities.length > 0 ? (
+                  <></>
+                ) : (
+                  <p className={styles["section-content"]}>
+                    No activities available.
+                  </p>
+                )}
               </div>
             </div>
-
-            <div className={styles["user-description"]}>
-              <h3 className={styles["section-title"]}>Description</h3>
-              <p className={styles["section-content"]}>
-                {userDetails.biography}
-              </p>
+          ) : (
+            <div className={styles["loading-container"]}>
+              <LoadingDot delay={0} />
+              <LoadingDot delay={0.1} />
+              <LoadingDot delay={0.1} />
+              <LoadingDot delay={0.2} />
+              <LoadingDot delay={0.2} />
             </div>
-
-            <div className={styles["user-initiatives"]}>
-              <h3 className={styles["section-title"]}>Initiatives</h3>
-              <InitiativeList initiatives={initiatives} />
-            </div>
-            <div className={styles["user-activities"]}>
-              <h3 className={styles["section-title"]}>Activities</h3>
-              {userDetails.activities.length > 0 ? (
-                <></>
-              ) : (
-                <p className={styles["section-content"]}>
-                  No activities available.
-                </p>
-              )}
-            </div>
-          </div>
-        ) : (
-          <div className={styles["loading-container"]}>
-            <LoadingDot delay={0} />
-            <LoadingDot delay={0.1} />
-            <LoadingDot delay={0.1} />
-            <LoadingDot delay={0.2} />
-            <LoadingDot delay={0.2} />
-          </div>
-        )}
+          )}
+        </div>
       </div>
       {isEditFormOpen && userId && (
         <AddItemModal
@@ -122,6 +124,6 @@ export default function UserDetailsPage() {
           />
         </AddItemModal>
       )}
-    </div>
+    </>
   );
 }
