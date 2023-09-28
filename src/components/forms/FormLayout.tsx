@@ -1,7 +1,22 @@
+import React from "react";
 import styles from "../../assets/scss/FormLayout.module.scss";
 import binIcon from "../../../public/bin-icon.svg";
 
-const FormLayout = ({ title, children, showIcon }) => {
+interface FormLayoutProps {
+  title: string;
+  children: React.ReactNode;
+  showIcon: boolean;
+  showOverviewButton?: boolean; // Add this prop
+  reloadWindow?: () => void; // Add this prop
+}
+
+const FormLayout: React.FC<FormLayoutProps> = ({
+  title,
+  children,
+  showIcon,
+  showOverviewButton = false, // Default value is false
+  reloadWindow,
+}) => {
   return (
     <div className={styles["form-container"]}>
       <div className={styles["form-header"]}>
@@ -12,6 +27,9 @@ const FormLayout = ({ title, children, showIcon }) => {
       </div>
       <hr />
       {children}
+      {showOverviewButton && (
+        <button onClick={reloadWindow}>Go back to overview</button>
+      )}
     </div>
   );
 };

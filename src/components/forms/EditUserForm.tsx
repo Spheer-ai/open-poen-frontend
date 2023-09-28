@@ -12,6 +12,7 @@ const EditUserForm: React.FC<EditUserFormProps> = ({
   onContinue
 }) => {
   const { user } = useAuth();
+  const [isConfirmed, setIsConfirmed] = useState(false);
 
   const [formData, setFormData] = useState({
     email: "",
@@ -71,32 +72,46 @@ const EditUserForm: React.FC<EditUserFormProps> = ({
       });
 
       console.log("User updated:", response.data);
-      onContinue();
-      window.location.reload();
+
+      setIsConfirmed(true);
     } catch (error) {
       console.error("Failed to update user:", error);
     }
   };
 
+  const reloadWindow = () => {
+    window.location.reload(); // Function to reload the window
+  };
+
   return (
     <div>
-      <FormLayout title={`Bewerk ${"gebruiker"}`} showIcon={false}>
-        <form>
-          <h3>Info</h3>
-          <div className={styles["form-group"]}>
-            <label className={styles["label-email"]} htmlFor="email">
-              E-mail
-            </label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              placeholder="Voer het e-mailadres in"
-              value={formData.email}
-              onChange={handleChange}
-            />
+      <FormLayout
+        title={`Bewerk ${"gebruiker"}`}
+        showIcon={false}
+        showOverviewButton={isConfirmed}
+        reloadWindow={reloadWindow} // Pass the showOverviewButton prop
+      >
+        {isConfirmed ? (
+          <div>
+            <p>Confirmation message here.</p>
           </div>
-          <hr />
+        ) : (
+          <form>
+            <h3>Info</h3>
+            <div className={styles["form-group"]}>
+              <label className={styles["label-email"]} htmlFor="email">
+                E-mail
+              </label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                placeholder="Voer het e-mailadres in"
+                value={formData.email}
+                onChange={handleChange}
+              />
+            </div>
+            <hr />
           <div className={styles["form-group"]}>
             <h3>Rol</h3>
             <div className={styles["form-group-roles"]}>
@@ -156,12 +171,18 @@ const EditUserForm: React.FC<EditUserFormProps> = ({
             </div>
           </div>
         </form>
-        <FormButtons
-          continueLabel="Save"
-          cancelLabel="Cancel"
-          onContinue={handleSubmit}
-          onCancel={onCancel}
-        />
+        )}
+        {!isConfirmed && (
+          <FormButtons
+            continueLabel="Save"
+            cancelLabel="Cancel"
+            onContinue={handleSubmit}
+            onCancel={() => {
+              onCancel();
+              reloadWindow(); // Reload when canceling the form
+            }}
+          />
+        )}
       </FormLayout>
     </div>
   );

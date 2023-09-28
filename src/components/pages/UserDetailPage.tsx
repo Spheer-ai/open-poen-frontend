@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import UserDetails from "../../types/UserTypes";
@@ -6,11 +6,14 @@ import ProfilePlaceholder from "/profile-placeholder.png";
 import styles from "../../assets/scss/UserDetailPage.module.scss";
 import InitiativeList from "../lists/InitiativeList";
 import LoadingDot from "../animation/LoadingDot";
+import AddItemModal from "../modals/AddItemModal";
+import EditUserProfileForm from "../forms/EditUserProfileForm"; // Replace "your-path-to" with the actual path
 
 export default function UserDetailsPage() {
   const { userId } = useParams<{ userId: string }>();
   const [userDetails, setUserDetails] = useState<UserDetails | null>(null);
   const [initiatives, setInitiatives] = useState([]);
+  const [isEditFormOpen, setIsEditFormOpen] = useState(false);
 
   useEffect(() => {
     const fetchUserDetails = async () => {
@@ -37,6 +40,10 @@ export default function UserDetailsPage() {
     }
   }, [userId]);
 
+  const toggleEditForm = () => {
+    setIsEditFormOpen(!isEditFormOpen);
+  };
+
   return (
     <div className={styles["user-details-container"]}>
       <div className={styles["user-details-content"]}>
@@ -62,6 +69,9 @@ export default function UserDetailsPage() {
                 <div className={styles["user-role-label"]}>
                   <p className={styles["user-role"]}>{userDetails.role}</p>
                 </div>
+              </div>
+              <div className={styles["top-right-button"]} onClick={toggleEditForm}>
+                Edit
               </div>
             </div>
 
@@ -97,6 +107,18 @@ export default function UserDetailsPage() {
           </div>
         )}
       </div>
+      {isEditFormOpen && userId &&(
+        <AddItemModal
+          isOpen={isEditFormOpen}
+          onClose={() => setIsEditFormOpen(false)}
+        >
+          <EditUserProfileForm
+            userId={userId}
+            onCancel={() => setIsEditFormOpen(false)} // Close the form when canceled
+            onContinue={() => setIsEditFormOpen(false)} // Close the form when saved
+          />
+        </AddItemModal>
+      )}
     </div>
   );
 }
