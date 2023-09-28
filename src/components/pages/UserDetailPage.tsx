@@ -70,7 +70,10 @@ export default function UserDetailsPage() {
                   <p className={styles["user-role"]}>{userDetails.role}</p>
                 </div>
               </div>
-              <div className={styles["top-right-button"]} onClick={toggleEditForm}>
+              <div
+                className={styles["top-right-button"]}
+                onClick={toggleEditForm}
+              >
                 Edit
               </div>
             </div>
@@ -107,7 +110,7 @@ export default function UserDetailsPage() {
           </div>
         )}
       </div>
-      {isEditFormOpen && userId &&(
+      {isEditFormOpen && userId && (
         <AddItemModal
           isOpen={isEditFormOpen}
           onClose={() => setIsEditFormOpen(false)}

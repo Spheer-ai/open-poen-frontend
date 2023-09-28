@@ -28,7 +28,14 @@ const FormLayout: React.FC<FormLayoutProps> = ({
       <hr />
       {children}
       {showOverviewButton && (
-        <button onClick={reloadWindow}>Go back to overview</button>
+        <button
+          className={`${styles["confirm-button"]} ${
+            showOverviewButton ? "" : styles["hidden"]
+          }`}
+          onClick={reloadWindow}
+        >
+          Go back to overview
+        </button>
       )}
     </div>
   );

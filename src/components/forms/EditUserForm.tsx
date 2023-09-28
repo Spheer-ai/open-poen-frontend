@@ -9,7 +9,7 @@ import { EditUserFormProps } from "../../types/EditUserFormType";
 const EditUserForm: React.FC<EditUserFormProps> = ({
   userId,
   onCancel,
-  onContinue
+  onContinue,
 }) => {
   const { user } = useAuth();
   const [isConfirmed, setIsConfirmed] = useState(false);
@@ -92,7 +92,7 @@ const EditUserForm: React.FC<EditUserFormProps> = ({
         reloadWindow={reloadWindow} // Pass the showOverviewButton prop
       >
         {isConfirmed ? (
-          <div>
+          <div className={styles["confirmation-container"]}>
             <p>Confirmation message here.</p>
           </div>
         ) : (
@@ -112,65 +112,65 @@ const EditUserForm: React.FC<EditUserFormProps> = ({
               />
             </div>
             <hr />
-          <div className={styles["form-group"]}>
-            <h3>Rol</h3>
-            <div className={styles["form-group-roles"]}>
-              <label>
-                <input
-                  type="checkbox"
-                  name="role"
-                  value="administrator"
-                  checked={formData.role === "administrator"}
-                  onChange={handleChange}
-                />
-                Beheerder
-              </label>
-              <label>
-                <input
-                  type="checkbox"
-                  name="role"
-                  value="user"
-                  checked={formData.role === "user"}
-                  onChange={handleChange}
-                />
-                Gebruiker
-              </label>
-              <label>
-                <input
-                  type="checkbox"
-                  name="role"
-                  value="financial"
-                  checked={formData.role === "financial"}
-                  onChange={handleChange}
-                />
-                Financieel
-              </label>
+            <div className={styles["form-group"]}>
+              <h3>Rol</h3>
+              <div className={styles["form-group-roles"]}>
+                <label>
+                  <input
+                    type="checkbox"
+                    name="role"
+                    value="administrator"
+                    checked={formData.role === "administrator"}
+                    onChange={handleChange}
+                  />
+                  Beheerder
+                </label>
+                <label>
+                  <input
+                    type="checkbox"
+                    name="role"
+                    value="user"
+                    checked={formData.role === "user"}
+                    onChange={handleChange}
+                  />
+                  Gebruiker
+                </label>
+                <label>
+                  <input
+                    type="checkbox"
+                    name="role"
+                    value="financial"
+                    checked={formData.role === "financial"}
+                    onChange={handleChange}
+                  />
+                  Financieel
+                </label>
+              </div>
             </div>
-          </div>
-          <div className={styles["form-group"]}>
-            <h3>Instellingen</h3>
-            <div className={styles["form-group-roles"]}>
-              <label>
-                <input
-                  type="checkbox"
-                  name="is_active"
-                  checked={formData.is_active}
-                  onChange={handleChange}
-                />
-                Initiatiefaccount is actief
-              </label>
-              <label>
-                <input
-                  type="checkbox"
-                  name="hidden"
-                  checked={formData.hidden}
-                  onChange={handleChange}
-                />
-                Gebruiker verbergen in overzicht
-              </label>
+            <div className={styles["form-group"]}>
+              <h3>Instellingen</h3>
+              <div className={styles["form-group-roles"]}>
+                <label>
+                  <input
+                    type="checkbox"
+                    name="is_active"
+                    checked={formData.is_active}
+                    onChange={handleChange}
+                  />
+                  Initiatiefaccount is actief
+                </label>
+                <label>
+                  <input
+                    type="checkbox"
+                    name="hidden"
+                    checked={formData.hidden}
+                    onChange={handleChange}
+                  />
+                  Gebruiker verbergen in overzicht
+                </label>
+              </div>
             </div>
-          </div>
-        </form>
+          </form>
         )}
         {!isConfirmed && (
           <FormButtons

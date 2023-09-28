@@ -32,10 +32,10 @@ const initialFormData: UserFormData = {
 const AddUserForm: React.FC<{
   onContinue: () => void;
   onCancel: () => void;
-}> = ({ onContinue, onCancel }) => {
+}> = ({ onCancel }) => {
   const [formData, setFormData] = useState<UserFormData>(initialFormData);
-  const [showPersonalInfo] = useState(false);
   const { user } = useAuth();
+  const [isConfirmed, setIsConfirmed] = useState(false); // State for confirmation
 
   const roleLabels = {
     administrator: "Beheerder",
@@ -72,96 +72,83 @@ const AddUserForm: React.FC<{
 
       const response = await createUser(formDataToSend, token);
       console.log("User created:", response);
-      onContinue();
+
+      // Set the confirmation state to true
+      setIsConfirmed(true);
     } catch (error) {
       console.error("Failed to create user:", error);
     }
   };
 
+  const reloadWindow = () => {
+    window.location.reload(); // Function to reload the window
+  };
+
   return (
     <div>
-      <FormLayout title="Gebruiker aanmaken" showIcon={false}>
-        <form>
-          <div className={styles["form-group"]}>
-            <h3>Info</h3>
-            <label className={styles["label-email"]} htmlFor="email">
-              E-mail
-            </label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              placeholder="Voer het e-mailadres in"
-              value={formData.email}
-              onChange={handleChange}
-            />
-            <p className={styles["description"]}>
-              Als er nog geen gebruiker bestaat met dit e-mailadres, ontvangt
-              deze een uitnodigingsmail met daarin een link om een wachtwoord
-              aan te maken. Indien er al een gebruiker bestaat met dit
-              e-mailadres, krijgt deze gebruiker de toegewezen rechten (hierover
-              wordt geen e-mail verzonden).
-            </p>
-            <hr />
+      <FormLayout
+        title="Gebruiker aanmaken"
+        showIcon={false}
+        showOverviewButton={isConfirmed}
+        reloadWindow={reloadWindow}
+      >
+        {isConfirmed ? (
+          <div className={styles["confirmation-container"]}>
+            <p>Confirmation message here.</p>
           </div>
-          <div className={styles["form-group"]}>
-            <h3>Rol</h3>
-            <div className={styles["role-options"]}>
-              {Object.entries(roleLabels).map(([apiRole, displayRole]) => (
-                <label key={apiRole} className={styles["role-label"]}>
-                  <input
-                    type="checkbox"
-                    name={apiRole}
-                    checked={formData.role === apiRole}
-                    onChange={handleCheckboxChange}
-                  />
-                  {displayRole}
-                </label>
-              ))}
+        ) : (
+          <form>
+            <div className={styles["form-group"]}>
+              <h3>Info</h3>
+              <label className={styles["label-email"]} htmlFor="email">
+                E-mail
+              </label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                placeholder="Voer het e-mailadres in"
+                value={formData.email}
+                onChange={handleChange}
+              />
+              <p className={styles["description"]}>
+                Als er nog geen gebruiker bestaat met dit e-mailadres, ontvangt
+                deze een uitnodigingsmail met daarin een link om een wachtwoord
+                aan te maken. Indien er al een gebruiker bestaat met dit
+                e-mailadres, krijgt deze gebruiker de toegewezen rechten
+                (hierover wordt geen e-mail verzonden).
+              </p>
+              <hr />
             </div>
-          </div>
-          {showPersonalInfo && (
-            <>
-              <h3>Persoonlijke gegevens</h3>
-              <div className={styles["form-group"]}>
-                <label htmlFor="first_name">First Name:</label>
-                <input
-                  type="text"
-                  id="first_name"
-                  name="first_name"
-                  value={formData.first_name}
-                  onChange={handleChange}
-                />
+            <div className={styles["form-group"]}>
+              <h3>Rol</h3>
+              <div className={styles["role-options"]}>
+                {Object.entries(roleLabels).map(([apiRole, displayRole]) => (
+                  <label key={apiRole} className={styles["role-label"]}>
+                    <input
+                      type="checkbox"
+                      name={apiRole}
+                      checked={formData.role === apiRole}
+                      onChange={handleCheckboxChange}
+                    />
+                    {displayRole}
+                  </label>
+                ))}
               </div>
-              <div className={styles["form-group"]}>
-                <label htmlFor="last_name">Last Name:</label>
-                <input
-                  type="text"
-                  id="last_name"
-                  name="last_name"
-                  value={formData.last_name}
-                  onChange={handleChange}
-                />
-              </div>
-              <div className={styles["form-group"]}>
-                <label htmlFor="biography">Biography:</label>
-                <input
-                  type="text"
-                  id="biography"
-                  name="biography"
-                  value={formData.biography}
-                  onChange={handleChange}
-                />
-              </div>
-            </>
-          )}
+            </div>
+          </form>
+        )}
+        {!isConfirmed && (
           <FormButtons
             continueLabel="Continue"
             cancelLabel="Cancel"
             onContinue={handleSubmit}
-            onCancel={onCancel}
+            onCancel={() => {
+              onCancel();
+              reloadWindow(); // Reload when canceling the form
+            }}
           />
-        </form>
+        )}
       </FormLayout>
     </div>
   );
