@@ -9,7 +9,7 @@ import { EditUserFormProps } from "../../types/EditUserFormType";
 const EditUserForm: React.FC<EditUserFormProps> = ({
   userId,
   onCancel,
-  onContinue
+  onContinue,
 }) => {
   const { user } = useAuth();
 
