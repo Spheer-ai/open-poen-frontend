@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, Outlet, useNavigate } from "react-router-dom";
+import { getUserById, getUsersOrdered } from "../middleware/Api";
 import axios from "axios";
 import jwtDecode from "jwt-decode";
 import TopNavigationBar from "../ui/top-navigation-bar/TopNavigationBar";
@@ -12,6 +13,10 @@ import DropdownMenu from "../elements/dropdown-menu/DropDownMenu";
 import { UserData } from "../../types/ContactsTypes";
 import EditUserForm from "../forms/EditUserForm";
 import DeleteUserForm from "../forms/DeleteUserForm";
+
+interface DecodedToken {
+  sub: string;
+}
 
 export default function Contacts() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -77,50 +82,44 @@ export default function Contacts() {
     async function fetchData() {
       try {
         const token = localStorage.getItem("token");
-        const loggedIn = !!token;
+        let loggedIn = false;
+        let userId: string | null = null;
 
-        setIsLoggedIn(loggedIn);
-
-        if (loggedIn) {
-          const decodedToken: string = jwtDecode(token);
-          const userId = decodedToken.sub;
-
+        if (token !== null) {
+          const decodedToken: DecodedToken = jwtDecode(token);
+          loggedIn = true;
+          userId = decodedToken.sub;
+          setIsLoggedIn(loggedIn);
           setLoggedInUserId(userId);
 
-          const loggedInUserResponse = await axios.get(`/api/user/${userId}`, {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
+          console.log("Fetching loggedInUserResponse:");
+          console.log("URL:", `/api/user/${userId}`);
+          console.log("Headers:", {
+            Authorization: `Bearer ${token}`,
           });
-
-          const usersResponse = await axios.get("/api/users", {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-            params: {
-              ordering: `-${userId}`,
-            },
-          });
-
-          const sortedUsers = [
-            loggedInUserResponse.data,
-            ...usersResponse.data.users,
-          ];
-
-          const filteredUsers = sortedUsers.reduce((uniqueUsers, user) => {
-            if (!uniqueUsers.some((u) => u.id === user.id)) {
-              uniqueUsers.push(user);
-            }
-            return uniqueUsers;
-          }, []);
-
-          setUserData(filteredUsers);
-          setUserListLoaded(true);
-        } else {
-          const usersResponse = await axios.get("/api/users");
-          setUserData(usersResponse.data.users);
-          setUserListLoaded(true);
         }
+
+        console.log("Fetching usersResponse:");
+        console.log("URL:", "/api/users");
+        console.log("Headers:", {
+          Authorization: `Bearer ${token || ""}`,
+        });
+
+        const usersResponse = await getUsersOrdered(token || "");
+
+        const sortedUsers = loggedIn
+          ? [await getUserById(userId || "", token || ""), ...usersResponse]
+          : usersResponse;
+
+        const filteredUsers = sortedUsers.reduce((uniqueUsers, user) => {
+          if (!uniqueUsers.some((u) => u.id === user.id)) {
+            uniqueUsers.push(user);
+          }
+          return uniqueUsers;
+        }, []);
+
+        setUserData(filteredUsers);
+        setUserListLoaded(true);
 
         setIsLoading(false);
       } catch (error) {
@@ -178,7 +177,7 @@ export default function Contacts() {
           onClose={() => setIsEditModalOpen(false)}
         >
           <EditUserForm
-            userId={activeUserId} // Pass activeUserId as userId
+            userId={activeUserId}
             onCancel={() => {
               setIsEditModalOpen(false);
             }}
@@ -352,7 +351,7 @@ export default function Contacts() {
         >
           <DropdownMenu
             isOpen={isDropdownOpen}
-            onEditClick={handleEditButtonClick} // Add it here
+            onEditClick={handleEditButtonClick}
             onDeleteClick={handleOpenDeleteModal}
           />
         </div>
