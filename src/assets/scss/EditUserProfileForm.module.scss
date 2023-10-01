@@ -13,53 +13,52 @@
     }
   }
 
-textarea,
-input[type="text"],
-input[type="email"] {
-  width: 100%;
-  padding: 10px;
-  border: solid 1px #D5D4DC;
-  border-radius: 8px;
-  margin-top: 10px;
-  font-weight: 400;
-  color: #8B849B;
+  textarea,
+  input[type="text"],
+  input[type="email"] {
+    width: 100%;
+    padding: 10px;
+    border: solid 1px #d5d4dc;
+    border-radius: 8px;
+    margin-top: 10px;
+    font-weight: 400;
+    color: #8b849b;
 
-  &:hover {
-    background-color: #F5F8FF;
+    &:hover {
+      background-color: #f5f8ff;
+    }
+
+    &:active {
+      border-color: #8bb4ff;
+      background-color: white;
+    }
+
+    &:focus {
+      border-color: #0f62fe;
+    }
   }
 
-  &:active {
-    border-color: #8BB4FF;
-    background-color: white;
+  /* Styles for filled input */
+  input[type="text"][value],
+  input[type="email"][value] {
+    color: #10002e;
   }
 
-  &:focus {
-    border-color: #0F62FE;
+  /* Styles for success state */
+  input[type="text"].success,
+  input[type="email"].success {
+    color: #10002e;
+    border-color: #2bac47;
+    background-color: #f1f8f2;
   }
-}
 
-/* Styles for filled input */
-input[type="text"][value],
-input[type="email"][value] {
-  color: #10002E;
-}
-
-/* Styles for success state */
-input[type="text"].success,
-input[type="email"].success {
-  color: #10002E;
-  border-color: #2BAC47;
-  background-color: #F1F8F2;
-}
-
-/* Styles for error state */
-input[type="text"].error,
-input[type="email"].error {
-  color: #10002E;
-  border-color: #C83532;
-  background-color: #FBEFEF;
-}
-
+  /* Styles for error state */
+  input[type="text"].error,
+  input[type="email"].error {
+    color: #10002e;
+    border-color: #c83532;
+    background-color: #fbefef;
+  }
 }
 
 .form-group-roles {
@@ -90,7 +89,7 @@ h3 {
 
 hr {
   border: none;
-  border-top: solid 1px #D5D4DC;
+  border-top: solid 1px #d5d4dc;
   margin: 10px 0;
 }
 
@@ -146,9 +145,9 @@ h2 {
 textarea {
   margin-top: 10px;
   width: 100%;
-    padding: 10px;
-    border: solid 1px #D5D4DC;
-    border-radius: 8px;
-    font-weight: 400;
+  padding: 10px;
+  border: solid 1px #d5d4dc;
+  border-radius: 8px;
+  font-weight: 400;
 }
 /* Add more styles as needed */

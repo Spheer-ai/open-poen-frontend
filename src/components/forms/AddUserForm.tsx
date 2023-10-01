@@ -35,7 +35,7 @@ const AddUserForm: React.FC<{
 }> = ({ onCancel }) => {
   const [formData, setFormData] = useState<UserFormData>(initialFormData);
   const { user } = useAuth();
-  const [isConfirmed, setIsConfirmed] = useState(false); // State for confirmation
+  const [isConfirmed, setIsConfirmed] = useState(false);
 
   const roleLabels = {
     administrator: "Beheerder",
@@ -46,11 +46,9 @@ const AddUserForm: React.FC<{
   const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, checked } = event.target;
 
-    // If a checkbox is checked, update the role field accordingly
     if (checked) {
       setFormData({ ...formData, role: name });
     } else {
-      // If a checkbox is unchecked, clear the role field
       setFormData({ ...formData, role: "" });
     }
   };
@@ -64,7 +62,6 @@ const AddUserForm: React.FC<{
     try {
       const token = user?.token || "";
 
-      // Convert UserFormData to FormData
       const formDataToSend = new FormData();
       for (const key in formData) {
         formDataToSend.append(key, formData[key]);
@@ -73,7 +70,6 @@ const AddUserForm: React.FC<{
       const response = await createUser(formDataToSend, token);
       console.log("User created:", response);
 
-      // Set the confirmation state to true
       setIsConfirmed(true);
     } catch (error) {
       console.error("Failed to create user:", error);
@@ -89,14 +85,19 @@ const AddUserForm: React.FC<{
         reloadWindow={() => {
           onCancel();
           setTimeout(() => {
-            window.location.reload(); // Reload after a small delay
-          }, 300); // Adjust the delay time (in milliseconds) as needed
+            window.location.reload();
+          }, 300);
         }}
       >
         {isConfirmed ? (
           <div>
             <h3>Gebruiker succesvol aangemaakt</h3>
-            <p>De gebruiker is succesvol aangemaakt. We hebben een e-mail met instructies voor accountactivatie naar de gebruiker gestuurd en een rol toegewezen. De gebruiker moet zijn e-mailadres verifiëren voordat hij het account kan gebruiken.</p>
+            <p>
+              De gebruiker is succesvol aangemaakt. We hebben een e-mail met
+              instructies voor accountactivatie naar de gebruiker gestuurd en
+              een rol toegewezen. De gebruiker moet zijn e-mailadres verifiëren
+              voordat hij het account kan gebruiken.
+            </p>
           </div>
         ) : (
           <form>
@@ -117,8 +118,8 @@ const AddUserForm: React.FC<{
                 Als er nog geen gebruiker bestaat met dit e-mailadres, ontvangt
                 deze een uitnodigingsmail met daarin een link om een wachtwoord
                 aan te maken. Indien er al een gebruiker bestaat met dit
-                e-mailadres, krijgt deze gebruiker de toegewezen rechten (hierover
-                wordt geen e-mail verzonden).
+                e-mailadres, krijgt deze gebruiker de toegewezen rechten
+                (hierover wordt geen e-mail verzonden).
               </p>
               <hr />
             </div>
@@ -147,7 +148,7 @@ const AddUserForm: React.FC<{
             onContinue={handleSubmit}
             onCancel={() => {
               onCancel();
-              window.location.reload(); // Reload when canceling the form
+              window.location.reload();
             }}
           />
         )}

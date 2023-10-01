@@ -1,6 +1,6 @@
 import React from "react";
 import { useTransition, animated } from "react-spring";
-import "./SlideInModal.module.scss"; // Remove the styles import
+import "./SlideInModal.module.scss";
 
 interface SlideInModalProps {
   isOpen: boolean;
@@ -22,16 +22,12 @@ const SlideInModal: React.FC<SlideInModalProps> = ({
   return transitions(
     (styles, item) =>
       item && (
-        <animated.div
-          style={styles}
-          className="modal" // Use the class names directly
-        >
+        <animated.div style={styles} className="modal">
           <div className="modal-content">
             {" "}
-            // Use the class names directly
             <button className="close-button" onClick={onClose}>
               {" "}
-              // Use the class names directly &times;
+              &times;
             </button>
             {children}
           </div>

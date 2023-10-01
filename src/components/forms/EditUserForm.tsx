@@ -6,11 +6,7 @@ import FormLayout from "./FormLayout";
 import { useAuth } from "../../contexts/AuthContext";
 import { EditUserFormProps } from "../../types/EditUserFormType";
 
-const EditUserForm: React.FC<EditUserFormProps> = ({
-  userId,
-  onCancel,
-  onContinue,
-}) => {
+const EditUserForm: React.FC<EditUserFormProps> = ({ userId, onCancel }) => {
   const { user } = useAuth();
   const [isConfirmed, setIsConfirmed] = useState(false);
   const [formData, setFormData] = useState({
@@ -51,17 +47,14 @@ const EditUserForm: React.FC<EditUserFormProps> = ({
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
-  
+
     if (type === "checkbox") {
       if (name === "role") {
-        // For role checkboxes, set the role field to the value of the checked checkbox
         setFormData({ ...formData, role: value });
       } else {
-        // For other checkboxes (settings), update their respective fields
         setFormData({ ...formData, [name]: checked });
       }
     } else {
-      // For other inputs, update the state as before
       setFormData({ ...formData, [name]: value });
     }
   };
@@ -86,13 +79,13 @@ const EditUserForm: React.FC<EditUserFormProps> = ({
   };
 
   const handleReloadWindow = () => {
-    onCancel(); // Close the modal
-    window.location.reload(); // Reload the window
+    onCancel();
+    window.location.reload();
   };
 
   const handleCancel = () => {
-    onCancel(); // Close the modal
-    window.location.reload(); // Reload the window
+    onCancel();
+    window.location.reload();
   };
 
   return (
@@ -184,20 +177,20 @@ const EditUserForm: React.FC<EditUserFormProps> = ({
               </div>
             </div>
           </form>
-                )}
-                {!isConfirmed && (
-                  <FormButtons
-                    continueLabel="Opslaan"
-                    cancelLabel="Annuleren"
-                    onContinue={() => {
-                      handleSubmit();
-                    }}
-                    onCancel={handleCancel} // Use the handleCancel function
-                  />
-                )}
-              </FormLayout>
-            </div>
-          );
-        };
-        
-        export default EditUserForm;
+        )}
+        {!isConfirmed && (
+          <FormButtons
+            continueLabel="Opslaan"
+            cancelLabel="Annuleren"
+            onContinue={() => {
+              handleSubmit();
+            }}
+            onCancel={handleCancel}
+          />
+        )}
+      </FormLayout>
+    </div>
+  );
+};
+
+export default EditUserForm;

@@ -1,7 +1,7 @@
-// Funds.js
+import React from "react";
 import { useState } from "react";
 import TopNavigationBar from "../ui/top-navigation-bar/TopNavigationBar";
-import SlideInModal from "../modals/SlideInModal"; // Import your SlideInModal component
+import SlideInModal from "../modals/SlideInModal";
 import styles from "../../assets/scss/Funds.module.scss";
 
 export default function Funds() {

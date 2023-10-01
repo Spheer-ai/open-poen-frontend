@@ -47,10 +47,14 @@ const SidebarMenu = ({ isAuthenticated, onLogout }: SidebarMenuProps) => {
       </div>
       <div className={styles["middle-section"]}>
         <ul>
-        {linkData.map((linkInfo) => (
+          {linkData.map((linkInfo) => (
             <li
               key={linkInfo.name}
-              className={isLinkActive(linkInfo.name.toLowerCase()) ? styles["active"] : ""}
+              className={
+                isLinkActive(linkInfo.name.toLowerCase())
+                  ? styles["active"]
+                  : ""
+              }
               data-tooltip={linkInfo.tooltip}
             >
               <Link to={`/${linkInfo.name.toLowerCase()}`}>
@@ -66,7 +70,11 @@ const SidebarMenu = ({ isAuthenticated, onLogout }: SidebarMenuProps) => {
             authenticatedLinks.map((linkInfo) => (
               <li
                 key={linkInfo.name}
-                className={isLinkActive(linkInfo.name.toLowerCase()) ? styles["active"] : ""}
+                className={
+                  isLinkActive(linkInfo.name.toLowerCase())
+                    ? styles["active"]
+                    : ""
+                }
                 data-tooltip={linkInfo.tooltip}
               >
                 <Link to={`/${linkInfo.name.toLowerCase()}`}>

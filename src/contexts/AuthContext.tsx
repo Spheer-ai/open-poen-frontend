@@ -1,6 +1,8 @@
-import { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useState, useEffect } from "react";
 import { login as apiLogin } from "../components/middleware/Api";
 import { UserData, AuthContextValue } from "../types/AuthContextTypes";
+import { FormattedMessage } from "react-intl";
+import ReactDOMServer from "react-dom/server";
 
 const AuthContext = createContext<AuthContextValue>({
   user: null,
@@ -36,7 +38,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   ): Promise<boolean> => {
     try {
       if (!username || !password) {
-        throw new Error("Gebruikersnaam en wachtwoord zijn verplicht.");
+        const errorMessage = (
+          <FormattedMessage
+            id="auth.validation.required"
+            defaultMessage="Field is required"
+          />
+        );
+
+        const errorMessageString = ReactDOMServer.renderToString(errorMessage);
+
+        throw errorMessageString;
       }
 
       setIsLoading(true);

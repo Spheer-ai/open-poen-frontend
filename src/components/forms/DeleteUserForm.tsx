@@ -9,10 +9,9 @@ import styles from "../../assets/scss/DeleteUserForm.module.scss";
 const DeleteUserForm: React.FC<DeleteUserFormProps> = ({
   userId,
   onCancel,
-  onContinue,
 }) => {
   const { user } = useAuth();
-  const [isConfirmed, setIsConfirmed] = useState(false); // Add a state for confirmation
+  const [isConfirmed, setIsConfirmed] = useState(false);
 
   if (!userId) {
     console.error("userId is undefined or null");
@@ -24,14 +23,14 @@ const DeleteUserForm: React.FC<DeleteUserFormProps> = ({
       const token = user?.token || "";
       const response = await deleteUser(userId, token);
       console.log("User deleted:", response);
-      setIsConfirmed(true); // Show confirmation message
+      setIsConfirmed(true);
     } catch (error) {
       console.error("Failed to delete user:", error);
     }
   };
 
   const reloadWindow = () => {
-    window.location.reload(); // Reload the page
+    window.location.reload();
   };
 
   return (
@@ -45,7 +44,10 @@ const DeleteUserForm: React.FC<DeleteUserFormProps> = ({
         {isConfirmed ? (
           <div className={styles["confirmation-container"]}>
             <h3>Gebruiker succesvol verwijderd</h3>
-            <p>De gebruiker is verwijderd en kan geen gebruik meer maken van het account.</p>
+            <p>
+              De gebruiker is verwijderd en kan geen gebruik meer maken van het
+              account.
+            </p>
           </div>
         ) : (
           <p>
@@ -55,7 +57,7 @@ const DeleteUserForm: React.FC<DeleteUserFormProps> = ({
         )}
         {!isConfirmed && (
           <FormButtons
-            continueLabel="Doorgaan" // Customize the button labels here
+            continueLabel="Doorgaan"
             cancelLabel="Annuleren"
             onContinue={handleDelete}
             onCancel={onCancel}

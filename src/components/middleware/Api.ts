@@ -60,6 +60,20 @@ export const fetchUserData = async (token: string, userId: string) => {
   }
 };
 
+export const fetchUserDetails = async (userId: string, token: string) => {
+  try {
+    const response = await api.get(`/api/user/${userId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching user details:", error);
+    throw error;
+  }
+};
+
 export const getUsers = async (token: string) => {
   try {
     if (!token) {
@@ -140,16 +154,20 @@ export const updateUser = async (
   userId: string,
   formData: any,
   token: string,
-  oldPassword: string, // Add oldPassword parameter
-  newPassword: string, // Add newPassword parameter
+  oldPassword: string,
+  newPassword: string,
 ) => {
   try {
-    const response = await api.patch(`/user/${userId}`, { ...formData, oldPassword, newPassword }, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
+    const response = await api.patch(
+      `/user/${userId}`,
+      { ...formData, oldPassword, newPassword },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
       },
-    });
+    );
     return response.data;
   } catch (error) {
     throw error;
@@ -182,6 +200,16 @@ export const getUsersOrdered = async (token: string, ordering: string = "") => {
     });
     return response.data.users;
   } catch (error) {
+    throw error;
+  }
+};
+
+export const fetchInitiatives = async () => {
+  try {
+    const response = await api.get(`/api/initiatives`);
+    return response.data.initiatives;
+  } catch (error) {
+    console.error("Error fetching initiatives:", error);
     throw error;
   }
 };

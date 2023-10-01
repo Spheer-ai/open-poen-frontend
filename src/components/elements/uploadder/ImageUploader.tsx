@@ -33,7 +33,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ onImageUpload }) => {
         accept="image/*"
         onChange={handleImageChange}
         ref={fileInputRef}
-        style={{ display: "none" }} // Hide the file input
+        style={{ display: "none" }}
       />
       {selectedImage && <p>Selected Image: {selectedImage.name}</p>}
     </div>

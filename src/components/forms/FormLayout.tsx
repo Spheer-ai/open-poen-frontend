@@ -3,7 +3,7 @@ import styles from "../../assets/scss/FormLayout.module.scss";
 import binIcon from "/bin-icon.svg";
 
 interface FormLayoutProps {
-  title?: string; // Make the title prop optional
+  title?: string;
   children: React.ReactNode;
   showIcon: boolean;
   showOverviewButton?: boolean;
@@ -12,12 +12,12 @@ interface FormLayoutProps {
 }
 
 const FormLayout: React.FC<FormLayoutProps> = ({
-  title, // Accept the title prop
+  title,
   children,
   showIcon,
   showOverviewButton = false,
   reloadWindow,
-  showHr = true, // Add this prop
+  showHr = true,
 }) => {
   return (
     <div className={styles["form-container"]}>
@@ -25,7 +25,7 @@ const FormLayout: React.FC<FormLayoutProps> = ({
         {showIcon && (
           <img src={binIcon} alt="Trash Bin" className={styles.binIcon} />
         )}
-        {title && <h2>{title}</h2>} {/* Display title if it is provided */}
+        {title && <h2>{title}</h2>}
       </div>
       {showHr && <hr />}
       {children}
@@ -37,7 +37,7 @@ const FormLayout: React.FC<FormLayoutProps> = ({
             }`}
             onClick={reloadWindow}
           >
-            Go back to overview
+            Ga terug naar het overzicht
           </button>
         </div>
       )}

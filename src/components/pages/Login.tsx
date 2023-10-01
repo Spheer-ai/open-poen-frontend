@@ -1,18 +1,14 @@
 import React, { useState } from "react";
 import { useAuth } from "../../contexts/AuthContext";
-import { useNavigate } from "react-router-dom"; // Import useNavigate
+import { useNavigate } from "react-router-dom";
 import styles from "../../assets/scss/Login.module.scss";
 
-export default function Login({
-  onLogin,
-}: {
-  onLogin: () => void;
-}) {
+export default function Login({ onLogin }: { onLogin: () => void }) {
   const { login, isLoading } = useAuth();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const navigate = useNavigate(); // Initialize useNavigate
+  const navigate = useNavigate();
 
   const handleLogin = async () => {
     try {
@@ -25,19 +21,21 @@ export default function Login({
       }
     } catch (error) {
       setError(
-        error.message || "Er is een fout opgetreden tijdens het inloggen."
+        error.message || "Er is een fout opgetreden tijdens het inloggen.",
       );
     }
   };
 
   const handleBackdropClick = () => {
-    // Trigger the onClose function when the backdrop is clicked
-    navigate("/funds"); // Redirect to the "funds" page
+    navigate("/funds");
   };
 
   return (
     <div className={styles["login-modal"]}>
-            <div className={styles["login-modal-backdrop"]} onClick={handleBackdropClick}></div>
+      <div
+        className={styles["login-modal-backdrop"]}
+        onClick={handleBackdropClick}
+      ></div>
       <div className={styles["login-modal-content"]}>
         <div className={styles["login-container"]}>
           <div className={styles["login-box"]}>

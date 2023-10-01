@@ -12,7 +12,6 @@ import EditUserProfileForm from "../forms/EditUserProfileForm";
 import EditIcon from "/edit-icon.svg";
 import ChangePasswordIcon from "/change-password-icon.svg";
 
-
 export default function UserDetailsPage() {
   const { userId } = useParams<{ userId: string }>();
   const [userDetails, setUserDetails] = useState<UserDetails | null>(null);
@@ -29,8 +28,6 @@ export default function UserDetailsPage() {
       }
     };
 
-    
-
     const fetchInitiatives = async () => {
       try {
         const response = await axios.get(`/api/initiatives`);
@@ -45,18 +42,17 @@ export default function UserDetailsPage() {
       fetchInitiatives();
     }
   }, [userId]);
-  
 
   const handleEditClick = () => {
-    setActiveAction("edit"); // Set active action to "edit" when Edit button is clicked
+    setActiveAction("edit");
   };
 
   const handleChangePasswordClick = () => {
-    setActiveAction("changePassword"); // Set active action to "changePassword" when Change Password button is clicked
+    setActiveAction("changePassword");
   };
 
   const handleCloseModal = () => {
-    setActiveAction(null); // Reset active action when the modal is closed
+    setActiveAction(null);
   };
 
   return (
@@ -91,11 +87,7 @@ export default function UserDetailsPage() {
                     className={styles["top-right-button"]}
                     onClick={handleEditClick}
                   >
-                    <img
-                      src={EditIcon}
-                      alt="Edit"
-                      className={styles["icon"]}
-                    />
+                    <img src={EditIcon} alt="Edit" className={styles["icon"]} />
                     Bewerken
                   </div>
                   <div
@@ -145,27 +137,23 @@ export default function UserDetailsPage() {
           )}
         </div>
       </div>
-      {activeAction === "edit" &&(
+      {activeAction === "edit" && (
         <AddItemModal isOpen={true} onClose={handleCloseModal}>
-            <EditUserProfileForm
-              userId={userId || null}
-              onCancel={handleCloseModal}
-              onContinue={handleCloseModal}
-              first_name={""}
-              last_name={""}
-              biography={""}
-              hidden={true}
-            />
+          <EditUserProfileForm
+            userId={userId || null}
+            onCancel={handleCloseModal}
+            onContinue={handleCloseModal}
+            first_name={""}
+            last_name={""}
+            biography={""}
+            hidden={true}
+          />
         </AddItemModal>
       )}
 
       {activeAction === "changePassword" && (
         <AddItemModal isOpen={true} onClose={handleCloseModal}>
-            <ChangePasswordForm
-              onClose={handleCloseModal}
-              userId={userId}
-              title="Change Password"
-            />
+          <ChangePasswordForm onClose={handleCloseModal} userId={userId} />
         </AddItemModal>
       )}
     </>

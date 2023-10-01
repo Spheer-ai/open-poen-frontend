@@ -15,7 +15,6 @@ const AddItemModal: React.FC<AddItemModalProps> = ({
   });
 
   const handleContentClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    // Prevent closing when clicking inside the modal content
     e.stopPropagation();
   };
 
@@ -47,7 +46,7 @@ const AddItemModal: React.FC<AddItemModalProps> = ({
                   bottom: 0,
                   zIndex: 100000,
                   background: "rgba(0, 0, 0, 0.6)",
-                  opacity: props.opacity, // Apply opacity transition to the modal-overlay
+                  opacity: props.opacity,
                 }}
               ></animated.div>
               <animated.div
@@ -61,9 +60,9 @@ const AddItemModal: React.FC<AddItemModalProps> = ({
                   padding: "20px",
                   overflowY: "auto",
                   zIndex: "999999",
-                  transform: props.transform, // Apply the slide-in transition to the modal-content
+                  transform: props.transform,
                 }}
-                onClick={handleContentClick} // Prevent closing when clicking inside the modal content
+                onClick={handleContentClick}
               >
                 <button
                   className="close-button"

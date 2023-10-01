@@ -1,5 +1,5 @@
 import React from "react";
-import styles from "../../../assets/scss/FormButton.module.scss"; // Define your button styles here
+import styles from "../../../assets/scss/FormButton.module.scss";
 
 interface FormButtonsProps {
   continueLabel: string;

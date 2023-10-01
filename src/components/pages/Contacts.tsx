@@ -14,7 +14,7 @@ import EditUserForm from "../forms/EditUserForm";
 import DeleteUserForm from "../forms/DeleteUserForm";
 
 interface DecodedToken {
-  sub: string; // Add other properties as needed
+  sub: string;
 }
 
 export default function Contacts() {
@@ -30,11 +30,11 @@ export default function Contacts() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState<{ [key: string]: boolean }>(
-    {}
+    {},
   );
   const [filteredData, setFilteredData] = useState<UserData[]>([]);
 
-  const dropdownRef = useRef(null as HTMLDivElement | null); // Type assertion
+  const dropdownRef = useRef(null as HTMLDivElement | null);
 
   const navigate = useNavigate();
 
@@ -75,34 +75,23 @@ export default function Contacts() {
   const { userId: urlUserId } = useParams();
 
   useEffect(() => {
-    if (urlUserId) {
-      setActiveUserId(urlUserId); // Set the activeUserId based on the URL parameter
-    }
-  }, [urlUserId]);
-
-  useEffect(() => {
-    // Function to handle clicks outside of the dropdown
     function handleClickOutside(event: MouseEvent) {
       if (
         dropdownRef.current &&
         !dropdownRef.current.contains(event.target as Node)
       ) {
-        // Clicked outside of the dropdown, so close all dropdowns
         setDropdownOpen({});
       }
     }
 
-    // Add the event listener to the window only if the modal is closed
     if (!isModalOpen) {
       window.addEventListener("click", handleClickOutside);
     }
 
-    // Remove the event listener when the component unmounts
     return () => {
       window.removeEventListener("click", handleClickOutside);
     };
-  }, [isModalOpen]); 
-
+  }, [isModalOpen]);
 
   useEffect(() => {
     async function fetchData() {
@@ -110,76 +99,71 @@ export default function Contacts() {
         const token = localStorage.getItem("token");
         let loggedIn = false;
         let userId: string | null = null;
-  
+
         if (token !== null) {
           const decodedToken: DecodedToken = jwtDecode(token);
           loggedIn = true;
           userId = decodedToken.sub;
           setIsLoggedIn(loggedIn);
           setLoggedInUserId(userId);
-  
-          // Log the URL and headers for loggedInUserResponse
+
           console.log("Fetching loggedInUserResponse:");
           console.log("URL:", `/api/user/${userId}`);
           console.log("Headers:", {
             Authorization: `Bearer ${token}`,
           });
         }
-  
-        // Log the URL and headers for usersResponse
         console.log("Fetching usersResponse:");
         console.log("URL:", "/api/users");
         console.log("Headers:", {
-          Authorization: `Bearer ${token || ""}`, // Provide an empty string as a default value for token
+          Authorization: `Bearer ${token || ""}`,
         });
-  
-        // Fetch usersResponse whether logged in or not
-        const usersResponse = await getUsersOrdered(token || ""); // Provide an empty string as a default value for token
-  
+
+        const usersResponse = await getUsersOrdered(token || "");
+
         let originalUsers = [...usersResponse];
-  
+
         if (loggedIn) {
           const loggedInUser = await getUserById(userId || "", token || "");
           originalUsers = [loggedInUser, ...usersResponse];
         }
-  
-        // Ensure that the first_name and last_name fields exist for each user
+
         const filteredUsers = originalUsers.reduce((uniqueUsers, user) => {
-          if (!uniqueUsers.some((u: { id: any; }) => u.id === user.id)) {
-            // Check and provide default values for first_name and last_name
+          if (!uniqueUsers.some((u: { id: any }) => u.id === user.id)) {
             const { first_name, last_name, ...rest } = user;
             const userWithNames = {
-              first_name: first_name || "First Name",
-              last_name: last_name || "Last Name",
+              first_name: first_name || "Voornaam",
+              last_name: last_name || "Achternaam",
               ...rest,
             };
             uniqueUsers.push(userWithNames);
           }
           return uniqueUsers;
         }, []);
-  
+
         setUserData(filteredUsers);
         setUserListLoaded(true);
-  
+
         setIsLoading(false);
       } catch (error) {
         setError(error);
         setIsLoading(false);
       }
     }
-  
+
     fetchData();
   }, []);
-  
+
   useEffect(() => {
     const updatedFilteredData = userData.filter((user) => {
-      const fullName = `${user.first_name || ''} ${user.last_name || ''}`;
-      const email = user.email || '';
+      const fullName = `${user.first_name || ""} ${user.last_name || ""}`;
+      const email = user.email || "";
       const keywords = searchQuery.toLowerCase().split(" ");
 
-      return keywords.every((keyword) =>
-        fullName.toLowerCase().includes(keyword) ||
-        email.toLowerCase().includes(keyword)
+      return keywords.every(
+        (keyword) =>
+          fullName.toLowerCase().includes(keyword) ||
+          email.toLowerCase().includes(keyword),
       );
     });
 
@@ -232,7 +216,7 @@ export default function Contacts() {
           onClose={() => setIsEditModalOpen(false)}
         >
           <EditUserForm
-            userId={activeUserId} // Pass activeUserId as userId
+            userId={activeUserId}
             onCancel={() => {
               setIsEditModalOpen(false);
             }}
@@ -281,158 +265,159 @@ export default function Contacts() {
                 const userItemId = user.id;
                 const loggedInId = loggedInUserId;
                 const isActive = activeUserId === userItemId;
-                const isLoggedActiveUser = isActive && loggedInId === userItemId;
+                const isLoggedActiveUser =
+                  isActive && loggedInId === userItemId;
 
-                const fullName = `${user.first_name || ''} ${user.last_name || ''}`;
-                const email = user.email || '';
+                const fullName = `${user.first_name || ""} ${
+                  user.last_name || ""
+                }`;
+                const email = user.email || "";
                 const keywords = searchQuery.toLowerCase().split(" ");
-                const matchesSearch = keywords.every((keyword) =>
-                  fullName.toLowerCase().includes(keyword) ||
-                  email.toLowerCase().includes(keyword)
+                const matchesSearch = keywords.every(
+                  (keyword) =>
+                    fullName.toLowerCase().includes(keyword) ||
+                    email.toLowerCase().includes(keyword),
                 );
 
-                // Check if the user matches the search criteria
                 if (!matchesSearch) {
-                  return null; // Skip rendering this user
+                  return null;
                 }
 
-                  return (
-                    <li
-                      key={userItemId}
-                      onClick={() => handleUserClick(userItemId)}
-                      className={`${isActive ? styles["active-user"] : ""}`}
-                      style={{
-                        backgroundColor:
-                          isActive && loggedInId === userItemId
-                            ? "gray"
-                            : "white",
-                      }}
-                    >
-                      {isLoggedIn ? (
-                        <Link
-                          to={`/contacts/user/${userItemId}`}
-                          className={`${styles["user-link"]} ${
-                            isLoggedActiveUser ? styles["logged-in"] : ""
-                          }`}
-                        >
-                          <div className={styles["profile"]}>
-                            <img
-                              src="../../../profile-placeholder.png"
-                              alt="Profile"
-                              className={styles["profile-image"]}
-                            />
-                            <div className={styles["user-info"]}>
-                              <p>
-                                {user.first_name} {user.last_name}
-                              </p>
-                              <p className={styles["profile-email"]}>
-                                {user.email}
-                              </p>
-                            </div>
+                return (
+                  <li
+                    key={userItemId}
+                    onClick={() => handleUserClick(userItemId)}
+                    className={`${isActive ? styles["active-user"] : ""}`}
+                    style={{
+                      backgroundColor:
+                        isActive && loggedInId === userItemId
+                          ? "gray"
+                          : "white",
+                    }}
+                  >
+                    {isLoggedIn ? (
+                      <Link
+                        to={`/contacts/user/${userItemId}`}
+                        className={`${styles["user-link"]} ${
+                          isLoggedActiveUser ? styles["logged-in"] : ""
+                        }`}
+                      >
+                        <div className={styles["profile"]}>
+                          <img
+                            src="../../../profile-placeholder.png"
+                            alt="Profile"
+                            className={styles["profile-image"]}
+                          />
+                          <div className={styles["user-info"]}>
+                            <p>
+                              {user.first_name} {user.last_name}
+                            </p>
+                            <p className={styles["profile-email"]}>
+                              {user.email}
+                            </p>
                           </div>
-                          {loggedInId == userItemId && (
-                            <div>
-                              <img
-                                src={ProfileIcon}
-                                alt="Profile Icon"
-                                className={styles["profile-icon"]}
-                              />
-                            </div>
-                          )}
-<div
-                            className={styles["three-dots"]}
-                            onClick={(event) => {
-                              event.stopPropagation();
-                              event.preventDefault(); // Prevent the default behavior
-
-                              // Toggle the dropdown for the specific user
-                              setDropdownOpen((prevDropdownOpen) => ({
-                                ...prevDropdownOpen,
-                                [userItemId]: !prevDropdownOpen[userItemId],
-                              }));
-                            }}
-                          >
-                            <div className={styles["dot"]}></div>{" "}
-                            <div className={styles["dot"]}></div>{" "}
-                            <div className={styles["dot"]}></div>{" "}
-                          </div>
-                          {dropdownOpen[userItemId] && (
-                            <div
-                              className={styles["dropdown-container"]}
-                              ref={dropdownRef} // Add the ref to the dropdown container
-                            >
-                              <DropdownMenu
-                                isOpen={true}
-                                onEditClick={handleEditButtonClick}
-                                onDeleteClick={handleOpenDeleteModal}
-                              />
-                            </div>
-                          )}
-                        </Link>
-                      ) : (
-                        <div
-                          className={`${styles["user-link"]} ${
-                            isLoggedActiveUser ? styles["logged-in"] : ""
-                          }`}
-                        >
-                          <div className={styles["profile"]}>
-                            <img
-                              src="../../../profile-placeholder.png"
-                              alt="Profile"
-                              className={styles["profile-image"]}
-                            />
-                            <div className={styles["user-info"]}>
-                              <p>
-                                {user.first_name} {user.last_name}
-                              </p>
-                              <p className={styles["profile-email"]}>
-                                {user.email}
-                              </p>
-                            </div>
-                          </div>
-                          {loggedInId == userItemId && (
-                            <div>
-                              <img
-                                src={ProfileIcon}
-                                alt="Profile Icon"
-                                className={styles["profile-icon"]}
-                              />
-                            </div>
-                          )}
- <div
-                            className={styles["three-dots"]}
-                            onClick={(event) => {
-                              event.stopPropagation();
-                              event.preventDefault(); // Prevent the default behavior
-
-                              // Toggle the dropdown for the specific user
-                              setDropdownOpen((prevDropdownOpen) => ({
-                                ...prevDropdownOpen,
-                                [userItemId]: !prevDropdownOpen[userItemId],
-                              }));
-                            }}
-                          >
-                            <div className={styles["dot"]}></div>{" "}
-                            <div className={styles["dot"]}></div>{" "}
-                            <div className={styles["dot"]}></div>{" "}
-                          </div>
-                          {dropdownOpen[userItemId] && (
-                            <div
-                              className={styles["dropdown-container"]}
-                              ref={dropdownRef} // Add the ref to the dropdown container
-                            >
-                              <DropdownMenu
-                                isOpen={true}
-                                onEditClick={handleEditButtonClick}
-                                onDeleteClick={handleOpenDeleteModal}
-                              />
-                            </div>
-                          )}
                         </div>
-                      )}
-                    </li>
-                  );
-                })}
+                        {loggedInId == userItemId && (
+                          <div>
+                            <img
+                              src={ProfileIcon}
+                              alt="Profile Icon"
+                              className={styles["profile-icon"]}
+                            />
+                          </div>
+                        )}
+                        <div
+                          className={styles["three-dots"]}
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            event.preventDefault();
+
+                            setDropdownOpen((prevDropdownOpen) => ({
+                              ...prevDropdownOpen,
+                              [userItemId]: !prevDropdownOpen[userItemId],
+                            }));
+                          }}
+                        >
+                          <div className={styles["dot"]}></div>{" "}
+                          <div className={styles["dot"]}></div>{" "}
+                          <div className={styles["dot"]}></div>{" "}
+                        </div>
+                        {dropdownOpen[userItemId] && (
+                          <div
+                            className={styles["dropdown-container"]}
+                            ref={dropdownRef}
+                          >
+                            <DropdownMenu
+                              isOpen={true}
+                              onEditClick={handleEditButtonClick}
+                              onDeleteClick={handleOpenDeleteModal}
+                            />
+                          </div>
+                        )}
+                      </Link>
+                    ) : (
+                      <div
+                        className={`${styles["user-link"]} ${
+                          isLoggedActiveUser ? styles["logged-in"] : ""
+                        }`}
+                      >
+                        <div className={styles["profile"]}>
+                          <img
+                            src="../../../profile-placeholder.png"
+                            alt="Profile"
+                            className={styles["profile-image"]}
+                          />
+                          <div className={styles["user-info"]}>
+                            <p>
+                              {user.first_name} {user.last_name}
+                            </p>
+                            <p className={styles["profile-email"]}>
+                              {user.email}
+                            </p>
+                          </div>
+                        </div>
+                        {loggedInId == userItemId && (
+                          <div>
+                            <img
+                              src={ProfileIcon}
+                              alt="Profile Icon"
+                              className={styles["profile-icon"]}
+                            />
+                          </div>
+                        )}
+                        <div
+                          className={styles["three-dots"]}
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            event.preventDefault();
+
+                            setDropdownOpen((prevDropdownOpen) => ({
+                              ...prevDropdownOpen,
+                              [userItemId]: !prevDropdownOpen[userItemId],
+                            }));
+                          }}
+                        >
+                          <div className={styles["dot"]}></div>{" "}
+                          <div className={styles["dot"]}></div>{" "}
+                          <div className={styles["dot"]}></div>{" "}
+                        </div>
+                        {dropdownOpen[userItemId] && (
+                          <div
+                            className={styles["dropdown-container"]}
+                            ref={dropdownRef}
+                          >
+                            <DropdownMenu
+                              isOpen={true}
+                              onEditClick={handleEditButtonClick}
+                              onDeleteClick={handleOpenDeleteModal}
+                            />
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </li>
+                );
+              })}
             </ul>
           )}
           <Outlet />
