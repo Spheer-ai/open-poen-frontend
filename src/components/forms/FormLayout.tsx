@@ -1,21 +1,23 @@
 import React from "react";
 import styles from "../../assets/scss/FormLayout.module.scss";
-import binIcon from "../../../public/bin-icon.svg";
+import binIcon from "/bin-icon.svg";
 
 interface FormLayoutProps {
-  title: string;
+  title?: string; // Make the title prop optional
   children: React.ReactNode;
   showIcon: boolean;
-  showOverviewButton?: boolean; // Add this prop
-  reloadWindow?: () => void; // Add this prop
+  showOverviewButton?: boolean;
+  reloadWindow?: () => void;
+  showHr?: boolean;
 }
 
 const FormLayout: React.FC<FormLayoutProps> = ({
-  title,
+  title, // Accept the title prop
   children,
   showIcon,
-  showOverviewButton = false, // Default value is false
+  showOverviewButton = false,
   reloadWindow,
+  showHr = true, // Add this prop
 }) => {
   return (
     <div className={styles["form-container"]}>
@@ -23,19 +25,21 @@ const FormLayout: React.FC<FormLayoutProps> = ({
         {showIcon && (
           <img src={binIcon} alt="Trash Bin" className={styles.binIcon} />
         )}
-        <h2>{title}</h2>
+        {title && <h2>{title}</h2>} {/* Display title if it is provided */}
       </div>
-      <hr />
+      {showHr && <hr />}
       {children}
       {showOverviewButton && (
-        <button
-          className={`${styles["confirm-button"]} ${
-            showOverviewButton ? "" : styles["hidden"]
-          }`}
-          onClick={reloadWindow}
-        >
-          Go back to overview
-        </button>
+        <div className={styles["button-container"]}>
+          <button
+            className={`${styles["confirm-button"]} ${
+              showOverviewButton ? "" : styles["hidden"]
+            }`}
+            onClick={reloadWindow}
+          >
+            Go back to overview
+          </button>
+        </div>
       )}
     </div>
   );

@@ -37,14 +37,15 @@ const DeleteUserForm: React.FC<DeleteUserFormProps> = ({
   return (
     <div>
       <FormLayout
-        title="Delete User"
+        title="Gebruiker verwijderen"
         showIcon={true}
         showOverviewButton={isConfirmed}
         reloadWindow={reloadWindow}
       >
         {isConfirmed ? (
           <div className={styles["confirmation-container"]}>
-            <p>User has been deleted successfully.</p>
+            <h3>Gebruiker succesvol verwijderd</h3>
+            <p>De gebruiker is verwijderd en kan geen gebruik meer maken van het account.</p>
           </div>
         ) : (
           <p>
@@ -54,8 +55,8 @@ const DeleteUserForm: React.FC<DeleteUserFormProps> = ({
         )}
         {!isConfirmed && (
           <FormButtons
-            continueLabel="Delete" // Customize the button labels here
-            cancelLabel="Cancel"
+            continueLabel="Doorgaan" // Customize the button labels here
+            cancelLabel="Annuleren"
             onContinue={handleDelete}
             onCancel={onCancel}
           />

@@ -7,17 +7,59 @@
     font-size: 14px;
     color: inherit;
     font-weight: 700;
+
+    p {
+      font-weight: 400;
+    }
   }
 
-  input[type="text"],
-  input[type="email"] {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    margin-top: 10px;
-    font-weight: 400;
+textarea,
+input[type="text"],
+input[type="email"] {
+  width: 100%;
+  padding: 10px;
+  border: solid 1px #D5D4DC;
+  border-radius: 8px;
+  margin-top: 10px;
+  font-weight: 400;
+  color: #8B849B;
+
+  &:hover {
+    background-color: #F5F8FF;
   }
+
+  &:active {
+    border-color: #8BB4FF;
+    background-color: white;
+  }
+
+  &:focus {
+    border-color: #0F62FE;
+  }
+}
+
+/* Styles for filled input */
+input[type="text"][value],
+input[type="email"][value] {
+  color: #10002E;
+}
+
+/* Styles for success state */
+input[type="text"].success,
+input[type="email"].success {
+  color: #10002E;
+  border-color: #2BAC47;
+  background-color: #F1F8F2;
+}
+
+/* Styles for error state */
+input[type="text"].error,
+input[type="email"].error {
+  color: #10002E;
+  border-color: #C83532;
+  background-color: #FBEFEF;
+}
+
 }
 
 .form-group-roles {
@@ -48,7 +90,7 @@ h3 {
 
 hr {
   border: none;
-  border-top: 1px solid #ccc;
+  border-top: solid 1px #D5D4DC;
   margin: 10px 0;
 }
 
@@ -101,4 +143,12 @@ h2 {
   z-index: 9999; /* Ensure the modal is above everything else */
 }
 
+textarea {
+  margin-top: 10px;
+  width: 100%;
+    padding: 10px;
+    border: solid 1px #D5D4DC;
+    border-radius: 8px;
+    font-weight: 400;
+}
 /* Add more styles as needed */

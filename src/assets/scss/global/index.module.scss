@@ -2,6 +2,10 @@
   body {
     margin: 0 auto;
     font-family: "Inter", sans-serif;
+
+    p {
+      color: #606060;
+    }
   }
 
   *,
@@ -20,4 +24,5 @@
   .confirmation-container {
     height: inherit;
   }
+
 }

@@ -13,7 +13,6 @@ const EditUserForm: React.FC<EditUserFormProps> = ({
 }) => {
   const { user } = useAuth();
   const [isConfirmed, setIsConfirmed] = useState(false);
-
   const [formData, setFormData] = useState({
     email: "",
     role: "",
@@ -52,10 +51,17 @@ const EditUserForm: React.FC<EditUserFormProps> = ({
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
-
+  
     if (type === "checkbox") {
-      setFormData({ ...formData, [name]: checked });
+      if (name === "role") {
+        // For role checkboxes, set the role field to the value of the checked checkbox
+        setFormData({ ...formData, role: value });
+      } else {
+        // For other checkboxes (settings), update their respective fields
+        setFormData({ ...formData, [name]: checked });
+      }
     } else {
+      // For other inputs, update the state as before
       setFormData({ ...formData, [name]: value });
     }
   };
@@ -79,8 +85,14 @@ const EditUserForm: React.FC<EditUserFormProps> = ({
     }
   };
 
-  const reloadWindow = () => {
-    window.location.reload(); // Function to reload the window
+  const handleReloadWindow = () => {
+    onCancel(); // Close the modal
+    window.location.reload(); // Reload the window
+  };
+
+  const handleCancel = () => {
+    onCancel(); // Close the modal
+    window.location.reload(); // Reload the window
   };
 
   return (
@@ -89,11 +101,12 @@ const EditUserForm: React.FC<EditUserFormProps> = ({
         title={`Bewerk ${"gebruiker"}`}
         showIcon={false}
         showOverviewButton={isConfirmed}
-        reloadWindow={reloadWindow} // Pass the showOverviewButton prop
+        reloadWindow={handleReloadWindow}
       >
         {isConfirmed ? (
           <div className={styles["confirmation-container"]}>
-            <p>Confirmation message here.</p>
+            <h3>Accountgegevens bijgewerkt</h3>
+            <p>De gegevens van de gebruiker zijn succesvol bijgewerkt.</p>
           </div>
         ) : (
           <form>
@@ -171,21 +184,20 @@ const EditUserForm: React.FC<EditUserFormProps> = ({
               </div>
             </div>
           </form>
-        )}
-        {!isConfirmed && (
-          <FormButtons
-            continueLabel="Save"
-            cancelLabel="Cancel"
-            onContinue={handleSubmit}
-            onCancel={() => {
-              onCancel();
-              reloadWindow(); // Reload when canceling the form
-            }}
-          />
-        )}
-      </FormLayout>
-    </div>
-  );
-};
-
-export default EditUserForm;
+                )}
+                {!isConfirmed && (
+                  <FormButtons
+                    continueLabel="Opslaan"
+                    cancelLabel="Annuleren"
+                    onContinue={() => {
+                      handleSubmit();
+                    }}
+                    onCancel={handleCancel} // Use the handleCancel function
+                  />
+                )}
+              </FormLayout>
+            </div>
+          );
+        };
+        
+        export default EditUserForm;

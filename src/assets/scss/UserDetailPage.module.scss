@@ -34,6 +34,12 @@
 .user-profile {
   display: flex;
   align-items: center;
+  gap: 20px;
+}
+
+.user-info {
+  display: flex;
+  gap: 20px;
 }
 
 .user-image {
@@ -68,7 +74,6 @@
 .user-role-label {
   display: flex;
   align-items: center;
-  margin-top: 10px;
 }
 
 .user-role {
@@ -120,4 +125,39 @@
   height: 100vh;
   justify-content: center;
   align-content: center;
+}
+
+.top-right-button-container {
+  position: absolute;
+  top: 20px;
+  right: 40px;
+  display: flex;
+  flex-direction: row-reverse; /* Reverse the order to have icon before text */
+  align-items: center;
+  gap: 10px; /* Gap between icon and text */
+}
+
+/* Style for the top-right buttons */
+.top-right-button {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-weight: 400;
+  font-size: 14px;
+  padding: 8px 12px;
+  border-radius: 5px;
+  transition: background-color 0.3s ease; /* Add a transition effect */
+
+  /* Optional: Add hover effect */
+  &:hover {
+    text-decoration: underline; /* Customize the hover background color */
+  }
+}
+
+/* Style for the icons within the top-right buttons */
+.top-right-button .icon {
+  width: 20px; /* Adjust icon width as needed */
+  height: 20px; /* Adjust icon height as needed */
+  fill: #fff; /* Customize icon color */
+  margin-right: 5px; /* Spacing between icon and text */
 }

@@ -7,13 +7,17 @@ import styles from "../../assets/scss/UserDetailPage.module.scss";
 import InitiativeList from "../lists/InitiativeList";
 import LoadingDot from "../animation/LoadingDot";
 import AddItemModal from "../modals/AddItemModal";
-import EditUserProfileForm from "../forms/EditUserProfileForm"; // Replace "your-path-to" with the actual path
+import ChangePasswordForm from "../forms/ChangePasswordForm";
+import EditUserProfileForm from "../forms/EditUserProfileForm";
+import EditIcon from "/edit-icon.svg";
+import ChangePasswordIcon from "/change-password-icon.svg";
+
 
 export default function UserDetailsPage() {
   const { userId } = useParams<{ userId: string }>();
   const [userDetails, setUserDetails] = useState<UserDetails | null>(null);
   const [initiatives, setInitiatives] = useState([]);
-  const [isEditFormOpen, setIsEditFormOpen] = useState(false);
+  const [activeAction, setActiveAction] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchUserDetails = async () => {
@@ -24,6 +28,8 @@ export default function UserDetailsPage() {
         console.error("Error fetching user details:", error);
       }
     };
+
+    
 
     const fetchInitiatives = async () => {
       try {
@@ -39,9 +45,18 @@ export default function UserDetailsPage() {
       fetchInitiatives();
     }
   }, [userId]);
+  
 
-  const toggleEditForm = () => {
-    setIsEditFormOpen(!isEditFormOpen);
+  const handleEditClick = () => {
+    setActiveAction("edit"); // Set active action to "edit" when Edit button is clicked
+  };
+
+  const handleChangePasswordClick = () => {
+    setActiveAction("changePassword"); // Set active action to "changePassword" when Change Password button is clicked
+  };
+
+  const handleCloseModal = () => {
+    setActiveAction(null); // Reset active action when the modal is closed
   };
 
   return (
@@ -71,11 +86,29 @@ export default function UserDetailsPage() {
                     <p className={styles["user-role"]}>{userDetails.role}</p>
                   </div>
                 </div>
-                <div
-                  className={styles["top-right-button"]}
-                  onClick={toggleEditForm}
-                >
-                  Edit
+                <div className={styles["top-right-button-container"]}>
+                  <div
+                    className={styles["top-right-button"]}
+                    onClick={handleEditClick}
+                  >
+                    <img
+                      src={EditIcon}
+                      alt="Edit"
+                      className={styles["icon"]}
+                    />
+                    Bewerken
+                  </div>
+                  <div
+                    className={styles["top-right-button"]}
+                    onClick={handleChangePasswordClick}
+                  >
+                    <img
+                      src={ChangePasswordIcon}
+                      alt="Change Password"
+                      className={styles["icon"]}
+                    />
+                    Verander wachtwoord
+                  </div>
                 </div>
               </div>
 
@@ -112,16 +145,27 @@ export default function UserDetailsPage() {
           )}
         </div>
       </div>
-      {isEditFormOpen && userId && (
-        <AddItemModal
-          isOpen={isEditFormOpen}
-          onClose={() => setIsEditFormOpen(false)}
-        >
-          <EditUserProfileForm
-            userId={userId}
-            onCancel={() => setIsEditFormOpen(false)} // Close the form when canceled
-            onContinue={() => setIsEditFormOpen(false)} // Close the form when saved
-          />
+      {activeAction === "edit" &&(
+        <AddItemModal isOpen={true} onClose={handleCloseModal}>
+            <EditUserProfileForm
+              userId={userId || null}
+              onCancel={handleCloseModal}
+              onContinue={handleCloseModal}
+              first_name={""}
+              last_name={""}
+              biography={""}
+              hidden={true}
+            />
+        </AddItemModal>
+      )}
+
+      {activeAction === "changePassword" && (
+        <AddItemModal isOpen={true} onClose={handleCloseModal}>
+            <ChangePasswordForm
+              onClose={handleCloseModal}
+              userId={userId}
+              title="Change Password"
+            />
         </AddItemModal>
       )}
     </>

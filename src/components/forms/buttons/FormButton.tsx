@@ -16,11 +16,11 @@ const FormButtons: React.FC<FormButtonsProps> = ({
 }) => {
   return (
     <div className={styles["button-container"]}>
-      <button className={styles["continue-button"]} onClick={onContinue}>
-        {continueLabel}
-      </button>
       <button className={styles["cancel-button"]} onClick={onCancel}>
         {cancelLabel}
+      </button>
+      <button className={styles["continue-button"]} onClick={onContinue}>
+        {continueLabel}
       </button>
     </div>
   );

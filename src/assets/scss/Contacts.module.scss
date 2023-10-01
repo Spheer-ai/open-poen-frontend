@@ -96,8 +96,8 @@ ul {
   background-color: #fff;
   border-right: 1px solid #dee2e6;
   height: 100vh;
-  max-width: 440px;
-  min-width: 440px;
+  max-width: 460px;
+  min-width: 460px;
   z-index: 1;
   overflow: scroll;
 }
@@ -135,4 +135,20 @@ li {
   height: 100vh;
   justify-content: center;
   align-content: center;
+}
+
+
+.dropdown-container {
+  position: relative;
+}
+
+/* Update styles for dropdown items */
+.dropdown-item {
+  padding: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s ease; /* Add a transition effect */
+}
+
+.dropdown-item:hover {
+  background-color: #f0f0f0; /* Highlight on hover */
 }

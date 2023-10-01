@@ -52,7 +52,7 @@ export const fetchUserData = async (token: string, userId: string) => {
         "Content-Type": "application/json",
       },
     });
-
+    console.log("User Details Response:", response.data);
     return response.data;
   } catch (error) {
     console.error("Failed to fetch user data:", error);
@@ -140,15 +140,47 @@ export const updateUser = async (
   userId: string,
   formData: any,
   token: string,
+  oldPassword: string, // Add oldPassword parameter
+  newPassword: string, // Add newPassword parameter
 ) => {
   try {
-    const response = await api.patch(`/user/${userId}`, formData, {
+    const response = await api.patch(`/user/${userId}`, { ...formData, oldPassword, newPassword }, {
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
     });
     return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+console.log("Making API request with URL:", apiUrl);
+export const getUserById = async (userId: string, token: string) => {
+  try {
+    const response = await api.get(`/user/${userId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getUsersOrdered = async (token: string, ordering: string = "") => {
+  try {
+    const response = await api.get("/users", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      params: {
+        ordering,
+      },
+    });
+    return response.data.users;
   } catch (error) {
     throw error;
   }

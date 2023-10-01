@@ -80,21 +80,23 @@ const AddUserForm: React.FC<{
     }
   };
 
-  const reloadWindow = () => {
-    window.location.reload(); // Function to reload the window
-  };
-
   return (
     <div>
       <FormLayout
         title="Gebruiker aanmaken"
         showIcon={false}
         showOverviewButton={isConfirmed}
-        reloadWindow={reloadWindow}
+        reloadWindow={() => {
+          onCancel();
+          setTimeout(() => {
+            window.location.reload(); // Reload after a small delay
+          }, 300); // Adjust the delay time (in milliseconds) as needed
+        }}
       >
         {isConfirmed ? (
-          <div className={styles["confirmation-container"]}>
-            <p>Confirmation message here.</p>
+          <div>
+            <h3>Gebruiker succesvol aangemaakt</h3>
+            <p>De gebruiker is succesvol aangemaakt. We hebben een e-mail met instructies voor accountactivatie naar de gebruiker gestuurd en een rol toegewezen. De gebruiker moet zijn e-mailadres verifiëren voordat hij het account kan gebruiken.</p>
           </div>
         ) : (
           <form>
@@ -115,8 +117,8 @@ const AddUserForm: React.FC<{
                 Als er nog geen gebruiker bestaat met dit e-mailadres, ontvangt
                 deze een uitnodigingsmail met daarin een link om een wachtwoord
                 aan te maken. Indien er al een gebruiker bestaat met dit
-                e-mailadres, krijgt deze gebruiker de toegewezen rechten
-                (hierover wordt geen e-mail verzonden).
+                e-mailadres, krijgt deze gebruiker de toegewezen rechten (hierover
+                wordt geen e-mail verzonden).
               </p>
               <hr />
             </div>
@@ -140,12 +142,12 @@ const AddUserForm: React.FC<{
         )}
         {!isConfirmed && (
           <FormButtons
-            continueLabel="Continue"
-            cancelLabel="Cancel"
+            continueLabel="Opslaan"
+            cancelLabel="Annuleren"
             onContinue={handleSubmit}
             onCancel={() => {
               onCancel();
-              reloadWindow(); // Reload when canceling the form
+              window.location.reload(); // Reload when canceling the form
             }}
           />
         )}
