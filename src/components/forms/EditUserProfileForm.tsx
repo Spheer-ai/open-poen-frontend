@@ -1,16 +1,15 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import FormButtons from "./buttons/FormButton";
 import FormLayout from "./FormLayout";
 import { useAuth } from "../../contexts/AuthContext";
 import { EditUserProfileFormProps } from "../../types/EditUserProfileFormType";
 import styles from "../../assets/scss/EditUserProfileForm.module.scss";
 import ImageUploader from "../elements/uploadder/ImageUploader";
+import { fetchUserProfileData, updateUserProfile } from "../middleware/Api";
 
 const EditUserProfileForm: React.FC<EditUserProfileFormProps> = ({
   userId,
   onCancel,
-  onContinue,
 }) => {
   const { user } = useAuth();
 
@@ -31,30 +30,22 @@ const EditUserProfileForm: React.FC<EditUserProfileFormProps> = ({
 
   useEffect(() => {
     if (userId) {
-      fetchUserData();
+      fetchUserProfileDataFromApi(userId, user?.token || "");
     }
   }, [userId]);
 
-  const fetchUserData = async () => {
+  const fetchUserProfileDataFromApi = async (userId: string, token: string) => {
     try {
-      const token = user?.token || "";
-      const response = await axios.get(`/api/user/${userId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
-
-      const userData = response.data;
+      const profileData = await fetchUserProfileData(token, userId);
 
       setFormData({
-        first_name: userData.first_name,
-        last_name: userData.last_name,
-        biography: userData.biography,
-        hidden: userData.hidden,
+        first_name: profileData.first_name,
+        last_name: profileData.last_name,
+        biography: profileData.biography,
+        hidden: profileData.hidden,
       });
     } catch (error) {
-      console.error("Failed to fetch user data:", error);
+      console.error("Failed to fetch user profile data:", error);
     }
   };
 
@@ -70,14 +61,14 @@ const EditUserProfileForm: React.FC<EditUserProfileFormProps> = ({
     try {
       const token = user?.token || "";
 
-      const response = await axios.patch(`/api/user/${userId}`, formData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
+      if (!userId) {
+        console.error("userId is null");
+        return;
+      }
 
-      console.log("User profile updated:", response.data);
+      const response = await updateUserProfile(userId, formData, token);
+
+      console.log("User profile updated:", response);
 
       setIsConfirmed(true);
       setIsSuccess(true);
@@ -88,10 +79,6 @@ const EditUserProfileForm: React.FC<EditUserProfileFormProps> = ({
       setIsError(true);
       setIsSuccess(false);
     }
-  };
-
-  const reloadWindow = () => {
-    window.location.reload();
   };
 
   const handleCancel = () => {

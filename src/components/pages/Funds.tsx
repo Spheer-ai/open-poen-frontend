@@ -23,7 +23,7 @@ export default function Funds() {
     <>
       <div className={styles["side-panel"]}>
         <TopNavigationBar
-          title="Funds"
+          title="Initiatieven"
           showSettings={true}
           showCta={true}
           onSettingsClick={() => {}}

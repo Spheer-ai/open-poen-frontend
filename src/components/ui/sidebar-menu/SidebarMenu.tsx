@@ -1,8 +1,8 @@
-import { Link, useLocation, Outlet } from "react-router-dom";
+import React from "react";
+import { Link, useLocation } from "react-router-dom";
 import styles from "../../../assets/scss/SidebarMenu.module.scss";
 import { logoutUser } from "../../middleware/Api";
 import { SidebarMenuProps } from "../../../types/SidebarMenuTypes";
-import React from "react";
 
 const SidebarMenu = ({ isAuthenticated, onLogout }: SidebarMenuProps) => {
   const location = useLocation();
@@ -18,7 +18,7 @@ const SidebarMenu = ({ isAuthenticated, onLogout }: SidebarMenuProps) => {
 
   const authenticatedLinks = [
     { name: "Transactions", icon: "transactions.svg", tooltip: "Transacties" },
-    { name: "Sponsors", icon: "sponsors.svg", tooltip: "Sponsoren" },
+    { name: "Sponsors", icon: "sponsors.svg", tooltip: "Sponsors" },
   ];
 
   const handleLogout = async () => {

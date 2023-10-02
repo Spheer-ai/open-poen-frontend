@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import styles from "../../assets/scss/EditUserForm.module.scss";
 import FormButtons from "./buttons/FormButton";
 import FormLayout from "./FormLayout";
 import { useAuth } from "../../contexts/AuthContext";
 import { EditUserFormProps } from "../../types/EditUserFormType";
+import { fetchUserData, updateUserProfile } from "../middleware/Api";
 
 const EditUserForm: React.FC<EditUserFormProps> = ({ userId, onCancel }) => {
   const { user } = useAuth();
@@ -18,21 +18,13 @@ const EditUserForm: React.FC<EditUserFormProps> = ({ userId, onCancel }) => {
 
   useEffect(() => {
     if (userId) {
-      fetchUserData();
+      fetchUserDataFromApi(userId, user?.token || "");
     }
   }, [userId]);
 
-  const fetchUserData = async () => {
+  const fetchUserDataFromApi = async (userId: string, token: string) => {
     try {
-      const token = user?.token || "";
-      const response = await axios.get(`/api/user/${userId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
-
-      const userData = response.data;
+      const userData = await fetchUserData(token, userId);
 
       setFormData({
         email: userData.email,
@@ -63,18 +55,18 @@ const EditUserForm: React.FC<EditUserFormProps> = ({ userId, onCancel }) => {
     try {
       const token = user?.token || "";
 
-      const response = await axios.patch(`/api/user/${userId}`, formData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
+      if (!userId) {
+        console.error("userId is null");
+        return;
+      }
 
-      console.log("User updated:", response.data);
+      const response = await updateUserProfile(userId, formData, token);
+
+      console.log("User profile updated:", response);
 
       setIsConfirmed(true);
     } catch (error) {
-      console.error("Failed to update user:", error);
+      console.error("Failed to update user profile:", error);
     }
   };
 

@@ -141,13 +141,12 @@ li {
   position: relative;
 }
 
-/* Update styles for dropdown items */
 .dropdown-item {
   padding: 10px;
   cursor: pointer;
-  transition: background-color 0.3s ease; /* Add a transition effect */
+  transition: background-color 0.3s ease;
 }
 
 .dropdown-item:hover {
-  background-color: #f0f0f0; /* Highlight on hover */
+  background-color: #f0f0f0;
 }

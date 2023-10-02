@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import React, { ReactNode } from "react";
 import styles from "../../../assets/scss/FullWidthLayout.module.scss";
 
 interface FullWidthLayoutProps {

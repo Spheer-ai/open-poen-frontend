@@ -38,13 +38,11 @@
     }
   }
 
-  /* Styles for filled input */
   input[type="text"][value],
   input[type="email"][value] {
     color: #10002e;
   }
 
-  /* Styles for success state */
   input[type="text"].success,
   input[type="email"].success {
     color: #10002e;
@@ -52,7 +50,6 @@
     background-color: #f1f8f2;
   }
 
-  /* Styles for error state */
   input[type="text"].error,
   input[type="email"].error {
     color: #10002e;
@@ -127,19 +124,17 @@ h2 {
   font-size: 22px;
 }
 
-/* EditUserProfileForm.module.scss */
-
 .modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black overlay */
+  background-color: rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 9999; /* Ensure the modal is above everything else */
+  z-index: 9999;
 }
 
 textarea {
@@ -150,4 +145,3 @@ textarea {
   border-radius: 8px;
   font-weight: 400;
 }
-/* Add more styles as needed */

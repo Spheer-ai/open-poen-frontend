@@ -62,7 +62,7 @@ export const fetchUserData = async (token: string, userId: string) => {
 
 export const fetchUserDetails = async (userId: string, token: string) => {
   try {
-    const response = await api.get(`/api/user/${userId}`, {
+    const response = await api.get(`/user/${userId}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -206,10 +206,42 @@ export const getUsersOrdered = async (token: string, ordering: string = "") => {
 
 export const fetchInitiatives = async () => {
   try {
-    const response = await api.get(`/api/initiatives`);
+    const response = await api.get(`/initiatives`);
     return response.data.initiatives;
   } catch (error) {
     console.error("Error fetching initiatives:", error);
     throw error;
   }
 };
+
+export const updateUserProfile = async (userId: string, formData: any, token: string) => {
+  try {
+    const response = await api.patch(`/user/${userId}`, formData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Failed to update user profile:", error);
+    throw error;
+  }
+};
+
+export const fetchUserProfileData = async (token: string, userId: string) => {
+  try {
+    const response = await api.get(`/user/${userId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error("Failed to fetch user profile data:", error);
+    throw error;
+  }
+};
+

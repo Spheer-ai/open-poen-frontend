@@ -38,10 +38,6 @@ export default function AppRoutes() {
     navigate("/funds");
   };
 
-  const closeModal = () => {
-    setShowLoginModal(false);
-  };
-
   return (
     <div className={styles["app-container"]}>
       <SidebarMenu isAuthenticated={isAuthenticated} onLogout={handleLogout} />

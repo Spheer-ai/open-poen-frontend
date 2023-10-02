@@ -1,17 +1,15 @@
-.login-container {
-}
 .login-modal-backdrop {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
-  z-index: 999; /* Ensure the backdrop is above other content */
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 999;
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer; /* Make the backdrop clickable */
+  cursor: pointer;
 }
 
 .login-box {

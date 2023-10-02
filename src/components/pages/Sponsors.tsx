@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import TopNavigationBar from "../ui/top-navigation-bar/TopNavigationBar";
 import AddItemModal from "../modals/AddItemModal";
 import styles from "../../assets/scss/Sponsors.module.scss";

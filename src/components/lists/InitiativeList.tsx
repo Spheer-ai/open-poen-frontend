@@ -1,3 +1,4 @@
+import React from "react";
 import styles from "../../assets/scss//InitiativeList.module.scss";
 
 export default function InitiativeList({ initiatives }) {

@@ -1,3 +1,4 @@
+import React from "react";
 import styles from "../../../assets/scss/LoadingSkeleton.module.scss";
 
 const LoadingSkeleton = () => {

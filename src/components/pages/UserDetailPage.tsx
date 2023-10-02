@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import { useParams } from "react-router-dom";
+import { useAuth } from "../../contexts/AuthContext";
 import UserDetails from "../../types/UserTypes";
 import ProfilePlaceholder from "/profile-placeholder.png";
 import styles from "../../assets/scss/UserDetailPage.module.scss";
@@ -11,37 +11,42 @@ import ChangePasswordForm from "../forms/ChangePasswordForm";
 import EditUserProfileForm from "../forms/EditUserProfileForm";
 import EditIcon from "/edit-icon.svg";
 import ChangePasswordIcon from "/change-password-icon.svg";
+import { fetchUserDetails, fetchInitiatives } from "../middleware/Api";
 
 export default function UserDetailsPage() {
+  const { user: authUser } = useAuth();
+  const token = authUser?.token;
   const { userId } = useParams<{ userId: string }>();
   const [userDetails, setUserDetails] = useState<UserDetails | null>(null);
   const [initiatives, setInitiatives] = useState([]);
   const [activeAction, setActiveAction] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchUserDetails = async () => {
-      try {
-        const response = await axios.get(`/api/user/${userId}`);
-        setUserDetails(response.data);
-      } catch (error) {
-        console.error("Error fetching user details:", error);
+    const fetchUserData = async () => {
+      if (userId && token) {
+        try {
+          const userResponse = await fetchUserDetails(userId, token);
+          setUserDetails(userResponse);
+        } catch (error) {
+          console.error("Error fetching user details:", error);
+        }
       }
     };
 
-    const fetchInitiatives = async () => {
+    const fetchUserInitiatives = async () => {
       try {
-        const response = await axios.get(`/api/initiatives`);
-        setInitiatives(response.data.initiatives);
+        const initiativesResponse = await fetchInitiatives();
+        setInitiatives(initiativesResponse);
       } catch (error) {
         console.error("Error fetching initiatives:", error);
       }
     };
 
     if (userId) {
-      fetchUserDetails();
-      fetchInitiatives();
+      fetchUserData();
+      fetchUserInitiatives();
     }
-  }, [userId]);
+  }, [userId, token]);
 
   const handleEditClick = () => {
     setActiveAction("edit");
@@ -69,18 +74,20 @@ export default function UserDetailsPage() {
                     className={styles["user-image circular"]}
                   />
                 </div>
-                <div className={styles["user-info"]}>
-                  <p className={styles["user-name"]}>
-                    {userDetails.first_name} {userDetails.last_name}
-                  </p>
-                  {userDetails.email && (
-                    <p className={styles["user-email"]}>
-                      Email: {userDetails.email}
+                <div className={styles["user-container"]}>
+                  <div className={styles["user-info"]}>
+                    <p className={styles["user-name"]}>
+                      {userDetails.first_name} {userDetails.last_name}
                     </p>
-                  )}
-                  <div className={styles["user-role-label"]}>
-                    <p className={styles["user-role"]}>{userDetails.role}</p>
+                    {userDetails.email && (
+                      <p className={styles["user-email"]}>
+                        {userDetails.email}
+                      </p>
+                    )}
                   </div>
+                </div>
+                <div className={styles["user-role-label"]}>
+                  <p className={styles["user-role"]}>{userDetails.role}</p>
                 </div>
                 <div className={styles["top-right-button-container"]}>
                   <div

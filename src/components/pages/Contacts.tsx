@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Link, Outlet, useNavigate, useParams } from "react-router-dom";
+import { Link, Outlet, useNavigate } from "react-router-dom";
 import { getUserById, getUsersOrdered } from "../middleware/Api";
 import jwtDecode from "jwt-decode";
 import TopNavigationBar from "../ui/top-navigation-bar/TopNavigationBar";
@@ -72,8 +72,6 @@ export default function Contacts() {
     setIsDeleteModalOpen(true);
   };
 
-  const { userId: urlUserId } = useParams();
-
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (
@@ -108,13 +106,11 @@ export default function Contacts() {
           setLoggedInUserId(userId);
 
           console.log("Fetching loggedInUserResponse:");
-          console.log("URL:", `/api/user/${userId}`);
           console.log("Headers:", {
             Authorization: `Bearer ${token}`,
           });
         }
         console.log("Fetching usersResponse:");
-        console.log("URL:", "/api/users");
         console.log("Headers:", {
           Authorization: `Bearer ${token || ""}`,
         });
@@ -129,7 +125,7 @@ export default function Contacts() {
         }
 
         const filteredUsers = originalUsers.reduce((uniqueUsers, user) => {
-          if (!uniqueUsers.some((u: { id: any }) => u.id === user.id)) {
+          if (!uniqueUsers.some((u: { id }) => u.id === user.id)) {
             const { first_name, last_name, ...rest } = user;
             const userWithNames = {
               first_name: first_name || "Voornaam",

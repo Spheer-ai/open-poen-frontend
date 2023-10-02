@@ -31,13 +31,12 @@
   }
 
   .form-content {
-    /* Add any styles for the content area */
-    flex: 1; /* This will make it expand to fill available space */
+    flex: 1;
   }
 
   .form-footer {
-    text-align: center; /* You can adjust text alignment as needed */
-    margin-top: 20px; /* Add margin to separate the button from the content */
+    text-align: center;
+    margin-top: 20px;
   }
 }
 

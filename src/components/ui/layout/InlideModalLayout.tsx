@@ -1,5 +1,4 @@
-import React from "react";
-import { ReactNode } from "react";
+import React, { ReactNode } from "react";
 import { NavigateFunction } from "react-router-dom";
 import styles from "../../../assets/scss/InlineModalLayout.module.scss";
 
@@ -16,7 +15,7 @@ export default function InlineModalLayout({
     <div className={styles["inline-modal-layout"]}>
       {React.Children.map(children, (child) =>
         React.isValidElement(child)
-          ? React.cloneElement(child as React.ReactElement<any>, { navigate })
+          ? React.cloneElement(child as React.ReactElement, { navigate })
           : child,
       )}
     </div>
