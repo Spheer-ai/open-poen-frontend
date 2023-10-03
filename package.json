@@ -4,11 +4,12 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "clear-cache": "rm -rf .vite",
     "dev": "vite",
     "build": "tsc && vite build",
     "start": "vite preview",
-    "deploy-dev": "cross-env VITE_APP_ENV=development vite build --mode development",
-    "deploy-prod": "cross-env VITE_APP_ENV=production vite build",
+    "deploy-dev": "cross-env VITE_APP_ENV=development vite build --mode development --debug",
+    "deploy-prod": "cross-env VITE_APP_ENV=production vite build --mode production --debug",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "format": "prettier --write 'src/**/*.{ts,tsx,js,jsx,json,css,scss,md}'"
