@@ -125,28 +125,6 @@ export default function Contacts() {
           originalUsers = [loggedInUser, ...usersResponse];
         }
 
-        console.log("Fetching usersResponse:");
-        console.log("URL:", "/api/users");
-        console.log("Headers:", {
-          Authorization: `Bearer ${token || ""}`,
-        });
-
-        const usersResponse = await getUsersOrdered(token || "");
-
-        const sortedUsers = loggedIn
-          ? [await getUserById(userId || "", token || ""), ...usersResponse]
-          : usersResponse;
-
-        const filteredUsers = sortedUsers.reduce((uniqueUsers, user) => {
-          if (!uniqueUsers.some((u) => u.id === user.id)) {
-            uniqueUsers.push(user);
-          }
-          return uniqueUsers;
-        }, []);
-
-        setUserData(filteredUsers);
-        setUserListLoaded(true);
-
         const filteredUsers = originalUsers.reduce((uniqueUsers, user) => {
           if (!uniqueUsers.some((u: { id }) => u.id === user.id)) {
             const { first_name, last_name, ...rest } = user;
