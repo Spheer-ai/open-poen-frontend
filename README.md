@@ -32,6 +32,9 @@ npm -v
 
 `npm install`
 
+## Set an .env file
+1. Project configuration requires an .env file to be present in the repo root. Remove the .example suffix from the .env.example file and change these values if neccesary.
+
 ## Configure Vite (if necessary)
 1. The project uses Vite for building the frontend and handling development. If you need to configure Vite settings, you can do so by editing the `vite.config.ts` file. In this file, you can specify the following:
     - **Host:** The development server's host is set to '127.0.0.1' in the Vite configuration.
