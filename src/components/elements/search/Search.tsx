@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import SearchIcon from "/search-icon.svg";
 import styles from "../../../assets/scss/Search.module.scss";
 

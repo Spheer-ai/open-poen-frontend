@@ -10,6 +10,7 @@ import InlineModalLayout from "../components/ui/layout/InlideModalLayout";
 import styles from "../assets/scss/Routes.module.scss";
 import UserDetailsPage from "../components/pages/UserDetailPage";
 import EditUserForm from "../components/forms/EditUserForm";
+import React from "react";
 
 export default function AppRoutes() {
   const navigate = useNavigate();
@@ -35,10 +36,6 @@ export default function AppRoutes() {
   const handleLogout = () => {
     setIsAuthenticated(false);
     navigate("/funds");
-  };
-
-  const closeModal = () => {
-    setShowLoginModal(false);
   };
 
   return (
@@ -112,7 +109,7 @@ export default function AppRoutes() {
               isAuthenticated ? (
                 <Navigate to="/contacts" />
               ) : (
-                <Login onLogin={handleLogin} onClose={closeModal} />
+                <Login onLogin={handleLogin} />
               )
             }
           />

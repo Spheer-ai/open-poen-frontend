@@ -1,3 +1,4 @@
+import React from "react";
 import styles from "../../../assets/scss/DeleteUser.module.scss";
 
 const DeleteUser = ({ userId, onDelete, onCancel }) => {

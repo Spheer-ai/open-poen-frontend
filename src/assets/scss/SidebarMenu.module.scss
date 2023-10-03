@@ -1,11 +1,9 @@
-/* SidebarMenu.css */
 .sidebar-menu {
   display: flex;
   flex-direction: column;
   height: 100%;
   border-right: 1px solid rgba(0, 0, 0, 0.08);
   box-shadow: -1px 0 0 rgba(0, 0, 0, 0.08);
-  z-index: 500;
 }
 
 .top-section {
@@ -34,6 +32,8 @@
   align-items: center;
   width: 40px;
   height: 40px;
+  transition: border-color 0.3s ease;
+  border-color: transparent;
 }
 
 .middle-section li:hover::after {
@@ -48,6 +48,7 @@
   left: calc(100% + 10px);
   transform: translateY(-50%);
   white-space: nowrap;
+  z-index: 10;
 }
 
 .middle-section a {
@@ -67,6 +68,11 @@
 }
 
 .middle-section li.active {
+  border: 1px solid #d2d2d2;
+  border-radius: 8px;
+}
+
+.middle-section li:active {
   border: 1px solid #d2d2d2;
   border-radius: 8px;
 }

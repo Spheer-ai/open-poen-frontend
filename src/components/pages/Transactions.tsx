@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import TopNavigationBar from "../ui/top-navigation-bar/TopNavigationBar";
 import AddItemModal from "../modals/AddItemModal";
 import styles from "../../assets/scss/Transactions.module.scss";
@@ -8,20 +8,22 @@ export default function Transactions() {
 
   const handleCtaClick = () => {
     setIsModalOpen(true);
+    console.log("Opening modal in Transactions component");
   };
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
+    console.log("Closing modal in Transactions component");
   };
 
   const handleSearch = (query) => {
-    console.log("Search query in UserDetailsPage:", query);
+    console.log("Search query in Transactions component:", query);
   };
 
   return (
     <div className={styles["side-panel"]}>
       <TopNavigationBar
-        title="Transactions"
+        title="Transacties"
         showSettings={true}
         showCta={true}
         onSettingsClick={() => {}}

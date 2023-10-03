@@ -1,3 +1,4 @@
+import React from "react";
 import styles from "../../../assets/scss/InitiativeItem.module.scss";
 
 export default function InitiativeItem({ initiative }) {

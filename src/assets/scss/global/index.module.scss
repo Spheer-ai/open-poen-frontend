@@ -2,6 +2,10 @@
   body {
     margin: 0 auto;
     font-family: "Inter", sans-serif;
+
+    p {
+      color: #606060;
+    }
   }
 
   *,
@@ -15,5 +19,9 @@
   ul {
     margin-top: -20px;
     padding: 20px;
+  }
+
+  .confirmation-container {
+    height: inherit;
   }
 }

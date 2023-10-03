@@ -1,3 +1,4 @@
+import React from "react";
 import styles from "../../assets/scss/LoadingDot.module.scss";
 
 const LoadingDot = ({ delay }) => {

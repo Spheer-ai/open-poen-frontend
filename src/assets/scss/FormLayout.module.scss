@@ -3,6 +3,12 @@
   flex-direction: column;
   padding: 0px 20px 0px 20px;
 
+  .form-header {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+  }
+
   hr {
     background-color: grey;
     display: block;
@@ -14,4 +20,33 @@
     line-height: 56px;
     margin: 0;
   }
+  .button-container {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    display: flex;
+    justify-content: flex-end;
+    padding: 10px;
+    width: 100%;
+  }
+
+  .form-content {
+    flex: 1;
+  }
+
+  .form-footer {
+    text-align: center;
+    margin-top: 20px;
+  }
+}
+
+.confirm-button {
+  background-color: #007bff !important;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 20px;
+  cursor: pointer;
+  display: flex;
+  justify-content: flex-end;
 }

@@ -1,6 +1,5 @@
-import styles from "../../../assets/scss/AppLayout.scss";
-
-import { ReactNode } from "react";
+import styles from "../../../assets/scss/AppLayout.module.scss";
+import React, { ReactNode } from "react";
 
 interface AppLayoutProps {
   children: ReactNode;

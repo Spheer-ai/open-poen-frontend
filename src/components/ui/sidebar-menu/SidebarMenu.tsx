@@ -1,3 +1,4 @@
+import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import styles from "../../../assets/scss/SidebarMenu.module.scss";
 import { logoutUser } from "../../middleware/Api";
@@ -6,13 +7,17 @@ import { SidebarMenuProps } from "../../../types/SidebarMenuTypes";
 const SidebarMenu = ({ isAuthenticated, onLogout }: SidebarMenuProps) => {
   const location = useLocation();
 
+  const isLinkActive = (pathname: string) => {
+    return location.pathname.startsWith(`/${pathname}`);
+  };
+
   const linkData = [
-    { name: "Funds", icon: "funds.svg", tooltip: "Funds" },
-    { name: "Contacts", icon: "contacts.svg", tooltip: "Contacts" },
+    { name: "Funds", icon: "funds.svg", tooltip: "Initiatieven" },
+    { name: "Contacts", icon: "contacts.svg", tooltip: "Gebruikers" },
   ];
 
   const authenticatedLinks = [
-    { name: "Transactions", icon: "transactions.svg", tooltip: "Transactions" },
+    { name: "Transactions", icon: "transactions.svg", tooltip: "Transacties" },
     { name: "Sponsors", icon: "sponsors.svg", tooltip: "Sponsors" },
   ];
 
@@ -46,8 +51,8 @@ const SidebarMenu = ({ isAuthenticated, onLogout }: SidebarMenuProps) => {
             <li
               key={linkInfo.name}
               className={
-                location.pathname === `/${linkInfo.name.toLowerCase()}`
-                  ? "active"
+                isLinkActive(linkInfo.name.toLowerCase())
+                  ? styles["active"]
                   : ""
               }
               data-tooltip={linkInfo.tooltip}
@@ -66,8 +71,8 @@ const SidebarMenu = ({ isAuthenticated, onLogout }: SidebarMenuProps) => {
               <li
                 key={linkInfo.name}
                 className={
-                  location.pathname === `/${linkInfo.name.toLowerCase()}`
-                    ? "active"
+                  isLinkActive(linkInfo.name.toLowerCase())
+                    ? styles["active"]
                     : ""
                 }
                 data-tooltip={linkInfo.tooltip}

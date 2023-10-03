@@ -9,7 +9,7 @@
 
   .search-input {
     flex: 1;
-    border: none;
+    border: none !important;
     background: transparent;
     color: var(--neutral-neutral-700, var(--neutral-700, #6a7178));
     font-family: Inter, sans-serif;
@@ -19,7 +19,7 @@
     line-height: 20px;
     letter-spacing: -0.001px;
     outline: none;
-    margin-top: 0;
+    margin-top: 0 !important;
   }
 }
 

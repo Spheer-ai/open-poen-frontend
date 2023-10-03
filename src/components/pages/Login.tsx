@@ -1,17 +1,14 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { useAuth } from "../../contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
 import styles from "../../assets/scss/Login.module.scss";
 
-export default function Login({
-  onLogin,
-}: {
-  onLogin: () => void;
-  onClose: () => void;
-}) {
+export default function Login({ onLogin }: { onLogin: () => void }) {
   const { login, isLoading } = useAuth();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   const handleLogin = async () => {
     try {
@@ -28,8 +25,17 @@ export default function Login({
       );
     }
   };
+
+  const handleBackdropClick = () => {
+    navigate("/funds");
+  };
+
   return (
     <div className={styles["login-modal"]}>
+      <div
+        className={styles["login-modal-backdrop"]}
+        onClick={handleBackdropClick}
+      ></div>
       <div className={styles["login-modal-content"]}>
         <div className={styles["login-container"]}>
           <div className={styles["login-box"]}>
