@@ -213,7 +213,11 @@ export const fetchInitiatives = async () => {
   }
 };
 
-export const updateUserProfile = async (userId: string, formData: any, token: string) => {
+export const updateUserProfile = async (
+  userId: string,
+  formData: any,
+  token: string,
+) => {
   try {
     const response = await api.patch(`/user/${userId}`, formData, {
       headers: {
@@ -243,4 +247,3 @@ export const fetchUserProfileData = async (token: string, userId: string) => {
     throw error;
   }
 };
-
