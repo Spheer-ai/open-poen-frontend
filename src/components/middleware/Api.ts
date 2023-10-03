@@ -245,3 +245,31 @@ export const fetchUserProfileData = async (token: string, userId: string) => {
   }
 };
 
+export const getUserById = async (userId: string, token: string) => {
+  try {
+    const response = await api.get(`/user/${userId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getUsersOrdered = async (token: string, ordering: string = "") => {
+  try {
+    const response = await api.get("/users", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      params: {
+        ordering,
+      },
+    });
+    return response.data.users;
+  } catch (error) {
+    throw error;
+  }
+};
