@@ -47,9 +47,9 @@ export default function AppRoutes() {
           <Route
             path="/"
             element={
-                <InlineModalLayout navigate={navigate}>
-                  {<Funds />}
-                </InlineModalLayout>
+              <InlineModalLayout navigate={navigate}>
+                {<Funds />}
+              </InlineModalLayout>
             }
           />
           <Route
@@ -80,20 +80,19 @@ export default function AppRoutes() {
             path="/funds/*"
             element={
               <InlineModalLayout navigate={navigate}>
-              {<Funds />}
-              <Routes>
-
-                <Route path="/detail" element={<FundDetail />} />
-              </Routes>
-            </InlineModalLayout>
+                {<Funds />}
+                <Routes>
+                  <Route path="/detail" element={<FundDetail />} />
+                </Routes>
+              </InlineModalLayout>
             }
           />
           <Route
             path="/funds/:action"
             element={
               <InlineModalLayout navigate={navigate}>
-              {<Funds />}
-            </InlineModalLayout>
+                {<Funds />}
+              </InlineModalLayout>
             }
           />
 

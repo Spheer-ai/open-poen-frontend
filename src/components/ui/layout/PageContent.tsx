@@ -8,22 +8,28 @@ interface PageContentProps {
   onClose: () => void;
 }
 
-export default function PageContent({ children, showContent, onClose }: PageContentProps) {
+export default function PageContent({
+  children,
+  showContent,
+  onClose,
+}: PageContentProps) {
   useEffect(() => {
-    const handleResize = () => {
-    
-    };
+    const handleResize = () => {};
 
-    window.addEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
 
     return () => {
-      window.removeEventListener('resize', handleResize);
+      window.removeEventListener("resize", handleResize);
     };
   }, []);
 
   return (
-    <div className={`${styles["page-content-temp"]} ${showContent ? '' : styles["mobile-hidden"]}`}>
-    <Breadcrumb />
+    <div
+      className={`${styles["page-content-temp"]} ${
+        showContent ? "" : styles["mobile-hidden"]
+      }`}
+    >
+      <Breadcrumb />
       {children}
       {showContent && (
         <button onClick={onClose} className={styles["close-button"]}>

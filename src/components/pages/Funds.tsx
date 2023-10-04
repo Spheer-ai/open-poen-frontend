@@ -5,8 +5,6 @@ import PageContent from "../ui/layout/PageContent";
 import styles from "../../assets/scss/Funds.module.scss";
 import AddFundModal from "../modals/AddFundMobile";
 
-
-
 export default function Funds() {
   const navigate = useNavigate();
   const { action } = useParams(); // Get the route parameter "action"
@@ -17,12 +15,12 @@ export default function Funds() {
 
   const isMobileScreen = window.innerWidth < 768;
 
-useEffect(() => {
-  console.log("action:", action); // Log the action parameter
-  if (action === "add-funds") {
-    setIsModalOpen(true);
-  }
-}, [action]);
+  useEffect(() => {
+    console.log("action:", action); // Log the action parameter
+    if (action === "add-funds") {
+      setIsModalOpen(true);
+    }
+  }, [action]);
 
   const handleCloseModal = () => {
     setIsBlockingInteraction(true); // Block interactions during timeout
@@ -75,7 +73,11 @@ useEffect(() => {
       </div>
 
       {isMobileScreen ? (
-        <AddFundModal isOpen={isModalOpen} onClose={handleToggleAddFundModal} isBlockingInteraction={isBlockingInteraction} />
+        <AddFundModal
+          isOpen={isModalOpen}
+          onClose={handleToggleAddFundModal}
+          isBlockingInteraction={isBlockingInteraction}
+        />
       ) : (
         <>
           <h2>Add Fund</h2>
@@ -92,7 +94,10 @@ useEffect(() => {
 
       {/* Conditionally render PageContent */}
       {showPageContent && (
-        <PageContent showContent={showPageContent} onClose={handleClosePageContent}>
+        <PageContent
+          showContent={showPageContent}
+          onClose={handleClosePageContent}
+        >
           {/* Add the content you want to show here */}
         </PageContent>
       )}

@@ -1,21 +1,16 @@
+.breadcrumbList {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  align-items: center;
+}
 
-    
-    .breadcrumbList {
-        list-style: none;
-        padding: 0;
-        display: flex;
-        align-items: center;
+.breadcrumbItem a {
+  margin-right: 5px;
+  color: white !important;
+}
 
-      }
-      
-      .breadcrumbItem a {
-        margin-right: 5px;
-        color: white !important;
-      }
-      
-      .breadcrumbItem.active a{
-        font-weight: bold;
-        color: red !important;
-      }
-
-  
+.breadcrumbItem.active a {
+  font-weight: bold;
+  color: red !important;
+}

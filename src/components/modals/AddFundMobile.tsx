@@ -7,7 +7,11 @@ interface AddFundModalProps {
   isBlockingInteraction: boolean; // Add this prop
 }
 
-const AddFundModal: React.FC<AddFundModalProps> = ({ isOpen, onClose,  isBlockingInteraction }) => {
+const AddFundModal: React.FC<AddFundModalProps> = ({
+  isOpen,
+  onClose,
+  isBlockingInteraction,
+}) => {
   const [modalIsOpen, setModalIsOpen] = useState(isOpen);
 
   useEffect(() => {
@@ -50,7 +54,10 @@ const AddFundModal: React.FC<AddFundModalProps> = ({ isOpen, onClose,  isBlockin
         </div>
         <div className={styles.formGroup}>
           <label className={styles.label}>Description:</label>
-          <textarea className={styles.description} placeholder="Enter fund description"></textarea>
+          <textarea
+            className={styles.description}
+            placeholder="Enter fund description"
+          ></textarea>
         </div>
         <div className={styles.formGroup}>
           <label className={styles.label}>Amount:</label>
@@ -58,10 +65,7 @@ const AddFundModal: React.FC<AddFundModalProps> = ({ isOpen, onClose,  isBlockin
         </div>
         {/* Buttons */}
         <div className={styles.buttonContainer}>
-          <button
-            onClick={handleClose}
-            className={styles.cancelButton}
-          >
+          <button onClick={handleClose} className={styles.cancelButton}>
             Cancel
           </button>
           <button className={styles.saveButton}>Save</button>
