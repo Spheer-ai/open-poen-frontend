@@ -1,9 +1,18 @@
 .side-panel {
   background-color: #fff;
   border-right: 1px solid #dee2e6;
-  height: 100vh;
+  height: 100%;
   max-width: 460px;
   min-width: 460px;
   z-index: 1;
   overflow: scroll;
+}
+
+.temp-container {
+  position: relative;
+  display: flex;
+  height: 100%;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
 }

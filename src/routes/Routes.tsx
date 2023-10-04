@@ -1,5 +1,6 @@
+import React from "react";
 import { useState, useEffect } from "react";
-import SidebarMenu from "../components/ui/sidebar-menu/SidebarMenu";
+import SidebarMenu from "../components/ui/layout/SidebarMenu";
 import { Routes, Route, useNavigate, Navigate } from "react-router-dom";
 import Contacts from "../components/pages/Contacts";
 import Funds from "../components/pages/Funds";
@@ -10,7 +11,7 @@ import InlineModalLayout from "../components/ui/layout/InlideModalLayout";
 import styles from "../assets/scss/Routes.module.scss";
 import UserDetailsPage from "../components/pages/UserDetailPage";
 import EditUserForm from "../components/forms/EditUserForm";
-import React from "react";
+import FundDetail from "../components/pages/FundDetail";
 
 export default function AppRoutes() {
   const navigate = useNavigate();
@@ -46,9 +47,9 @@ export default function AppRoutes() {
           <Route
             path="/"
             element={
-              <InlineModalLayout navigate={navigate}>
-                {<Funds />}
-              </InlineModalLayout>
+                <InlineModalLayout navigate={navigate}>
+                  {<Funds />}
+                </InlineModalLayout>
             }
           />
           <Route
@@ -76,13 +77,26 @@ export default function AppRoutes() {
             }
           />
           <Route
-            path="/funds"
+            path="/funds/*"
             element={
               <InlineModalLayout navigate={navigate}>
-                {<Funds />}
-              </InlineModalLayout>
+              {<Funds />}
+              <Routes>
+
+                <Route path="/detail" element={<FundDetail />} />
+              </Routes>
+            </InlineModalLayout>
             }
           />
+          <Route
+            path="/funds/:action"
+            element={
+              <InlineModalLayout navigate={navigate}>
+              {<Funds />}
+            </InlineModalLayout>
+            }
+          />
+
           {isAuthenticated && (
             <>
               <Route
