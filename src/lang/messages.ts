@@ -1,5 +1,5 @@
 // messages.js
-import { createIntl } from 'react-intl';
+import { createIntl } from "react-intl";
 
 // Create an empty object to store messages globally
 const messages = {};
@@ -11,7 +11,7 @@ export const loadMessages = async (locale: string) => {
     messages[locale] = messagesModule.default;
     console.log(`Loaded messages for locale "${locale}":`, messages[locale]);
   } catch (error) {
-    console.error('Error loading messages:', error);
+    console.error("Error loading messages:", error);
   }
 };
 

@@ -13,7 +13,10 @@ export default function App() {
   return (
     <AppAuthProvider>
       <Router>
-        <IntlProvider locale={locale} messages={messages[locale] || messages["nl"]}>
+        <IntlProvider
+          locale={locale}
+          messages={messages[locale] || messages["nl"]}
+        >
           <div>
             <AppRoutes />
           </div>

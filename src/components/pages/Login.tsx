@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useAuth } from "../../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { useIntl } from "react-intl";
 import styles from "../../assets/scss/Login.module.scss";
 
 export default function Login({ onLogin }: { onLogin: () => void }) {
@@ -8,26 +9,60 @@ export default function Login({ onLogin }: { onLogin: () => void }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [emailValidationError, setEmailValidationError] = useState("");
+  const [formSubmitted, setFormSubmitted] = useState(false);
   const navigate = useNavigate();
+  const intl = useIntl();
 
   const handleLogin = async () => {
     try {
+      if (!username.trim()) {
+        setError(intl.formatMessage({ id: "auth.emptyEmail" }));
+        return;
+      }
+
       const success = await login(username, password);
 
       if (success) {
         onLogin();
       } else {
-        setError("Verkeerde gebruikersnaam en wachtwoord");
+        setError(intl.formatMessage({ id: "auth.usernamePasswordRequired" }));
       }
     } catch (error) {
-      setError(
-        error.message || "Er is een fout opgetreden tijdens het inloggen.",
-      );
+      if (error.response && error.response.status === 400) {
+        setError(intl.formatMessage({ id: "auth.badCredentials" }));
+      } else {
+        setError(intl.formatMessage({ id: "auth.genericError" }));
+      }
+    }
+  };
+
+  const validateEmail = (email: string) => {
+    const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
+    return emailRegex.test(email);
+  };
+
+  const handleEmailChange = (e) => {
+    const email = e.target.value;
+    setUsername(email);
+
+    if (formSubmitted) {
+      if (!validateEmail(email)) {
+        setEmailValidationError("auth.emailValidation");
+      } else {
+        setEmailValidationError("");
+      }
     }
   };
 
   const handleBackdropClick = () => {
     navigate("/funds");
+  };
+
+  const handleFormSubmit = () => {
+    setFormSubmitted(true);
+
+    handleLogin();
   };
 
   return (
@@ -58,7 +93,7 @@ export default function Login({ onLogin }: { onLogin: () => void }) {
                 type="text"
                 placeholder="E-mailadres"
                 value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                onChange={handleEmailChange}
               />
             </div>
             <div className={styles["input-container"]}>
@@ -79,13 +114,18 @@ export default function Login({ onLogin }: { onLogin: () => void }) {
             </div>
             <button
               className={styles["login-button"]}
-              onClick={handleLogin}
+              onClick={handleFormSubmit} // Trigger form submission
               disabled={isLoading}
             >
               {isLoading ? "Inloggen..." : "Login"}
             </button>
 
             {error && <p className={styles["error-message"]}>{error}</p>}
+            {formSubmitted && emailValidationError && (
+              <p className={styles["error-message"]}>
+                {intl.formatMessage({ id: emailValidationError })}
+              </p>
+            )}
 
             {isLoading && (
               <div className={styles["loading-animation"]}>

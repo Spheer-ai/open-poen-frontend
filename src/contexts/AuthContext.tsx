@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { login as apiLogin } from "../components/middleware/Api";
 import { UserData, AuthContextValue } from "../types/AuthContextTypes";
-import { IntlProvider, createIntl, IntlShape } from 'react-intl';
+import { IntlProvider, createIntl, IntlShape } from "react-intl";
 import { messages, defaultLocale } from "../locale/messages"; // Import the messages and defaultLocale
 import { getLocale } from "../locale/locale"; // Import the getLocale function
 
@@ -43,7 +43,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   ): Promise<boolean> => {
     try {
       if (!username || !password) {
-        throw new Error(intl.formatMessage({ id: "auth.usernamePasswordRequired" }));
+        throw new Error(
+          intl.formatMessage({ id: "auth.usernamePasswordRequired" }),
+        );
       }
 
       setIsLoading(true);
@@ -77,7 +79,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   return (
     <AuthContext.Provider value={contextValue}>
-      <IntlProvider locale={intl.locale} messages={messages[intl.locale] || messages[defaultLocale]}>
+      <IntlProvider
+        locale={intl.locale}
+        messages={messages[intl.locale] || messages[defaultLocale]}
+      >
         {children}
       </IntlProvider>
     </AuthContext.Provider>
