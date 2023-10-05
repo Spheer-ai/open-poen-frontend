@@ -74,19 +74,19 @@ export default function Funds() {
       </div>
 
       {isMobileScreen ? (
-      <AddFundModal
-        isOpen={isModalOpen}
-        onClose={handleToggleAddFundModal}
-        isBlockingInteraction={isBlockingInteraction}
-      />
-    ) : (
-      // Render AddFundDesktop for desktop screens
-      <AddFundDesktop
-        isOpen={isModalOpen}
-        onClose={handleToggleAddFundModal}
-        isBlockingInteraction={isBlockingInteraction}
-      />
-    )}
+        <AddFundModal
+          isOpen={isModalOpen}
+          onClose={handleToggleAddFundModal}
+          isBlockingInteraction={isBlockingInteraction}
+        />
+      ) : (
+        // Render AddFundDesktop for desktop screens
+        <AddFundDesktop
+          isOpen={isModalOpen}
+          onClose={handleToggleAddFundModal}
+          isBlockingInteraction={isBlockingInteraction}
+        />
+      )}
       <button onClick={handleShowPageContent}>
         {showPageContent ? "Close PageContent" : "Show PageContent"}
       </button>
