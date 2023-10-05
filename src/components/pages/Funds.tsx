@@ -4,6 +4,7 @@ import TopNavigationBar from "../ui/top-navigation-bar/TopNavigationBar";
 import PageContent from "../ui/layout/PageContent";
 import styles from "../../assets/scss/Funds.module.scss";
 import AddFundModal from "../modals/AddFundMobile";
+import AddFundDesktop from "../modals/AddFundDesktop";
 
 export default function Funds() {
   const navigate = useNavigate();
@@ -73,19 +74,19 @@ export default function Funds() {
       </div>
 
       {isMobileScreen ? (
-        <AddFundModal
-          isOpen={isModalOpen}
-          onClose={handleToggleAddFundModal}
-          isBlockingInteraction={isBlockingInteraction}
-        />
-      ) : (
-        <>
-          <h2>Add Fund</h2>
-          {/* Add your form or content for adding a fund here */}
-          <button onClick={handleCloseModal}>Close</button>
-        </>
-      )}
-
+      <AddFundModal
+        isOpen={isModalOpen}
+        onClose={handleToggleAddFundModal}
+        isBlockingInteraction={isBlockingInteraction}
+      />
+    ) : (
+      // Render AddFundDesktop for desktop screens
+      <AddFundDesktop
+        isOpen={isModalOpen}
+        onClose={handleToggleAddFundModal}
+        isBlockingInteraction={isBlockingInteraction}
+      />
+    )}
       <button onClick={handleShowPageContent}>
         {showPageContent ? "Close PageContent" : "Show PageContent"}
       </button>

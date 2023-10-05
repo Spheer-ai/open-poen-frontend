@@ -99,48 +99,8 @@
   outline: none;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 767px) {
   .sidebar-menu {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: auto;
-    background-color: #333;
-    box-shadow: none;
-    border: none;
-    flex-direction: row;
-    justify-content: space-around;
-    align-items: center;
-    background: white;
-  }
-
-  .top-section,
-  .middle-section,
-  .bottom-section {
-    padding: 0;
-    text-align: center;
-  }
-
-  .middle-section ul {
-    flex-direction: row;
-    display: flex;
-  }
-
-  .middle-section li {
-    margin: 0 10px;
-    width: auto;
-    height: auto;
-  }
-
-  .middle-section li:hover::after {
-    display: none;
-  }
-
-  .middle-section a img {
-    border: 2px solid transparent;
-    border-radius: 50%;
-    width: 24px;
-    height: 24px;
+    display: none; /* Hide the sidebar menu on mobile */
   }
 }
