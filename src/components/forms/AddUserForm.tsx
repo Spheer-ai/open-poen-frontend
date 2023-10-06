@@ -4,6 +4,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import FormButtons from "./buttons/FormButton";
 import FormLayout from "./FormLayout";
 import { createUser } from "../middleware/Api";
+import { useIntl } from "react-intl";
 
 export type UserFormData = {
   email: string;
@@ -36,6 +37,8 @@ const AddUserForm: React.FC<{
   const [formData, setFormData] = useState<UserFormData>(initialFormData);
   const { user } = useAuth();
   const [isConfirmed, setIsConfirmed] = useState(false);
+  const [error, setError] = useState<string>("");
+  const intl = useIntl();
 
   const roleLabels = {
     administrator: "Beheerder",
@@ -46,11 +49,10 @@ const AddUserForm: React.FC<{
   const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, checked } = event.target;
 
-    if (checked) {
-      setFormData({ ...formData, role: name });
-    } else {
-      setFormData({ ...formData, role: "" });
-    }
+    setFormData((prevData) => ({
+      ...prevData,
+      role: checked ? name : "", // Update formData based on checkbox state
+    }));
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -60,6 +62,18 @@ const AddUserForm: React.FC<{
 
   const handleSubmit = async () => {
     try {
+      // Check for an empty email
+      if (!formData.email.trim()) {
+        setError(intl.formatMessage({ id: "auth.emptyEmail" }));
+        return;
+      }
+
+      // Check if at least one role is selected
+      if (!formData.role) {
+        setError(intl.formatMessage({ id: "addUser.SelectRole" }));
+        return;
+      }
+
       const token = user?.token || "";
 
       const formDataToSend = new FormData();
@@ -72,7 +86,19 @@ const AddUserForm: React.FC<{
 
       setIsConfirmed(true);
     } catch (error) {
-      console.error("Failed to create user:", error);
+      if (error.response) {
+        const status = error.response.status;
+
+        if (status === 422) {
+          setError(intl.formatMessage({ id: "auth.emailValidation" }));
+        } else if (status === 400) {
+          setError(intl.formatMessage({ id: "addUser.AlreadyExist" }));
+        } else {
+          console.error("Failed to create user:", error);
+        }
+      } else {
+        console.error("Failed to create user:", error);
+      }
     }
   };
 
@@ -114,6 +140,7 @@ const AddUserForm: React.FC<{
                 value={formData.email}
                 onChange={handleChange}
               />
+              {error && <p className={styles["error-message"]}>{error}</p>}
               <p className={styles["description"]}>
                 Als er nog geen gebruiker bestaat met dit e-mailadres, ontvangt
                 deze een uitnodigingsmail met daarin een link om een wachtwoord

@@ -284,7 +284,9 @@ export default function Contacts() {
                   <li
                     key={userItemId}
                     onClick={() => handleUserClick(userItemId)}
-                    className={`${isActive ? styles["active-user"] : ""}`}
+                    className={`${styles["user-list"]} ${
+                      isActive ? styles["active-user"] : ""
+                    }`}
                     style={{
                       backgroundColor:
                         isActive && loggedInId === userItemId

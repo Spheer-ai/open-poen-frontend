@@ -1,24 +1,65 @@
-import React from "react";
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import TopNavigationBar from "../ui/top-navigation-bar/TopNavigationBar";
-import SlideInModal from "../modals/SlideInModal";
+import PageContent from "../ui/layout/PageContent";
 import styles from "../../assets/scss/Funds.module.scss";
+import AddFundModal from "../modals/AddFundMobile";
+import AddFundDesktop from "../modals/AddFundDesktop";
 
 export default function Funds() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const navigate = useNavigate();
+  const { action } = useParams(); // Get the route parameter "action"
 
-  const handleCtaClick = () => {
-    setIsModalOpen(true);
-  };
+  const [isModalOpen, setIsModalOpen] = useState(action === "add-funds");
+  const [showPageContent, setShowPageContent] = useState(false);
+  const [isBlockingInteraction, setIsBlockingInteraction] = useState(false); // State to block interactions
+
+  const isMobileScreen = window.innerWidth < 768;
+
+  useEffect(() => {
+    console.log("action:", action); // Log the action parameter
+    if (action === "add-funds") {
+      setIsModalOpen(true);
+    }
+  }, [action]);
 
   const handleCloseModal = () => {
-    setIsModalOpen(false);
+    setIsBlockingInteraction(true); // Block interactions during timeout
+    setTimeout(() => {
+      setIsBlockingInteraction(false); // Unblock interactions
+      setIsModalOpen(false);
+      navigate("/funds"); // Update the route when the modal is closed
+    }, 150); // Adjust the delay time as needed
   };
 
   const handleSearch = (query) => {
     console.log("Search query in UserDetailsPage:", query);
   };
-  console.log("isModalOpen:", isModalOpen);
+
+  const handleShowPageContent = () => {
+    setShowPageContent(true);
+    navigate("/funds/detail");
+  };
+
+  const handleClosePageContent = () => {
+    setShowPageContent(false);
+    navigate("/funds");
+  };
+
+  const handleToggleAddFundModal = () => {
+    if (isModalOpen) {
+      setIsBlockingInteraction(true); // Block interactions during timeout
+      setTimeout(() => {
+        setIsBlockingInteraction(false); // Unblock interactions
+        setIsModalOpen(false);
+        navigate("/funds"); // Update the route when the modal is closed
+      }, 300); // Adjust the delay time as needed
+    } else {
+      setIsModalOpen(true); // Open the modal
+      navigate("/funds/add-funds"); // Update the route to "/funds/add-funds"
+    }
+  };
+
   return (
     <>
       <div className={styles["side-panel"]}>
@@ -27,13 +68,40 @@ export default function Funds() {
           showSettings={true}
           showCta={true}
           onSettingsClick={() => {}}
-          onCtaClick={handleCtaClick}
+          onCtaClick={handleToggleAddFundModal}
           onSearch={handleSearch}
         />
       </div>
-      <SlideInModal isOpen={isModalOpen} onClose={handleCloseModal}>
-        <p>This is the modal content.</p>
-      </SlideInModal>
+
+      {isMobileScreen ? (
+        <AddFundModal
+          isOpen={isModalOpen}
+          onClose={handleToggleAddFundModal}
+          isBlockingInteraction={isBlockingInteraction}
+        />
+      ) : (
+        // Render AddFundDesktop for desktop screens
+        <AddFundDesktop
+          isOpen={isModalOpen}
+          onClose={handleToggleAddFundModal}
+          isBlockingInteraction={isBlockingInteraction}
+        />
+      )}
+      <button onClick={handleShowPageContent}>
+        {showPageContent ? "Close PageContent" : "Show PageContent"}
+      </button>
+
+      <button onClick={handleToggleAddFundModal}>Add Fund</button>
+
+      {/* Conditionally render PageContent */}
+      {showPageContent && (
+        <PageContent
+          showContent={showPageContent}
+          onClose={handleClosePageContent}
+        >
+          {/* Add the content you want to show here */}
+        </PageContent>
+      )}
     </>
   );
 }

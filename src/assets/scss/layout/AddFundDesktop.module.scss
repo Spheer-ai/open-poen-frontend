@@ -1,0 +1,95 @@
+/* AddFundModal.module.scss */
+
+/* Backdrop styles */
+.backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0);
+  z-index: 9998;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.backdrop.open {
+  background-color: rgba(0, 0, 0, 0.5);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Title styles */
+.title {
+  font-size: 22px;
+  font-weight: bold;
+  margin: 20px;
+  text-align: center;
+}
+
+/* Form group styles */
+.formGroup {
+  margin: 20px;
+}
+
+.labelEmail {
+  font-weight: bold;
+  font-size: 14px;
+}
+
+/* Description styles */
+.description {
+  font-size: 14px;
+  color: rgba(105, 105, 105, 1);
+  margin-top: 20px;
+  margin-bottom: 20px;
+  line-height: 22px;
+}
+
+/* Button container styles */
+.buttonContainer {
+  display: flex;
+  justify-content: space-between;
+  margin: 20px;
+}
+
+.cancelButton {
+  background-color: #ccc;
+  border: none;
+  border-radius: 5px;
+  padding: 10px;
+  flex: 1;
+  margin-right: 10px;
+  cursor: pointer;
+}
+
+.saveButton {
+  background-color: #007bff;
+  border: none;
+  border-radius: 5px;
+  padding: 10px;
+  flex: 1;
+  color: white;
+  cursor: pointer;
+}
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: unset;
+  right: -100%; /* Initially, position it to the right of the screen */
+  bottom: 0;
+  width: 100%;
+  max-width: 500px; /* Adjust the width as needed */
+  background-color: white;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+  padding: 20px;
+  overflow-y: auto;
+  transition: right 0.3s ease-in-out; /* Add transition for right property */
+  z-index: 10000;
+
+  &.open {
+    right: 0; /* Slide in from right to left when the modal is open */
+  }
+}
