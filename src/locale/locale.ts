@@ -1,4 +1,4 @@
-let currentLocale = "nl"; // Set the initial locale
+let currentLocale = "en";
 
 export const setLocale = (locale) => {
   currentLocale = locale;
