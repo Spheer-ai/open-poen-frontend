@@ -51,7 +51,7 @@ const AddUserForm: React.FC<{
 
     setFormData((prevData) => ({
       ...prevData,
-      role: checked ? name : "", // Update formData based on checkbox state
+      role: checked ? name : "",
     }));
   };
 
