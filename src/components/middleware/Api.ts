@@ -247,3 +247,24 @@ export const fetchUserProfileData = async (token: string, userId: string) => {
     throw error;
   }
 };
+
+export const resetPassword = async (token: string, newPassword: string) => {
+  try {
+    const response = await api.post(
+      "/auth/reset-password",
+      {
+        token,
+        password: newPassword,
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      },
+    );
+
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};

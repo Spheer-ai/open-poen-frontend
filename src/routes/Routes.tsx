@@ -12,6 +12,8 @@ import styles from "../assets/scss/Routes.module.scss";
 import UserDetailsPage from "../components/pages/UserDetailPage";
 import EditUserForm from "../components/forms/EditUserForm";
 import FundDetail from "../components/pages/FundDetail";
+import ResetPassword from "../components/pages/onboarding/ResetPassword";
+import ResetPasswordLayout from "../components/pages/onboarding/ResetPasswordLayout";
 
 export default function AppRoutes() {
   const navigate = useNavigate();
@@ -50,6 +52,14 @@ export default function AppRoutes() {
               <InlineModalLayout navigate={navigate}>
                 {<Funds />}
               </InlineModalLayout>
+            }
+          />
+          <Route
+            path="/reset-password"
+            element={
+              <ResetPasswordLayout>
+                <ResetPassword />
+              </ResetPasswordLayout>
             }
           />
           <Route
