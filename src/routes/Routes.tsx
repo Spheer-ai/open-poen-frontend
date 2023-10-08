@@ -14,6 +14,7 @@ import EditUserForm from "../components/forms/EditUserForm";
 import FundDetail from "../components/pages/FundDetail";
 import ResetPassword from "../components/pages/onboarding/ResetPassword";
 import ResetPasswordLayout from "../components/pages/onboarding/ResetPasswordLayout";
+import ResetPasswordRequest from "../components/pages/onboarding/ResetPasswordRequest";
 
 export default function AppRoutes() {
   const navigate = useNavigate();
@@ -59,6 +60,14 @@ export default function AppRoutes() {
             element={
               <ResetPasswordLayout>
                 <ResetPassword />
+              </ResetPasswordLayout>
+            }
+          />
+          <Route
+            path="/request-password-reset"
+            element={
+              <ResetPasswordLayout>
+                <ResetPasswordRequest />
               </ResetPasswordLayout>
             }
           />
