@@ -1,45 +1,56 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { resetPassword } from "../../middleware/Api";
-import { useAuth } from "../../../contexts/AuthContext";
-import styles from "../../../assets/scss/layout/ResetPasswordLayout.module.scss"; // Import your CSS file for styling
+import styles from "../../../assets/scss/layout/ResetPasswordLayout.module.scss"; 
 
 function ResetPassword() {
   const location = useLocation();
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState(""); // New state variable for confirming password
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
 
-  const auth = useAuth();
-  const token = auth.user?.token;
+  useEffect(() => {
+    const urlSearchParams = new URLSearchParams(location.search);
+    const token = urlSearchParams.get("token");
+
+    console.log("Token used in useEffect:", token);
+
+    if (!token) {
+      setError("Er is iets mis gegaan. Vraag een nieuwe link aan");
+    }
+  }, [location.search]);
 
   const handlePasswordChange = (e) => {
     setPassword(e.target.value);
   };
 
   const handleConfirmPasswordChange = (e) => {
-    // Handle confirm password change
     setConfirmPassword(e.target.value);
   };
 
   const handleSubmit = async () => {
     try {
-      if (!token) {
-        throw new Error("User not authenticated");
+      if (password !== confirmPassword) {
+        setError("Wachtwoorden komen niet overeen.");
+        return;
       }
 
-      // Check if passwords match
-      if (password !== confirmPassword) {
-        setError("Passwords do not match.");
+      const urlSearchParams = new URLSearchParams(location.search);
+      const token = urlSearchParams.get("token");
+
+      console.log("Token used in handleSubmit:", token);
+
+      if (!token) {
+        setError("Invalid or missing token");
         return;
       }
 
       await resetPassword(token, password);
 
-      // Password reset successful, you can choose to navigate to some other page
+      window.location.href = "/login";
     } catch (error) {
       console.error("Password reset error:", error);
-      setError("An error occurred while resetting your password.");
+      setError("Er is een onbekende fout opgetreden bij het aanpassen van het wachtwoord.");
     }
   };
 
