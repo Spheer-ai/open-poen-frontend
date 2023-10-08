@@ -89,7 +89,7 @@ function ResetPassword() {
           <img src="/login-openpoen-logo.svg" alt="Project Name" />
         </div>
         <h3>Account aanmaken</h3>
-        {step === "request" && ( // Show email input only in the "request" step
+        {step === "request" && (
           <>
             <p>Je bent uitgenodigd. Vul je e-mailadres in om verder te gaan.</p>
             <div className={styles["form-group"]}>
@@ -109,7 +109,7 @@ function ResetPassword() {
             </button>
           </>
         )}
-        {step === "submit" && ( // Show password reset form only in the "submit" step
+        {step === "submit" && (
           <>
             <div className={styles["form-group"]}>
               <label htmlFor="password">Wachtwoord:</label>
