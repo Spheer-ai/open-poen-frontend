@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { resetPassword } from "../../middleware/Api";
-import styles from "../../../assets/scss/layout/ResetPasswordLayout.module.scss"; 
+import styles from "../../../assets/scss/layout/ResetPasswordLayout.module.scss";
 
 function ResetPassword() {
   const location = useLocation();
@@ -50,7 +50,9 @@ function ResetPassword() {
       window.location.href = "/login";
     } catch (error) {
       console.error("Password reset error:", error);
-      setError("Er is een onbekende fout opgetreden bij het aanpassen van het wachtwoord.");
+      setError(
+        "Er is een onbekende fout opgetreden bij het aanpassen van het wachtwoord.",
+      );
     }
   };
 
