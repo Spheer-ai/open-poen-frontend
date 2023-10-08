@@ -268,3 +268,23 @@ export const resetPassword = async (token: string, newPassword: string) => {
     throw error;
   }
 };
+
+export const requestPasswordReset = async (email: string) => {
+  try {
+    const response = await api.post(
+      "/auth/forgot-password",
+      {
+        email,
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      },
+    );
+
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
