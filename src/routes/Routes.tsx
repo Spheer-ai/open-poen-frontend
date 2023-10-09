@@ -15,6 +15,7 @@ import FundDetail from "../components/pages/FundDetail";
 import ResetPassword from "../components/pages/onboarding/ResetPassword";
 import ResetPasswordLayout from "../components/pages/onboarding/ResetPasswordLayout";
 import ResetPasswordRequest from "../components/pages/onboarding/ResetPasswordRequest";
+import SponsorDetail from "../components/pages/SponsorDetail";
 
 export default function AppRoutes() {
   const navigate = useNavigate();
@@ -126,7 +127,18 @@ export default function AppRoutes() {
                 }
               />
               <Route
-                path="/sponsors"
+                path="/sponsors/*"
+                element={
+                  <InlineModalLayout navigate={navigate}>
+                    {<Sponsors />}
+                    <Routes>
+                      <Route path="/detail" element={<SponsorDetail />} />
+                    </Routes>
+                  </InlineModalLayout>
+                }
+              />
+              <Route
+                path="/sponsors/:action"
                 element={
                   <InlineModalLayout navigate={navigate}>
                     {<Sponsors />}
