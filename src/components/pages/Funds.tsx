@@ -87,8 +87,7 @@ export default function Funds() {
         <PageContent
           showContent={showPageContent}
           onClose={handleClosePageContent}
-        >
-        </PageContent>
+        ></PageContent>
       )}
     </>
   );

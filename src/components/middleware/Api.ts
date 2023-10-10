@@ -298,3 +298,18 @@ export const fetchSponsors = async () => {
     throw error;
   }
 };
+
+export const fetchSponsorById = async (funderId: number, token: string) => {
+  try {
+    const response = await axios.get(`/api/sponsors/${funderId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching sponsor details:", error);
+    throw error;
+  }
+};

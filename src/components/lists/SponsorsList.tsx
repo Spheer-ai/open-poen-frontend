@@ -33,13 +33,13 @@ const SponsorList: React.FC<SponsorListProps> = ({ onShowPageContent }) => {
       <ul>
         {sponsors.map((sponsor) => (
           <li key={sponsor.id}>
-          <a target="_blank" rel="noopener noreferrer">
-            {sponsor.name}
-          </a>
-          <button onClick={() => onShowPageContent(sponsor.id.toString())}>
-            Show PageContent
-          </button>
-        </li>
+            <a target="_blank" rel="noopener noreferrer">
+              {sponsor.name}
+            </a>
+            <button onClick={() => onShowPageContent(sponsor.id.toString())}>
+              Show PageContent
+            </button>
+          </li>
         ))}
       </ul>
     </div>

@@ -10,9 +10,9 @@ import SponsorDetail from "./SponsorDetail"; // Import the SponsorDetail compone
 
 export default function Sponsors() {
   const navigate = useNavigate();
-  const { action } = useParams();
+  const { action, sponsorId } = useParams(); // Extract sponsorId and action from the URL
   const [isModalOpen, setIsModalOpen] = useState(action === "add-sponsor");
-  const [showPageContent, setShowPageContent] = useState(false);
+  const [showPageContent, setShowPageContent] = useState(!!sponsorId); // Initialize based on whether sponsorId is available
   const [isBlockingInteraction, setIsBlockingInteraction] = useState(false);
 
   const isMobileScreen = window.innerWidth < 768;
@@ -28,9 +28,14 @@ export default function Sponsors() {
     console.log("Search query in UserDetailsPage:", query);
   };
 
-  const handleShowPageContent = () => {
+  const handleShowPageContent = (sponsorId) => {
+    if (sponsorId !== undefined) {
       setShowPageContent(true);
-      navigate(`/sponsors/detail/`);
+      navigate(`/sponsors/detail/${sponsorId}`);
+    } else {
+      // Handle the case when 'sponsorId' is not available, e.g., show a message
+      alert("Sponsor ID not available.");
+    }
   };
 
   const handleClosePageContent = () => {
@@ -78,21 +83,15 @@ export default function Sponsors() {
           isBlockingInteraction={isBlockingInteraction}
         />
       )}
-      <button onClick={handleShowPageContent}>
-        {showPageContent ? "Close PageContent" : "Show PageContent"}
-      </button>
-
-      <button onClick={handleToggleAddSponsorModal}>Add Sponsor</button>
       {showPageContent ? (
-      <PageContent
-        showContent={showPageContent}
-        onClose={handleClosePageContent}
-         // Pass the sponsorIdParam
-      >
-        {/* Render the SponsorDetail component with the specific sponsorId */}
-        <SponsorDetail />
-      </PageContent>
-    ) : (
+        <PageContent
+          showContent={showPageContent}
+          onClose={handleClosePageContent}
+        >
+          {/* Render the SponsorDetail component with the specific sponsorId */}
+          <SponsorDetail />
+        </PageContent>
+      ) : (
         <div>No data loaded or message here.</div>
       )}
     </>
