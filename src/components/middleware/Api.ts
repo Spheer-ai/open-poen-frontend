@@ -288,3 +288,13 @@ export const requestPasswordReset = async (email: string) => {
     throw error;
   }
 };
+
+export const fetchSponsors = async () => {
+  try {
+    const response = await api.get("/funders");
+    return response.data.funders;
+  } catch (error) {
+    console.error("Error fetching sponsors:", error);
+    throw error;
+  }
+};

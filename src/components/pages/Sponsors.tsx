@@ -5,6 +5,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import AddSponsorMobile from "../modals/AddSponsorMobile";
 import AddSponsorDesktop from "../modals/AddSponsorDesktop";
 import PageContent from "../ui/layout/PageContent";
+import SponsorList from "../lists/SponsorsList";
+import SponsorDetail from "./SponsorDetail"; // Import the SponsorDetail component
 
 export default function Sponsors() {
   const navigate = useNavigate();
@@ -27,8 +29,8 @@ export default function Sponsors() {
   };
 
   const handleShowPageContent = () => {
-    setShowPageContent(true);
-    navigate("/sponsors/detail");
+      setShowPageContent(true);
+      navigate(`/sponsors/detail/`);
   };
 
   const handleClosePageContent = () => {
@@ -61,6 +63,7 @@ export default function Sponsors() {
           onCtaClick={handleToggleAddSponsorModal}
           onSearch={handleSearch}
         />
+        <SponsorList onShowPageContent={handleShowPageContent} />
       </div>
       {isMobileScreen ? (
         <AddSponsorMobile
@@ -80,12 +83,17 @@ export default function Sponsors() {
       </button>
 
       <button onClick={handleToggleAddSponsorModal}>Add Sponsor</button>
-      {showPageContent && (
-        <PageContent
-          showContent={showPageContent}
-          onClose={handleClosePageContent}
-        >
-        </PageContent>
+      {showPageContent ? (
+      <PageContent
+        showContent={showPageContent}
+        onClose={handleClosePageContent}
+         // Pass the sponsorIdParam
+      >
+        {/* Render the SponsorDetail component with the specific sponsorId */}
+        <SponsorDetail />
+      </PageContent>
+    ) : (
+        <div>No data loaded or message here.</div>
       )}
     </>
   );
