@@ -112,23 +112,23 @@ export default function UserDetailsPage() {
               </div>
 
               <div className={styles["user-description"]}>
-                <h3 className={styles["section-title"]}>Description</h3>
+                <h3 className={styles["section-title"]}>Omschrijving</h3>
                 <p className={styles["section-content"]}>
                   {userDetails.biography}
                 </p>
               </div>
 
               <div className={styles["user-initiatives"]}>
-                <h3 className={styles["section-title"]}>Initiatives</h3>
+                <h3 className={styles["section-title"]}>Initiatieven</h3>
                 <InitiativeList initiatives={initiatives} />
               </div>
               <div className={styles["user-activities"]}>
-                <h3 className={styles["section-title"]}>Activities</h3>
+                <h3 className={styles["section-title"]}>Activiteiten</h3>
                 {userDetails.activities.length > 0 ? (
                   <></>
                 ) : (
                   <p className={styles["section-content"]}>
-                    No activities available.
+                    Geen activiteiten beschikbaar.
                   </p>
                 )}
               </div>

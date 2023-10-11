@@ -3,14 +3,17 @@
   padding: 0;
   display: flex;
   align-items: center;
+
+  ul {
+    margin-top: 0;
+  }
 }
 
 .breadcrumbItem a {
   margin-right: 5px;
-  color: white !important;
 }
 
 .breadcrumbItem.active a {
   font-weight: bold;
-  color: red !important;
+  color: grey !important;
 }

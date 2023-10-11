@@ -36,7 +36,6 @@ const SidebarMenu = ({ isAuthenticated, onLogout }: SidebarMenuProps) => {
 
   return (
     <div className={styles["sidebar-menu"]}>
-      {/* Render SidebarMenu content */}
       <div className={styles["top-section"]}>
         <Link to="/funds">
           <img

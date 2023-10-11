@@ -132,7 +132,10 @@ export default function AppRoutes() {
                   <InlineModalLayout navigate={navigate}>
                     {<Sponsors />}
                     <Routes>
-                      <Route path="/detail" element={<SponsorDetail />} />
+                      <Route
+                        path="/detail/:funderId"
+                        element={<SponsorDetail />}
+                      />
                     </Routes>
                   </InlineModalLayout>
                 }

@@ -5,10 +5,10 @@ import { BrowserRouter as Router } from "react-router-dom";
 import { AuthProvider as AppAuthProvider } from "./contexts/AuthContext";
 import { IntlProvider } from "react-intl";
 import { messages } from "./locale/messages";
-import { getLocale } from "./locale/locale"; // Import the getLocale function
+import { getLocale } from "./locale/locale";
 
 export default function App() {
-  const locale = getLocale(); // Get the current locale
+  const locale = getLocale();
 
   return (
     <AppAuthProvider>

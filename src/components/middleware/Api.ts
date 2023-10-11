@@ -299,17 +299,16 @@ export const fetchSponsors = async () => {
   }
 };
 
-export const fetchSponsorById = async (funderId: number, token: string) => {
+export const getFunderById = async (token: string, funderId: number) => {
   try {
-    const response = await axios.get(`/api/sponsors/${funderId}`, {
+    const response = await api.get(`/funder/${funderId}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
-
     return response.data;
   } catch (error) {
-    console.error("Error fetching sponsor details:", error);
+    console.error("Error fetching funder:", error);
     throw error;
   }
 };

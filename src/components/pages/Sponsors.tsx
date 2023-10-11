@@ -4,15 +4,13 @@ import styles from "../../assets/scss/Sponsors.module.scss";
 import { useNavigate, useParams } from "react-router-dom";
 import AddSponsorMobile from "../modals/AddSponsorMobile";
 import AddSponsorDesktop from "../modals/AddSponsorDesktop";
-import PageContent from "../ui/layout/PageContent";
 import SponsorList from "../lists/SponsorsList";
-import SponsorDetail from "./SponsorDetail"; // Import the SponsorDetail component
 
 export default function Sponsors() {
   const navigate = useNavigate();
-  const { action, sponsorId } = useParams(); // Extract sponsorId and action from the URL
+  const { action, sponsorId } = useParams();
   const [isModalOpen, setIsModalOpen] = useState(action === "add-sponsor");
-  const [showPageContent, setShowPageContent] = useState(!!sponsorId); // Initialize based on whether sponsorId is available
+  const [showPageContent, setShowPageContent] = useState(!!sponsorId);
   const [isBlockingInteraction, setIsBlockingInteraction] = useState(false);
 
   const isMobileScreen = window.innerWidth < 768;
@@ -33,14 +31,8 @@ export default function Sponsors() {
       setShowPageContent(true);
       navigate(`/sponsors/detail/${sponsorId}`);
     } else {
-      // Handle the case when 'sponsorId' is not available, e.g., show a message
       alert("Sponsor ID not available.");
     }
-  };
-
-  const handleClosePageContent = () => {
-    setShowPageContent(false);
-    navigate("/sponsors");
   };
 
   const handleToggleAddSponsorModal = () => {
@@ -82,17 +74,6 @@ export default function Sponsors() {
           onClose={handleToggleAddSponsorModal}
           isBlockingInteraction={isBlockingInteraction}
         />
-      )}
-      {showPageContent ? (
-        <PageContent
-          showContent={showPageContent}
-          onClose={handleClosePageContent}
-        >
-          {/* Render the SponsorDetail component with the specific sponsorId */}
-          <SponsorDetail />
-        </PageContent>
-      ) : (
-        <div>No data loaded or message here.</div>
       )}
     </>
   );

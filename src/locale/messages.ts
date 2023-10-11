@@ -23,7 +23,7 @@ const messages = {
     "addUser.AlreadyExist": "Gebruiker is reeds bekend.",
   },
   fy: {
-    // Frieze messages
+    // Friese messages
     "auth.genericError": "Der is in flater optrêden by it ynladen.",
     "auth.usernamePasswordRequired":
       "Brûkersnamme en wachtwurd binne ferplichte.",

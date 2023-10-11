@@ -2,8 +2,8 @@ import React, { createContext, useContext, useState, useEffect } from "react";
 import { login as apiLogin } from "../components/middleware/Api";
 import { UserData, AuthContextValue } from "../types/AuthContextTypes";
 import { IntlProvider, createIntl, IntlShape } from "react-intl";
-import { messages, defaultLocale } from "../locale/messages"; // Import the messages and defaultLocale
-import { getLocale } from "../locale/locale"; // Import the getLocale function
+import { messages, defaultLocale } from "../locale/messages";
+import { getLocale } from "../locale/locale";
 
 const AuthContext = createContext<AuthContextValue>({
   user: null,
@@ -25,9 +25,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const [user, setUser] = useState<UserData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-
-  // Initialize 'intl' here with the current locale
-  const locale = getLocale(); // Get the current locale
+  const locale = getLocale();
   const intl: IntlShape = createIntl({ locale, messages: messages[locale] });
 
   useEffect(() => {
