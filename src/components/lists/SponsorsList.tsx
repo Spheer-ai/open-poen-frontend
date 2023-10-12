@@ -51,18 +51,18 @@ const SponsorList: React.FC<SponsorListProps> = ({ onShowPageContent }) => {
               }`}
             >
               <div className={styles["sponsor-info"]}>
-              <a
-                target="_blank"
-                rel="noopener noreferrer"
-                className={styles["sponsor-link"]}
-                onClick={(e) => {
-                  e.preventDefault(); // Prevent link navigation
-                  handleSponsorClick(sponsor.id.toString());
-                }}
-              >
-                {sponsor.name}
-              </a>
-              <p className={styles["sponsor-website"]}>{sponsor.url}</p>
+                <a
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={styles["sponsor-link"]}
+                  onClick={(e) => {
+                    e.preventDefault(); // Prevent link navigation
+                    handleSponsorClick(sponsor.id.toString());
+                  }}
+                >
+                  {sponsor.name}
+                </a>
+                <p className={styles["sponsor-website"]}>{sponsor.url}</p>
               </div>
             </li>
           );
