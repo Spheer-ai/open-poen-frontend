@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import { getFunderById } from "../middleware/Api";
 import Breadcrumb from "../ui/layout/BreadCrumbs";
+import styles from "../../assets/scss/pages/SponsorDetail.module.scss";
 
 type SponsorData = {
   id: number;
@@ -46,7 +47,7 @@ const SponsorDetail = () => {
   }
 
   return (
-    <div>
+    <div className={styles["sponsor-detail-container"]}>
       <Breadcrumb />
       <h2>Sponsor Details</h2>
       <p>Name: {sponsorData.name}</p>
