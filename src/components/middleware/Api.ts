@@ -312,3 +312,32 @@ export const getFunderById = async (token: string, funderId: number) => {
     throw error;
   }
 };
+
+export const fetchUserPermissions = async (
+  entityId?: number,
+  token?: string,
+): Promise<string[]> => {
+  try {
+    const params = {
+      entity_class: "User",
+    };
+    if (entityId) {
+      params["entity_id"] = entityId;
+    }
+
+    const headers = {};
+    if (token) {
+      headers["Authorization"] = `Bearer ${token}`;
+    }
+
+    const response = await api.get("/auth/entity-access/actions", {
+      params,
+      headers,
+    });
+
+    return response.data.actions;
+  } catch (error) {
+    console.error("Failed to fetch user permissions:", error);
+    throw error;
+  }
+};

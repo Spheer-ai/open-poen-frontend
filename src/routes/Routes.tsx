@@ -16,6 +16,7 @@ import ResetPassword from "../components/pages/onboarding/ResetPassword";
 import ResetPasswordLayout from "../components/pages/onboarding/ResetPasswordLayout";
 import ResetPasswordRequest from "../components/pages/onboarding/ResetPasswordRequest";
 import SponsorDetail from "../components/pages/SponsorDetail";
+import PermissionChecker from "../components/pages/PermissionChecker";
 
 export default function AppRoutes() {
   const navigate = useNavigate();
@@ -71,6 +72,10 @@ export default function AppRoutes() {
                 <ResetPasswordRequest />
               </ResetPasswordLayout>
             }
+          />
+          <Route
+            path="/permission-checker"
+            element={<PermissionChecker></PermissionChecker>}
           />
           <Route
             path="/contacts/*"

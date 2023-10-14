@@ -87,6 +87,7 @@ export default function Funds() {
         <PageContent
           showContent={showPageContent}
           onClose={handleClosePageContent}
+          children={undefined}
         ></PageContent>
       )}
     </>
