@@ -65,7 +65,7 @@ export default function AppRoutes() {
             }
           />
           <Route
-            path="/request-password-reset"
+            path="/request-new-password"
             element={
               <ResetPasswordLayout>
                 <ResetPasswordRequest />
