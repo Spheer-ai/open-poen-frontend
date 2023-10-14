@@ -12,8 +12,8 @@ function ResetPassword() {
   const [step, setStep] = useState("request");
 
   useEffect(() => {
-    const urlSearchParams = new URLSearchParams(location.search);
-    const token = urlSearchParams.get("token");
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get('token');
 
     console.log("Token used in useEffect:", token);
 
