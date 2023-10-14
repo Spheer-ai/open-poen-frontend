@@ -13,7 +13,7 @@ function ResetPassword() {
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    const token = params.get('token');
+    const token = params.get("token");
 
     console.log("Token used in useEffect:", token);
 
