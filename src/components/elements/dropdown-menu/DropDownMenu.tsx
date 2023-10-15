@@ -2,10 +2,11 @@ import React from "react";
 import styles from "../../../assets/scss/DropDownMenu.module.scss";
 import { DropdownMenuProps } from "../../../types/DropDownMenuTypes";
 
-const DropdownMenu: React.FC<DropdownMenuProps> = ({
+const DropdownMenu: React.FC<DropdownMenuProps & { canDelete: boolean }> = ({
   isOpen,
   onEditClick,
   onDeleteClick,
+  canDelete,
 }) => {
   if (!isOpen) {
     return null;
@@ -16,9 +17,15 @@ const DropdownMenu: React.FC<DropdownMenuProps> = ({
       <button className={styles["menu-option"]} onClick={onEditClick}>
         Bewerken
       </button>
-      <button className={styles["menu-option-delete"]} onClick={onDeleteClick}>
-        Verwijderen
-      </button>
+      {canDelete && (
+        <button
+          className={styles["menu-option-delete"]}
+          onClick={onDeleteClick}
+          style={{ display: canDelete ? "block" : "none" }}
+        >
+          Verwijderen
+        </button>
+      )}
     </div>
   );
 };

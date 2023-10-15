@@ -1,6 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link, Outlet, useNavigate } from "react-router-dom";
-import { getUserById, getUsersOrdered } from "../middleware/Api";
+import {
+  fetchUserPermissions,
+  getUserById,
+  getUsersOrdered,
+} from "../middleware/Api";
 import jwtDecode from "jwt-decode";
 import TopNavigationBar from "../ui/top-navigation-bar/TopNavigationBar";
 import AddItemModal from "../../components/modals/AddItemModal";
@@ -19,6 +23,7 @@ interface DecodedToken {
 }
 
 export default function Contacts() {
+  const token = localStorage.getItem("token");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [userData, setUserData] = useState<UserData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -37,6 +42,9 @@ export default function Contacts() {
   const { permissions } = usePermissions();
   const { globalPermissions } = usePermissions();
   const dropdownRef = useRef(null as HTMLDivElement | null);
+  const [userPermissionsMap, setUserPermissionsMap] = useState<
+    Record<string, string[]>
+  >({});
 
   const navigate = useNavigate();
 
@@ -74,29 +82,32 @@ export default function Contacts() {
     setIsDeleteModalOpen(true);
   };
 
-  const showThreeDots = (userId) => {
-    // If it's the logged-in user
-    if (userId === loggedInUserId) {
-      // For user role: never show
-      if (permissions.includes("read") && !permissions.includes("delete"))
-        return false;
-      // For administrator: always show
-      if (permissions.includes("read") && permissions.includes("edit"))
-        return true;
-      // For financial: show if they have edit permission
-      if (permissions.includes("edit")) return true;
-    } else {
-      // For other users
-      if (permissions.includes("delete")) return true; // admin and potentially some financial users
-    }
-    return false;
-  };
+  useEffect(() => {
+    async function fetchAllPermissions() {
+      const permissionsMap = {};
+      for (let user of userData) {
+        // Convert user.id to a number
+        const userPerms = token
+          ? await fetchUserPermissions(Number(user.id), token)
+          : [];
 
-  // Determine if delete option should be displayed
-  const showDeleteOption = (userId) => {
-    if (userId === loggedInUserId && permissions.includes("delete"))
-      return true; // only for admin on their own profile
-    return false;
+        permissionsMap[user.id] = userPerms;
+      }
+      setUserPermissionsMap(permissionsMap);
+    }
+
+    fetchAllPermissions();
+  }, [userData]);
+
+  const showThreeDots = (userId) => {
+    const userPerms = userPermissionsMap[userId] || [];
+    console.log("User ID:", userId, "Permissions:", userPerms);
+
+    if (userId === loggedInUserId) {
+      return false;
+    }
+
+    return userPerms.includes("edit");
   };
 
   useEffect(() => {
@@ -121,7 +132,6 @@ export default function Contacts() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const token = localStorage.getItem("token");
         let loggedIn = false;
         let userId: string | null = null;
 
@@ -356,23 +366,25 @@ export default function Contacts() {
                             />
                           </div>
                         )}
-                        <div
-                          className={styles["three-dots"]}
-                          onClick={(event) => {
-                            event.stopPropagation();
-                            event.preventDefault();
+                        {showThreeDots(user.id) && (
+                          <div
+                            className={styles["three-dots"]}
+                            onClick={(event) => {
+                              event.stopPropagation();
+                              event.preventDefault();
 
-                            setDropdownOpen((prevDropdownOpen) => ({
-                              ...prevDropdownOpen,
-                              [userItemId]: !prevDropdownOpen[userItemId],
-                            }));
-                          }}
-                        >
-                          <div className={styles["dot"]}></div>
-                          <div className={styles["dot"]}></div>
-                          <div className={styles["dot"]}></div>
-                        </div>
-                        {dropdownOpen[userItemId] && (
+                              setDropdownOpen((prevDropdownOpen) => ({
+                                ...prevDropdownOpen,
+                                [user.id]: !prevDropdownOpen[user.id],
+                              }));
+                            }}
+                          >
+                            <div className={styles["dot"]}></div>
+                            <div className={styles["dot"]}></div>
+                            <div className={styles["dot"]}></div>
+                          </div>
+                        )}
+                        {dropdownOpen[user.id] && (
                           <div
                             className={styles["dropdown-container"]}
                             ref={dropdownRef}
@@ -381,6 +393,11 @@ export default function Contacts() {
                               isOpen={true}
                               onEditClick={handleEditButtonClick}
                               onDeleteClick={handleOpenDeleteModal}
+                              canDelete={
+                                userPermissionsMap[user.id]?.includes(
+                                  "delete",
+                                ) || false
+                              }
                             />
                           </div>
                         )}
@@ -415,7 +432,7 @@ export default function Contacts() {
                             />
                           </div>
                         )}
-                        {showThreeDots(userItemId) && (
+                        {showThreeDots(user.id) && (
                           <div
                             className={styles["three-dots"]}
                             onClick={(event) => {
@@ -424,7 +441,7 @@ export default function Contacts() {
 
                               setDropdownOpen((prevDropdownOpen) => ({
                                 ...prevDropdownOpen,
-                                [userItemId]: !prevDropdownOpen[userItemId],
+                                [user.id]: !prevDropdownOpen[user.id],
                               }));
                             }}
                           >
@@ -433,7 +450,7 @@ export default function Contacts() {
                             <div className={styles["dot"]}></div>
                           </div>
                         )}
-                        {dropdownOpen[userItemId] && (
+                        {dropdownOpen[user.id] && (
                           <div
                             className={styles["dropdown-container"]}
                             ref={dropdownRef}
@@ -442,6 +459,11 @@ export default function Contacts() {
                               isOpen={true}
                               onEditClick={handleEditButtonClick}
                               onDeleteClick={handleOpenDeleteModal}
+                              canDelete={
+                                userPermissionsMap[user.id]?.includes(
+                                  "delete",
+                                ) || false
+                              }
                             />
                           </div>
                         )}
