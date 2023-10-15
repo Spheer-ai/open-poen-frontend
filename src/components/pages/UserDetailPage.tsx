@@ -13,6 +13,13 @@ import EditIcon from "/edit-icon.svg";
 import ChangePasswordIcon from "/change-password-icon.svg";
 import { fetchUserDetails, fetchInitiatives } from "../middleware/Api";
 
+const roleLabels = {
+  administrator: "Beheerder",
+  financial: "Financieel",
+  user: "Gebruiker",
+  superuser: "Super beheerder",
+};
+
 export default function UserDetailsPage() {
   const { user: authUser } = useAuth();
   const token = authUser?.token;
@@ -87,7 +94,14 @@ export default function UserDetailsPage() {
                   </div>
                 </div>
                 <div className={styles["user-role-label"]}>
-                  <p className={styles["user-role"]}>{userDetails.role}</p>
+                  <p className={styles["user-role"]}>
+                    {roleLabels[userDetails.role] || userDetails.role}
+                  </p>
+                  {userDetails.is_superuser && (
+                    <p className={styles["user-role"]}>
+                      {roleLabels.superuser}
+                    </p>
+                  )}
                 </div>
                 <div className={styles["top-right-button-container"]}>
                   <div

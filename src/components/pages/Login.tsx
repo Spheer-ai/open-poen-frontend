@@ -70,7 +70,7 @@ export default function Login({ onLogin }: { onLogin: () => void }) {
 
     handleLogin();
   };
-  
+
   const handleSubmit = (e) => {
     e.preventDefault();
     handleFormSubmit();
@@ -91,47 +91,47 @@ export default function Login({ onLogin }: { onLogin: () => void }) {
             <div className={styles["project-title"]}>
               <img src="/login-openpoen-logo.svg" alt="Project Name" />
             </div>
-            <form onSubmit={handleSubmit}> 
-            <div className={styles["input-container"]}>
-              <span className={styles["icon"]}>
-                <img
-                  src="/input-username.svg"
-                  alt="Username"
-                  width="20"
-                  height="20"
+            <form onSubmit={handleSubmit}>
+              <div className={styles["input-container"]}>
+                <span className={styles["icon"]}>
+                  <img
+                    src="/input-username.svg"
+                    alt="Username"
+                    width="20"
+                    height="20"
+                  />
+                </span>
+                <input
+                  type="text"
+                  placeholder="E-mailadres"
+                  value={username}
+                  onChange={handleEmailChange}
                 />
-              </span>
-              <input
-                type="text"
-                placeholder="E-mailadres"
-                value={username}
-                onChange={handleEmailChange}
-              />
-            </div>
-            <div className={styles["input-container"]}>
-              <span className={styles["icon"]}>
-                <img
-                  src="/input-password.svg"
-                  alt="Wachtwoord"
-                  width="20"
-                  height="20"
+              </div>
+              <div className={styles["input-container"]}>
+                <span className={styles["icon"]}>
+                  <img
+                    src="/input-password.svg"
+                    alt="Wachtwoord"
+                    width="20"
+                    height="20"
+                  />
+                </span>
+                <input
+                  type="password"
+                  placeholder="Password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                 />
-              </span>
-              <input
-                type="password"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </div>
-            <button
-              className={styles["login-button"]}
-              onClick={handleFormSubmit}
-              type="submit"
-              disabled={isLoading}
-            >
-              {isLoading ? "Inloggen..." : "Login"}
-            </button>
+              </div>
+              <button
+                className={styles["login-button"]}
+                onClick={handleFormSubmit}
+                type="submit"
+                disabled={isLoading}
+              >
+                {isLoading ? "Inloggen..." : "Login"}
+              </button>
             </form>
             {error && <p className={styles["error-message"]}>{error}</p>}
             {formSubmitted && emailValidationError && (

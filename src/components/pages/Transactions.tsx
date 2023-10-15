@@ -21,7 +21,7 @@ export default function Transactions() {
     console.log("Search query in Transactions component:", query);
   };
 
-  const { permissions } = usePermissions();
+  const { globalPermissions } = usePermissions();
 
   return (
     <div className={styles["side-panel"]}>
@@ -32,7 +32,7 @@ export default function Transactions() {
         onSettingsClick={() => {}}
         onCtaClick={handleCtaClick}
         onSearch={handleSearch}
-        permissions={permissions}
+        globalPermissions={globalPermissions}
       />
 
       <AddItemModal isOpen={isModalOpen} onClose={handleCloseModal}>

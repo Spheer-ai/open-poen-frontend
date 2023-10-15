@@ -5,4 +5,5 @@ export interface UserDetails {
   image: string | null;
   userId: string;
   token: string | null;
+  is_superuser?: boolean;
 }
