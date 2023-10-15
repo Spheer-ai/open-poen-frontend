@@ -12,6 +12,7 @@ import DropdownMenu from "../elements/dropdown-menu/DropDownMenu";
 import { UserData } from "../../types/ContactsTypes";
 import EditUserForm from "../forms/EditUserForm";
 import DeleteUserForm from "../forms/DeleteUserForm";
+import { usePermissions } from "../../contexts/PermissionContext";
 
 interface DecodedToken {
   sub: string;
@@ -33,7 +34,7 @@ export default function Contacts() {
     {},
   );
   const [filteredData, setFilteredData] = useState<UserData[]>([]);
-
+  const { permissions } = usePermissions();
   const dropdownRef = useRef(null as HTMLDivElement | null);
 
   const navigate = useNavigate();
@@ -197,6 +198,7 @@ export default function Contacts() {
         onSettingsClick={() => {}}
         onCtaClick={handleCtaClick}
         onSearch={handleSearch}
+        permissions={permissions}
       />
       <AddItemModal isOpen={isModalOpen} onClose={handleCloseModal}>
         <AddUserForm

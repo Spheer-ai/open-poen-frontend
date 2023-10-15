@@ -5,4 +5,5 @@ export interface TopNavigationBarProps {
   onSettingsClick?: () => void;
   onCtaClick?: () => void;
   onSearch: (query: string) => void;
+  permissions: string[];
 }

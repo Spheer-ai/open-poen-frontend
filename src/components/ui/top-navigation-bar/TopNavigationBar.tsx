@@ -10,7 +10,10 @@ const TopNavigationBar: React.FC<TopNavigationBarProps> = ({
   showCta,
   onCtaClick,
   onSearch,
+  permissions,
 }) => {
+  const hasWritePermission = permissions.includes("edit");
+
   return (
     <div className={styles["top-navigation-bar"]}>
       <div className={styles["bar-items"]}>
@@ -23,7 +26,7 @@ const TopNavigationBar: React.FC<TopNavigationBarProps> = ({
               <img src="/profile-settings.svg" alt="Profile Settings" />
             </div>
           )}
-          {showCta && (
+          {showCta && hasWritePermission && (
             <div className={styles["cta-button"]} onClick={onCtaClick}>
               <button className={styles["cta-button"]}>+</button>
             </div>

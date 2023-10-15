@@ -1,5 +1,5 @@
 export interface UserData {
-  token: string | null;
+  token: string | null | undefined;
 }
 
 export interface AuthContextValue {

@@ -1,11 +1,13 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useAuth } from "../../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { useIntl } from "react-intl";
 import styles from "../../assets/scss/Login.module.scss";
+import { usePermissions } from "../../contexts/PermissionContext";
 
 export default function Login({ onLogin }: { onLogin: () => void }) {
-  const { login, isLoading } = useAuth();
+  const { login, user, isLoading } = useAuth();
+  const { permissions, setPermissions, fetchPermissions } = usePermissions();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -65,6 +67,21 @@ export default function Login({ onLogin }: { onLogin: () => void }) {
     handleLogin();
   };
 
+  useEffect(() => {
+    if (user && user.token) {
+      const fetchAndSetPermissions = async () => {
+        const fetchedPermissions = await fetchPermissions(
+          undefined,
+          user.token || undefined,
+        );
+        if (fetchedPermissions) {
+          setPermissions(fetchedPermissions);
+        }
+      };
+      fetchAndSetPermissions();
+    }
+  }, [user, fetchPermissions, setPermissions]);
+
   return (
     <div className={styles["login-modal"]}>
       <div
@@ -114,7 +131,7 @@ export default function Login({ onLogin }: { onLogin: () => void }) {
             </div>
             <button
               className={styles["login-button"]}
-              onClick={handleFormSubmit} // Trigger form submission
+              onClick={handleFormSubmit}
               disabled={isLoading}
             >
               {isLoading ? "Inloggen..." : "Login"}

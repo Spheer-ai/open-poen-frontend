@@ -5,11 +5,12 @@ import PageContent from "../ui/layout/PageContent";
 import styles from "../../assets/scss/Funds.module.scss";
 import AddFundModal from "../modals/AddFundMobile";
 import AddFundDesktop from "../modals/AddFundDesktop";
+import { usePermissions } from "../../contexts/PermissionContext";
 
 export default function Funds() {
   const navigate = useNavigate();
   const { action } = useParams();
-
+  const { permissions } = usePermissions();
   const [isModalOpen, setIsModalOpen] = useState(action === "add-funds");
   const [showPageContent, setShowPageContent] = useState(false);
   const [isBlockingInteraction, setIsBlockingInteraction] = useState(false);
@@ -61,6 +62,7 @@ export default function Funds() {
           onSettingsClick={() => {}}
           onCtaClick={handleToggleAddFundModal}
           onSearch={handleSearch}
+          permissions={permissions}
         />
       </div>
 

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import TopNavigationBar from "../ui/top-navigation-bar/TopNavigationBar";
 import AddItemModal from "../modals/AddItemModal";
 import styles from "../../assets/scss/Transactions.module.scss";
+import { usePermissions } from "../../contexts/PermissionContext";
 
 export default function Transactions() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -20,6 +21,8 @@ export default function Transactions() {
     console.log("Search query in Transactions component:", query);
   };
 
+  const { permissions } = usePermissions();
+
   return (
     <div className={styles["side-panel"]}>
       <TopNavigationBar
@@ -29,6 +32,7 @@ export default function Transactions() {
         onSettingsClick={() => {}}
         onCtaClick={handleCtaClick}
         onSearch={handleSearch}
+        permissions={permissions}
       />
 
       <AddItemModal isOpen={isModalOpen} onClose={handleCloseModal}>

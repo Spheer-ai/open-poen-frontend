@@ -2,10 +2,11 @@ import { createContext, useContext } from "react";
 
 interface PermissionContextType {
   permissions: string[];
+  setPermissions: React.Dispatch<React.SetStateAction<string[]>>;
   fetchPermissions: (
     entityId?: number,
     token?: string,
-  ) => Promise<string[] | undefined>; // Updated return type
+  ) => Promise<string[] | undefined>;
 }
 
 const PermissionContext = createContext<PermissionContextType | undefined>(

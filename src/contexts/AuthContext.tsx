@@ -49,13 +49,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       setIsLoading(true);
 
       const response = await apiLogin(username, password);
-
       const token = response.access_token;
       localStorage.setItem("token", token);
       setUser({ token });
 
       setIsLoading(false);
-
       return true;
     } catch (error) {
       setIsLoading(false);
