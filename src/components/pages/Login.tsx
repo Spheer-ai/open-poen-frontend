@@ -70,6 +70,11 @@ export default function Login({ onLogin }: { onLogin: () => void }) {
 
     handleLogin();
   };
+  
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    handleFormSubmit();
+  };
 
   return (
     <div className={styles["login-modal"]}>
@@ -86,6 +91,7 @@ export default function Login({ onLogin }: { onLogin: () => void }) {
             <div className={styles["project-title"]}>
               <img src="/login-openpoen-logo.svg" alt="Project Name" />
             </div>
+            <form onSubmit={handleSubmit}> 
             <div className={styles["input-container"]}>
               <span className={styles["icon"]}>
                 <img
@@ -121,11 +127,12 @@ export default function Login({ onLogin }: { onLogin: () => void }) {
             <button
               className={styles["login-button"]}
               onClick={handleFormSubmit}
+              type="submit"
               disabled={isLoading}
             >
               {isLoading ? "Inloggen..." : "Login"}
             </button>
-
+            </form>
             {error && <p className={styles["error-message"]}>{error}</p>}
             {formSubmitted && emailValidationError && (
               <p className={styles["error-message"]}>
