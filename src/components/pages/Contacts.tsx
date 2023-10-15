@@ -35,6 +35,7 @@ export default function Contacts() {
   );
   const [filteredData, setFilteredData] = useState<UserData[]>([]);
   const { permissions } = usePermissions();
+  const { globalPermissions } = usePermissions();
   const dropdownRef = useRef(null as HTMLDivElement | null);
 
   const navigate = useNavigate();
@@ -71,6 +72,31 @@ export default function Contacts() {
 
   const handleOpenDeleteModal = () => {
     setIsDeleteModalOpen(true);
+  };
+
+  const showThreeDots = (userId) => {
+    // If it's the logged-in user
+    if (userId === loggedInUserId) {
+      // For user role: never show
+      if (permissions.includes("read") && !permissions.includes("delete"))
+        return false;
+      // For administrator: always show
+      if (permissions.includes("read") && permissions.includes("edit"))
+        return true;
+      // For financial: show if they have edit permission
+      if (permissions.includes("edit")) return true;
+    } else {
+      // For other users
+      if (permissions.includes("delete")) return true; // admin and potentially some financial users
+    }
+    return false;
+  };
+
+  // Determine if delete option should be displayed
+  const showDeleteOption = (userId) => {
+    if (userId === loggedInUserId && permissions.includes("delete"))
+      return true; // only for admin on their own profile
+    return false;
   };
 
   useEffect(() => {
@@ -189,6 +215,8 @@ export default function Contacts() {
   console.log("isEditModalOpen:", isEditModalOpen);
   console.log("activeUserId:", activeUserId);
 
+  console.log("Permissions before passing to TopNavigationBar:", permissions);
+
   return (
     <div className={styles["side-panel"]}>
       <TopNavigationBar
@@ -198,7 +226,7 @@ export default function Contacts() {
         onSettingsClick={() => {}}
         onCtaClick={handleCtaClick}
         onSearch={handleSearch}
-        permissions={permissions}
+        globalPermissions={globalPermissions}
       />
       <AddItemModal isOpen={isModalOpen} onClose={handleCloseModal}>
         <AddUserForm
@@ -277,6 +305,7 @@ export default function Contacts() {
                     fullName.toLowerCase().includes(keyword) ||
                     email.toLowerCase().includes(keyword),
                 );
+                const isCurrentUser = userItemId === loggedInId;
 
                 if (!matchesSearch) {
                   return null;
@@ -339,9 +368,9 @@ export default function Contacts() {
                             }));
                           }}
                         >
-                          <div className={styles["dot"]}></div>{" "}
-                          <div className={styles["dot"]}></div>{" "}
-                          <div className={styles["dot"]}></div>{" "}
+                          <div className={styles["dot"]}></div>
+                          <div className={styles["dot"]}></div>
+                          <div className={styles["dot"]}></div>
                         </div>
                         {dropdownOpen[userItemId] && (
                           <div
@@ -386,22 +415,24 @@ export default function Contacts() {
                             />
                           </div>
                         )}
-                        <div
-                          className={styles["three-dots"]}
-                          onClick={(event) => {
-                            event.stopPropagation();
-                            event.preventDefault();
+                        {showThreeDots(userItemId) && (
+                          <div
+                            className={styles["three-dots"]}
+                            onClick={(event) => {
+                              event.stopPropagation();
+                              event.preventDefault();
 
-                            setDropdownOpen((prevDropdownOpen) => ({
-                              ...prevDropdownOpen,
-                              [userItemId]: !prevDropdownOpen[userItemId],
-                            }));
-                          }}
-                        >
-                          <div className={styles["dot"]}></div>{" "}
-                          <div className={styles["dot"]}></div>{" "}
-                          <div className={styles["dot"]}></div>{" "}
-                        </div>
+                              setDropdownOpen((prevDropdownOpen) => ({
+                                ...prevDropdownOpen,
+                                [userItemId]: !prevDropdownOpen[userItemId],
+                              }));
+                            }}
+                          >
+                            <div className={styles["dot"]}></div>
+                            <div className={styles["dot"]}></div>
+                            <div className={styles["dot"]}></div>
+                          </div>
+                        )}
                         {dropdownOpen[userItemId] && (
                           <div
                             className={styles["dropdown-container"]}

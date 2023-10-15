@@ -3,10 +3,15 @@ import { fetchUserPermissions } from "../middleware/Api";
 
 export const useFetchPermissions = () => {
   const [permissions, setPermissions] = useState<string[]>([]);
+  const [globalPermissions, setGlobalPermissions] = useState<string[]>([]);
 
-  const fetchPermissions = async (entityId?: number, token?: string) => {
+  const fetchPermissionsWithEntityId = async (
+    entityId?: number,
+    token?: string,
+  ) => {
     try {
       const userPermissions = await fetchUserPermissions(entityId, token);
+      console.log("API Response for permissions:", userPermissions);
       setPermissions(userPermissions);
       return userPermissions;
     } catch (error) {
@@ -14,5 +19,16 @@ export const useFetchPermissions = () => {
     }
   };
 
-  return { permissions, fetchPermissions };
+  const fetchGlobalPermissions = async (token: string): Promise<string[]> => {
+    const globalPerms = await fetchUserPermissions(undefined, token);
+    setGlobalPermissions(globalPerms);
+    return globalPerms;
+  };
+
+  return {
+    permissions,
+    fetchPermissionsWithEntityId,
+    globalPermissions,
+    fetchGlobalPermissions,
+  };
 };

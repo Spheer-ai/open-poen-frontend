@@ -10,7 +10,7 @@ import { usePermissions } from "../../contexts/PermissionContext";
 export default function Funds() {
   const navigate = useNavigate();
   const { action } = useParams();
-  const { permissions } = usePermissions();
+  const { globalPermissions } = usePermissions();
   const [isModalOpen, setIsModalOpen] = useState(action === "add-funds");
   const [showPageContent, setShowPageContent] = useState(false);
   const [isBlockingInteraction, setIsBlockingInteraction] = useState(false);
@@ -62,7 +62,7 @@ export default function Funds() {
           onSettingsClick={() => {}}
           onCtaClick={handleToggleAddFundModal}
           onSearch={handleSearch}
-          permissions={permissions}
+          globalPermissions={globalPermissions}
         />
       </div>
 

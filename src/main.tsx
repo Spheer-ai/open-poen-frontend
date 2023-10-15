@@ -3,7 +3,7 @@ import ReactDOM from "react-dom/client";
 import App from "./App";
 import "./assets/scss/global/index.module.scss";
 
-const locale = "en";
+const locale = "nl";
 
 const root = ReactDOM.createRoot(document.getElementById("root")!);
 

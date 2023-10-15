@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { login as apiLogin } from "../components/middleware/Api";
+import { getUserData, login as apiLogin } from "../components/middleware/Api";
 import { UserData, AuthContextValue } from "../types/AuthContextTypes";
 import { IntlProvider, createIntl, IntlShape } from "react-intl";
 import { messages, defaultLocale } from "../locale/messages";
@@ -50,8 +50,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
       const response = await apiLogin(username, password);
       const token = response.access_token;
+
+      const userData = await getUserData(token);
+
+      setUser({
+        token,
+        userId: userData.id,
+        username: userData.username,
+      });
+
       localStorage.setItem("token", token);
-      setUser({ token });
 
       setIsLoading(false);
       return true;

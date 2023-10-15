@@ -317,6 +317,13 @@ export const fetchUserPermissions = async (
   entityId?: number,
   token?: string,
 ): Promise<string[]> => {
+  console.log(
+    "fetchUserPermissions called with entityId:",
+    entityId,
+    "and token:",
+    token,
+  );
+
   try {
     const params = {
       entity_class: "User",
@@ -334,6 +341,8 @@ export const fetchUserPermissions = async (
       params,
       headers,
     });
+
+    console.log("API Response for permissions:", response.data);
 
     return response.data.actions;
   } catch (error) {

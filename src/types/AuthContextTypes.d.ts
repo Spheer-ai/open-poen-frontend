@@ -1,5 +1,7 @@
 export interface UserData {
-  token: string | null | undefined;
+  userId?: number;
+  username?: string;
+  token: string;
 }
 
 export interface AuthContextValue {

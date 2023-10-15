@@ -7,7 +7,7 @@ import { usePermissions } from "../../contexts/PermissionContext";
 
 export default function Login({ onLogin }: { onLogin: () => void }) {
   const { login, user, isLoading } = useAuth();
-  const { permissions, setPermissions, fetchPermissions } = usePermissions();
+  const { fetchPermissions } = usePermissions();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -27,6 +27,10 @@ export default function Login({ onLogin }: { onLogin: () => void }) {
 
       if (success) {
         onLogin();
+
+        if (user && user.token) {
+          await fetchPermissions(user.userId, user.token);
+        }
       } else {
         setError(intl.formatMessage({ id: "auth.usernamePasswordRequired" }));
       }
@@ -58,7 +62,7 @@ export default function Login({ onLogin }: { onLogin: () => void }) {
   };
 
   const handleBackdropClick = () => {
-    navigate("/funds");
+    navigate("/contacts");
   };
 
   const handleFormSubmit = () => {
@@ -66,21 +70,6 @@ export default function Login({ onLogin }: { onLogin: () => void }) {
 
     handleLogin();
   };
-
-  useEffect(() => {
-    if (user && user.token) {
-      const fetchAndSetPermissions = async () => {
-        const fetchedPermissions = await fetchPermissions(
-          undefined,
-          user.token || undefined,
-        );
-        if (fetchedPermissions) {
-          setPermissions(fetchedPermissions);
-        }
-      };
-      fetchAndSetPermissions();
-    }
-  }, [user, fetchPermissions, setPermissions]);
 
   return (
     <div className={styles["login-modal"]}>

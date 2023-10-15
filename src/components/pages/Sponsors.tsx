@@ -13,7 +13,7 @@ export default function Sponsors() {
   const [isModalOpen, setIsModalOpen] = useState(action === "add-sponsor");
   const [showPageContent, setShowPageContent] = useState(!!sponsorId);
   const [isBlockingInteraction, setIsBlockingInteraction] = useState(false);
-  const { permissions } = usePermissions();
+  const { globalPermissions } = usePermissions();
   const isMobileScreen = window.innerWidth < 768;
 
   useEffect(() => {
@@ -60,7 +60,7 @@ export default function Sponsors() {
           onSettingsClick={() => {}}
           onCtaClick={handleToggleAddSponsorModal}
           onSearch={handleSearch}
-          permissions={permissions}
+          globalPermissions={globalPermissions}
         />
         <SponsorList onShowPageContent={handleShowPageContent} />
       </div>

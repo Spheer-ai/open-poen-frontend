@@ -35,7 +35,7 @@ export default function AppRoutes() {
 
   const handleLogin = () => {
     setIsAuthenticated(true);
-    navigate("/funds");
+    navigate("/contacts");
     setShowLoginModal(false);
   };
 

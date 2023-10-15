@@ -1,28 +1,33 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import PermissionContext from "./PermissionContext";
 import { useFetchPermissions } from "../components/hooks/useFetchPermissions";
+import { useAuth } from "./AuthContext";
 import { PermissionProviderProps } from "../types/PermissionProviderTypes";
 
 const PermissionProvider: React.FC<PermissionProviderProps> = ({
   children,
 }) => {
-  const [storedPermissions, setStoredPermissions] = useState<string[]>([]);
-  const { permissions, fetchPermissions } = useFetchPermissions();
+  const {
+    permissions,
+    fetchPermissionsWithEntityId,
+    globalPermissions,
+    fetchGlobalPermissions,
+  } = useFetchPermissions();
+  const { user } = useAuth();
 
   useEffect(() => {
-    fetchPermissions();
-  }, []);
-
-  useEffect(() => {
-    setStoredPermissions(permissions);
-  }, [permissions]);
+    if (user && user.token) {
+      fetchGlobalPermissions(user.token);
+    }
+  }, [user]);
 
   return (
     <PermissionContext.Provider
       value={{
-        permissions: storedPermissions,
-        setPermissions: setStoredPermissions,
-        fetchPermissions,
+        permissions,
+        fetchPermissions: fetchPermissionsWithEntityId,
+        globalPermissions,
+        fetchGlobalPermissions,
       }}
     >
       {children}
