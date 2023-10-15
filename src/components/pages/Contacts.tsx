@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link, Outlet, useNavigate } from "react-router-dom";
+import ReactTooltip from "react-tooltip";
+
 import {
   fetchUserPermissions,
   getUserById,
@@ -17,7 +19,6 @@ import { UserData } from "../../types/ContactsTypes";
 import EditUserForm from "../forms/EditUserForm";
 import DeleteUserForm from "../forms/DeleteUserForm";
 import { usePermissions } from "../../contexts/PermissionContext";
-
 interface DecodedToken {
   sub: string;
 }
@@ -349,10 +350,15 @@ export default function Contacts() {
                             className={styles["profile-image"]}
                           />
                           <div className={styles["user-info"]}>
-                            <p>
+                            <p
+                              data-tip={user.first_name + " " + user.last_name}
+                            >
                               {user.first_name} {user.last_name}
                             </p>
-                            <p className={styles["profile-email"]}>
+                            <p
+                              className={styles["profile-email"]}
+                              data-tip={user.email}
+                            >
                               {user.email}
                             </p>
                           </div>
@@ -415,10 +421,15 @@ export default function Contacts() {
                             className={styles["profile-image"]}
                           />
                           <div className={styles["user-info"]}>
-                            <p>
+                            <p
+                              data-tip={user.first_name + " " + user.last_name}
+                            >
                               {user.first_name} {user.last_name}
                             </p>
-                            <p className={styles["profile-email"]}>
+                            <p
+                              className={styles["profile-email"]}
+                              data-tip={user.email}
+                            >
                               {user.email}
                             </p>
                           </div>
