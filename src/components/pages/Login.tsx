@@ -15,6 +15,7 @@ export default function Login({ onLogin }: { onLogin: () => void }) {
   const [formSubmitted, setFormSubmitted] = useState(false);
   const navigate = useNavigate();
   const intl = useIntl();
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleLogin = async () => {
     try {
@@ -76,6 +77,10 @@ export default function Login({ onLogin }: { onLogin: () => void }) {
     handleFormSubmit();
   };
 
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
   return (
     <div className={styles["login-modal"]}>
       <div
@@ -118,11 +123,24 @@ export default function Login({ onLogin }: { onLogin: () => void }) {
                   />
                 </span>
                 <input
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   placeholder="Password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                 />
+                <span
+                  className={styles["toggle-password"]}
+                  onClick={togglePasswordVisibility}
+                >
+                  <img
+                    src={
+                      showPassword
+                        ? "/eye-closed-icon.svg"
+                        : "/eye-open-icon.svg"
+                    }
+                    alt="Toggle Password Visibility"
+                  />
+                </span>
               </div>
               <button
                 className={styles["login-button"]}

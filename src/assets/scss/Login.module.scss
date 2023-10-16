@@ -151,3 +151,15 @@ input {
     transform: rotate(360deg);
   }
 }
+
+.toggle-password {
+  display: flex;
+  cursor: pointer;
+  height: 20px;
+  right: 20px;
+  margin-right: 10px;
+}
+
+.input-container {
+  position: relative;
+}
