@@ -15,6 +15,8 @@ import FundDetail from "../components/pages/FundDetail";
 import ResetPassword from "../components/pages/onboarding/ResetPassword";
 import ResetPasswordLayout from "../components/pages/onboarding/ResetPasswordLayout";
 import ResetPasswordRequest from "../components/pages/onboarding/ResetPasswordRequest";
+import SponsorDetail from "../components/pages/SponsorDetail";
+import PermissionChecker from "../components/pages/PermissionChecker";
 
 export default function AppRoutes() {
   const navigate = useNavigate();
@@ -33,7 +35,7 @@ export default function AppRoutes() {
 
   const handleLogin = () => {
     setIsAuthenticated(true);
-    navigate("/funds");
+    navigate("/contacts");
     setShowLoginModal(false);
   };
 
@@ -70,6 +72,10 @@ export default function AppRoutes() {
                 <ResetPasswordRequest />
               </ResetPasswordLayout>
             }
+          />
+          <Route
+            path="/permission-checker"
+            element={<PermissionChecker></PermissionChecker>}
           />
           <Route
             path="/contacts/*"
@@ -126,7 +132,21 @@ export default function AppRoutes() {
                 }
               />
               <Route
-                path="/sponsors"
+                path="/sponsors/*"
+                element={
+                  <InlineModalLayout navigate={navigate}>
+                    {<Sponsors />}
+                    <Routes>
+                      <Route
+                        path="/detail/:funderId"
+                        element={<SponsorDetail />}
+                      />
+                    </Routes>
+                  </InlineModalLayout>
+                }
+              />
+              <Route
+                path="/sponsors/:action"
                 element={
                   <InlineModalLayout navigate={navigate}>
                     {<Sponsors />}

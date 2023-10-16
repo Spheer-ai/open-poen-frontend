@@ -288,3 +288,65 @@ export const requestPasswordReset = async (email: string) => {
     throw error;
   }
 };
+
+export const fetchSponsors = async () => {
+  try {
+    const response = await api.get("/funders");
+    return response.data.funders;
+  } catch (error) {
+    console.error("Error fetching sponsors:", error);
+    throw error;
+  }
+};
+
+export const getFunderById = async (token: string, funderId: number) => {
+  try {
+    const response = await api.get(`/funder/${funderId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching funder:", error);
+    throw error;
+  }
+};
+
+export const fetchUserPermissions = async (
+  entityId?: number,
+  token?: string,
+): Promise<string[]> => {
+  console.log(
+    "fetchUserPermissions called with entityId:",
+    entityId,
+    "and token:",
+    token,
+  );
+
+  try {
+    const params = {
+      entity_class: "User",
+    };
+    if (entityId) {
+      params["entity_id"] = entityId;
+    }
+
+    const headers = {};
+    if (token) {
+      headers["Authorization"] = `Bearer ${token}`;
+    }
+
+    const response = await api.get("/auth/entity-access/actions", {
+      params,
+      headers,
+    });
+
+    console.log("API Response for permissions:", response.data);
+
+    return response.data.actions;
+  } catch (error) {
+    console.error("Failed to fetch user permissions:", error);
+    throw error;
+  }
+};

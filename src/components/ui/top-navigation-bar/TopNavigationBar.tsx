@@ -10,7 +10,13 @@ const TopNavigationBar: React.FC<TopNavigationBarProps> = ({
   showCta,
   onCtaClick,
   onSearch,
+  globalPermissions,
 }) => {
+  const hasCreatePermission = globalPermissions.includes("create");
+  console.log(
+    "Inside TopNavigationBar - hasCreatePermission:",
+    hasCreatePermission,
+  );
   return (
     <div className={styles["top-navigation-bar"]}>
       <div className={styles["bar-items"]}>
@@ -23,7 +29,7 @@ const TopNavigationBar: React.FC<TopNavigationBarProps> = ({
               <img src="/profile-settings.svg" alt="Profile Settings" />
             </div>
           )}
-          {showCta && (
+          {showCta && hasCreatePermission && (
             <div className={styles["cta-button"]} onClick={onCtaClick}>
               <button className={styles["cta-button"]}>+</button>
             </div>

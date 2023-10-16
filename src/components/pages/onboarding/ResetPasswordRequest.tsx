@@ -34,7 +34,7 @@ function ResetPasswordRequest() {
         <div className={styles["project-title"]}>
           <img src="/login-openpoen-logo.svg" alt="Project Name" />
         </div>
-        <h3>Wachtwoord Reset Aanvragen</h3>
+        <h3>Account aanmaken</h3>
         {!success && (
           <>
             <p>Je bent uitgenodigd. Vul je e-mailadres in om verder te gaan.</p>
@@ -53,7 +53,7 @@ function ResetPasswordRequest() {
         {success && (
           <div>
             <p>Er is een link naar je e-mailadres gestuurd.</p>
-            <p>Volg de link om je wachtwoord te resetten.</p>
+            <p>Volg de link om je wachtwoord in te stellen.</p>
           </div>
         )}
         {!success && (

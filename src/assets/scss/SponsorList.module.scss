@@ -1,0 +1,75 @@
+/* Existing styles for SponsorList */
+.sponsor-list {
+  list-style-type: none;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.sponsor-list-item {
+  align-items: center;
+  cursor: pointer;
+  justify-content: space-between;
+  padding: 10px;
+  width: 100%;
+  border: 1px solid #dee2e6;
+  transition: background-color 0.3s ease;
+  align-items: flex-start;
+  -webkit-animation-duration: 0.3s;
+  animation-duration: 0.3s;
+  -webkit-animation-fill-mode: forwards;
+  animation-fill-mode: forwards;
+  -webkit-animation-name: _opacity-change_vz7di_1;
+  animation-name: _opacity-change_vz7di_1;
+  background-color: transparent;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  justify-content: center;
+  align-content: center;
+  margin: 5px 0;
+  padding: 12px;
+  transition:
+    background-color 0.4s ease-in-out,
+    border 0.4s ease-in-out;
+  width: 100%;
+}
+
+.sponsor-info {
+  padding: 20px;
+}
+
+.sponsor-link {
+  text-decoration: none;
+  color: rgba(16, 18, 19, 1);
+  font-weight: 700;
+}
+
+.sponsor-website {
+  margin: 0px;
+  margin-top: 10px;
+  color: #6a7178;
+  font-size: 14px;
+}
+
+.sponsor-button {
+  /* Add styling for the button as needed */
+}
+
+/* Active sponsor styles */
+.active-sponsor {
+  background-color: rgba(
+    0,
+    0,
+    0,
+    0.08
+  ); /* Optional background color for active sponsor */
+}
+
+/* Hover effect for sponsor items */
+.sponsor-list-item:hover {
+  background-color: #f0f0f0; /* Optional background color on hover */
+}

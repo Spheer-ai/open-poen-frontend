@@ -26,6 +26,7 @@ ul {
   font-size: 16px;
   margin: 0px;
   text-decoration: none !important;
+  overflow: hidden;
 }
 
 .user-info p {
@@ -65,6 +66,7 @@ ul {
   align-items: center;
   justify-content: space-between;
   padding: 10px;
+  overflow: hidden;
 }
 
 .user-link {
@@ -171,4 +173,12 @@ li {
     background-color 0.4s ease-in-out,
     border 0.4s ease-in-out;
   width: 100%;
+}
+
+.profile-email,
+.user-info > p {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
 }

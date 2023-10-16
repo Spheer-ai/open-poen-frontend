@@ -27,6 +27,7 @@ const EditUserProfileForm: React.FC<EditUserProfileFormProps> = ({
   const [isConfirmed, setIsConfirmed] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [isError, setIsError] = useState(false);
+  const [bioCharCount, setBioCharCount] = useState<number>(0);
 
   useEffect(() => {
     if (userId) {
@@ -85,6 +86,14 @@ const EditUserProfileForm: React.FC<EditUserProfileFormProps> = ({
     onCancel();
 
     window.location.reload();
+  };
+
+  const handleBioChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const value = e.target.value;
+
+    setBioCharCount(value.length);
+
+    setFormData({ ...formData, biography: value });
   };
 
   return (
@@ -146,9 +155,25 @@ const EditUserProfileForm: React.FC<EditUserProfileFormProps> = ({
                 name="biography"
                 placeholder="Voer een biografie in"
                 value={formData.biography}
-                onChange={handleChange}
+                onChange={handleBioChange}
                 className={isSuccess ? "success" : isError ? "error" : ""}
               />
+              <div className={styles["chart-count-container"]}>
+                <div
+                  className={
+                    bioCharCount > 500
+                      ? styles["char-count-error"]
+                      : styles["char-count"]
+                  }
+                >
+                  {bioCharCount}/500
+                </div>
+                {bioCharCount > 500 && (
+                  <div className={styles["error-message"]}>
+                    Biografie mag maximaal 500 tekens bevatten.
+                  </div>
+                )}
+              </div>
             </div>
             <div className={styles["form-group"]}>
               <label>Profielfoto</label>

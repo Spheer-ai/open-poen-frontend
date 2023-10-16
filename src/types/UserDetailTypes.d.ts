@@ -4,4 +4,6 @@ export interface UserDetails {
   email: string;
   image: string | null;
   userId: string;
+  token: string | null;
+  is_superuser?: boolean;
 }

@@ -8,6 +8,7 @@ export interface UserDetails {
   email: string;
   role: string;
   image: string | null;
+  is_superuser?: boolean;
 }
 
 export default UserDetails;

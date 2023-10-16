@@ -8,11 +8,11 @@ interface PageContentProps {
   onClose: () => void;
 }
 
-export default function PageContent({
+const PageContent: React.FC<PageContentProps> = ({
   children,
   showContent,
   onClose,
-}: PageContentProps) {
+}) => {
   useEffect(() => {
     const handleResize = () => {};
 
@@ -38,4 +38,6 @@ export default function PageContent({
       )}
     </div>
   );
-}
+};
+
+export default PageContent;

@@ -5,32 +5,24 @@ import PageContent from "../ui/layout/PageContent";
 import styles from "../../assets/scss/Funds.module.scss";
 import AddFundModal from "../modals/AddFundMobile";
 import AddFundDesktop from "../modals/AddFundDesktop";
+import { usePermissions } from "../../contexts/PermissionContext";
 
 export default function Funds() {
   const navigate = useNavigate();
-  const { action } = useParams(); // Get the route parameter "action"
-
+  const { action } = useParams();
+  const { globalPermissions } = usePermissions();
   const [isModalOpen, setIsModalOpen] = useState(action === "add-funds");
   const [showPageContent, setShowPageContent] = useState(false);
-  const [isBlockingInteraction, setIsBlockingInteraction] = useState(false); // State to block interactions
+  const [isBlockingInteraction, setIsBlockingInteraction] = useState(false);
 
   const isMobileScreen = window.innerWidth < 768;
 
   useEffect(() => {
-    console.log("action:", action); // Log the action parameter
+    console.log("action:", action);
     if (action === "add-funds") {
       setIsModalOpen(true);
     }
   }, [action]);
-
-  const handleCloseModal = () => {
-    setIsBlockingInteraction(true); // Block interactions during timeout
-    setTimeout(() => {
-      setIsBlockingInteraction(false); // Unblock interactions
-      setIsModalOpen(false);
-      navigate("/funds"); // Update the route when the modal is closed
-    }, 150); // Adjust the delay time as needed
-  };
 
   const handleSearch = (query) => {
     console.log("Search query in UserDetailsPage:", query);
@@ -48,15 +40,15 @@ export default function Funds() {
 
   const handleToggleAddFundModal = () => {
     if (isModalOpen) {
-      setIsBlockingInteraction(true); // Block interactions during timeout
+      setIsBlockingInteraction(true);
       setTimeout(() => {
-        setIsBlockingInteraction(false); // Unblock interactions
+        setIsBlockingInteraction(false);
         setIsModalOpen(false);
-        navigate("/funds"); // Update the route when the modal is closed
-      }, 300); // Adjust the delay time as needed
+        navigate("/funds");
+      }, 300);
     } else {
-      setIsModalOpen(true); // Open the modal
-      navigate("/funds/add-funds"); // Update the route to "/funds/add-funds"
+      setIsModalOpen(true);
+      navigate("/funds/add-funds");
     }
   };
 
@@ -70,6 +62,7 @@ export default function Funds() {
           onSettingsClick={() => {}}
           onCtaClick={handleToggleAddFundModal}
           onSearch={handleSearch}
+          globalPermissions={globalPermissions}
         />
       </div>
 
@@ -80,7 +73,6 @@ export default function Funds() {
           isBlockingInteraction={isBlockingInteraction}
         />
       ) : (
-        // Render AddFundDesktop for desktop screens
         <AddFundDesktop
           isOpen={isModalOpen}
           onClose={handleToggleAddFundModal}
@@ -93,14 +85,12 @@ export default function Funds() {
 
       <button onClick={handleToggleAddFundModal}>Add Fund</button>
 
-      {/* Conditionally render PageContent */}
       {showPageContent && (
         <PageContent
           showContent={showPageContent}
           onClose={handleClosePageContent}
-        >
-          {/* Add the content you want to show here */}
-        </PageContent>
+          children={undefined}
+        ></PageContent>
       )}
     </>
   );

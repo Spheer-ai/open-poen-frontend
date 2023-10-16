@@ -1,6 +1,3 @@
-/* AddFundModal.module.scss */
-
-/* Backdrop styles */
 .backdrop {
   position: fixed;
   top: 0;
@@ -20,7 +17,6 @@
   pointer-events: auto;
 }
 
-/* Modal styles */
 .modal {
   position: fixed;
   bottom: 0;
@@ -40,7 +36,6 @@
   transform: translateY(0%);
 }
 
-/* Title styles */
 .title {
   font-size: 22px;
   font-weight: bold;
@@ -48,7 +43,6 @@
   text-align: center;
 }
 
-/* Form group styles */
 .formGroup {
   margin: 20px;
 }
@@ -58,7 +52,6 @@
   font-size: 14px;
 }
 
-/* Description styles */
 .description {
   font-size: 14px;
   color: rgba(105, 105, 105, 1);
@@ -67,7 +60,6 @@
   line-height: 22px;
 }
 
-/* Button container styles */
 .buttonContainer {
   display: flex;
   justify-content: space-between;

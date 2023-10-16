@@ -145,3 +145,25 @@ textarea {
   border-radius: 8px;
   font-weight: 400;
 }
+
+.chart-count-container {
+  display: flex;
+  align-items: center;
+  align-content: center;
+  justify-content: space-between;
+  margin-top: 4px;
+}
+.char-count {
+  color: #666;
+  font-size: 12px;
+}
+
+.char-count-error {
+  color: red;
+  font-size: 12px;
+}
+
+.error-message {
+  color: red;
+  font-size: 12px;
+}

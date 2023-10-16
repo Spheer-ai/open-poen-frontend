@@ -10,6 +10,8 @@ function ResetPassword() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const [step, setStep] = useState("request");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -78,6 +80,14 @@ function ResetPassword() {
     }
   }, [step]);
 
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
+  const toggleConfirmPasswordVisibility = () => {
+    setShowConfirmPassword(!showConfirmPassword);
+  };
+
   return (
     <div className={styles["reset-password-container"]}>
       <div className={styles["modal-background"]}></div>
@@ -113,21 +123,52 @@ function ResetPassword() {
           <>
             <div className={styles["form-group"]}>
               <label htmlFor="password">Wachtwoord:</label>
-              <input
-                type="password"
-                id="password"
-                value={password}
-                onChange={handlePasswordChange}
-              />
+              <div className={styles["password-container"]}>
+                <input
+                  type={showPassword ? "text" : "password"}
+                  id="password"
+                  value={password}
+                  onChange={handlePasswordChange}
+                />
+                <span
+                  className={styles["toggle-password"]}
+                  onClick={togglePasswordVisibility}
+                >
+                  <img
+                    src={
+                      showPassword
+                        ? "/eye-closed-icon.svg"
+                        : "/eye-open-icon.svg"
+                    }
+                    alt="Toggle Password Visibility"
+                  />
+                </span>
+              </div>
             </div>
+
             <div className={styles["form-group"]}>
               <label htmlFor="confirmPassword">Bevestig wachtwoord:</label>
-              <input
-                type="password"
-                id="confirmPassword"
-                value={confirmPassword}
-                onChange={handleConfirmPasswordChange}
-              />
+              <div className={styles["password-container"]}>
+                <input
+                  type={showConfirmPassword ? "text" : "password"}
+                  id="confirmPassword"
+                  value={confirmPassword}
+                  onChange={handleConfirmPasswordChange}
+                />
+                <span
+                  className={styles["toggle-password"]}
+                  onClick={toggleConfirmPasswordVisibility}
+                >
+                  <img
+                    src={
+                      showConfirmPassword
+                        ? "/eye-closed-icon.svg"
+                        : "/eye-open-icon.svg"
+                    }
+                    alt="Toggle Password Visibility"
+                  />
+                </span>
+              </div>
             </div>
             {error && <div className={styles["error"]}>{error}</div>}
             <button
