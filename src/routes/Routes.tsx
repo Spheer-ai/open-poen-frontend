@@ -53,7 +53,7 @@ export default function AppRoutes() {
             path="/"
             element={
               <InlineModalLayout navigate={navigate}>
-                {<Funds />}
+                {<Contacts />}
               </InlineModalLayout>
             }
           />

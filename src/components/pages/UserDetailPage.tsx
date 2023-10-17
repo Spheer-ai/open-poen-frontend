@@ -11,7 +11,11 @@ import ChangePasswordForm from "../forms/ChangePasswordForm";
 import EditUserProfileForm from "../forms/EditUserProfileForm";
 import EditIcon from "/edit-icon.svg";
 import ChangePasswordIcon from "/change-password-icon.svg";
-import { fetchUserDetails, fetchInitiatives } from "../middleware/Api";
+import {
+  fetchUserDetails,
+  fetchInitiatives,
+  fetchUserPermissions,
+} from "../middleware/Api";
 
 const roleLabels = {
   administrator: "Beheerder",
@@ -27,6 +31,9 @@ export default function UserDetailsPage() {
   const [userDetails, setUserDetails] = useState<UserDetails | null>(null);
   const [initiatives, setInitiatives] = useState([]);
   const [activeAction, setActiveAction] = useState<string | null>(null);
+  const [viewedUserPermissions, setViewedUserPermissions] = useState<string[]>(
+    [],
+  );
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -34,6 +41,8 @@ export default function UserDetailsPage() {
         try {
           const userResponse = await fetchUserDetails(userId, token);
           setUserDetails(userResponse);
+          const userPerms = await fetchUserPermissions(Number(userId), token);
+          setViewedUserPermissions(userPerms);
         } catch (error) {
           console.error("Error fetching user details:", error);
         }
@@ -65,6 +74,10 @@ export default function UserDetailsPage() {
 
   const handleCloseModal = () => {
     setActiveAction(null);
+  };
+
+  const canEditUser = () => {
+    return viewedUserPermissions.includes("edit");
   };
 
   return (
@@ -104,13 +117,19 @@ export default function UserDetailsPage() {
                   )}
                 </div>
                 <div className={styles["top-right-button-container"]}>
-                  <div
-                    className={styles["top-right-button"]}
-                    onClick={handleEditClick}
-                  >
-                    <img src={EditIcon} alt="Edit" className={styles["icon"]} />
-                    Bewerken
-                  </div>
+                  {canEditUser() && (
+                    <div
+                      className={styles["top-right-button"]}
+                      onClick={handleEditClick}
+                    >
+                      <img
+                        src={EditIcon}
+                        alt="Edit"
+                        className={styles["icon"]}
+                      />
+                      Bewerken
+                    </div>
+                  )}
                   <div
                     className={styles["top-right-button"]}
                     onClick={handleChangePasswordClick}
