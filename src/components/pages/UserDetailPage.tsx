@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
+import jwtDecode from "jwt-decode";
 import { useAuth } from "../../contexts/AuthContext";
 import UserDetails from "../../types/UserTypes";
 import ProfilePlaceholder from "/profile-placeholder.png";
@@ -24,10 +25,21 @@ const roleLabels = {
   superuser: "Super beheerder",
 };
 
+interface DecodedToken {
+  sub: string;
+}
+
 export default function UserDetailsPage() {
   const { user: authUser } = useAuth();
   const token = authUser?.token;
   const { userId } = useParams<{ userId: string }>();
+
+  let loggedInUserId: string | null = null;
+  if (token) {
+    const decodedToken: DecodedToken = jwtDecode(token);
+    loggedInUserId = decodedToken.sub;
+  }
+
   const [userDetails, setUserDetails] = useState<UserDetails | null>(null);
   const [initiatives, setInitiatives] = useState([]);
   const [activeAction, setActiveAction] = useState<string | null>(null);
@@ -130,17 +142,19 @@ export default function UserDetailsPage() {
                       Bewerken
                     </div>
                   )}
-                  <div
-                    className={styles["top-right-button"]}
-                    onClick={handleChangePasswordClick}
-                  >
-                    <img
-                      src={ChangePasswordIcon}
-                      alt="Change Password"
-                      className={styles["icon"]}
-                    />
-                    Verander wachtwoord
-                  </div>
+                  {loggedInUserId === userId && (
+                    <div
+                      className={styles["top-right-button"]}
+                      onClick={handleChangePasswordClick}
+                    >
+                      <img
+                        src={ChangePasswordIcon}
+                        alt="Change Password"
+                        className={styles["icon"]}
+                      />
+                      Verander wachtwoord
+                    </div>
+                  )}
                 </div>
               </div>
 
