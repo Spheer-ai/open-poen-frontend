@@ -12,6 +12,7 @@ const ChangePasswordForm = ({ onClose, userId }) => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isConfirmed, setIsConfirmed] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleCancel = () => {
     onClose();
@@ -39,6 +40,10 @@ const ChangePasswordForm = ({ onClose, userId }) => {
     }
   };
 
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
   return (
     <div className={styles["form-container"]}>
       <FormLayout
@@ -63,7 +68,7 @@ const ChangePasswordForm = ({ onClose, userId }) => {
                 Huidig wachtwoord:
               </label>
               <input
-                type="password"
+                type={showPassword ? "text" : "password"}
                 id="currentPassword"
                 name="currentPassword"
                 value={currentPassword}
@@ -71,20 +76,42 @@ const ChangePasswordForm = ({ onClose, userId }) => {
                 required
                 className={styles["input"]}
               />
+              <p className={styles["input-description"]}>
+                Voer uw huidige wachtwoord in.
+              </p>
             </div>
             <div className={styles["form-group"]}>
               <label htmlFor="newPassword" className={styles["label-email"]}>
                 Nieuw wachtwoord:
               </label>
-              <input
-                type="password"
-                id="newPassword"
-                name="newPassword"
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-                required
-                className={styles["input"]}
-              />
+              <div className={styles["password-container"]}>
+                <input
+                  type={showPassword ? "text" : "password"}
+                  id="newPassword"
+                  name="newPassword"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  required
+                  className={styles["input"]}
+                />
+                <span
+                  className={styles["toggle-password"]}
+                  onClick={togglePasswordVisibility}
+                >
+                  <img
+                    src={
+                      showPassword
+                        ? "/eye-open-icon.svg"
+                        : "/eye-closed-icon.svg"
+                    }
+                    alt="Toggle Password Visibility"
+                    className={styles["eye-icon"]}
+                  />
+                </span>
+              </div>
+              <p className={styles["input-description"]}>
+                Kies een nieuw wachtwoord.
+              </p>
             </div>
             <div className={styles["form-group"]}>
               <label
@@ -93,15 +120,34 @@ const ChangePasswordForm = ({ onClose, userId }) => {
               >
                 Bevestig nieuwe wachtwoord:
               </label>
-              <input
-                type="password"
-                id="confirmPassword"
-                name="confirmPassword"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                required
-                className={styles["input"]}
-              />
+              <div className={styles["password-container"]}>
+                <input
+                  type={showPassword ? "text" : "password"}
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  required
+                  className={styles["input"]}
+                />
+                <span
+                  className={styles["toggle-password"]}
+                  onClick={togglePasswordVisibility}
+                >
+                  <img
+                    src={
+                      showPassword
+                        ? "/eye-open-icon.svg"
+                        : "/eye-closed-icon.svg"
+                    }
+                    alt="Toggle Password Visibility"
+                    className={styles["eye-icon"]}
+                  />
+                </span>
+              </div>
+              <p className={styles["input-description"]}>
+                Herhaal het nieuwe wachtwoord ter bevestiging.
+              </p>
             </div>
             {!isConfirmed && (
               <FormButtons
