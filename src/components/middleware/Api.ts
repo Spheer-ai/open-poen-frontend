@@ -418,3 +418,32 @@ export const addSponsor = async (token: string, name: string, url: string) => {
     throw error;
   }
 };
+
+export const addRegulation = async (
+  token: string,
+  funderId: number,
+  name: string,
+  description: string,
+) => {
+  try {
+    const response = await api.post(
+      `/funder/${funderId}/regulation`,
+      {
+        name,
+        description,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+    return response.data;
+  } catch (error) {
+    console.error(
+      "Error creating regulation:",
+      error.response ? error.response.data : error,
+    );
+    throw error;
+  }
+};

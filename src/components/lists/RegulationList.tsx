@@ -6,6 +6,8 @@ import { fetchFunderRegulations } from "../middleware/Api";
 import { useAuth } from "../../contexts/AuthContext";
 import { usePermissions } from "../../contexts/PermissionContext";
 import RegulationDetail from "../pages/RegulationDetail";
+import AddRegulationDesktop from "../modals/AddRegulationDesktop";
+import AddRegulationMobile from "../modals/AddRegulationMobile";
 
 type Regulation = {
   id: string;
@@ -14,6 +16,8 @@ type Regulation = {
 
 const RegulationList = () => {
   const { sponsorId } = useParams<{ sponsorId: string }>();
+  const { action } = useParams();
+  const [isModalOpen, setIsModalOpen] = useState(action === "add-regulation");
   const navigate = useNavigate();
   const [regulations, setRegulations] = useState<Regulation[]>([]);
   const { user } = useAuth();
@@ -21,6 +25,9 @@ const RegulationList = () => {
   const [selectedRegulationId, setSelectedRegulationId] = useState<
     string | null
   >(null);
+  const [isBlockingInteraction, setIsBlockingInteraction] = useState(false);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const isMobileScreen = window.innerWidth < 768;
 
   const token = user?.token;
   useParams();
@@ -47,7 +54,28 @@ const RegulationList = () => {
     }
 
     getRegulations();
-  }, [sponsorId, token]);
+  }, [sponsorId, token, refreshTrigger]);
+
+  useEffect(() => {
+    console.log("action:", action);
+    if (action === "add-regulation") {
+      setIsModalOpen(true);
+    }
+  }, [action]);
+
+  const handleToggleAddRegulationModal = () => {
+    if (isModalOpen) {
+      setIsBlockingInteraction(true);
+      setTimeout(() => {
+        setIsBlockingInteraction(false);
+        setIsModalOpen(false);
+        navigate(`/sponsors/${sponsorId}/regulations/`);
+      }, 300);
+    } else {
+      setIsModalOpen(true);
+      navigate(`/sponsors/${sponsorId}/regulations/add-regulation`);
+    }
+  };
 
   const handleBackClick = () => {
     navigate("/sponsors");
@@ -61,6 +89,10 @@ const RegulationList = () => {
     setSelectedRegulationId(regulationId);
   };
 
+  const handleRegulationAdded = () => {
+    setRefreshTrigger((prev) => prev + 1);
+  };
+
   return (
     <div className={styles["container"]}>
       <div className={styles["side-panel"]}>
@@ -71,9 +103,7 @@ const RegulationList = () => {
           showCta={true}
           onSettingsClick={() => {}}
           onSearch={handleSearch}
-          onCtaClick={function (): void {
-            throw new Error("Function not implemented.");
-          }}
+          onCtaClick={handleToggleAddRegulationModal}
           globalPermissions={globalPermissions}
         />
 
@@ -95,6 +125,25 @@ const RegulationList = () => {
           <p>Geen gegevens gevonden</p>
         )}
       </div>
+      {isMobileScreen ? (
+        <AddRegulationMobile
+          isOpen={isModalOpen}
+          onClose={handleToggleAddRegulationModal}
+          isBlockingInteraction={isBlockingInteraction}
+          onRegulationAdded={handleRegulationAdded}
+          sponsorId={sponsorId}
+          refreshTrigger={refreshTrigger}
+        />
+      ) : (
+        <AddRegulationDesktop
+          isOpen={isModalOpen}
+          onClose={handleToggleAddRegulationModal}
+          isBlockingInteraction={isBlockingInteraction}
+          onRegulationAdded={handleRegulationAdded}
+          sponsorId={sponsorId}
+          refreshTrigger={refreshTrigger}
+        />
+      )}
       {selectedRegulationId && (
         <div className={styles["detail-panel"]}>
           <RegulationDetail regulationId={selectedRegulationId} />

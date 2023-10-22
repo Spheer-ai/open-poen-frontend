@@ -154,10 +154,18 @@ export default function AppRoutes() {
                 }
               />
               <Route
+                path="/sponsors/:sponsorId/regulations/:action"
+                element={
+                  <InlineModalLayout navigate={navigate}>
+                    <RegulationList />
+                  </InlineModalLayout>
+                }
+              />
+              <Route
                 path="/sponsors/:action"
                 element={
                   <InlineModalLayout navigate={navigate}>
-                    {<Sponsors />}
+                    <Sponsors />
                   </InlineModalLayout>
                 }
               />
