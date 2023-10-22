@@ -6,6 +6,7 @@ import AddSponsorMobile from "../modals/AddSponsorMobile";
 import AddSponsorDesktop from "../modals/AddSponsorDesktop";
 import SponsorList from "../lists/SponsorsList";
 import { usePermissions } from "../../contexts/PermissionContext";
+import RegulationList from "../lists/RegulationList";
 
 export default function Sponsors() {
   const navigate = useNavigate();
@@ -13,6 +14,7 @@ export default function Sponsors() {
   const [isModalOpen, setIsModalOpen] = useState(action === "add-sponsor");
   const [showPageContent, setShowPageContent] = useState(!!sponsorId);
   const [isBlockingInteraction, setIsBlockingInteraction] = useState(false);
+  const [isRegulationListVisible, setIsRegulationListVisible] = useState(false);
   const { globalPermissions } = usePermissions();
   const isMobileScreen = window.innerWidth < 768;
 
@@ -29,6 +31,7 @@ export default function Sponsors() {
 
   const handleShowPageContent = (sponsorId) => {
     if (sponsorId !== undefined) {
+      setIsRegulationListVisible(true);
       setShowPageContent(true);
       navigate(`/sponsors/detail/${sponsorId}`);
     } else {
@@ -53,16 +56,22 @@ export default function Sponsors() {
   return (
     <>
       <div className={styles["side-panel"]}>
-        <TopNavigationBar
-          title="Sponsors"
-          showSettings={true}
-          showCta={true}
-          onSettingsClick={() => {}}
-          onCtaClick={handleToggleAddSponsorModal}
-          onSearch={handleSearch}
-          globalPermissions={globalPermissions}
-        />
-        <SponsorList onShowPageContent={handleShowPageContent} />
+        {!isRegulationListVisible && (
+          <TopNavigationBar
+            title="Sponsors"
+            showSettings={true}
+            showCta={true}
+            onSettingsClick={() => {}}
+            onCtaClick={handleToggleAddSponsorModal}
+            onSearch={handleSearch}
+            globalPermissions={globalPermissions}
+          />
+        )}
+        {sponsorId ? (
+          <RegulationList />
+        ) : (
+          <SponsorList onShowPageContent={handleShowPageContent} />
+        )}
       </div>
       {isMobileScreen ? (
         <AddSponsorMobile

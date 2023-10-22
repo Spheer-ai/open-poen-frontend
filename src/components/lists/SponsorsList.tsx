@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { fetchSponsors } from "../middleware/Api";
 import styles from "../../assets/scss/SponsorList.module.scss";
 
@@ -16,6 +16,7 @@ interface SponsorListProps {
 const SponsorList: React.FC<SponsorListProps> = ({ onShowPageContent }) => {
   const [sponsors, setSponsors] = useState<Sponsor[]>([]);
   const [activeSponsorId, setActiveSponsorId] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -30,11 +31,8 @@ const SponsorList: React.FC<SponsorListProps> = ({ onShowPageContent }) => {
     fetchData();
   }, []);
 
-  // Define the function to handle showing content when a sponsor is clicked
   const handleSponsorClick = (sponsorId: string) => {
-    setActiveSponsorId(sponsorId);
-    // Trigger the "Show PageContent" behavior
-    onShowPageContent(sponsorId);
+    navigate(`/sponsors/${sponsorId}/regulations`);
   };
 
   return (
@@ -56,7 +54,7 @@ const SponsorList: React.FC<SponsorListProps> = ({ onShowPageContent }) => {
                   rel="noopener noreferrer"
                   className={styles["sponsor-link"]}
                   onClick={(e) => {
-                    e.preventDefault(); // Prevent link navigation
+                    e.preventDefault();
                     handleSponsorClick(sponsor.id.toString());
                   }}
                 >

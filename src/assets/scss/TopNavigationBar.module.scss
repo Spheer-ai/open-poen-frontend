@@ -21,7 +21,7 @@
   border-bottom: 1px solid #dee2e6;
   gap: 15px;
   justify-content: space-between;
-  padding: 0 20px;
+  padding: 20px 20px;
   padding-bottom: 20px;
   position: sticky;
   min-width: inherit;
@@ -106,4 +106,39 @@ h2 {
 .bar-items {
   display: flex;
   justify-content: space-between;
+  align-items: center;
+}
+
+.side-panel {
+  background-color: #fff;
+  border-right: 1px solid #dee2e6;
+  height: 100vh;
+  max-width: 460px;
+  min-width: 460px;
+  z-index: 1;
+  overflow: scroll;
+}
+
+.backArrow {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  margin: 0;
+
+  img {
+    width: 24px;
+    height: auto;
+  }
+}
+
+.titleWithArrow {
+  flex-grow: 0;
+  text-align: left;
+  margin-left: -110px;
+}
+
+.titleWithoutArrow {
+  flex-grow: 1;
+  text-align: left;
 }

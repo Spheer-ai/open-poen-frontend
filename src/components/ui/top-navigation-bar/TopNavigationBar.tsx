@@ -10,17 +10,25 @@ const TopNavigationBar: React.FC<TopNavigationBarProps> = ({
   showCta,
   onCtaClick,
   onSearch,
+  onBackArrowClick,
   globalPermissions,
 }) => {
+  const hasBackArrow = Boolean(onBackArrowClick);
   const hasCreatePermission = globalPermissions.includes("create");
-  console.log(
-    "Inside TopNavigationBar - hasCreatePermission:",
-    hasCreatePermission,
-  );
+
   return (
     <div className={styles["top-navigation-bar"]}>
       <div className={styles["bar-items"]}>
-        <div className={styles["title"]}>
+        {onBackArrowClick && (
+          <button onClick={onBackArrowClick} className={styles.backArrow}>
+            <img src="/arrow-left.png" alt="Terug" />
+          </button>
+        )}
+        <div
+          className={
+            hasBackArrow ? styles.titleWithArrow : styles.titleWithoutArrow
+          }
+        >
           <h2>{title}</h2>
         </div>
         <div className={styles["icons"]}>

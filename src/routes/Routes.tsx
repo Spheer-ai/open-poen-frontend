@@ -17,6 +17,8 @@ import ResetPasswordLayout from "../components/pages/onboarding/ResetPasswordLay
 import ResetPasswordRequest from "../components/pages/onboarding/ResetPasswordRequest";
 import SponsorDetail from "../components/pages/SponsorDetail";
 import PermissionChecker from "../components/pages/PermissionChecker";
+import RegulationDetail from "../components/pages/RegulationDetail";
+import RegulationList from "../components/lists/RegulationList";
 
 export default function AppRoutes() {
   const navigate = useNavigate();
@@ -142,6 +144,14 @@ export default function AppRoutes() {
                         element={<SponsorDetail />}
                       />
                     </Routes>
+                  </InlineModalLayout>
+                }
+              />
+              <Route
+                path="/sponsors/:sponsorId/regulations"
+                element={
+                  <InlineModalLayout navigate={navigate}>
+                    <RegulationList />
                   </InlineModalLayout>
                 }
               />
