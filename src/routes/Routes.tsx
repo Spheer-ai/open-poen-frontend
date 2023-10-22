@@ -17,12 +17,10 @@ import ResetPasswordLayout from "../components/pages/onboarding/ResetPasswordLay
 import ResetPasswordRequest from "../components/pages/onboarding/ResetPasswordRequest";
 import SponsorDetail from "../components/pages/SponsorDetail";
 import PermissionChecker from "../components/pages/PermissionChecker";
-import RegulationDetail from "../components/pages/RegulationDetail";
 import RegulationList from "../components/lists/RegulationList";
 
 export default function AppRoutes() {
   const navigate = useNavigate();
-
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [, setShowLoginModal] = useState(false);
 
@@ -175,7 +173,6 @@ export default function AppRoutes() {
               )
             }
           />
-          <Route path="*" element={<Navigate to="/login" />} />
         </Routes>
       </div>
     </div>

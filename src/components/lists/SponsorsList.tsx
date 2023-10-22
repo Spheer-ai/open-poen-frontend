@@ -11,9 +11,13 @@ type Sponsor = {
 
 interface SponsorListProps {
   onShowPageContent: (sponsorId: string) => void;
+  refreshTrigger: number;
 }
 
-const SponsorList: React.FC<SponsorListProps> = ({ onShowPageContent }) => {
+const SponsorList: React.FC<SponsorListProps> = ({
+  onShowPageContent,
+  refreshTrigger,
+}) => {
   const [sponsors, setSponsors] = useState<Sponsor[]>([]);
   const [activeSponsorId, setActiveSponsorId] = useState<string | null>(null);
   const navigate = useNavigate();
@@ -29,7 +33,7 @@ const SponsorList: React.FC<SponsorListProps> = ({ onShowPageContent }) => {
     };
 
     fetchData();
-  }, []);
+  }, [refreshTrigger]);
 
   const handleSponsorClick = (sponsorId: string) => {
     navigate(`/sponsors/${sponsorId}/regulations`);

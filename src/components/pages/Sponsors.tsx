@@ -16,6 +16,7 @@ export default function Sponsors() {
   const [isBlockingInteraction, setIsBlockingInteraction] = useState(false);
   const [isRegulationListVisible, setIsRegulationListVisible] = useState(false);
   const { globalPermissions } = usePermissions();
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
   const isMobileScreen = window.innerWidth < 768;
 
   useEffect(() => {
@@ -53,6 +54,9 @@ export default function Sponsors() {
     }
   };
 
+  const handleSponsorAdded = () => {
+    setRefreshTrigger((prev) => prev + 1);
+  };
   return (
     <>
       <div className={styles["side-panel"]}>
@@ -70,7 +74,10 @@ export default function Sponsors() {
         {sponsorId ? (
           <RegulationList />
         ) : (
-          <SponsorList onShowPageContent={handleShowPageContent} />
+          <SponsorList
+            onShowPageContent={handleShowPageContent}
+            refreshTrigger={refreshTrigger}
+          />
         )}
       </div>
       {isMobileScreen ? (
@@ -78,12 +85,14 @@ export default function Sponsors() {
           isOpen={isModalOpen}
           onClose={handleToggleAddSponsorModal}
           isBlockingInteraction={isBlockingInteraction}
+          onSponsorAdded={handleSponsorAdded}
         />
       ) : (
         <AddSponsorDesktop
           isOpen={isModalOpen}
           onClose={handleToggleAddSponsorModal}
           isBlockingInteraction={isBlockingInteraction}
+          onSponsorAdded={handleSponsorAdded}
         />
       )}
     </>

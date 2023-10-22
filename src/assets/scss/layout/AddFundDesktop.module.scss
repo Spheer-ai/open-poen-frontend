@@ -1,6 +1,3 @@
-/* AddFundModal.module.scss */
-
-/* Backdrop styles */
 .backdrop {
   position: fixed;
   top: 0;
@@ -20,15 +17,13 @@
   pointer-events: auto;
 }
 
-/* Title styles */
 .title {
   font-size: 22px;
   font-weight: bold;
   margin: 20px;
-  text-align: center;
+  text-align: left;
 }
 
-/* Form group styles */
 .formGroup {
   margin: 20px;
 }
@@ -38,7 +33,6 @@
   font-size: 14px;
 }
 
-/* Description styles */
 .description {
   font-size: 14px;
   color: rgba(105, 105, 105, 1);
@@ -47,11 +41,13 @@
   line-height: 22px;
 }
 
-/* Button container styles */
 .buttonContainer {
   display: flex;
   justify-content: space-between;
   margin: 20px;
+  margin-top: auto;
+  width: 50%;
+  align-self: end;
 }
 
 .cancelButton {
@@ -65,7 +61,7 @@
 }
 
 .saveButton {
-  background-color: #007bff;
+  background-color: #2760d5;
   border: none;
   border-radius: 5px;
   padding: 10px;
@@ -75,6 +71,8 @@
 }
 
 .modal {
+  display: flex;
+  flex-direction: column;
   position: fixed;
   top: 0;
   left: unset;

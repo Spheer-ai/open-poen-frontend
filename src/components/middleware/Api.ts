@@ -394,3 +394,27 @@ export const fetchRegulationDetails = async (
     throw error;
   }
 };
+
+export const addSponsor = async (token: string, name: string, url: string) => {
+  try {
+    const response = await api.post(
+      "/funder",
+      {
+        name,
+        url,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+    return response.data;
+  } catch (error) {
+    console.error(
+      "Error creating sponsor:",
+      error.response ? error.response.data : error,
+    );
+    throw error;
+  }
+};
