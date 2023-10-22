@@ -1,0 +1,73 @@
+.regulation-detail-container {
+  display: flex;
+  flex-direction: column;
+  padding: 75px;
+  width: 100%;
+  position: relative;
+  max-width: 1200px;
+  margin-top: 75px;
+
+  h1 {
+    font-weight: 600;
+    font-size: 20px;
+    color: #2760d5;
+  }
+
+  p {
+    font-size: 16px;
+  }
+}
+
+.regulation-detail-content {
+  display: block;
+  width: 100%;
+  padding: 75px;
+  position: relative;
+}
+
+.officer-list,
+.grant-list {
+  list-style-type: none;
+  padding: 0;
+
+  li {
+    color: #2760d5;
+    padding-left: 0;
+  }
+}
+
+.officer-item,
+.grant-item {
+  padding: 10px;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.section-title {
+  color: #585858;
+  font-family: Inter, sans-serif;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 20px;
+  letter-spacing: -0.001px;
+  text-transform: uppercase;
+}
+
+.section-content {
+  font-family: Inter, sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 24px;
+  letter-spacing: -0.01%;
+  color: #696969;
+  margin-top: 8px;
+}
+
+.officer-description {
+  margin-top: 80px;
+}
+
+.officer-details,
+.grant-details {
+  margin-top: 30px;
+}

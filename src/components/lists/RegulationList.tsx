@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react"; // Import useEffect and useState
+import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import styles from "../../assets/scss/RegulationList.module.scss";
 import TopNavigationBar from "../ui/top-navigation-bar/TopNavigationBar";
-import { fetchFunderRegulations } from "../middleware/Api"; // Ensure this path is correct
+import { fetchFunderRegulations } from "../middleware/Api";
 import { useAuth } from "../../contexts/AuthContext";
 import { usePermissions } from "../../contexts/PermissionContext";
 import RegulationDetail from "../pages/RegulationDetail";
@@ -18,7 +18,6 @@ const RegulationList = () => {
   const [regulations, setRegulations] = useState<Regulation[]>([]);
   const { user } = useAuth();
   const { globalPermissions } = usePermissions();
-  const [showRegulationDetail, setShowRegulationDetail] = useState(false);
   const [selectedRegulationId, setSelectedRegulationId] = useState<
     string | null
   >(null);
@@ -63,46 +62,44 @@ const RegulationList = () => {
   };
 
   return (
-    <div>
-      <div className={styles["container"]}>
-        <div className={styles["side-panel"]}>
-          <TopNavigationBar
-            title={`Regelingen ${sponsorId}`}
-            onBackArrowClick={handleBackClick}
-            showSettings={true}
-            showCta={true}
-            onSettingsClick={() => {}}
-            onSearch={handleSearch}
-            onCtaClick={function (): void {
-              throw new Error("Function not implemented.");
-            }}
-            globalPermissions={globalPermissions}
-          />
+    <div className={styles["container"]}>
+      <div className={styles["side-panel"]}>
+        <TopNavigationBar
+          title={`Regelingen ${sponsorId}`}
+          onBackArrowClick={handleBackClick}
+          showSettings={true}
+          showCta={true}
+          onSettingsClick={() => {}}
+          onSearch={handleSearch}
+          onCtaClick={function (): void {
+            throw new Error("Function not implemented.");
+          }}
+          globalPermissions={globalPermissions}
+        />
 
-          {regulations.length > 0 ? (
-            <ul className={styles["regulation-list"]}>
-              {regulations.map((regulation) => (
-                <li
-                  key={regulation.id}
-                  className={styles["regulation-list-item"]}
-                  onClick={() => handleRegulationClick(regulation.id)}
-                >
-                  <div className={styles["regulation-info"]}>
-                    {regulation.name}
-                  </div>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p>Geen gegevens gevonden</p>
-          )}
-        </div>
-        {selectedRegulationId && (
-          <div className={styles["detail-panel"]}>
-            <RegulationDetail regulationId={selectedRegulationId} />
-          </div>
+        {regulations.length > 0 ? (
+          <ul className={styles["regulation-list"]}>
+            {regulations.map((regulation) => (
+              <li
+                key={regulation.id}
+                className={styles["regulation-list-item"]}
+                onClick={() => handleRegulationClick(regulation.id)}
+              >
+                <div className={styles["regulation-info"]}>
+                  {regulation.name}
+                </div>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p>Geen gegevens gevonden</p>
         )}
       </div>
+      {selectedRegulationId && (
+        <div className={styles["detail-panel"]}>
+          <RegulationDetail regulationId={selectedRegulationId} />
+        </div>
+      )}
     </div>
   );
 };

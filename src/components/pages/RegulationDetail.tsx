@@ -2,11 +2,31 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { fetchRegulationDetails } from "../middleware/Api";
 import { useAuth } from "../../contexts/AuthContext";
+import styles from "../../assets/scss/RegulationDetail.module.scss";
+
+type Officer = {
+  email: string;
+  first_name: string;
+  last_name: string;
+  biography: string;
+  role: string;
+  image: string;
+};
+
+type Grant = {
+  name: string;
+  reference: string;
+  budget: number;
+  income: number;
+  expenses: number;
+};
 
 type RegulationDetailType = {
-  id: number;
   name: string;
   description: string;
+  grant_officers: Officer[];
+  policy_officers: Officer[];
+  grants: Grant[];
 };
 
 interface RegulationDetailProps {
@@ -48,8 +68,36 @@ const RegulationDetail: React.FC<RegulationDetailProps> = ({
   if (!regulationDetails) return <p>Loading...</p>;
 
   return (
-    <div>
+    <div className={styles["regulation-detail-container"]}>
       <h1>{regulationDetails.name}</h1>
+      <p>{regulationDetails.description}</p>
+
+      <h3 className={styles["section-title"]}>BESCHIKKINGEN</h3>
+      <ul className={styles["grant-list"]}>
+        {regulationDetails.grants.map((grant, index) => (
+          <li key={index} className={styles["grant-item"]}>
+            {grant.name} | {grant.reference} | € {grant.budget}
+          </li>
+        ))}
+      </ul>
+
+      <h3 className={styles["section-title"]}>Grant Officers:</h3>
+      <ul className={styles["officer-list"]}>
+        {regulationDetails.grant_officers.map((officer, index) => (
+          <li key={index} className={styles["officer-item"]}>
+            {officer.first_name} {officer.last_name} ({officer.email})
+          </li>
+        ))}
+      </ul>
+
+      <h3 className={styles["section-title"]}>Policy Officers:</h3>
+      <ul className={styles["officer-list"]}>
+        {regulationDetails.policy_officers.map((officer, index) => (
+          <li key={index} className={styles["officer-item"]}>
+            {officer.first_name} {officer.last_name} ({officer.email})
+          </li>
+        ))}
+      </ul>
     </div>
   );
 };
