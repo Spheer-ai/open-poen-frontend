@@ -35,10 +35,12 @@ type RegulationDetailType = {
 interface RegulationDetailProps {
   regulationId?: string;
   isBlockingInteraction: boolean;
+  onRegulationEdited: () => void;
 }
 
 const RegulationDetail: React.FC<RegulationDetailProps> = ({
   regulationId,
+  onRegulationEdited,
 }) => {
   const { sponsorId } = useParams<{ sponsorId?: string }>();
   const { action } = useParams();
@@ -69,6 +71,8 @@ const RegulationDetail: React.FC<RegulationDetailProps> = ({
             sponsorId,
             regulationId,
           );
+          console.log("Fetched details:", details);
+          setRegulationDetails(details);
           setRegulationDetails(details);
         } else {
           console.error("Token, sponsorId, or regulationId is not available");
@@ -93,6 +97,7 @@ const RegulationDetail: React.FC<RegulationDetailProps> = ({
       setTimeout(() => {
         setIsBlockingInteraction(false);
         setIsModalOpen(false);
+        navigate(`/sponsors/${sponsorId}/regulations/${regulationId}`);
       }, 300);
     } else {
       setIsModalOpen(true);
@@ -104,6 +109,9 @@ const RegulationDetail: React.FC<RegulationDetailProps> = ({
 
   const handleRegulationEdited = () => {
     setRefreshTrigger((prev) => prev + 1);
+    if (onRegulationEdited) {
+      onRegulationEdited();
+    }
   };
 
   if (!regulationDetails) return <p>Loading...</p>;
@@ -158,8 +166,8 @@ const RegulationDetail: React.FC<RegulationDetailProps> = ({
           sponsorId={sponsorId}
           regulationId={regulationId}
           refreshTrigger={refreshTrigger}
-          currentName={""}
-          currentDescription={""}
+          currentName={regulationDetails.name}
+          currentDescription={regulationDetails.description}
         />
       ) : (
         <EditRegulationDesktop
@@ -170,8 +178,8 @@ const RegulationDetail: React.FC<RegulationDetailProps> = ({
           sponsorId={sponsorId}
           regulationId={regulationId}
           refreshTrigger={refreshTrigger}
-          currentName={""}
-          currentDescription={""}
+          currentName={regulationDetails.name}
+          currentDescription={regulationDetails.description}
         />
       )}
     </div>

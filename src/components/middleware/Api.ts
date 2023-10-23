@@ -455,7 +455,7 @@ export const updateRegulationDetails = async (
   name: string,
   description: string,
 ) => {
-  const response = await axios.patch(
+  const response = await api.patch(
     `/funder/${sponsorId}/regulation/${regulationId}`,
     {
       name,

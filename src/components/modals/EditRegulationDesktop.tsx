@@ -9,7 +9,7 @@ interface EditRegulationDesktopProps {
   onRegulationEdited: () => void;
   sponsorId?: string;
   regulationId?: string;
-  refreshTrigger: number; // Add this line
+  refreshTrigger: number;
   currentName: string;
   currentDescription: string;
 }
@@ -38,6 +38,11 @@ const EditRegulationDesktop: React.FC<EditRegulationDesktopProps> = ({
       }, 300);
     }
   }, [isOpen]);
+
+  useEffect(() => {
+    setRegulationName(currentName);
+    setRegulationDescription(currentDescription);
+  }, [currentName, currentDescription]);
 
   const handleSave = async () => {
     try {

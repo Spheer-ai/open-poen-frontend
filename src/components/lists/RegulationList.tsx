@@ -86,10 +86,15 @@ const RegulationList = () => {
   };
 
   const handleRegulationClick = (regulationId: string) => {
+    navigate(`/sponsors/${sponsorId}/regulations/${regulationId}`);
     setSelectedRegulationId(regulationId);
   };
 
   const handleRegulationAdded = () => {
+    setRefreshTrigger((prev) => prev + 1);
+  };
+
+  const handleRegulationEdited = () => {
     setRefreshTrigger((prev) => prev + 1);
   };
 
@@ -149,6 +154,7 @@ const RegulationList = () => {
           <RegulationDetail
             regulationId={selectedRegulationId}
             isBlockingInteraction={false}
+            onRegulationEdited={handleRegulationEdited}
           />
         </div>
       )}
