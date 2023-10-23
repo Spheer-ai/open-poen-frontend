@@ -5,7 +5,9 @@ import { useAuth } from "../../contexts/AuthContext";
 import styles from "../../assets/scss/RegulationDetail.module.scss";
 import EditRegulationDesktop from "../modals/EditRegulationDesktop";
 import EditRegulationMobile from "../modals/EditRegulationMobile";
+import AddGrantDesktop from "../modals/AddGrantDesktop";
 import EditIcon from "/edit-icon.svg";
+import AddGrantMobile from "../modals/AddGrantMobile";
 
 type Officer = {
   email: string;
@@ -54,6 +56,7 @@ const RegulationDetail: React.FC<RegulationDetailProps> = ({
   >(null);
   const [isBlockingInteraction, setIsBlockingInteraction] = useState(false);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const [isAddGrantModalOpen, setIsAddGrantModalOpen] = useState(false);
   const isMobileScreen = window.innerWidth < 768;
 
   const token = user?.token;
@@ -107,11 +110,29 @@ const RegulationDetail: React.FC<RegulationDetailProps> = ({
     }
   };
 
+  const handleToggleAddGrantModal = () => {
+    if (isAddGrantModalOpen) {
+      setIsBlockingInteraction(true);
+      setTimeout(() => {
+        setIsBlockingInteraction(false);
+        setIsAddGrantModalOpen(false);
+        navigate(`/sponsors/${sponsorId}/regulations/${regulationId}`);
+      }, 300);
+    } else {
+      setIsAddGrantModalOpen(true);
+      navigate(`/sponsors/${sponsorId}/regulations/${regulationId}/add-grant`);
+    }
+  };
+
   const handleRegulationEdited = () => {
     setRefreshTrigger((prev) => prev + 1);
     if (onRegulationEdited) {
       onRegulationEdited();
     }
+  };
+
+  const handleGrantAdded = () => {
+    setRefreshTrigger((prev) => prev + 1);
   };
 
   if (!regulationDetails) return <p>Loading...</p>;
@@ -130,8 +151,15 @@ const RegulationDetail: React.FC<RegulationDetailProps> = ({
       </div>
 
       <p>{regulationDetails.description}</p>
-
-      <h3 className={styles["section-title"]}>BESCHIKKINGEN</h3>
+      <div className={styles["grant-container"]}>
+        <h3 className={styles["section-title"]}>BESCHIKKINGEN</h3>
+        <button
+          className={styles["add-button"]}
+          onClick={handleToggleAddGrantModal}
+        >
+          Beschikking toevoegen
+        </button>
+      </div>
       <ul className={styles["grant-list"]}>
         {regulationDetails.grants.map((grant, index) => (
           <li key={index} className={styles["grant-item"]}>
@@ -139,7 +167,6 @@ const RegulationDetail: React.FC<RegulationDetailProps> = ({
           </li>
         ))}
       </ul>
-
       <h3 className={styles["section-title"]}>Grant Officers:</h3>
       <ul className={styles["officer-list"]}>
         {regulationDetails.grant_officers.map((officer, index) => (
@@ -180,6 +207,27 @@ const RegulationDetail: React.FC<RegulationDetailProps> = ({
           refreshTrigger={refreshTrigger}
           currentName={regulationDetails.name}
           currentDescription={regulationDetails.description}
+        />
+      )}
+      {isMobileScreen ? (
+        <AddGrantMobile
+          isOpen={isAddGrantModalOpen}
+          onClose={handleToggleAddGrantModal}
+          onGrantAdded={handleGrantAdded}
+          sponsorId={sponsorId}
+          regulationId={regulationId}
+          isBlockingInteraction={isBlockingInteraction}
+          refreshTrigger={refreshTrigger}
+        />
+      ) : (
+        <AddGrantDesktop
+          isOpen={isAddGrantModalOpen}
+          onClose={handleToggleAddGrantModal}
+          onGrantAdded={handleGrantAdded}
+          sponsorId={sponsorId}
+          regulationId={regulationId}
+          isBlockingInteraction={isBlockingInteraction}
+          refreshTrigger={refreshTrigger}
         />
       )}
     </div>
