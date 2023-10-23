@@ -469,3 +469,35 @@ export const updateRegulationDetails = async (
   );
   return response.data;
 };
+
+export const addGrant = async (
+  token: string,
+  funderId: number,
+  regulationId: number,
+  name: string,
+  reference: string,
+  budget: number
+) => {
+  try {
+    const response = await api.post(
+      `/funder/${funderId}/regulation/${regulationId}/grant`,
+      {
+        name,
+        reference,
+        budget,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error(
+      "Error adding grant:",
+      error.response ? error.response.data : error
+    );
+    throw error;
+  }
+};
