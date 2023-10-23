@@ -8,6 +8,8 @@ import EditRegulationMobile from "../modals/EditRegulationMobile";
 import AddGrantDesktop from "../modals/AddGrantDesktop";
 import EditIcon from "/edit-icon.svg";
 import AddGrantMobile from "../modals/AddGrantMobile";
+import EditGrantDesktop from "../modals/EditGrantDesktop";
+import EditGrantMobile from "../modals/EditGrantMobile";
 
 type Officer = {
   email: string;
@@ -19,6 +21,7 @@ type Officer = {
 };
 
 type Grant = {
+  id: number;
   name: string;
   reference: string;
   budget: number;
@@ -58,7 +61,8 @@ const RegulationDetail: React.FC<RegulationDetailProps> = ({
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [isAddGrantModalOpen, setIsAddGrantModalOpen] = useState(false);
   const isMobileScreen = window.innerWidth < 768;
-
+  const [isGrantModalOpen, setIsGrantModalOpen] = useState(false);
+  const [currentGrant, setCurrentGrant] = useState<Grant | null>(null);
   const token = user?.token;
   useParams();
 
@@ -135,7 +139,29 @@ const RegulationDetail: React.FC<RegulationDetailProps> = ({
     setRefreshTrigger((prev) => prev + 1);
   };
 
+  const handleToggleEditGrantModal = (grant: Grant | null = null) => {
+    if (isGrantModalOpen) {
+      setIsBlockingInteraction(true);
+      setTimeout(() => {
+        setIsBlockingInteraction(false);
+        setIsGrantModalOpen(false);
+        navigate(`/sponsors/${sponsorId}/regulations/${regulationId}`);
+      }, 300);
+    } else if (grant) {
+      setCurrentGrant(grant);
+      setIsGrantModalOpen(true);
+      navigate(
+        `/sponsors/${sponsorId}/regulations/${regulationId}/edit-grant/${grant.id}`,
+      );
+    }
+  };
+
+  const handleGrantEdited = () => {
+    setRefreshTrigger((prev) => prev + 1);
+  };
+
   if (!regulationDetails) return <p>Loading...</p>;
+  console.log("Current Grant:", currentGrant);
 
   return (
     <div className={styles["regulation-detail-container"]}>
@@ -164,6 +190,13 @@ const RegulationDetail: React.FC<RegulationDetailProps> = ({
         {regulationDetails.grants.map((grant, index) => (
           <li key={index} className={styles["grant-item"]}>
             {grant.name} | {grant.reference} | € {grant.budget}
+            <button
+              className={styles["edit-button"]}
+              onClick={() => handleToggleEditGrantModal(grant)}
+            >
+              <img src={EditIcon} alt="Edit" className={styles["icon"]} />
+              Bewerken
+            </button>
           </li>
         ))}
       </ul>
@@ -228,6 +261,33 @@ const RegulationDetail: React.FC<RegulationDetailProps> = ({
           regulationId={regulationId}
           isBlockingInteraction={isBlockingInteraction}
           refreshTrigger={refreshTrigger}
+        />
+      )}
+      {isMobileScreen ? (
+        <EditGrantMobile
+          isOpen={isGrantModalOpen}
+          onClose={() => handleToggleEditGrantModal(currentGrant)}
+          isBlockingInteraction={isBlockingInteraction}
+          onGrantEdited={handleGrantEdited}
+          sponsorId={sponsorId}
+          regulationId={regulationId}
+          grant={currentGrant}
+          currentName={currentGrant?.name || ""}
+          currentReference={currentGrant?.reference || ""}
+          currentBudget={currentGrant?.budget || 0}
+        />
+      ) : (
+        <EditGrantDesktop
+          isOpen={isGrantModalOpen}
+          onClose={() => handleToggleEditGrantModal(currentGrant)}
+          isBlockingInteraction={isBlockingInteraction}
+          onGrantEdited={handleGrantEdited}
+          sponsorId={sponsorId}
+          regulationId={regulationId}
+          grant={currentGrant}
+          currentName={currentGrant?.name || ""}
+          currentReference={currentGrant?.reference || ""}
+          currentBudget={currentGrant?.budget || 0}
         />
       )}
     </div>

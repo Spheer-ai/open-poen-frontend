@@ -31,7 +31,7 @@
       cursor: pointer;
 
       &:hover {
-        text-decoration: underline;
+        color: #2760d5;
       }
     }
   }
@@ -105,5 +105,20 @@
     padding: 10px;
     height: fit-content;
     cursor: pointer;
+  }
+}
+
+.grant-list {
+  .edit-button {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    align-items: center;
+    display: flex;
+    gap: 10px;
+  }
+
+  :hover {
+    color: #2760d5;
   }
 }

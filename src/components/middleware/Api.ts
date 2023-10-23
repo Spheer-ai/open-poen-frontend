@@ -509,7 +509,7 @@ export const editGrant = async (
   grantId: number,
   name: string,
   reference: string,
-  budget: number
+  budget: number,
 ) => {
   try {
     const response = await api.patch(
@@ -523,13 +523,13 @@ export const editGrant = async (
         headers: {
           Authorization: `Bearer ${token}`,
         },
-      }
+      },
     );
     return response.data;
   } catch (error) {
     console.error(
       "Error editing grant:",
-      error.response ? error.response.data : error
+      error.response ? error.response.data : error,
     );
     throw error;
   }
