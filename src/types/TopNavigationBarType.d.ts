@@ -1,9 +1,12 @@
 export interface TopNavigationBarProps {
   title: string;
   showSettings: boolean;
+  onSettingsClick: () => void;
   showCta: boolean;
-  onSettingsClick?: () => void;
-  onCtaClick?: () => void;
-  onSearch: (query: string) => void;
+  onCtaClick: () => void;
+  onSearch: (query: any) => void;
   globalPermissions: string[];
+  showBackButton?: boolean;
+  onBackClick?: () => void;
+  onBackArrowClick?: () => void;
 }

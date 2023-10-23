@@ -350,3 +350,122 @@ export const fetchUserPermissions = async (
     throw error;
   }
 };
+
+export const fetchFunderRegulations = async (
+  token: string,
+  funderId: string,
+) => {
+  try {
+    const response = await api.get(`/funder/${funderId}/regulations`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data.regulations;
+  } catch (error) {
+    console.error(
+      "Error fetching funder regulations:",
+      error.response ? error.response.data : error,
+    );
+    throw error;
+  }
+};
+
+export const fetchRegulationDetails = async (
+  token: string,
+  funderId: string,
+  regulationId: string,
+) => {
+  try {
+    const response = await api.get(
+      `/funder/${funderId}/regulation/${regulationId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+    return response.data;
+  } catch (error) {
+    console.error(
+      "Error fetching regulation details:",
+      error.response ? error.response.data : error,
+    );
+    throw error;
+  }
+};
+
+export const addSponsor = async (token: string, name: string, url: string) => {
+  try {
+    const response = await api.post(
+      "/funder",
+      {
+        name,
+        url,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+    return response.data;
+  } catch (error) {
+    console.error(
+      "Error creating sponsor:",
+      error.response ? error.response.data : error,
+    );
+    throw error;
+  }
+};
+
+export const addRegulation = async (
+  token: string,
+  funderId: number,
+  name: string,
+  description: string,
+) => {
+  try {
+    const response = await api.post(
+      `/funder/${funderId}/regulation`,
+      {
+        name,
+        description,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+    return response.data;
+  } catch (error) {
+    console.error(
+      "Error creating regulation:",
+      error.response ? error.response.data : error,
+    );
+    throw error;
+  }
+};
+
+export const updateRegulationDetails = async (
+  token: string,
+  sponsorId: number,
+  regulationId: number,
+  name: string,
+  description: string,
+) => {
+  const response = await axios.patch(
+    `/funder/${sponsorId}/regulation/${regulationId}`,
+    {
+      name,
+      description,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    },
+  );
+  return response.data;
+};

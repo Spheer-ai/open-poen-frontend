@@ -17,10 +17,11 @@ import ResetPasswordLayout from "../components/pages/onboarding/ResetPasswordLay
 import ResetPasswordRequest from "../components/pages/onboarding/ResetPasswordRequest";
 import SponsorDetail from "../components/pages/SponsorDetail";
 import PermissionChecker from "../components/pages/PermissionChecker";
+import RegulationList from "../components/lists/RegulationList";
+import RegulationDetail from "../components/pages/RegulationDetail";
 
 export default function AppRoutes() {
   const navigate = useNavigate();
-
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [, setShowLoginModal] = useState(false);
 
@@ -146,10 +147,35 @@ export default function AppRoutes() {
                 }
               />
               <Route
+                path="/sponsors/:sponsorId/regulations"
+                element={
+                  <InlineModalLayout navigate={navigate}>
+                    <RegulationList />
+                  </InlineModalLayout>
+                }
+              />
+              <Route
+                path="/sponsors/:sponsorId/regulations/:action"
+                element={
+                  <InlineModalLayout navigate={navigate}>
+                    <RegulationList />
+                  </InlineModalLayout>
+                }
+              />
+
+              <Route
+                path="/sponsors/:sponsorId/regulations/:action"
+                element={
+                  <InlineModalLayout navigate={navigate}>
+                    <RegulationDetail isBlockingInteraction={false} />
+                  </InlineModalLayout>
+                }
+              />
+              <Route
                 path="/sponsors/:action"
                 element={
                   <InlineModalLayout navigate={navigate}>
-                    {<Sponsors />}
+                    <Sponsors />
                   </InlineModalLayout>
                 }
               />
@@ -165,7 +191,6 @@ export default function AppRoutes() {
               )
             }
           />
-          <Route path="*" element={<Navigate to="/login" />} />
         </Routes>
       </div>
     </div>

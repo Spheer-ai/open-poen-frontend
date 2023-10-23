@@ -6,6 +6,7 @@ import AddSponsorMobile from "../modals/AddSponsorMobile";
 import AddSponsorDesktop from "../modals/AddSponsorDesktop";
 import SponsorList from "../lists/SponsorsList";
 import { usePermissions } from "../../contexts/PermissionContext";
+import RegulationList from "../lists/RegulationList";
 
 export default function Sponsors() {
   const navigate = useNavigate();
@@ -13,7 +14,9 @@ export default function Sponsors() {
   const [isModalOpen, setIsModalOpen] = useState(action === "add-sponsor");
   const [showPageContent, setShowPageContent] = useState(!!sponsorId);
   const [isBlockingInteraction, setIsBlockingInteraction] = useState(false);
+  const [isRegulationListVisible, setIsRegulationListVisible] = useState(false);
   const { globalPermissions } = usePermissions();
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
   const isMobileScreen = window.innerWidth < 768;
 
   useEffect(() => {
@@ -29,6 +32,7 @@ export default function Sponsors() {
 
   const handleShowPageContent = (sponsorId) => {
     if (sponsorId !== undefined) {
+      setIsRegulationListVisible(true);
       setShowPageContent(true);
       navigate(`/sponsors/detail/${sponsorId}`);
     } else {
@@ -50,31 +54,45 @@ export default function Sponsors() {
     }
   };
 
+  const handleSponsorAdded = () => {
+    setRefreshTrigger((prev) => prev + 1);
+  };
   return (
     <>
       <div className={styles["side-panel"]}>
-        <TopNavigationBar
-          title="Sponsors"
-          showSettings={true}
-          showCta={true}
-          onSettingsClick={() => {}}
-          onCtaClick={handleToggleAddSponsorModal}
-          onSearch={handleSearch}
-          globalPermissions={globalPermissions}
-        />
-        <SponsorList onShowPageContent={handleShowPageContent} />
+        {!isRegulationListVisible && (
+          <TopNavigationBar
+            title="Sponsors"
+            showSettings={true}
+            showCta={true}
+            onSettingsClick={() => {}}
+            onCtaClick={handleToggleAddSponsorModal}
+            onSearch={handleSearch}
+            globalPermissions={globalPermissions}
+          />
+        )}
+        {sponsorId ? (
+          <RegulationList />
+        ) : (
+          <SponsorList
+            onShowPageContent={handleShowPageContent}
+            refreshTrigger={refreshTrigger}
+          />
+        )}
       </div>
       {isMobileScreen ? (
         <AddSponsorMobile
           isOpen={isModalOpen}
           onClose={handleToggleAddSponsorModal}
           isBlockingInteraction={isBlockingInteraction}
+          onSponsorAdded={handleSponsorAdded}
         />
       ) : (
         <AddSponsorDesktop
           isOpen={isModalOpen}
           onClose={handleToggleAddSponsorModal}
           isBlockingInteraction={isBlockingInteraction}
+          onSponsorAdded={handleSponsorAdded}
         />
       )}
     </>

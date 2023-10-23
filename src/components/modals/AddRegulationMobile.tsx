@@ -1,72 +1,67 @@
 import React, { useEffect, useState } from "react";
-import styles from "../../assets/scss/layout/AddFundDesktop.module.scss";
-import { addSponsor } from "../middleware/Api";
+import styles from "../../assets/scss/layout/AddFundModal.module.scss";
+import { addRegulation } from "../middleware/Api";
 
-interface AddSponsorDesktopProps {
+interface AddRegulationMobileProps {
   isOpen: boolean;
   onClose: () => void;
   isBlockingInteraction: boolean;
-  onSponsorAdded: () => void;
+  onRegulationAdded: () => void;
+  sponsorId?: string;
+  refreshTrigger: number;
 }
 
-const AddSponsorDesktop: React.FC<AddSponsorDesktopProps> = ({
+const AddRegulationMobile: React.FC<AddRegulationMobileProps> = ({
   isOpen,
   onClose,
   isBlockingInteraction,
-  onSponsorAdded,
+  onRegulationAdded,
+  sponsorId,
 }) => {
   const [modalIsOpen, setModalIsOpen] = useState(isOpen);
-  const [sponsorName, setSponsorName] = useState("");
-  const [sponsorUrl, setSponsorUrl] = useState("");
-  const [isUrlValid, setIsUrlValid] = useState(true);
+  const [regulationName, setRegulationName] = useState("");
+  const [regulationDescription, setRegulationDescription] = useState("");
 
   useEffect(() => {
+    console.log("Component rendered with isOpen:", isOpen);
     if (isOpen) {
       setModalIsOpen(true);
     } else {
+      console.log("Closing modal");
       setTimeout(() => {
+        console.log("Modal closed with modalIsOpen:", modalIsOpen);
         setModalIsOpen(false);
-      }, 300);
+      }, 150);
     }
   }, [isOpen]);
 
-  const isValidUrl = (url: string) => {
-    try {
-      new URL(url);
-      return true;
-    } catch (_) {
-      return false;
-    }
-  };
-
   const handleSave = async () => {
-    if (!isValidUrl(sponsorUrl)) {
-      setIsUrlValid(false);
-      return;
-    }
-
-    setIsUrlValid(true);
-
     try {
       const token = localStorage.getItem("token");
       if (!token) {
         console.error("Token is not available in localStorage");
         return;
       }
-      await addSponsor(token, sponsorName, sponsorUrl);
-      setSponsorName("");
-      setSponsorUrl("");
+
+      if (!sponsorId) {
+        console.error("Sponsor ID is not defined.");
+        return;
+      }
+
+      await addRegulation(
+        token,
+        Number(sponsorId),
+        regulationName,
+        regulationDescription,
+      );
+      setRegulationName("");
+      setRegulationDescription("");
       handleClose();
 
-      onSponsorAdded();
+      onRegulationAdded();
     } catch (error) {
-      console.error("Failed to create sponsor:", error);
+      console.error("Failed to create regulation:", error);
     }
-  };
-
-  const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setIsUrlValid(true);
-    setSponsorUrl(e.target.value);
   };
 
   const handleClose = () => {
@@ -77,6 +72,7 @@ const AddSponsorDesktop: React.FC<AddSponsorDesktopProps> = ({
   };
 
   if (!isOpen && !modalIsOpen) {
+    console.log("Modal is not open");
     return null;
   }
 
@@ -87,31 +83,25 @@ const AddSponsorDesktop: React.FC<AddSponsorDesktopProps> = ({
         onClick={handleClose}
       ></div>
       <div className={`${styles.modal} ${modalIsOpen ? styles.open : ""}`}>
-        <h2 className={styles.title}>Sponsor Aanmaken</h2>
+        <h2 className={styles.title}>Regeling aanmaken</h2>
         <hr></hr>
         <div className={styles.formGroup}>
           <h3>Info</h3>
-          <label className={styles.labelEmail}>Naam:</label>
+          <label className={styles.label}>Naam:</label>
           <input
             type="text"
             placeholder="Voer een naam in"
-            value={sponsorName}
-            onChange={(e) => setSponsorName(e.target.value)}
+            value={regulationName}
+            onChange={(e) => setRegulationName(e.target.value)}
           />
         </div>
         <div className={styles.formGroup}>
-          <label className={styles.label}>URL:</label>
-          <input
-            type="text"
-            placeholder="Voer de URL in"
-            value={sponsorUrl}
-            onChange={handleUrlChange}
+          <label className={styles.label}>Beschrijving:</label>
+          <textarea
+            placeholder="Voer de beschrijving in"
+            value={regulationDescription}
+            onChange={(e) => setRegulationDescription(e.target.value)}
           />
-          {!isUrlValid && (
-            <span style={{ color: "red", display: "block", marginTop: "5px" }}>
-              Vul een geldigle URL in.
-            </span>
-          )}
         </div>
         <div className={styles.buttonContainer}>
           <button onClick={handleClose} className={styles.cancelButton}>
@@ -126,4 +116,4 @@ const AddSponsorDesktop: React.FC<AddSponsorDesktopProps> = ({
   );
 };
 
-export default AddSponsorDesktop;
+export default AddRegulationMobile;

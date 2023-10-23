@@ -62,13 +62,11 @@ const AddUserForm: React.FC<{
 
   const handleSubmit = async () => {
     try {
-      // Check for an empty email
       if (!formData.email.trim()) {
         setError(intl.formatMessage({ id: "auth.emptyEmail" }));
         return;
       }
 
-      // Check if at least one role is selected
       if (!formData.role) {
         setError(intl.formatMessage({ id: "addUser.SelectRole" }));
         return;

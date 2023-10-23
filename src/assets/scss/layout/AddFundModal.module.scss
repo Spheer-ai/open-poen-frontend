@@ -19,6 +19,8 @@
 
 .modal {
   position: fixed;
+  display: flex;
+  flex-direction: column;
   bottom: 0;
   left: 0;
   width: 100%;
@@ -40,7 +42,7 @@
   font-size: 22px;
   font-weight: bold;
   margin: 20px;
-  text-align: center;
+  text-align: left;
 }
 
 .formGroup {
@@ -64,6 +66,7 @@
   display: flex;
   justify-content: space-between;
   margin: 20px;
+  margin-top: auto;
 }
 
 .cancelButton {
@@ -77,7 +80,7 @@
 }
 
 .saveButton {
-  background-color: #007bff;
+  background-color: #2760d5;
   border: none;
   border-radius: 5px;
   padding: 10px;
