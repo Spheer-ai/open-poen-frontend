@@ -90,3 +90,20 @@
 .grant-details {
   margin-top: 30px;
 }
+
+.grant-container {
+  display: flex;
+  gap: 30px;
+  margin-top: 30px;
+  margin-bottom: 30px;
+  align-items: center;
+
+  button {
+    background: transparent;
+    border: solid 1px grey;
+    border-radius: 5px;
+    padding: 10px;
+    height: fit-content;
+    cursor: pointer;
+  }
+}

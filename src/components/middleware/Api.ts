@@ -476,7 +476,7 @@ export const addGrant = async (
   regulationId: number,
   name: string,
   reference: string,
-  budget: number
+  budget: number,
 ) => {
   try {
     const response = await api.post(
@@ -490,13 +490,13 @@ export const addGrant = async (
         headers: {
           Authorization: `Bearer ${token}`,
         },
-      }
+      },
     );
     return response.data;
   } catch (error) {
     console.error(
       "Error adding grant:",
-      error.response ? error.response.data : error
+      error.response ? error.response.data : error,
     );
     throw error;
   }
