@@ -501,3 +501,36 @@ export const addGrant = async (
     throw error;
   }
 };
+
+export const editGrant = async (
+  token: string,
+  funderId: number,
+  regulationId: number,
+  grantId: number,
+  name: string,
+  reference: string,
+  budget: number
+) => {
+  try {
+    const response = await api.patch(
+      `/funder/${funderId}/regulation/${regulationId}/grant/${grantId}`,
+      {
+        name,
+        reference,
+        budget,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error(
+      "Error editing grant:",
+      error.response ? error.response.data : error
+    );
+    throw error;
+  }
+};
