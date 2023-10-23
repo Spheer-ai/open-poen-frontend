@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { fetchRegulationDetails } from "../middleware/Api";
 import { useAuth } from "../../contexts/AuthContext";
 import styles from "../../assets/scss/RegulationDetail.module.scss";
+import EditRegulationDesktop from "../modals/EditRegulationDesktop";
+import EditRegulationMobile from "../modals/EditRegulationMobile";
+import EditIcon from "/edit-icon.svg";
 
 type Officer = {
   email: string;
@@ -31,16 +34,28 @@ type RegulationDetailType = {
 
 interface RegulationDetailProps {
   regulationId?: string;
+  isBlockingInteraction: boolean;
 }
 
 const RegulationDetail: React.FC<RegulationDetailProps> = ({
   regulationId,
 }) => {
   const { sponsorId } = useParams<{ sponsorId?: string }>();
-
+  const { action } = useParams();
+  const navigate = useNavigate();
+  const [isModalOpen, setIsModalOpen] = useState(action === "edit-regulation");
   const [regulationDetails, setRegulationDetails] =
     useState<RegulationDetailType | null>(null);
   const { user } = useAuth();
+  const [selectedRegulationId, setSelectedRegulationId] = useState<
+    string | null
+  >(null);
+  const [isBlockingInteraction, setIsBlockingInteraction] = useState(false);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const isMobileScreen = window.innerWidth < 768;
+
+  const token = user?.token;
+  useParams();
 
   useEffect(() => {
     async function getRegulationDetails() {
@@ -63,13 +78,49 @@ const RegulationDetail: React.FC<RegulationDetailProps> = ({
       }
     }
     getRegulationDetails();
-  }, [sponsorId, regulationId, user]);
+  }, [sponsorId, regulationId, user, refreshTrigger]);
+
+  useEffect(() => {
+    console.log("action:", action);
+    if (action === "edit-regulation") {
+      setIsModalOpen(true);
+    }
+  }, [action]);
+
+  const handleToggleEditRegulationModal = () => {
+    if (isModalOpen) {
+      setIsBlockingInteraction(true);
+      setTimeout(() => {
+        setIsBlockingInteraction(false);
+        setIsModalOpen(false);
+      }, 300);
+    } else {
+      setIsModalOpen(true);
+      navigate(
+        `/sponsors/${sponsorId}/regulations/${regulationId}/edit-regulation`,
+      );
+    }
+  };
+
+  const handleRegulationEdited = () => {
+    setRefreshTrigger((prev) => prev + 1);
+  };
 
   if (!regulationDetails) return <p>Loading...</p>;
 
   return (
     <div className={styles["regulation-detail-container"]}>
-      <h1>{regulationDetails.name}</h1>
+      <div className={styles["regulation-detail-header"]}>
+        <h1>{regulationDetails.name}</h1>
+        <button
+          className={styles["edit-button"]}
+          onClick={handleToggleEditRegulationModal}
+        >
+          <img src={EditIcon} alt="Edit" className={styles["icon"]} />
+          Regeling bewerken
+        </button>
+      </div>
+
       <p>{regulationDetails.description}</p>
 
       <h3 className={styles["section-title"]}>BESCHIKKINGEN</h3>
@@ -98,6 +149,31 @@ const RegulationDetail: React.FC<RegulationDetailProps> = ({
           </li>
         ))}
       </ul>
+      {isMobileScreen ? (
+        <EditRegulationMobile
+          isOpen={isModalOpen}
+          onClose={handleToggleEditRegulationModal}
+          isBlockingInteraction={isBlockingInteraction}
+          onRegulationEdited={handleRegulationEdited}
+          sponsorId={sponsorId}
+          regulationId={regulationId}
+          refreshTrigger={refreshTrigger}
+          currentName={""}
+          currentDescription={""}
+        />
+      ) : (
+        <EditRegulationDesktop
+          isOpen={isModalOpen}
+          onClose={handleToggleEditRegulationModal}
+          isBlockingInteraction={isBlockingInteraction}
+          onRegulationEdited={handleRegulationEdited}
+          sponsorId={sponsorId}
+          regulationId={regulationId}
+          refreshTrigger={refreshTrigger}
+          currentName={""}
+          currentDescription={""}
+        />
+      )}
     </div>
   );
 };

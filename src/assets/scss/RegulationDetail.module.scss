@@ -16,6 +16,26 @@
   p {
     font-size: 16px;
   }
+
+  .regulation-detail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    button {
+      display: flex;
+      border: none;
+      gap: 15px;
+      background-color: #ffffff;
+      align-items: center;
+      font-size: 14px;
+      cursor: pointer;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
 }
 
 .regulation-detail-content {

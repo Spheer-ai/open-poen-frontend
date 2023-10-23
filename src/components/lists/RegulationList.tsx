@@ -97,7 +97,7 @@ const RegulationList = () => {
     <div className={styles["container"]}>
       <div className={styles["side-panel"]}>
         <TopNavigationBar
-          title={`Regelingen ${sponsorId}`}
+          title={`Regelingen`}
           onBackArrowClick={handleBackClick}
           showSettings={true}
           showCta={true}
@@ -146,7 +146,10 @@ const RegulationList = () => {
       )}
       {selectedRegulationId && (
         <div className={styles["detail-panel"]}>
-          <RegulationDetail regulationId={selectedRegulationId} />
+          <RegulationDetail
+            regulationId={selectedRegulationId}
+            isBlockingInteraction={false}
+          />
         </div>
       )}
     </div>

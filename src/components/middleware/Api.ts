@@ -447,3 +447,25 @@ export const addRegulation = async (
     throw error;
   }
 };
+
+export const updateRegulationDetails = async (
+  token: string,
+  sponsorId: number,
+  regulationId: number,
+  name: string,
+  description: string,
+) => {
+  const response = await axios.patch(
+    `/funder/${sponsorId}/regulation/${regulationId}`,
+    {
+      name,
+      description,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    },
+  );
+  return response.data;
+};
