@@ -135,3 +135,14 @@
     }
   }
 }
+
+.button-container {
+  button {
+    background: transparent;
+    border: solid 1px grey;
+    border-radius: 5px;
+    padding: 10px;
+    height: fit-content;
+    cursor: pointer;
+  }
+}
