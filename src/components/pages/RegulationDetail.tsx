@@ -10,15 +10,9 @@ import EditIcon from "/edit-icon.svg";
 import AddGrantMobile from "../modals/AddGrantMobile";
 import EditGrantDesktop from "../modals/EditGrantDesktop";
 import EditGrantMobile from "../modals/EditGrantMobile";
-
-type Officer = {
-  email: string;
-  first_name: string;
-  last_name: string;
-  biography: string;
-  role: string;
-  image: string;
-};
+import AddOfficerDesktop from "../modals/AddOfficerDesktop";
+import AddOfficerMobile from "../modals/AddOfficerMobile";
+import { Officer } from "../../types/AddOfficerType";
 
 type Grant = {
   id: number;
@@ -63,6 +57,9 @@ const RegulationDetail: React.FC<RegulationDetailProps> = ({
   const isMobileScreen = window.innerWidth < 768;
   const [isGrantModalOpen, setIsGrantModalOpen] = useState(false);
   const [currentGrant, setCurrentGrant] = useState<Grant | null>(null);
+  const [isAddOfficerModalOpen, setIsAddOfficerModalOpen] = useState(false);
+  const [selectedGrantId, setSelectedGrantId] = useState<number | null>(null);
+  const [availableOfficers, setAvailableOfficers] = useState<Officer[]>([]);
   const token = user?.token;
   useParams();
 
@@ -86,6 +83,9 @@ const RegulationDetail: React.FC<RegulationDetailProps> = ({
         }
       } catch (error) {
         console.error("Failed to fetch regulation details:", error);
+      }
+      if (regulationDetails) {
+        setAvailableOfficers(regulationDetails.policy_officers);
       }
     }
     getRegulationDetails();
@@ -156,12 +156,32 @@ const RegulationDetail: React.FC<RegulationDetailProps> = ({
     }
   };
 
-  const handleGrantEdited = () => {
+  const handleOfficerAdded = () => {
     setRefreshTrigger((prev) => prev + 1);
   };
 
   if (!regulationDetails) return <p>Loading...</p>;
   console.log("Current Grant:", currentGrant);
+
+  const handleToggleAddOfficerModal = () => {
+    if (isAddOfficerModalOpen) {
+      setIsBlockingInteraction(true);
+      setTimeout(() => {
+        setIsBlockingInteraction(false);
+        setIsAddOfficerModalOpen(false);
+        navigate(`/sponsors/${sponsorId}/regulations/${regulationId}`);
+      }, 300);
+    } else {
+      setIsAddOfficerModalOpen(true);
+      navigate(
+        `/sponsors/${sponsorId}/regulations/${regulationId}/add-officer`,
+      );
+    }
+  };
+
+  const handleGrantEdited = () => {
+    setRefreshTrigger((prev) => prev + 1);
+  };
 
   return (
     <div className={styles["regulation-detail-container"]}>
@@ -190,6 +210,16 @@ const RegulationDetail: React.FC<RegulationDetailProps> = ({
         {regulationDetails.grants.map((grant, index) => (
           <li key={index} className={styles["grant-item"]}>
             {grant.name} | {grant.reference} | € {grant.budget}
+            <div className={styles["button-container"]}>
+            <button
+              className={styles["add-button"]}
+              onClick={() => {
+                setSelectedGrantId(grant.id);
+                handleToggleAddOfficerModal();
+              }}
+            >
+              Officer toevoegen
+            </button>
             <button
               className={styles["edit-button"]}
               onClick={() => handleToggleEditGrantModal(grant)}
@@ -197,6 +227,7 @@ const RegulationDetail: React.FC<RegulationDetailProps> = ({
               <img src={EditIcon} alt="Edit" className={styles["icon"]} />
               Bewerken
             </button>
+            </div>
           </li>
         ))}
       </ul>
@@ -288,6 +319,29 @@ const RegulationDetail: React.FC<RegulationDetailProps> = ({
           currentName={currentGrant?.name || ""}
           currentReference={currentGrant?.reference || ""}
           currentBudget={currentGrant?.budget || 0}
+        />
+      )}
+      {isMobileScreen ? (
+        <AddOfficerMobile
+          isOpen={isAddOfficerModalOpen}
+          onClose={handleToggleAddOfficerModal}
+          onOfficerAdded={handleOfficerAdded}
+          sponsorId={sponsorId}
+          regulationId={regulationId}
+          grantId={selectedGrantId?.toString() || undefined}
+          officers={availableOfficers}
+          isBlockingInteraction={false}
+        />
+      ) : (
+        <AddOfficerDesktop
+          isOpen={isAddOfficerModalOpen}
+          onClose={handleToggleAddOfficerModal}
+          onOfficerAdded={handleOfficerAdded}
+          sponsorId={sponsorId}
+          regulationId={regulationId}
+          grantId={selectedGrantId?.toString() || undefined}
+          officers={availableOfficers}
+          isBlockingInteraction={false}
         />
       )}
     </div>

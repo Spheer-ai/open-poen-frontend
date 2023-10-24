@@ -534,3 +534,31 @@ export const editGrant = async (
     throw error;
   }
 };
+
+export const addOfficerToGrant = async (
+  token: string,
+  funderId: number,
+  regulationId: number,
+  grantId: number,
+  userIds: number[],
+): Promise<{ users: any[] }> => {
+  const url = `/funder/${funderId}/regulation/${regulationId}/grant/${grantId}/overseer`;
+  const headers = {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${token}`,
+  };
+
+  const response = await fetch(url, {
+    method: "PATCH",
+    headers: headers,
+    body: JSON.stringify({ user_ids: userIds }),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(`Error adding officer: ${errorData.detail}`);
+  }
+
+  const data = await response.json();
+  return data;
+};

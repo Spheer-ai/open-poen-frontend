@@ -109,6 +109,9 @@
 }
 
 .grant-list {
+  .button-container {
+    display: flex;
+    gap: 30px;
   .edit-button {
     background: transparent;
     border: none;
@@ -118,7 +121,17 @@
     gap: 10px;
   }
 
+  button {
+    background: transparent;
+    border: solid 1px grey;
+    border-radius: 5px;
+    padding: 10px;
+    height: fit-content;
+    cursor: pointer;
+  }
+
   :hover {
     color: #2760d5;
   }
+}
 }
