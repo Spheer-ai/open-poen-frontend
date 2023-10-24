@@ -541,24 +541,25 @@ export const addOfficerToGrant = async (
   regulationId: number,
   grantId: number,
   userIds: number[],
-): Promise<{ users: any[] }> => {
-  const url = `/funder/${funderId}/regulation/${regulationId}/grant/${grantId}/overseer`;
-  const headers = {
-    "Content-Type": "application/json",
-    Authorization: `Bearer ${token}`,
-  };
-
-  const response = await fetch(url, {
-    method: "PATCH",
-    headers: headers,
-    body: JSON.stringify({ user_ids: userIds }),
-  });
-
-  if (!response.ok) {
-    const errorData = await response.json();
-    throw new Error(`Error adding officer: ${errorData.detail}`);
+) => {
+  try {
+    const response = await api.patch(
+      `/funder/${funderId}/regulation/${regulationId}/grant/${grantId}/overseer`,
+      {
+        user_ids: userIds,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+    return response.data;
+  } catch (error) {
+    console.error(
+      "Error adding officer to grant:",
+      error.response ? error.response.data : error,
+    );
+    throw error;
   }
-
-  const data = await response.json();
-  return data;
 };

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import styles from "../../assets/scss/layout/AddFundDesktop.module.scss";
-import { addOfficerToGrant } from "../middleware/Api";
+import { addOfficerToGrant, getUsers } from "../middleware/Api";
 import { Officer } from "../../types/AddOfficerType";
 
 interface AddOfficerDesktopProps {
@@ -28,6 +28,9 @@ const AddOfficerDesktop: React.FC<AddOfficerDesktopProps> = ({
   const [selectedOfficerId, setSelectedOfficerId] = useState<number | null>(
     null,
   );
+  const [allUsers, setAllUsers] = useState<Officer[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [addedOfficers, setAddedOfficers] = useState<Officer[]>([]);
 
   useEffect(() => {
     if (isOpen) {
@@ -39,6 +42,30 @@ const AddOfficerDesktop: React.FC<AddOfficerDesktopProps> = ({
     }
   }, [isOpen]);
 
+  useEffect(() => {
+    async function fetchAndSetUsers() {
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) {
+          console.error("Token is not available in localStorage");
+          return;
+        }
+        const response = await getUsers(token);
+        setAllUsers(response.users);
+      } catch (error) {
+        console.error("Error fetching all users:", error);
+      }
+    }
+    fetchAndSetUsers();
+  }, []);
+
+  const handleOfficerSelect = (officer: Officer) => {
+    if (!addedOfficers.includes(officer)) {
+        setAddedOfficers((prev) => [...prev, officer]);
+    }
+    setSelectedOfficerId(officer.id);
+    setSearchTerm("");
+};
   const handleAddOfficer = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -47,10 +74,16 @@ const AddOfficerDesktop: React.FC<AddOfficerDesktopProps> = ({
         return;
       }
 
-      if (!sponsorId || !regulationId || !grantId || !selectedOfficerId) {
-        console.error("Required IDs are not available.");
-        return;
-      }
+      console.log("sponsorId", sponsorId);
+console.log("regulationId", regulationId);
+console.log("grantId", grantId);
+console.log("selectedOfficerId", selectedOfficerId);
+
+if (!sponsorId || !regulationId || !grantId || !selectedOfficerId) {
+  console.error("Required IDs are not available.");
+  return;
+}
+
 
       await addOfficerToGrant(
         token,
@@ -87,18 +120,35 @@ const AddOfficerDesktop: React.FC<AddOfficerDesktopProps> = ({
         <h2 className={styles.title}>Officer Toevoegen</h2>
         <hr></hr>
         <div className={styles.formGroup}>
-          <label className={styles.label}>Kies een Officer:</label>
-          <select
-            value={selectedOfficerId || ""}
-            onChange={(e) => setSelectedOfficerId(Number(e.target.value))}
-          >
-            {officers.map((officer) => (
-              <option key={officer.id} value={officer.id}>
-                {officer.first_name} {officer.last_name}
-              </option>
-            ))}
-          </select>
+          <label className={styles.label}>Search and Add an Officer:</label>
+          <input
+            type="text"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder="Search by email..."
+          />
+          {searchTerm && (
+    <div className={styles.dropdown}>
+        {allUsers
+            .filter(user => user.email.includes(searchTerm))
+            .map(user => (
+                <div 
+                    key={user.id} 
+                    onClick={() => handleOfficerSelect(user)}
+                >
+                    {user.email}
+                </div>
+            ))
+        }
+    </div>
+)}
         </div>
+        <h3>Added Officers</h3>
+        <ul>
+          {addedOfficers.map((officer) => (
+            <li key={officer.id}>{officer.email}</li>
+          ))}
+        </ul>
         <div className={styles.buttonContainer}>
           <button onClick={handleClose} className={styles.cancelButton}>
             Annuleren

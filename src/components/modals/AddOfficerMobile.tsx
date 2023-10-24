@@ -1,8 +1,6 @@
-// AddOfficerDesktop.tsx
-
 import React, { useEffect, useState } from "react";
 import styles from "../../assets/scss/layout/AddFundModal.module.scss";
-import { addOfficerToGrant } from "../middleware/Api"; // Make sure you have this function available
+import { addOfficerToGrant } from "../middleware/Api";
 import { Officer } from "../../types/AddOfficerType";
 
 interface AddOfficerDesktopProps {
@@ -13,7 +11,7 @@ interface AddOfficerDesktopProps {
   sponsorId?: string;
   regulationId?: string;
   grantId?: string;
-  officers: Officer[]; // A list of available officers to be added
+  officers: Officer[];
 }
 
 const AddOfficerDesktop: React.FC<AddOfficerDesktopProps> = ({

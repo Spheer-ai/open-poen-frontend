@@ -186,7 +186,7 @@ const RegulationDetail: React.FC<RegulationDetailProps> = ({
 
   return (
     <div className={styles["regulation-detail-container"]}>
-            <Breadcrumb />
+      <Breadcrumb />
       <div className={styles["regulation-detail-header"]}>
         <h1>{regulationDetails.name}</h1>
         <button
@@ -213,22 +213,22 @@ const RegulationDetail: React.FC<RegulationDetailProps> = ({
           <li key={index} className={styles["grant-item"]}>
             {grant.name} | {grant.reference} | € {grant.budget}
             <div className={styles["button-container"]}>
-            <button
-              className={styles["add-button"]}
-              onClick={() => {
-                setSelectedGrantId(grant.id);
-                handleToggleAddOfficerModal();
-              }}
-            >
-              Officer toevoegen
-            </button>
-            <button
-              className={styles["edit-button"]}
-              onClick={() => handleToggleEditGrantModal(grant)}
-            >
-              <img src={EditIcon} alt="Edit" className={styles["icon"]} />
-              Bewerken
-            </button>
+              <button
+                className={styles["add-button"]}
+                onClick={() => {
+                  setSelectedGrantId(grant.id);
+                  handleToggleAddOfficerModal();
+                }}
+              >
+                Officer toevoegen
+              </button>
+              <button
+                className={styles["edit-button"]}
+                onClick={() => handleToggleEditGrantModal(grant)}
+              >
+                <img src={EditIcon} alt="Edit" className={styles["icon"]} />
+                Bewerken
+              </button>
             </div>
           </li>
         ))}
