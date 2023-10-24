@@ -14,6 +14,8 @@ import AddOfficerDesktop from "../modals/AddOfficerDesktop";
 import AddOfficerMobile from "../modals/AddOfficerMobile";
 import { Officer } from "../../types/AddOfficerType";
 import Breadcrumb from "../ui/layout/BreadCrumbs";
+import AddEmployeeToRegulation from "../modals/AddEmployeeToRegulation";
+import AddEmployeeToRegulationMobile from "../modals/AddEmployeeToRegulationMobile";
 
 type Grant = {
   id: number;
@@ -57,6 +59,7 @@ const RegulationDetail: React.FC<RegulationDetailProps> = ({
   const [isAddGrantModalOpen, setIsAddGrantModalOpen] = useState(false);
   const isMobileScreen = window.innerWidth < 768;
   const [isGrantModalOpen, setIsGrantModalOpen] = useState(false);
+  const [isAddEmployeeModalOpen, setIsAddEmployeeModalOpen] = useState(false);
   const [currentGrant, setCurrentGrant] = useState<Grant | null>(null);
   const [isAddOfficerModalOpen, setIsAddOfficerModalOpen] = useState(false);
   const [selectedGrantId, setSelectedGrantId] = useState<number | null>(null);
@@ -115,6 +118,22 @@ const RegulationDetail: React.FC<RegulationDetailProps> = ({
     }
   };
 
+  const handleToggleAddEmployeeModal = () => {
+    if (isAddEmployeeModalOpen) {
+      setIsBlockingInteraction(true);
+      setTimeout(() => {
+        setIsBlockingInteraction(false);
+        setIsAddEmployeeModalOpen(false);
+        navigate(`/sponsors/${sponsorId}/regulations/${regulationId}`);
+      }, 300);
+    } else {
+      setIsAddEmployeeModalOpen(true);
+      navigate(
+        `/sponsors/${sponsorId}/regulations/${regulationId}/add-employee`,
+      );
+    }
+  };
+
   const handleToggleAddGrantModal = () => {
     if (isAddGrantModalOpen) {
       setIsBlockingInteraction(true);
@@ -137,6 +156,10 @@ const RegulationDetail: React.FC<RegulationDetailProps> = ({
   };
 
   const handleGrantAdded = () => {
+    setRefreshTrigger((prev) => prev + 1);
+  };
+
+  const handleEmployeeAdded = () => {
     setRefreshTrigger((prev) => prev + 1);
   };
 
@@ -199,6 +222,14 @@ const RegulationDetail: React.FC<RegulationDetailProps> = ({
       </div>
 
       <p>{regulationDetails.description}</p>
+      <div className={styles["button-container"]}>
+        <button
+          className={styles["add-button"]}
+          onClick={handleToggleAddEmployeeModal}
+        >
+          Medewerkers
+        </button>
+      </div>
       <div className={styles["grant-container"]}>
         <h3 className={styles["section-title"]}>BESCHIKKINGEN</h3>
         <button
@@ -344,6 +375,25 @@ const RegulationDetail: React.FC<RegulationDetailProps> = ({
           grantId={selectedGrantId?.toString() || undefined}
           officers={availableOfficers}
           isBlockingInteraction={false}
+        />
+      )}
+      {isMobileScreen ? (
+        <AddEmployeeToRegulationMobile
+          isOpen={isAddEmployeeModalOpen}
+          onClose={handleToggleAddEmployeeModal}
+          isBlockingInteraction={isBlockingInteraction}
+          onEmployeeAdded={handleEmployeeAdded}
+          sponsorId={sponsorId}
+          regulationId={regulationId}
+        />
+      ) : (
+        <AddEmployeeToRegulation
+          isOpen={isAddEmployeeModalOpen}
+          onClose={handleToggleAddEmployeeModal}
+          isBlockingInteraction={isBlockingInteraction}
+          onEmployeeAdded={handleEmployeeAdded}
+          sponsorId={sponsorId}
+          regulationId={regulationId}
         />
       )}
     </div>

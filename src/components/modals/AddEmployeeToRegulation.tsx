@@ -1,36 +1,32 @@
 import React, { useEffect, useState } from "react";
 import styles from "../../assets/scss/layout/AddFundDesktop.module.scss";
-import { addOfficerToGrant, getUsers } from "../middleware/Api";
+import { addEmployeeToRegulation, getUsers } from "../middleware/Api";
 import { Officer } from "../../types/AddOfficerType";
 
-interface AddOfficerDesktopProps {
+interface AddEmployeeToRegulationProps {
   isOpen: boolean;
   onClose: () => void;
   isBlockingInteraction: boolean;
-  onOfficerAdded: () => void;
+  onEmployeeAdded: () => void;
   sponsorId?: string;
   regulationId?: string;
-  grantId?: string;
-  officers: Officer[];
 }
 
-const AddOfficerDesktop: React.FC<AddOfficerDesktopProps> = ({
+const AddEmployeeToRegulation: React.FC<AddEmployeeToRegulationProps> = ({
   isOpen,
   onClose,
   isBlockingInteraction,
-  onOfficerAdded,
+  onEmployeeAdded,
   sponsorId,
   regulationId,
-  grantId,
-  officers,
 }) => {
   const [modalIsOpen, setModalIsOpen] = useState(isOpen);
-  const [selectedOfficerId, setSelectedOfficerId] = useState<number | null>(
+  const [selectedEmployeeId, setSelectedEmployeeId] = useState<number | null>(
     null,
   );
   const [allUsers, setAllUsers] = useState<Officer[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [addedOfficers, setAddedOfficers] = useState<Officer[]>([]);
+  const [addedEmployees, setAddedEmployees] = useState<Officer[]>([]);
 
   useEffect(() => {
     if (isOpen) {
@@ -59,14 +55,15 @@ const AddOfficerDesktop: React.FC<AddOfficerDesktopProps> = ({
     fetchAndSetUsers();
   }, []);
 
-  const handleOfficerSelect = (officer: Officer) => {
-    if (!addedOfficers.includes(officer)) {
-      setAddedOfficers((prev) => [...prev, officer]);
+  const handleEmployeeSelect = (employee: Officer) => {
+    if (!addedEmployees.includes(employee)) {
+      setAddedEmployees((prev) => [...prev, employee]);
     }
-    setSelectedOfficerId(officer.id);
+    setSelectedEmployeeId(employee.id);
     setSearchTerm("");
   };
-  const handleAddOfficer = async () => {
+
+  const handleAddEmployee = async () => {
     try {
       const token = localStorage.getItem("token");
       if (!token) {
@@ -76,25 +73,23 @@ const AddOfficerDesktop: React.FC<AddOfficerDesktopProps> = ({
 
       console.log("sponsorId", sponsorId);
       console.log("regulationId", regulationId);
-      console.log("grantId", grantId);
-      console.log("selectedOfficerId", selectedOfficerId);
+      console.log("selectedEmployeeId", selectedEmployeeId);
 
-      if (!sponsorId || !regulationId || !grantId || !selectedOfficerId) {
+      if (!sponsorId || !regulationId || !selectedEmployeeId) {
         console.error("Required IDs are not available.");
         return;
       }
 
-      await addOfficerToGrant(
+      await addEmployeeToRegulation(
         token,
         Number(sponsorId),
         Number(regulationId),
-        Number(grantId),
-        [selectedOfficerId],
+        [selectedEmployeeId],
       );
       handleClose();
-      onOfficerAdded();
+      onEmployeeAdded();
     } catch (error) {
-      console.error("Failed to add officer:", error);
+      console.error("Failed to add employee:", error);
     }
   };
 
@@ -116,10 +111,10 @@ const AddOfficerDesktop: React.FC<AddOfficerDesktopProps> = ({
         onClick={handleClose}
       ></div>
       <div className={`${styles.modal} ${modalIsOpen ? styles.open : ""}`}>
-        <h2 className={styles.title}>Officer Toevoegen</h2>
+        <h2 className={styles.title}>Employee Toevoegen</h2>
         <hr></hr>
         <div className={styles.formGroup}>
-          <label className={styles.label}>Search and Add an Officer:</label>
+          <label className={styles.label}>Search and Add an Employee:</label>
           <input
             type="text"
             value={searchTerm}
@@ -131,24 +126,24 @@ const AddOfficerDesktop: React.FC<AddOfficerDesktopProps> = ({
               {allUsers
                 .filter((user) => user.email.includes(searchTerm))
                 .map((user) => (
-                  <div key={user.id} onClick={() => handleOfficerSelect(user)}>
+                  <div key={user.id} onClick={() => handleEmployeeSelect(user)}>
                     {user.email}
                   </div>
                 ))}
             </div>
           )}
         </div>
-        <h3>Added Officers</h3>
+        <h3>Added Employees</h3>
         <ul>
-          {addedOfficers.map((officer) => (
-            <li key={officer.id}>{officer.email}</li>
+          {addedEmployees.map((employee) => (
+            <li key={employee.id}>{employee.email}</li>
           ))}
         </ul>
         <div className={styles.buttonContainer}>
           <button onClick={handleClose} className={styles.cancelButton}>
             Annuleren
           </button>
-          <button onClick={handleAddOfficer} className={styles.saveButton}>
+          <button onClick={handleAddEmployee} className={styles.saveButton}>
             Toevoegen
           </button>
         </div>
@@ -157,4 +152,4 @@ const AddOfficerDesktop: React.FC<AddOfficerDesktopProps> = ({
   );
 };
 
-export default AddOfficerDesktop;
+export default AddEmployeeToRegulation;

@@ -563,3 +563,33 @@ export const addOfficerToGrant = async (
     throw error;
   }
 };
+
+export const addEmployeeToRegulation = async (
+  token: string,
+  funderId: number,
+  regulationId: number,
+  employeeIds: number[],
+  role: string = "grant officer",
+) => {
+  try {
+    const response = await api.patch(
+      `/funder/${funderId}/regulation/${regulationId}/officers`,
+      {
+        user_ids: employeeIds,
+        role,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+    return response.data;
+  } catch (error) {
+    console.error(
+      "Error adding employee to regulation:",
+      error.response ? error.response.data : error,
+    );
+    throw error;
+  }
+};
