@@ -13,6 +13,7 @@ import EditGrantMobile from "../modals/EditGrantMobile";
 import AddOfficerDesktop from "../modals/AddOfficerDesktop";
 import AddOfficerMobile from "../modals/AddOfficerMobile";
 import { Officer } from "../../types/AddOfficerType";
+import Breadcrumb from "../ui/layout/BreadCrumbs";
 
 type Grant = {
   id: number;
@@ -185,6 +186,7 @@ const RegulationDetail: React.FC<RegulationDetailProps> = ({
 
   return (
     <div className={styles["regulation-detail-container"]}>
+            <Breadcrumb />
       <div className={styles["regulation-detail-header"]}>
         <h1>{regulationDetails.name}</h1>
         <button
