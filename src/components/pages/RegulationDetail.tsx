@@ -251,7 +251,7 @@ const RegulationDetail: React.FC<RegulationDetailProps> = ({
                   handleToggleAddOfficerModal();
                 }}
               >
-                Officer toevoegen
+                Penvoerders
               </button>
               <button
                 className={styles["edit-button"]}
@@ -264,20 +264,20 @@ const RegulationDetail: React.FC<RegulationDetailProps> = ({
           </li>
         ))}
       </ul>
-      <h3 className={styles["section-title"]}>Grant Officers:</h3>
+      <h3 className={styles["section-title"]}>Subsidiemedewerkers:</h3>
       <ul className={styles["officer-list"]}>
         {regulationDetails.grant_officers.map((officer, index) => (
           <li key={index} className={styles["officer-item"]}>
-            {officer.first_name} {officer.last_name} ({officer.email})
+            {officer.email}
           </li>
         ))}
       </ul>
 
-      <h3 className={styles["section-title"]}>Policy Officers:</h3>
+      <h3 className={styles["section-title"]}>Beleidsmedewerkers:</h3>
       <ul className={styles["officer-list"]}>
         {regulationDetails.policy_officers.map((officer, index) => (
           <li key={index} className={styles["officer-item"]}>
-            {officer.first_name} {officer.last_name} ({officer.email})
+            {officer.email}
           </li>
         ))}
       </ul>

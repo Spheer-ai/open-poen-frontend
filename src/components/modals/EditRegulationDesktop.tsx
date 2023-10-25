@@ -103,8 +103,7 @@ const EditRegulationDesktop: React.FC<EditRegulationDesktopProps> = ({
         </div>
         <div className={styles.formGroup}>
           <label className={styles.label}>Beschrijving:</label>
-          <input
-            type="text"
+          <textarea
             placeholder="Voer de beschrijving in"
             value={regulationDescription}
             onChange={(e) => setRegulationDescription(e.target.value)}

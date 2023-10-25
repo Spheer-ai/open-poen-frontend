@@ -569,7 +569,7 @@ export const addEmployeeToRegulation = async (
   funderId: number,
   regulationId: number,
   employeeIds: number[],
-  role: string = "grant officer",
+  role: string,
 ) => {
   try {
     const response = await api.patch(

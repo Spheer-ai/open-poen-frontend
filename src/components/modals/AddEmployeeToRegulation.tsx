@@ -21,12 +21,10 @@ const AddEmployeeToRegulation: React.FC<AddEmployeeToRegulationProps> = ({
   regulationId,
 }) => {
   const [modalIsOpen, setModalIsOpen] = useState(isOpen);
-  const [selectedEmployeeId, setSelectedEmployeeId] = useState<number | null>(
-    null,
-  );
+  const [selectedEmployees, setSelectedEmployees] = useState<Officer[]>([]);
   const [allUsers, setAllUsers] = useState<Officer[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [addedEmployees, setAddedEmployees] = useState<Officer[]>([]);
+  const [selectedRole, setSelectedRole] = useState("");
 
   useEffect(() => {
     if (isOpen) {
@@ -56,11 +54,14 @@ const AddEmployeeToRegulation: React.FC<AddEmployeeToRegulationProps> = ({
   }, []);
 
   const handleEmployeeSelect = (employee: Officer) => {
-    if (!addedEmployees.includes(employee)) {
-      setAddedEmployees((prev) => [...prev, employee]);
+    if (!selectedEmployees.some((selected) => selected.id === employee.id)) {
+      setSelectedEmployees((prevSelected) => [...prevSelected, employee]);
     }
-    setSelectedEmployeeId(employee.id);
     setSearchTerm("");
+  };
+
+  const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSelectedRole(event.target.value);
   };
 
   const handleAddEmployee = async () => {
@@ -73,23 +74,35 @@ const AddEmployeeToRegulation: React.FC<AddEmployeeToRegulationProps> = ({
 
       console.log("sponsorId", sponsorId);
       console.log("regulationId", regulationId);
-      console.log("selectedEmployeeId", selectedEmployeeId);
+      console.log("selectedEmployees", selectedEmployees);
+      console.log("selectedRole", selectedRole);
 
-      if (!sponsorId || !regulationId || !selectedEmployeeId) {
-        console.error("Required IDs are not available.");
+      if (
+        !sponsorId ||
+        !regulationId ||
+        selectedEmployees.length === 0 ||
+        !selectedRole
+      ) {
+        console.error("Required data is not available.");
         return;
       }
+      const formattedRole =
+        selectedRole === "grantOfficer" ? "grant officer" : "policy officer";
+      const selectedEmployeeIds = selectedEmployees.map(
+        (employee) => employee.id,
+      );
 
       await addEmployeeToRegulation(
         token,
         Number(sponsorId),
         Number(regulationId),
-        [selectedEmployeeId],
+        selectedEmployeeIds,
+        formattedRole,
       );
       handleClose();
       onEmployeeAdded();
     } catch (error) {
-      console.error("Failed to add employee:", error);
+      console.error("Failed to add employees:", error);
     }
   };
 
@@ -111,34 +124,75 @@ const AddEmployeeToRegulation: React.FC<AddEmployeeToRegulationProps> = ({
         onClick={handleClose}
       ></div>
       <div className={`${styles.modal} ${modalIsOpen ? styles.open : ""}`}>
-        <h2 className={styles.title}>Employee Toevoegen</h2>
+        <h2 className={styles.title}>Medewerker aanmaken</h2>
         <hr></hr>
         <div className={styles.formGroup}>
-          <label className={styles.label}>Search and Add an Employee:</label>
+          <h3>Medewerkers</h3>
+          {selectedEmployees.length > 0 && (
+            <ul className={styles["officers-list"]}>
+              {selectedEmployees.map((employee) => (
+                <li key={employee.id}>{employee.email}</li>
+              ))}
+            </ul>
+          )}
+          <label className={styles.label}>Selecteer een medewerker...</label>
           <input
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Search by email..."
+            placeholder="Vul een e-mailadres in..."
+            className={`${styles.inputDefault} ${
+              searchTerm && styles.inputWithResults
+            }`}
           />
           {searchTerm && (
-            <div className={styles.dropdown}>
-              {allUsers
-                .filter((user) => user.email.includes(searchTerm))
-                .map((user) => (
-                  <div key={user.id} onClick={() => handleEmployeeSelect(user)}>
-                    {user.email}
-                  </div>
-                ))}
+            <div
+              className={`${styles.dropdownContainer} ${
+                searchTerm && styles.dropdownWithResults
+              }`}
+            >
+              <div className={styles.dropdown}>
+                {allUsers
+                  .filter((user) => user.email.includes(searchTerm))
+                  .map((user) => (
+                    <div
+                      key={user.id}
+                      onClick={() => handleEmployeeSelect(user)}
+                    >
+                      {user.email}
+                    </div>
+                  ))}
+              </div>
             </div>
           )}
+          <div className={styles["officer-checkbox"]}>
+            <label className={styles.label}>Selecteer een rol:</label>
+            <div className={styles.checkboxContainer}>
+              <div className={styles.checkboxLabel}>
+                <label htmlFor="policyOfficer">Beleidsmedewerker</label>
+                <input
+                  type="checkbox"
+                  id="policyOfficer"
+                  name="role"
+                  value="policyOfficer"
+                  checked={selectedRole === "policyOfficer"}
+                  onChange={handleCheckboxChange}
+                />
+              </div>
+              <div className={styles.checkboxLabel}>
+                <label htmlFor="grantOfficer">Subsidiemedewerker</label>
+                <input
+                  type="checkbox"
+                  id="grantOfficer"
+                  name="role"
+                  value="grantOfficer"
+                  checked={selectedRole === "grantOfficer"}
+                  onChange={handleCheckboxChange}
+                />
+              </div>
+            </div>
+          </div>
         </div>
-        <h3>Added Employees</h3>
-        <ul>
-          {addedEmployees.map((employee) => (
-            <li key={employee.id}>{employee.email}</li>
-          ))}
-        </ul>
         <div className={styles.buttonContainer}>
           <button onClick={handleClose} className={styles.cancelButton}>
             Annuleren

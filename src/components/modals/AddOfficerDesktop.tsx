@@ -116,34 +116,46 @@ const AddOfficerDesktop: React.FC<AddOfficerDesktopProps> = ({
         onClick={handleClose}
       ></div>
       <div className={`${styles.modal} ${modalIsOpen ? styles.open : ""}`}>
-        <h2 className={styles.title}>Officer Toevoegen</h2>
+        <h2 className={styles.title}>Penvoerder aanmaken</h2>
         <hr></hr>
         <div className={styles.formGroup}>
-          <label className={styles.label}>Search and Add an Officer:</label>
+          <h3>Penvoerders</h3>
+          <ul className={styles["officers-list"]}>
+            {addedOfficers.map((officer) => (
+              <li key={officer.id}>{officer.email}</li>
+            ))}
+          </ul>
+          <label className={styles.label}>Selecteer een penvoerder...</label>
           <input
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Search by email..."
+            placeholder="Vul een e-mailadres in..."
+            className={`${styles.inputDefault} ${
+              searchTerm && styles.inputWithResults
+            }`}
           />
           {searchTerm && (
-            <div className={styles.dropdown}>
-              {allUsers
-                .filter((user) => user.email.includes(searchTerm))
-                .map((user) => (
-                  <div key={user.id} onClick={() => handleOfficerSelect(user)}>
-                    {user.email}
-                  </div>
-                ))}
+            <div
+              className={`${styles.dropdownContainer} ${
+                searchTerm && styles.dropdownWithResults
+              }`}
+            >
+              <div className={styles.dropdown}>
+                {allUsers
+                  .filter((user) => user.email.includes(searchTerm))
+                  .map((user) => (
+                    <div
+                      key={user.id}
+                      onClick={() => handleOfficerSelect(user)}
+                    >
+                      {user.email}
+                    </div>
+                  ))}
+              </div>
             </div>
           )}
         </div>
-        <h3>Added Officers</h3>
-        <ul>
-          {addedOfficers.map((officer) => (
-            <li key={officer.id}>{officer.email}</li>
-          ))}
-        </ul>
         <div className={styles.buttonContainer}>
           <button onClick={handleClose} className={styles.cancelButton}>
             Annuleren
