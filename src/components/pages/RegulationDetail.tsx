@@ -251,7 +251,7 @@ const RegulationDetail: React.FC<RegulationDetailProps> = ({
                   handleToggleAddOfficerModal();
                 }}
               >
-                Officer toevoegen
+                Penvoerders
               </button>
               <button
                 className={styles["edit-button"]}
