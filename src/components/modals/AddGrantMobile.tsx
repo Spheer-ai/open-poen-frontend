@@ -23,7 +23,7 @@ const AddGrantMobile: React.FC<AddGrantMobileProps> = ({
   const [modalIsOpen, setModalIsOpen] = useState(isOpen);
   const [grantName, setGrantName] = useState("");
   const [grantReference, setGrantReference] = useState("");
-  const [grantBudget, setGrantBudget] = useState(0);
+  const [grantBudget, setGrantBudget] = useState("");
 
   useEffect(() => {
     if (isOpen) {
@@ -48,13 +48,15 @@ const AddGrantMobile: React.FC<AddGrantMobileProps> = ({
         return;
       }
 
+      const budget = parseFloat(grantBudget);
+
       await addGrant(
         token,
         Number(sponsorId),
         Number(regulationId),
         grantName,
         grantReference,
-        grantBudget,
+        budget,
       );
       handleClose();
       onGrantAdded();
@@ -108,7 +110,7 @@ const AddGrantMobile: React.FC<AddGrantMobileProps> = ({
             type="number"
             placeholder="Vul een begroting in"
             value={grantBudget}
-            onChange={(e) => setGrantBudget(Number(e.target.value))}
+            onChange={(e) => setGrantBudget(e.target.value)}
           />
         </div>
         <div className={styles.buttonContainer}>

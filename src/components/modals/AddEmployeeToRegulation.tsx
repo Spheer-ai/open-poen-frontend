@@ -54,7 +54,6 @@ const AddEmployeeToRegulation: React.FC<AddEmployeeToRegulationProps> = ({
   }, []);
 
   const handleEmployeeSelect = (employee: Officer) => {
-    // Check if the employee is already selected to avoid duplicates
     if (!selectedEmployees.some((selected) => selected.id === employee.id)) {
       setSelectedEmployees((prevSelected) => [...prevSelected, employee]);
     }
