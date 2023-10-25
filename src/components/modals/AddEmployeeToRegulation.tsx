@@ -21,13 +21,10 @@ const AddEmployeeToRegulation: React.FC<AddEmployeeToRegulationProps> = ({
   regulationId,
 }) => {
   const [modalIsOpen, setModalIsOpen] = useState(isOpen);
-  const [selectedEmployeeId, setSelectedEmployeeId] = useState<number | null>(
-    null,
-  );
+  const [selectedEmployees, setSelectedEmployees] = useState<Officer[]>([]);
   const [allUsers, setAllUsers] = useState<Officer[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [addedEmployees, setAddedEmployees] = useState<Officer[]>([]);
-  const [selectedRole, setSelectedRole] = useState("policyOfficer");
+  const [selectedRole, setSelectedRole] = useState("");
 
   useEffect(() => {
     if (isOpen) {
@@ -57,11 +54,15 @@ const AddEmployeeToRegulation: React.FC<AddEmployeeToRegulationProps> = ({
   }, []);
 
   const handleEmployeeSelect = (employee: Officer) => {
-    if (!addedEmployees.includes(employee)) {
-      setAddedEmployees((prev) => [...prev, employee]);
+    // Check if the employee is already selected to avoid duplicates
+    if (!selectedEmployees.some((selected) => selected.id === employee.id)) {
+      setSelectedEmployees((prevSelected) => [...prevSelected, employee]);
     }
-    setSelectedEmployeeId(employee.id);
     setSearchTerm("");
+  };
+
+  const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSelectedRole(event.target.value);
   };
 
   const handleAddEmployee = async () => {
@@ -74,23 +75,35 @@ const AddEmployeeToRegulation: React.FC<AddEmployeeToRegulationProps> = ({
 
       console.log("sponsorId", sponsorId);
       console.log("regulationId", regulationId);
-      console.log("selectedEmployeeId", selectedEmployeeId);
+      console.log("selectedEmployees", selectedEmployees);
+      console.log("selectedRole", selectedRole);
 
-      if (!sponsorId || !regulationId || !selectedEmployeeId) {
-        console.error("Required IDs are not available.");
+      if (
+        !sponsorId ||
+        !regulationId ||
+        selectedEmployees.length === 0 ||
+        !selectedRole
+      ) {
+        console.error("Required data is not available.");
         return;
       }
+      const formattedRole =
+        selectedRole === "grantOfficer" ? "grant officer" : "policy officer";
+      const selectedEmployeeIds = selectedEmployees.map(
+        (employee) => employee.id,
+      );
 
       await addEmployeeToRegulation(
         token,
         Number(sponsorId),
         Number(regulationId),
-        [selectedEmployeeId],
+        selectedEmployeeIds,
+        formattedRole,
       );
       handleClose();
       onEmployeeAdded();
     } catch (error) {
-      console.error("Failed to add employee:", error);
+      console.error("Failed to add employees:", error);
     }
   };
 
@@ -116,11 +129,13 @@ const AddEmployeeToRegulation: React.FC<AddEmployeeToRegulationProps> = ({
         <hr></hr>
         <div className={styles.formGroup}>
           <h3>Medewerkers</h3>
-          <ul className={styles["officers-list"]}>
-            {addedEmployees.map((employee) => (
-              <li key={employee.id}>{employee.email}</li>
-            ))}
-          </ul>
+          {selectedEmployees.length > 0 && (
+            <ul className={styles["officers-list"]}>
+              {selectedEmployees.map((employee) => (
+                <li key={employee.id}>{employee.email}</li>
+              ))}
+            </ul>
+          )}
           <label className={styles.label}>Selecteer een medewerker...</label>
           <input
             type="text"
@@ -162,7 +177,7 @@ const AddEmployeeToRegulation: React.FC<AddEmployeeToRegulationProps> = ({
                   name="role"
                   value="policyOfficer"
                   checked={selectedRole === "policyOfficer"}
-                  onChange={() => setSelectedRole("policyOfficer")}
+                  onChange={handleCheckboxChange}
                 />
               </div>
               <div className={styles.checkboxLabel}>
@@ -173,7 +188,7 @@ const AddEmployeeToRegulation: React.FC<AddEmployeeToRegulationProps> = ({
                   name="role"
                   value="grantOfficer"
                   checked={selectedRole === "grantOfficer"}
-                  onChange={() => setSelectedRole("grantOfficer")}
+                  onChange={handleCheckboxChange}
                 />
               </div>
             </div>
