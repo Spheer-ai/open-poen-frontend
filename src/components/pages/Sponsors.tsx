@@ -11,7 +11,7 @@ import { useAuth } from "../../contexts/AuthContext";
 
 export default function Sponsors() {
   const navigate = useNavigate();
-  const { user, isLoading } = useAuth();
+  const { user } = useAuth();
   const { action, sponsorId } = useParams();
   const [isModalOpen, setIsModalOpen] = useState(action === "add-sponsor");
   const [showPageContent, setShowPageContent] = useState(!!sponsorId);

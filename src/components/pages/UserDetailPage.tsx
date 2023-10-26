@@ -13,6 +13,7 @@ import EditUserProfileForm from "../forms/EditUserProfileForm";
 import EditIcon from "/edit-icon.svg";
 import ChangePasswordIcon from "/change-password-icon.svg";
 import { fetchUserDetails, fetchInitiatives } from "../middleware/Api";
+import { usePermissions } from "../../contexts/PermissionContext";
 
 const roleLabels = {
   administrator: "Beheerder",
@@ -27,6 +28,7 @@ interface DecodedToken {
 
 export default function UserDetailsPage() {
   const { user: authUser } = useAuth();
+  const { user } = useAuth();
   const token = authUser?.token;
   const { userId } = useParams<{ userId: string }>();
 
@@ -38,6 +40,24 @@ export default function UserDetailsPage() {
   const [userDetails, setUserDetails] = useState<UserDetails | null>(null);
   const [initiatives, setInitiatives] = useState([]);
   const [activeAction, setActiveAction] = useState<string | null>(null);
+  const { fetchPermissions } = usePermissions();
+  const [permissionsFetched, setPermissionsFetched] = useState(false);
+  const [entityPermissions, setEntityPermissions] = useState<string[]>([]);
+  const hasPermission = entityPermissions.includes("create");
+
+  useEffect(() => {
+    if (user && user.token && !permissionsFetched) {
+      fetchPermissions("Funder", undefined, user.token)
+        .then((permissions) => {
+          setEntityPermissions(permissions || []);
+          setPermissionsFetched(true);
+        })
+        .catch((error) => {
+          console.error("Failed to fetch permissions:", error);
+          setPermissionsFetched(true);
+        });
+    }
+  }, [user, fetchPermissions, permissionsFetched]);
 
   useEffect(() => {
     const fetchUserData = async () => {

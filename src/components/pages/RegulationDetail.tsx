@@ -16,6 +16,7 @@ import { Officer } from "../../types/AddOfficerType";
 import Breadcrumb from "../ui/layout/BreadCrumbs";
 import AddEmployeeToRegulation from "../modals/AddEmployeeToRegulation";
 import AddEmployeeToRegulationMobile from "../modals/AddEmployeeToRegulationMobile";
+import { usePermissions } from "../../contexts/PermissionContext";
 
 type Grant = {
   id: number;
@@ -65,6 +66,11 @@ const RegulationDetail: React.FC<RegulationDetailProps> = ({
   const [selectedGrantId, setSelectedGrantId] = useState<number | null>(null);
   const [availableOfficers, setAvailableOfficers] = useState<Officer[]>([]);
   const token = user?.token;
+  const { fetchPermissions } = usePermissions();
+  const [hasEditPermission, setHasEditPermission] = useState(false);
+  const [hasCreateGrantPermission, setHasCreateGrantPermission] =
+    useState(false);
+
   useParams();
 
   useEffect(() => {
@@ -74,22 +80,33 @@ const RegulationDetail: React.FC<RegulationDetailProps> = ({
         console.log("Checking values: sponsorId", sponsorId);
         console.log("Checking values: regulationId", regulationId);
         if (user?.token && sponsorId && regulationId) {
+          const permissions: string[] | undefined = await fetchPermissions(
+            "Regulation",
+            parseInt(regulationId),
+            user.token,
+          );
+          console.log("Fetched permissions for the regulation:", permissions);
+
+          if (permissions && permissions.includes("edit")) {
+            setHasEditPermission(true);
+          }
+
+          if (permissions && permissions.includes("create_grant")) {
+            setHasCreateGrantPermission(true);
+          }
+
           const details = await fetchRegulationDetails(
             user.token,
             sponsorId,
             regulationId,
           );
-          console.log("Fetched details:", details);
-          setRegulationDetails(details);
+          console.log("Fetched regulation details:", details);
           setRegulationDetails(details);
         } else {
           console.error("Token, sponsorId, or regulationId is not available");
         }
       } catch (error) {
         console.error("Failed to fetch regulation details:", error);
-      }
-      if (regulationDetails) {
-        setAvailableOfficers(regulationDetails.policy_officers);
       }
     }
     getRegulationDetails();
@@ -212,36 +229,45 @@ const RegulationDetail: React.FC<RegulationDetailProps> = ({
       <Breadcrumb />
       <div className={styles["regulation-detail-header"]}>
         <h1>{regulationDetails.name}</h1>
-        <button
-          className={styles["edit-button"]}
-          onClick={handleToggleEditRegulationModal}
-        >
-          <img src={EditIcon} alt="Edit" className={styles["icon"]} />
-          Regeling bewerken
-        </button>
+        {hasEditPermission && (
+          <button
+            className={styles["edit-button"]}
+            onClick={handleToggleEditRegulationModal}
+          >
+            <img src={EditIcon} alt="Edit" className={styles["icon"]} />
+            Regeling bewerken
+          </button>
+        )}
       </div>
 
       <p>{regulationDetails.description}</p>
       <div className={styles["button-container"]}>
-        <button
-          className={styles["add-button"]}
-          onClick={handleToggleAddEmployeeModal}
-        >
-          Medewerkers
-        </button>
+        {hasEditPermission && (
+          <button
+            className={styles["add-button"]}
+            onClick={handleToggleAddEmployeeModal}
+          >
+            Medewerkers
+          </button>
+        )}
       </div>
       <div className={styles["grant-container"]}>
         <h3 className={styles["section-title"]}>BESCHIKKINGEN</h3>
-        <button
-          className={styles["add-button"]}
-          onClick={handleToggleAddGrantModal}
-        >
-          Beschikking toevoegen
-        </button>
+        {hasCreateGrantPermission && (
+          <button
+            className={styles["add-button"]}
+            onClick={handleToggleAddGrantModal}
+          >
+            Beschikking toevoegen
+          </button>
+        )}
       </div>
       <ul className={styles["grant-list"]}>
-        {regulationDetails.grants.map((grant, index) => (
-          <li key={index} className={styles["grant-item"]}>
+        {regulationDetails.grants.map((grant) => (
+          <li
+            key={`grant-${grant.id}-${grant.name}`}
+            className={styles["grant-item"]}
+          >
             {grant.name} | {grant.reference} | € {grant.budget}
             <div className={styles["button-container"]}>
               <button

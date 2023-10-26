@@ -239,7 +239,6 @@ export default function Contacts() {
       ) : (
         <div>
           {userData.length === 0 ? (
-            // Display loading dots when there's no user data
             <div className={styles["loading-container"]}>
               <LoadingDot delay={0} />
               <LoadingDot delay={0.1} />
