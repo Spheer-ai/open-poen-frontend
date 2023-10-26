@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import jwtDecode from "jwt-decode";
 import { useAuth } from "../../contexts/AuthContext";
@@ -44,10 +44,13 @@ export default function UserDetailsPage() {
   const [permissionsFetched, setPermissionsFetched] = useState(false);
   const [entityPermissions, setEntityPermissions] = useState<string[]>([]);
   const hasPermission = entityPermissions.includes("create");
+  const prevUserIdRef = useRef<string | null>(null);
 
   useEffect(() => {
-    if (user && user.token && !permissionsFetched) {
-      fetchPermissions("Funder", undefined, user.token)
+    if (user && user.token && userId && userId !== prevUserIdRef.current) {
+      prevUserIdRef.current = userId;
+      setPermissionsFetched(false);
+      fetchPermissions("User", parseInt(userId), user.token)
         .then((permissions) => {
           setEntityPermissions(permissions || []);
           setPermissionsFetched(true);
@@ -57,7 +60,7 @@ export default function UserDetailsPage() {
           setPermissionsFetched(true);
         });
     }
-  }, [user, fetchPermissions, permissionsFetched]);
+  }, [user, userId, fetchPermissions]);
 
   useEffect(() => {
     const fetchUserData = async () => {
