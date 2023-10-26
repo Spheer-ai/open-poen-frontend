@@ -35,13 +35,9 @@ export default function UserDetailsPage() {
     const decodedToken: DecodedToken = jwtDecode(token);
     loggedInUserId = decodedToken.sub;
   }
-
   const [userDetails, setUserDetails] = useState<UserDetails | null>(null);
   const [initiatives, setInitiatives] = useState([]);
   const [activeAction, setActiveAction] = useState<string | null>(null);
-  const [viewedUserPermissions, setViewedUserPermissions] = useState<string[]>(
-    [],
-  );
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -82,10 +78,6 @@ export default function UserDetailsPage() {
     setActiveAction(null);
   };
 
-  const canEditUser = () => {
-    return viewedUserPermissions.includes("edit");
-  };
-
   return (
     <>
       <div className={styles["user-details-container"]}>
@@ -123,19 +115,13 @@ export default function UserDetailsPage() {
                   )}
                 </div>
                 <div className={styles["top-right-button-container"]}>
-                  {canEditUser() && (
-                    <div
-                      className={styles["top-right-button"]}
-                      onClick={handleEditClick}
-                    >
-                      <img
-                        src={EditIcon}
-                        alt="Edit"
-                        className={styles["icon"]}
-                      />
-                      Bewerken
-                    </div>
-                  )}
+                  <div
+                    className={styles["top-right-button"]}
+                    onClick={handleEditClick}
+                  >
+                    <img src={EditIcon} alt="Edit" className={styles["icon"]} />
+                    Bewerken
+                  </div>
                   {loggedInUserId === userId && (
                     <div
                       className={styles["top-right-button"]}
