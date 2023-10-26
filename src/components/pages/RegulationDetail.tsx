@@ -17,6 +17,7 @@ import Breadcrumb from "../ui/layout/BreadCrumbs";
 import AddEmployeeToRegulation from "../modals/AddEmployeeToRegulation";
 import AddEmployeeToRegulationMobile from "../modals/AddEmployeeToRegulationMobile";
 import { usePermissions } from "../../contexts/PermissionContext";
+import GrantList from "../lists/GrantList";
 
 type Grant = {
   id: number;
@@ -25,6 +26,7 @@ type Grant = {
   budget: number;
   income: number;
   expenses: number;
+  permissions: string[];
 };
 
 type RegulationDetailType = {
@@ -70,6 +72,10 @@ const RegulationDetail: React.FC<RegulationDetailProps> = ({
   const [hasEditPermission, setHasEditPermission] = useState(false);
   const [hasCreateGrantPermission, setHasCreateGrantPermission] =
     useState(false);
+  const [grants, setGrants] = useState<Grant[]>([]);
+  const [grantPermissions, setGrantPermissions] = useState<
+    Record<number, string[]>
+  >({});
 
   useParams();
 
@@ -229,67 +235,37 @@ const RegulationDetail: React.FC<RegulationDetailProps> = ({
       <Breadcrumb />
       <div className={styles["regulation-detail-header"]}>
         <h1>{regulationDetails.name}</h1>
-        {hasEditPermission && (
-          <button
-            className={styles["edit-button"]}
-            onClick={handleToggleEditRegulationModal}
-          >
-            <img src={EditIcon} alt="Edit" className={styles["icon"]} />
-            Regeling bewerken
-          </button>
-        )}
+        <button
+          className={styles["edit-button"]}
+          onClick={handleToggleEditRegulationModal}
+        >
+          <img src={EditIcon} alt="Edit" className={styles["icon"]} />
+          Regeling bewerken
+        </button>
       </div>
 
       <p>{regulationDetails.description}</p>
       <div className={styles["button-container"]}>
-        {hasEditPermission && (
-          <button
-            className={styles["add-button"]}
-            onClick={handleToggleAddEmployeeModal}
-          >
-            Medewerkers
-          </button>
-        )}
+        <button
+          className={styles["add-button"]}
+          onClick={handleToggleAddEmployeeModal}
+        >
+          Medewerkers
+        </button>
       </div>
-      <div className={styles["grant-container"]}>
-        <h3 className={styles["section-title"]}>BESCHIKKINGEN</h3>
-        {hasCreateGrantPermission && (
-          <button
-            className={styles["add-button"]}
-            onClick={handleToggleAddGrantModal}
-          >
-            Beschikking toevoegen
-          </button>
-        )}
-      </div>
-      <ul className={styles["grant-list"]}>
-        {regulationDetails.grants.map((grant) => (
-          <li
-            key={`grant-${grant.id}-${grant.name}`}
-            className={styles["grant-item"]}
-          >
-            {grant.name} | {grant.reference} | € {grant.budget}
-            <div className={styles["button-container"]}>
-              <button
-                className={styles["add-button"]}
-                onClick={() => {
-                  setSelectedGrantId(grant.id);
-                  handleToggleAddOfficerModal();
-                }}
-              >
-                Penvoerders
-              </button>
-              <button
-                className={styles["edit-button"]}
-                onClick={() => handleToggleEditGrantModal(grant)}
-              >
-                <img src={EditIcon} alt="Edit" className={styles["icon"]} />
-                Bewerken
-              </button>
-            </div>
-          </li>
-        ))}
-      </ul>
+
+      <GrantList
+        grants={regulationDetails.grants}
+        grantPermissions={grantPermissions}
+        hasCreateGrantPermission={hasCreateGrantPermission}
+        onAddGrantClick={handleToggleAddGrantModal}
+        onEditGrantClick={handleToggleEditGrantModal}
+        onAddOfficerClick={(grantId) => {
+          setSelectedGrantId(grantId);
+          handleToggleAddOfficerModal();
+        }}
+      />
+
       <h3 className={styles["section-title"]}>Subsidiemedewerkers:</h3>
       <ul className={styles["officer-list"]}>
         {regulationDetails.grant_officers.map((officer, index) => (
