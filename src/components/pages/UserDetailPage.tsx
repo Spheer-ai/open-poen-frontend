@@ -41,23 +41,38 @@ export default function UserDetailsPage() {
   const [initiatives, setInitiatives] = useState([]);
   const [activeAction, setActiveAction] = useState<string | null>(null);
   const { fetchPermissions } = usePermissions();
+  const [permissionsFetched, setPermissionsFetched] = useState(false);
   const [userPermissions, setUserPermissions] = useState<string[]>([]);
   const [entityPermissions, setEntityPermissions] = useState<string[]>([]);
-  const hasPermission = entityPermissions.includes("create");
-  const hasEditPermission = userPermissions.includes("edit");
+  const [hasEditPermission, setHasEditPermission] = useState(false);
   const prevUserIdRef = useRef<string | null>(null);
 
   useEffect(() => {
-    if (user && user.token && userId) {
-      fetchPermissions("User", parseInt(userId), user.token)
-        .then((permissions) => {
-          setUserPermissions(permissions || []);
-        })
-        .catch((error) => {
-          console.error("Failed to fetch user permissions:", error);
-        });
+    async function fetchUserPermissions() {
+      try {
+        if (user && user.token && userId) {
+          const userPermissions: string[] | undefined = await fetchPermissions(
+            "User",
+            parseInt(userId),
+            user.token,
+          );
+
+          if (userPermissions && userPermissions.includes("edit")) {
+            console.log("User has edit permission");
+            setHasEditPermission(true);
+          } else {
+            console.log("User does not have edit permission");
+            setHasEditPermission(false);
+          }
+        }
+      } catch (error) {
+        console.error("Failed to fetch user permissions:", error);
+      }
     }
-  }, [user, userId, fetchPermissions]);
+
+    fetchUserPermissions();
+  }, [user, userId]);
+
   useEffect(() => {
     const fetchUserData = async () => {
       if (userId && token) {
@@ -96,6 +111,9 @@ export default function UserDetailsPage() {
   const handleCloseModal = () => {
     setActiveAction(null);
   };
+
+  console.log("hasEditPermission:", hasEditPermission);
+  console.log("API Response for permissions:", entityPermissions);
 
   return (
     <>
