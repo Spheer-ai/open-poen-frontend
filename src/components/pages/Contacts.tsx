@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
-
+import LoadingDot from "../animation/LoadingDot";
 import { getUserById, getUsersOrdered } from "../middleware/Api";
 import jwtDecode from "jwt-decode";
 import TopNavigationBar from "../ui/top-navigation-bar/TopNavigationBar";
@@ -239,7 +239,14 @@ export default function Contacts() {
       ) : (
         <div>
           {userData.length === 0 ? (
-            <p>Gegevens konden niet geladen worden.</p>
+            // Display loading dots when there's no user data
+            <div className={styles["loading-container"]}>
+              <LoadingDot delay={0} />
+              <LoadingDot delay={0.1} />
+              <LoadingDot delay={0.1} />
+              <LoadingDot delay={0.2} />
+              <LoadingDot delay={0.2} />
+            </div>
           ) : (
             <ul>
               {userData.map((user) => (
