@@ -55,10 +55,8 @@ const GrantList: React.FC<GrantListProps> = ({
       }
     }
 
-    if (!permissionsFetched) {
-      fetchGrantPermissions();
-    }
-  }, [grants, user?.token, fetchPermissions, permissionsFetched]);
+    fetchGrantPermissions();
+  }, [grants, user?.token]);
 
   return (
     <>

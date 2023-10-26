@@ -539,6 +539,31 @@ export const editGrant = async (
   }
 };
 
+export const deleteGrant = async (
+  token: string,
+  funderId: number,
+  regulationId: number,
+  grantId: number,
+) => {
+  try {
+    const response = await api.delete(
+      `/funder/${funderId}/regulation/${regulationId}/grant/${grantId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+    return response.data;
+  } catch (error) {
+    console.error(
+      "Error deleting grant:",
+      error.response ? error.response.data : error,
+    );
+    throw error;
+  }
+};
+
 export const addOfficerToGrant = async (
   token: string,
   funderId: number,

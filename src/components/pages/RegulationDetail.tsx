@@ -30,6 +30,7 @@ type RegulationDetailType = {
   grant_officers: Officer[];
   policy_officers: Officer[];
   grants: Grant[];
+  entityPermissions: string[];
 };
 
 interface RegulationDetailProps {
@@ -248,6 +249,7 @@ const RegulationDetail: React.FC<RegulationDetailProps> = ({
       </div>
 
       <GrantList
+        key={selectedRegulationId}
         grants={regulationDetails.grants}
         grantPermissions={grantPermissions}
         hasCreateGrantPermission={hasCreateGrantPermission}
