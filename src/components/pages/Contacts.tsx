@@ -1,12 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link, Outlet, useNavigate } from "react-router-dom";
-import ReactTooltip from "react-tooltip";
 
-import {
-  fetchUserPermissions,
-  getUserById,
-  getUsersOrdered,
-} from "../middleware/Api";
+import { getUserById, getUsersOrdered } from "../middleware/Api";
 import jwtDecode from "jwt-decode";
 import TopNavigationBar from "../ui/top-navigation-bar/TopNavigationBar";
 import AddItemModal from "../../components/modals/AddItemModal";
@@ -19,15 +14,16 @@ import { UserData } from "../../types/ContactsTypes";
 import EditUserForm from "../forms/EditUserForm";
 import DeleteUserForm from "../forms/DeleteUserForm";
 import { usePermissions } from "../../contexts/PermissionContext";
+import { useAuth } from "../../contexts/AuthContext";
 interface DecodedToken {
   sub: string;
 }
 
 export default function Contacts() {
   const token = localStorage.getItem("token");
+  const { user, isLoading } = useAuth();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [userData, setUserData] = useState<UserData[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
   const [loggedInUserId, setLoggedInUserId] = useState<string | null>(null);
   const [activeUserId, setActiveUserId] = useState<string | null>(null);
@@ -40,12 +36,25 @@ export default function Contacts() {
     {},
   );
   const [filteredData, setFilteredData] = useState<UserData[]>([]);
-  const { permissions } = usePermissions();
-  const { globalPermissions } = usePermissions();
   const dropdownRef = useRef(null as HTMLDivElement | null);
-  const [userPermissionsMap, setUserPermissionsMap] = useState<
-    Record<string, string[]>
-  >({});
+  const { fetchPermissions } = usePermissions();
+  const [permissionsFetched, setPermissionsFetched] = useState(false);
+  const [entityPermissions, setEntityPermissions] = useState<string[]>([]);
+  const hasPermission = entityPermissions.includes("create");
+
+  useEffect(() => {
+    if (user && user.token && !permissionsFetched) {
+      fetchPermissions("User", undefined, user.token)
+        .then((permissions) => {
+          setEntityPermissions(permissions || []);
+          setPermissionsFetched(true);
+        })
+        .catch((error) => {
+          console.error("Failed to fetch permissions:", error);
+          setPermissionsFetched(true);
+        });
+    }
+  }, [user, fetchPermissions, permissionsFetched]);
 
   const navigate = useNavigate();
 
@@ -81,34 +90,6 @@ export default function Contacts() {
 
   const handleOpenDeleteModal = () => {
     setIsDeleteModalOpen(true);
-  };
-
-  useEffect(() => {
-    async function fetchAllPermissions() {
-      const permissionsMap = {};
-      for (let user of userData) {
-        // Convert user.id to a number
-        const userPerms = token
-          ? await fetchUserPermissions(Number(user.id), token)
-          : [];
-
-        permissionsMap[user.id] = userPerms;
-      }
-      setUserPermissionsMap(permissionsMap);
-    }
-
-    fetchAllPermissions();
-  }, [userData]);
-
-  const showThreeDots = (userId) => {
-    const userPerms = userPermissionsMap[userId] || [];
-    console.log("User ID:", userId, "Permissions:", userPerms);
-
-    if (userId === loggedInUserId) {
-      return false;
-    }
-
-    return userPerms.includes("edit");
   };
 
   useEffect(() => {
@@ -178,11 +159,8 @@ export default function Contacts() {
 
         setUserData(filteredUsers);
         setUserListLoaded(true);
-
-        setIsLoading(false);
       } catch (error) {
         setError(error);
-        setIsLoading(false);
       }
     }
 
@@ -226,8 +204,6 @@ export default function Contacts() {
   console.log("isEditModalOpen:", isEditModalOpen);
   console.log("activeUserId:", activeUserId);
 
-  console.log("Permissions before passing to TopNavigationBar:", permissions);
-
   return (
     <div className={styles["side-panel"]}>
       <TopNavigationBar
@@ -237,7 +213,7 @@ export default function Contacts() {
         onSettingsClick={() => {}}
         onCtaClick={handleCtaClick}
         onSearch={handleSearch}
-        globalPermissions={globalPermissions}
+        hasPermission={hasPermission}
       />
       <AddItemModal isOpen={isModalOpen} onClose={handleCloseModal}>
         <AddUserForm
@@ -372,7 +348,7 @@ export default function Contacts() {
                             />
                           </div>
                         )}
-                        {showThreeDots(user.id) && (
+                        {user.id && (
                           <div
                             className={styles["three-dots"]}
                             onClick={(event) => {
@@ -399,11 +375,6 @@ export default function Contacts() {
                               isOpen={true}
                               onEditClick={handleEditButtonClick}
                               onDeleteClick={handleOpenDeleteModal}
-                              canDelete={
-                                userPermissionsMap[user.id]?.includes(
-                                  "delete",
-                                ) || false
-                              }
                             />
                           </div>
                         )}
@@ -443,7 +414,7 @@ export default function Contacts() {
                             />
                           </div>
                         )}
-                        {showThreeDots(user.id) && (
+                        {user.id && (
                           <div
                             className={styles["three-dots"]}
                             onClick={(event) => {
@@ -470,11 +441,6 @@ export default function Contacts() {
                               isOpen={true}
                               onEditClick={handleEditButtonClick}
                               onDeleteClick={handleOpenDeleteModal}
-                              canDelete={
-                                userPermissionsMap[user.id]?.includes(
-                                  "delete",
-                                ) || false
-                              }
                             />
                           </div>
                         )}

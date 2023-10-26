@@ -313,26 +313,30 @@ export const getFunderById = async (token: string, funderId: number) => {
   }
 };
 
-export const fetchUserPermissions = async (
+export const fetchEntityPermissions = async (
+  entityClass: string,
   entityId?: number,
   token?: string,
 ): Promise<string[]> => {
   console.log(
-    "fetchUserPermissions called with entityId:",
+    "fetchEntityPermissions called with entityClass:",
+    entityClass,
+    "entityId:",
     entityId,
     "and token:",
     token,
   );
 
   try {
-    const params = {
-      entity_class: "User",
-    };
+    const params: Record<string, any> = {};
+    if (entityClass) {
+      params["entity_class"] = entityClass;
+    }
     if (entityId) {
       params["entity_id"] = entityId;
     }
 
-    const headers = {};
+    const headers: Record<string, string> = {};
     if (token) {
       headers["Authorization"] = `Bearer ${token}`;
     }
@@ -346,7 +350,7 @@ export const fetchUserPermissions = async (
 
     return response.data.actions;
   } catch (error) {
-    console.error("Failed to fetch user permissions:", error);
+    console.error(`Failed to fetch permissions for ${entityClass}:`, error);
     throw error;
   }
 };

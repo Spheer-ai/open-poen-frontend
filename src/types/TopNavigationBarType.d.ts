@@ -5,8 +5,10 @@ export interface TopNavigationBarProps {
   showCta: boolean;
   onCtaClick: () => void;
   onSearch: (query: any) => void;
-  globalPermissions: string[];
   showBackButton?: boolean;
   onBackClick?: () => void;
   onBackArrowClick?: () => void;
+  entityClass?: string;
+  children?: ReactNode;
+  hasPermission: boolean;
 }

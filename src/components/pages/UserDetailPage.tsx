@@ -12,11 +12,7 @@ import ChangePasswordForm from "../forms/ChangePasswordForm";
 import EditUserProfileForm from "../forms/EditUserProfileForm";
 import EditIcon from "/edit-icon.svg";
 import ChangePasswordIcon from "/change-password-icon.svg";
-import {
-  fetchUserDetails,
-  fetchInitiatives,
-  fetchUserPermissions,
-} from "../middleware/Api";
+import { fetchUserDetails, fetchInitiatives } from "../middleware/Api";
 
 const roleLabels = {
   administrator: "Beheerder",
@@ -53,8 +49,6 @@ export default function UserDetailsPage() {
         try {
           const userResponse = await fetchUserDetails(userId, token);
           setUserDetails(userResponse);
-          const userPerms = await fetchUserPermissions(Number(userId), token);
-          setViewedUserPermissions(userPerms);
         } catch (error) {
           console.error("Error fetching user details:", error);
         }

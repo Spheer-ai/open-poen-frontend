@@ -6,23 +6,36 @@ import styles from "../../assets/scss/Funds.module.scss";
 import AddFundModal from "../modals/AddFundMobile";
 import AddFundDesktop from "../modals/AddFundDesktop";
 import { usePermissions } from "../../contexts/PermissionContext";
+import { useAuth } from "../../contexts/AuthContext";
 
 export default function Funds() {
   const navigate = useNavigate();
   const { action } = useParams();
-  const { globalPermissions } = usePermissions();
+  const { user } = useAuth();
   const [isModalOpen, setIsModalOpen] = useState(action === "add-funds");
   const [showPageContent, setShowPageContent] = useState(false);
   const [isBlockingInteraction, setIsBlockingInteraction] = useState(false);
-
   const isMobileScreen = window.innerWidth < 768;
+  const { fetchPermissions } = usePermissions();
+  const [permissionsFetched, setPermissionsFetched] = useState(false);
+  const [entityPermissions, setEntityPermissions] = useState<string[]>([]);
+  const hasPermission = entityPermissions.includes("create");
 
   useEffect(() => {
     console.log("action:", action);
-    if (action === "add-funds") {
-      setIsModalOpen(true);
+
+    if (user && user.token && !permissionsFetched) {
+      fetchPermissions("Funder", undefined, user.token)
+        .then((permissions) => {
+          setEntityPermissions(permissions || []);
+          setPermissionsFetched(true);
+        })
+        .catch((error) => {
+          console.error("Failed to fetch permissions:", error);
+          setPermissionsFetched(true);
+        });
     }
-  }, [action]);
+  }, [action, user, fetchPermissions, permissionsFetched]);
 
   const handleSearch = (query) => {
     console.log("Search query in UserDetailsPage:", query);
@@ -62,7 +75,7 @@ export default function Funds() {
           onSettingsClick={() => {}}
           onCtaClick={handleToggleAddFundModal}
           onSearch={handleSearch}
-          globalPermissions={globalPermissions}
+          hasPermission={hasPermission}
         />
       </div>
 

@@ -1,20 +1,28 @@
 import { createContext, useContext } from "react";
 
 interface PermissionContextType {
-  permissions: string[];
+  permissions: Record<string, string[]>;
   fetchPermissions: (
+    entityClass: string,
     entityId?: number,
     token?: string,
   ) => Promise<string[] | undefined>;
-  globalPermissions: string[]; // Add this
+  globalPermissions: string[];
   fetchGlobalPermissions: (token: string) => Promise<string[]>;
+  entityClassPermissions: Record<string, string[]>;
+  fetchEntityClassPermissions: (
+    entityClass: string,
+    token: string,
+  ) => Promise<void>;
 }
 
 const PermissionContext = createContext<PermissionContextType | undefined>({
-  permissions: [],
-  fetchPermissions: async () => [],
+  permissions: {},
+  fetchPermissions: async () => undefined,
   globalPermissions: [],
   fetchGlobalPermissions: async () => [],
+  entityClassPermissions: {},
+  fetchEntityClassPermissions: async () => {},
 });
 
 export const usePermissions = () => {
