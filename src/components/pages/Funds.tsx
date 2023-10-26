@@ -3,7 +3,6 @@ import { useNavigate, useParams } from "react-router-dom";
 import TopNavigationBar from "../ui/top-navigation-bar/TopNavigationBar";
 import PageContent from "../ui/layout/PageContent";
 import styles from "../../assets/scss/Funds.module.scss";
-import AddFundModal from "../modals/AddFundMobile";
 import AddFundDesktop from "../modals/AddFundDesktop";
 import { usePermissions } from "../../contexts/PermissionContext";
 import { useAuth } from "../../contexts/AuthContext";
@@ -15,7 +14,6 @@ export default function Funds() {
   const [isModalOpen, setIsModalOpen] = useState(action === "add-funds");
   const [showPageContent, setShowPageContent] = useState(false);
   const [isBlockingInteraction, setIsBlockingInteraction] = useState(false);
-  const isMobileScreen = window.innerWidth < 768;
   const { fetchPermissions } = usePermissions();
   const [permissionsFetched, setPermissionsFetched] = useState(false);
   const [entityPermissions, setEntityPermissions] = useState<string[]>([]);
@@ -78,20 +76,11 @@ export default function Funds() {
           hasPermission={hasPermission}
         />
       </div>
-
-      {isMobileScreen ? (
-        <AddFundModal
-          isOpen={isModalOpen}
-          onClose={handleToggleAddFundModal}
-          isBlockingInteraction={isBlockingInteraction}
-        />
-      ) : (
-        <AddFundDesktop
-          isOpen={isModalOpen}
-          onClose={handleToggleAddFundModal}
-          isBlockingInteraction={isBlockingInteraction}
-        />
-      )}
+      <AddFundDesktop
+        isOpen={isModalOpen}
+        onClose={handleToggleAddFundModal}
+        isBlockingInteraction={isBlockingInteraction}
+      />
       <button onClick={handleShowPageContent}>
         {showPageContent ? "Close PageContent" : "Show PageContent"}
       </button>

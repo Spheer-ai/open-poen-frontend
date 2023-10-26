@@ -6,7 +6,6 @@ import { fetchFunderRegulations } from "../middleware/Api";
 import { useAuth } from "../../contexts/AuthContext";
 import RegulationDetail from "../pages/RegulationDetail";
 import AddRegulationDesktop from "../modals/AddRegulationDesktop";
-import AddRegulationMobile from "../modals/AddRegulationMobile";
 import { usePermissions } from "../../contexts/PermissionContext";
 
 type Regulation = {
@@ -26,7 +25,6 @@ const RegulationList = () => {
   >(null);
   const [isBlockingInteraction, setIsBlockingInteraction] = useState(false);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
-  const isMobileScreen = window.innerWidth < 768;
   const { fetchPermissions } = usePermissions();
   const [permissionsFetched, setPermissionsFetched] = useState(false);
   const [entityPermissions, setEntityPermissions] = useState<string[]>([]);
@@ -148,25 +146,14 @@ const RegulationList = () => {
           <p>Geen gegevens gevonden</p>
         )}
       </div>
-      {isMobileScreen ? (
-        <AddRegulationMobile
-          isOpen={isModalOpen}
-          onClose={handleToggleAddRegulationModal}
-          isBlockingInteraction={isBlockingInteraction}
-          onRegulationAdded={handleRegulationAdded}
-          sponsorId={sponsorId}
-          refreshTrigger={refreshTrigger}
-        />
-      ) : (
-        <AddRegulationDesktop
-          isOpen={isModalOpen}
-          onClose={handleToggleAddRegulationModal}
-          isBlockingInteraction={isBlockingInteraction}
-          onRegulationAdded={handleRegulationAdded}
-          sponsorId={sponsorId}
-          refreshTrigger={refreshTrigger}
-        />
-      )}
+      <AddRegulationDesktop
+        isOpen={isModalOpen}
+        onClose={handleToggleAddRegulationModal}
+        isBlockingInteraction={isBlockingInteraction}
+        onRegulationAdded={handleRegulationAdded}
+        sponsorId={sponsorId}
+        refreshTrigger={refreshTrigger}
+      />
       {selectedRegulationId && (
         <div className={styles["detail-panel"]}>
           <RegulationDetail

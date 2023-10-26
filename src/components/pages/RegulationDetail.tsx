@@ -4,18 +4,13 @@ import { fetchRegulationDetails } from "../middleware/Api";
 import { useAuth } from "../../contexts/AuthContext";
 import styles from "../../assets/scss/RegulationDetail.module.scss";
 import EditRegulationDesktop from "../modals/EditRegulationDesktop";
-import EditRegulationMobile from "../modals/EditRegulationMobile";
 import AddGrantDesktop from "../modals/AddGrantDesktop";
 import EditIcon from "/edit-icon.svg";
-import AddGrantMobile from "../modals/AddGrantMobile";
 import EditGrantDesktop from "../modals/EditGrantDesktop";
-import EditGrantMobile from "../modals/EditGrantMobile";
 import AddOfficerDesktop from "../modals/AddOfficerDesktop";
-import AddOfficerMobile from "../modals/AddOfficerMobile";
 import { Officer } from "../../types/AddOfficerType";
 import Breadcrumb from "../ui/layout/BreadCrumbs";
 import AddEmployeeToRegulation from "../modals/AddEmployeeToRegulation";
-import AddEmployeeToRegulationMobile from "../modals/AddEmployeeToRegulationMobile";
 import { usePermissions } from "../../contexts/PermissionContext";
 import GrantList from "../lists/GrantList";
 
@@ -60,7 +55,6 @@ const RegulationDetail: React.FC<RegulationDetailProps> = ({
   const [isBlockingInteraction, setIsBlockingInteraction] = useState(false);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [isAddGrantModalOpen, setIsAddGrantModalOpen] = useState(false);
-  const isMobileScreen = window.innerWidth < 768;
   const [isGrantModalOpen, setIsGrantModalOpen] = useState(false);
   const [isAddEmployeeModalOpen, setIsAddEmployeeModalOpen] = useState(false);
   const [currentGrant, setCurrentGrant] = useState<Grant | null>(null);
@@ -72,7 +66,6 @@ const RegulationDetail: React.FC<RegulationDetailProps> = ({
   const [hasEditPermission, setHasEditPermission] = useState(false);
   const [hasCreateGrantPermission, setHasCreateGrantPermission] =
     useState(false);
-  const [grants, setGrants] = useState<Grant[]>([]);
   const [grantPermissions, setGrantPermissions] = useState<
     Record<number, string[]>
   >({});
@@ -283,121 +276,56 @@ const RegulationDetail: React.FC<RegulationDetailProps> = ({
           </li>
         ))}
       </ul>
-      {isMobileScreen ? (
-        <EditRegulationMobile
-          isOpen={isModalOpen}
-          onClose={handleToggleEditRegulationModal}
-          isBlockingInteraction={isBlockingInteraction}
-          onRegulationEdited={handleRegulationEdited}
-          sponsorId={sponsorId}
-          regulationId={regulationId}
-          refreshTrigger={refreshTrigger}
-          currentName={regulationDetails.name}
-          currentDescription={regulationDetails.description}
-        />
-      ) : (
-        <EditRegulationDesktop
-          isOpen={isModalOpen}
-          onClose={handleToggleEditRegulationModal}
-          isBlockingInteraction={isBlockingInteraction}
-          onRegulationEdited={handleRegulationEdited}
-          sponsorId={sponsorId}
-          regulationId={regulationId}
-          refreshTrigger={refreshTrigger}
-          currentName={regulationDetails.name}
-          currentDescription={regulationDetails.description}
-        />
-      )}
-      {isMobileScreen ? (
-        <AddGrantMobile
-          isOpen={isAddGrantModalOpen}
-          onClose={handleToggleAddGrantModal}
-          onGrantAdded={handleGrantAdded}
-          sponsorId={sponsorId}
-          regulationId={regulationId}
-          isBlockingInteraction={isBlockingInteraction}
-          refreshTrigger={refreshTrigger}
-        />
-      ) : (
-        <AddGrantDesktop
-          isOpen={isAddGrantModalOpen}
-          onClose={handleToggleAddGrantModal}
-          onGrantAdded={handleGrantAdded}
-          sponsorId={sponsorId}
-          regulationId={regulationId}
-          isBlockingInteraction={isBlockingInteraction}
-          refreshTrigger={refreshTrigger}
-        />
-      )}
-      {isMobileScreen ? (
-        <EditGrantMobile
-          isOpen={isGrantModalOpen}
-          onClose={() => handleToggleEditGrantModal(currentGrant)}
-          isBlockingInteraction={isBlockingInteraction}
-          onGrantEdited={handleGrantEdited}
-          sponsorId={sponsorId}
-          regulationId={regulationId}
-          grant={currentGrant}
-          currentName={currentGrant?.name || ""}
-          currentReference={currentGrant?.reference || ""}
-          currentBudget={currentGrant?.budget || 0}
-        />
-      ) : (
-        <EditGrantDesktop
-          isOpen={isGrantModalOpen}
-          onClose={() => handleToggleEditGrantModal(currentGrant)}
-          isBlockingInteraction={isBlockingInteraction}
-          onGrantEdited={handleGrantEdited}
-          sponsorId={sponsorId}
-          regulationId={regulationId}
-          grant={currentGrant}
-          currentName={currentGrant?.name || ""}
-          currentReference={currentGrant?.reference || ""}
-          currentBudget={currentGrant?.budget || 0}
-        />
-      )}
-      {isMobileScreen ? (
-        <AddOfficerMobile
-          isOpen={isAddOfficerModalOpen}
-          onClose={handleToggleAddOfficerModal}
-          onOfficerAdded={handleOfficerAdded}
-          sponsorId={sponsorId}
-          regulationId={regulationId}
-          grantId={selectedGrantId?.toString() || undefined}
-          officers={availableOfficers}
-          isBlockingInteraction={false}
-        />
-      ) : (
-        <AddOfficerDesktop
-          isOpen={isAddOfficerModalOpen}
-          onClose={handleToggleAddOfficerModal}
-          onOfficerAdded={handleOfficerAdded}
-          sponsorId={sponsorId}
-          regulationId={regulationId}
-          grantId={selectedGrantId?.toString() || undefined}
-          officers={availableOfficers}
-          isBlockingInteraction={false}
-        />
-      )}
-      {isMobileScreen ? (
-        <AddEmployeeToRegulationMobile
-          isOpen={isAddEmployeeModalOpen}
-          onClose={handleToggleAddEmployeeModal}
-          isBlockingInteraction={isBlockingInteraction}
-          onEmployeeAdded={handleEmployeeAdded}
-          sponsorId={sponsorId}
-          regulationId={regulationId}
-        />
-      ) : (
-        <AddEmployeeToRegulation
-          isOpen={isAddEmployeeModalOpen}
-          onClose={handleToggleAddEmployeeModal}
-          isBlockingInteraction={isBlockingInteraction}
-          onEmployeeAdded={handleEmployeeAdded}
-          sponsorId={sponsorId}
-          regulationId={regulationId}
-        />
-      )}
+      <EditRegulationDesktop
+        isOpen={isModalOpen}
+        onClose={handleToggleEditRegulationModal}
+        isBlockingInteraction={isBlockingInteraction}
+        onRegulationEdited={handleRegulationEdited}
+        sponsorId={sponsorId}
+        regulationId={regulationId}
+        refreshTrigger={refreshTrigger}
+        currentName={regulationDetails.name}
+        currentDescription={regulationDetails.description}
+      />
+      <AddGrantDesktop
+        isOpen={isAddGrantModalOpen}
+        onClose={handleToggleAddGrantModal}
+        onGrantAdded={handleGrantAdded}
+        sponsorId={sponsorId}
+        regulationId={regulationId}
+        isBlockingInteraction={isBlockingInteraction}
+        refreshTrigger={refreshTrigger}
+      />
+      <EditGrantDesktop
+        isOpen={isGrantModalOpen}
+        onClose={() => handleToggleEditGrantModal(currentGrant)}
+        isBlockingInteraction={isBlockingInteraction}
+        onGrantEdited={handleGrantEdited}
+        sponsorId={sponsorId}
+        regulationId={regulationId}
+        grant={currentGrant}
+        currentName={currentGrant?.name || ""}
+        currentReference={currentGrant?.reference || ""}
+        currentBudget={currentGrant?.budget || 0}
+      />
+      <AddOfficerDesktop
+        isOpen={isAddOfficerModalOpen}
+        onClose={handleToggleAddOfficerModal}
+        onOfficerAdded={handleOfficerAdded}
+        sponsorId={sponsorId}
+        regulationId={regulationId}
+        grantId={selectedGrantId?.toString() || undefined}
+        officers={availableOfficers}
+        isBlockingInteraction={false}
+      />
+      <AddEmployeeToRegulation
+        isOpen={isAddEmployeeModalOpen}
+        onClose={handleToggleAddEmployeeModal}
+        isBlockingInteraction={isBlockingInteraction}
+        onEmployeeAdded={handleEmployeeAdded}
+        sponsorId={sponsorId}
+        regulationId={regulationId}
+      />
     </div>
   );
 };

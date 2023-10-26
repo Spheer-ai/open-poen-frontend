@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import TopNavigationBar from "../ui/top-navigation-bar/TopNavigationBar";
 import styles from "../../assets/scss/Sponsors.module.scss";
 import { useNavigate, useParams } from "react-router-dom";
-import AddSponsorMobile from "../modals/AddSponsorMobile";
 import AddSponsorDesktop from "../modals/AddSponsorDesktop";
 import SponsorList from "../lists/SponsorsList";
 import { usePermissions } from "../../contexts/PermissionContext";
@@ -18,7 +17,6 @@ export default function Sponsors() {
   const [isBlockingInteraction, setIsBlockingInteraction] = useState(false);
   const [isRegulationListVisible, setIsRegulationListVisible] = useState(false);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
-  const isMobileScreen = window.innerWidth < 768;
   const { fetchPermissions } = usePermissions();
   const [permissionsFetched, setPermissionsFetched] = useState(false);
   const [entityPermissions, setEntityPermissions] = useState<string[]>([]);
@@ -94,21 +92,12 @@ export default function Sponsors() {
           />
         )}
       </div>
-      {isMobileScreen ? (
-        <AddSponsorMobile
-          isOpen={isModalOpen}
-          onClose={handleToggleAddSponsorModal}
-          isBlockingInteraction={isBlockingInteraction}
-          onSponsorAdded={handleSponsorAdded}
-        />
-      ) : (
-        <AddSponsorDesktop
-          isOpen={isModalOpen}
-          onClose={handleToggleAddSponsorModal}
-          isBlockingInteraction={isBlockingInteraction}
-          onSponsorAdded={handleSponsorAdded}
-        />
-      )}
+      <AddSponsorDesktop
+        isOpen={isModalOpen}
+        onClose={handleToggleAddSponsorModal}
+        isBlockingInteraction={isBlockingInteraction}
+        onSponsorAdded={handleSponsorAdded}
+      />
     </>
   );
 }
