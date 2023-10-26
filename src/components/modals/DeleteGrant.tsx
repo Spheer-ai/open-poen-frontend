@@ -105,6 +105,7 @@ const DeleteGrant: React.FC<DeleteGrantProps> = ({
         <hr></hr>
         <div className={styles.formGroup}>
           <h3>Info</h3>
+          <p>Weet je zekler dat je de beschikking wilt verwijderen?</p>
           <label className={styles.label}>Naam:</label>
           <span>{currentName}</span>
         </div>
@@ -120,7 +121,7 @@ const DeleteGrant: React.FC<DeleteGrantProps> = ({
           <button onClick={handleClose} className={styles.cancelButton}>
             Annuleren
           </button>
-          <button onClick={handleDelete} className={styles.deleteButton}>
+          <button onClick={handleDelete} className={styles.saveButton}>
             Verwijderen
           </button>
         </div>

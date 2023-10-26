@@ -134,6 +134,23 @@
       color: #2760d5;
     }
 
+    .delete-button {
+      background: transparent;
+      border: none;
+      color: #ea5252;
+      border-radius: 5px;
+      padding: 10px;
+      height: fit-content;
+      cursor: pointer;
+      align-items: center;
+      display: flex;
+      gap: 10px;
+
+      img {
+        color: red;
+      }
+    }
+
     li {
       color: #2760d5;
     }

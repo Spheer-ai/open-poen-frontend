@@ -13,6 +13,7 @@ import Breadcrumb from "../ui/layout/BreadCrumbs";
 import AddEmployeeToRegulation from "../modals/AddEmployeeToRegulation";
 import { usePermissions } from "../../contexts/PermissionContext";
 import GrantList from "../lists/GrantList";
+import DeleteGrant from "../modals/DeleteGrant";
 
 type Grant = {
   id: number;
@@ -57,6 +58,7 @@ const RegulationDetail: React.FC<RegulationDetailProps> = ({
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [isAddGrantModalOpen, setIsAddGrantModalOpen] = useState(false);
   const [isGrantModalOpen, setIsGrantModalOpen] = useState(false);
+  const [isDeleteGrantModalOpen, setIsDeleteGrantModalOpen] = useState(false);
   const [isAddEmployeeModalOpen, setIsAddEmployeeModalOpen] = useState(false);
   const [currentGrant, setCurrentGrant] = useState<Grant | null>(null);
   const [isAddOfficerModalOpen, setIsAddOfficerModalOpen] = useState(false);
@@ -197,6 +199,26 @@ const RegulationDetail: React.FC<RegulationDetailProps> = ({
     }
   };
 
+  const handleToggleDeleteGrantModal = (grantId: number | null = null) => {
+    if (isDeleteGrantModalOpen) {
+      setIsBlockingInteraction(true);
+      setTimeout(() => {
+        setIsBlockingInteraction(false);
+        setIsDeleteGrantModalOpen(false);
+        navigate(`/sponsors/${sponsorId}/regulations/${regulationId}`);
+      }, 300);
+    } else if (grantId !== null) {
+      const grant = regulationDetails?.grants.find((g) => g.id === grantId);
+      if (grant) {
+        setCurrentGrant(grant);
+        setIsDeleteGrantModalOpen(true);
+        navigate(
+          `/sponsors/${sponsorId}/regulations/${regulationId}/delete-grant/${grantId}`,
+        );
+      }
+    }
+  };
+
   const handleOfficerAdded = () => {
     setRefreshTrigger((prev) => prev + 1);
   };
@@ -221,6 +243,10 @@ const RegulationDetail: React.FC<RegulationDetailProps> = ({
   };
 
   const handleGrantEdited = () => {
+    setRefreshTrigger((prev) => prev + 1);
+  };
+
+  const handleGrantDeleted = () => {
     setRefreshTrigger((prev) => prev + 1);
   };
 
@@ -255,6 +281,7 @@ const RegulationDetail: React.FC<RegulationDetailProps> = ({
         hasCreateGrantPermission={hasCreateGrantPermission}
         onAddGrantClick={handleToggleAddGrantModal}
         onEditGrantClick={handleToggleEditGrantModal}
+        onDeleteGrantClick={handleToggleDeleteGrantModal}
         onAddOfficerClick={(grantId) => {
           setSelectedGrantId(grantId);
           handleToggleAddOfficerModal();
@@ -303,6 +330,18 @@ const RegulationDetail: React.FC<RegulationDetailProps> = ({
         onClose={() => handleToggleEditGrantModal(currentGrant)}
         isBlockingInteraction={isBlockingInteraction}
         onGrantEdited={handleGrantEdited}
+        sponsorId={sponsorId}
+        regulationId={regulationId}
+        grant={currentGrant}
+        currentName={currentGrant?.name || ""}
+        currentReference={currentGrant?.reference || ""}
+        currentBudget={currentGrant?.budget || 0}
+      />
+      <DeleteGrant
+        isOpen={isDeleteGrantModalOpen}
+        onClose={() => handleToggleDeleteGrantModal()}
+        isBlockingInteraction={isBlockingInteraction}
+        onGrantDeleted={handleGrantDeleted}
         sponsorId={sponsorId}
         regulationId={regulationId}
         grant={currentGrant}

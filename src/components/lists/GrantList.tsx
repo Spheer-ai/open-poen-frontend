@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import EditIcon from "/edit-icon.svg";
+import DeleteIcon from "/delete-icon.svg";
 import { Grant } from "../../types/GranListType";
 import { usePermissions } from "../../contexts/PermissionContext";
 import { useAuth } from "../../contexts/AuthContext";
-
 import styles from "../../assets/scss/RegulationDetail.module.scss";
 
 interface GrantListProps {
@@ -11,6 +11,7 @@ interface GrantListProps {
   hasCreateGrantPermission: boolean;
   onAddGrantClick: () => void;
   onEditGrantClick: (grant: Grant) => void;
+  onDeleteGrantClick: (grantId: number) => void;
   onAddOfficerClick: (grantId: number) => void;
   grantPermissions: Record<number, string[]>;
 }
@@ -20,6 +21,7 @@ const GrantList: React.FC<GrantListProps> = ({
   hasCreateGrantPermission,
   onAddGrantClick,
   onEditGrantClick,
+  onDeleteGrantClick,
   onAddOfficerClick,
   grantPermissions,
 }) => {
@@ -76,6 +78,12 @@ const GrantList: React.FC<GrantListProps> = ({
           >
             {grant.name} | {grant.reference} | € {grant.budget}
             <div className={styles["button-container"]}>
+              <button
+                className={styles["add-button"]}
+                onClick={() => onAddOfficerClick(grant.id)}
+              >
+                Penvoerders
+              </button>
               {grantPermissionsMap[grant.id]?.includes("edit") && (
                 <button
                   className={styles["edit-button"]}
@@ -85,12 +93,19 @@ const GrantList: React.FC<GrantListProps> = ({
                   Bewerken
                 </button>
               )}
-              <button
-                className={styles["add-button"]}
-                onClick={() => onAddOfficerClick(grant.id)}
-              >
-                Penvoerders
-              </button>
+              {grantPermissionsMap[grant.id]?.includes("delete") && (
+                <button
+                  className={styles["delete-button"]}
+                  onClick={() => onDeleteGrantClick(grant.id)}
+                >
+                  <img
+                    src={DeleteIcon}
+                    alt="Delete"
+                    className={styles["icon"]}
+                  />
+                  Verwijderen
+                </button>
+              )}
             </div>
           </li>
         ))}
