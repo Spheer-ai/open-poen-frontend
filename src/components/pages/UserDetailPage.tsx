@@ -41,27 +41,23 @@ export default function UserDetailsPage() {
   const [initiatives, setInitiatives] = useState([]);
   const [activeAction, setActiveAction] = useState<string | null>(null);
   const { fetchPermissions } = usePermissions();
-  const [permissionsFetched, setPermissionsFetched] = useState(false);
+  const [userPermissions, setUserPermissions] = useState<string[]>([]);
   const [entityPermissions, setEntityPermissions] = useState<string[]>([]);
   const hasPermission = entityPermissions.includes("create");
+  const hasEditPermission = userPermissions.includes("edit");
   const prevUserIdRef = useRef<string | null>(null);
 
   useEffect(() => {
-    if (user && user.token && userId && userId !== prevUserIdRef.current) {
-      prevUserIdRef.current = userId;
-      setPermissionsFetched(false);
+    if (user && user.token && userId) {
       fetchPermissions("User", parseInt(userId), user.token)
         .then((permissions) => {
-          setEntityPermissions(permissions || []);
-          setPermissionsFetched(true);
+          setUserPermissions(permissions || []);
         })
         .catch((error) => {
-          console.error("Failed to fetch permissions:", error);
-          setPermissionsFetched(true);
+          console.error("Failed to fetch user permissions:", error);
         });
     }
   }, [user, userId, fetchPermissions]);
-
   useEffect(() => {
     const fetchUserData = async () => {
       if (userId && token) {
@@ -138,13 +134,19 @@ export default function UserDetailsPage() {
                   )}
                 </div>
                 <div className={styles["top-right-button-container"]}>
-                  <div
-                    className={styles["top-right-button"]}
-                    onClick={handleEditClick}
-                  >
-                    <img src={EditIcon} alt="Edit" className={styles["icon"]} />
-                    Bewerken
-                  </div>
+                  {hasEditPermission && (
+                    <div
+                      className={styles["top-right-button"]}
+                      onClick={handleEditClick}
+                    >
+                      <img
+                        src={EditIcon}
+                        alt="Edit"
+                        className={styles["icon"]}
+                      />
+                      Bewerken
+                    </div>
+                  )}
                   {loggedInUserId === userId && (
                     <div
                       className={styles["top-right-button"]}
