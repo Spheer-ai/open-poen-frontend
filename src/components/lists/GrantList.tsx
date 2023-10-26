@@ -78,12 +78,14 @@ const GrantList: React.FC<GrantListProps> = ({
           >
             {grant.name} | {grant.reference} | € {grant.budget}
             <div className={styles["button-container"]}>
-              <button
-                className={styles["add-button"]}
-                onClick={() => onAddOfficerClick(grant.id)}
-              >
-                Penvoerders
-              </button>
+              {hasCreateGrantPermission && (
+                <button
+                  className={styles["add-button"]}
+                  onClick={() => onAddOfficerClick(grant.id)}
+                >
+                  Penvoerders
+                </button>
+              )}
               {grantPermissionsMap[grant.id]?.includes("edit") && (
                 <button
                   className={styles["edit-button"]}

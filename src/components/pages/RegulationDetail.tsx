@@ -14,6 +14,7 @@ import AddEmployeeToRegulation from "../modals/AddEmployeeToRegulation";
 import { usePermissions } from "../../contexts/PermissionContext";
 import GrantList from "../lists/GrantList";
 import DeleteGrant from "../modals/DeleteGrant";
+import EditSponsor from "../modals/EditSponsor";
 
 type Grant = {
   id: number;
@@ -59,6 +60,7 @@ const RegulationDetail: React.FC<RegulationDetailProps> = ({
   const [isAddGrantModalOpen, setIsAddGrantModalOpen] = useState(false);
   const [isGrantModalOpen, setIsGrantModalOpen] = useState(false);
   const [isDeleteGrantModalOpen, setIsDeleteGrantModalOpen] = useState(false);
+  const [isEditSponsorModalOpen, setIsEditSponsorModalOpen] = useState(false);
   const [isAddEmployeeModalOpen, setIsAddEmployeeModalOpen] = useState(false);
   const [currentGrant, setCurrentGrant] = useState<Grant | null>(null);
   const [isAddOfficerModalOpen, setIsAddOfficerModalOpen] = useState(false);
@@ -69,6 +71,8 @@ const RegulationDetail: React.FC<RegulationDetailProps> = ({
   const [hasEditPermission, setHasEditPermission] = useState(false);
   const [hasCreateGrantPermission, setHasCreateGrantPermission] =
     useState(false);
+  const [hasEditSponsorPermission, setHasEditSponsorPermission] =
+    useState(false);
   const [grantPermissions, setGrantPermissions] = useState<
     Record<number, string[]>
   >({});
@@ -78,23 +82,35 @@ const RegulationDetail: React.FC<RegulationDetailProps> = ({
   useEffect(() => {
     async function getRegulationDetails() {
       try {
-        console.log("Checking values: user.token", user?.token);
-        console.log("Checking values: sponsorId", sponsorId);
-        console.log("Checking values: regulationId", regulationId);
         if (user?.token && sponsorId && regulationId) {
-          const permissions: string[] | undefined = await fetchPermissions(
-            "Regulation",
-            parseInt(regulationId),
-            user.token,
+          const regulationPermissions: string[] | undefined =
+            await fetchPermissions(
+              "Regulation",
+              parseInt(regulationId),
+              user.token,
+            );
+          console.log(
+            "Fetched permissions for the regulation:",
+            regulationPermissions,
           );
-          console.log("Fetched permissions for the regulation:", permissions);
 
-          if (permissions && permissions.includes("edit")) {
+          const funderPermissions: string[] | undefined =
+            await fetchPermissions("Funder", parseInt(sponsorId), user.token);
+          console.log("Fetched permissions for the funder:", funderPermissions);
+
+          if (regulationPermissions && regulationPermissions.includes("edit")) {
             setHasEditPermission(true);
           }
 
-          if (permissions && permissions.includes("create_grant")) {
+          if (
+            regulationPermissions &&
+            regulationPermissions.includes("create_grant")
+          ) {
             setHasCreateGrantPermission(true);
+          }
+
+          if (funderPermissions && funderPermissions.includes("edit")) {
+            setHasEditSponsorPermission(true);
           }
 
           const details = await fetchRegulationDetails(
@@ -105,7 +121,7 @@ const RegulationDetail: React.FC<RegulationDetailProps> = ({
           console.log("Fetched regulation details:", details);
           setRegulationDetails(details);
         } else {
-          console.error("Token, sponsorId, or regulationId is not available");
+          console.error("Token or sponsorId is not available");
         }
       } catch (error) {
         console.error("Failed to fetch regulation details:", error);
@@ -219,6 +235,26 @@ const RegulationDetail: React.FC<RegulationDetailProps> = ({
     }
   };
 
+  const handleToggleEditSponsorModal = () => {
+    if (isEditSponsorModalOpen) {
+      setIsBlockingInteraction(true);
+      setTimeout(() => {
+        setIsBlockingInteraction(false);
+        setIsEditSponsorModalOpen(false);
+        navigate(`/sponsors/${sponsorId}/regulations/${regulationId}`);
+      }, 300);
+    } else {
+      setIsEditSponsorModalOpen(true);
+      navigate(
+        `/sponsors/${sponsorId}/regulations/${regulationId}/edit-sponsor/${sponsorId}`,
+      );
+    }
+  };
+
+  const handleSponsorEdited = () => {
+    setRefreshTrigger((prev) => prev + 1);
+  };
+
   const handleOfficerAdded = () => {
     setRefreshTrigger((prev) => prev + 1);
   };
@@ -255,23 +291,38 @@ const RegulationDetail: React.FC<RegulationDetailProps> = ({
       <Breadcrumb />
       <div className={styles["regulation-detail-header"]}>
         <h1>{regulationDetails.name}</h1>
-        <button
-          className={styles["edit-button"]}
-          onClick={handleToggleEditRegulationModal}
-        >
-          <img src={EditIcon} alt="Edit" className={styles["icon"]} />
-          Regeling bewerken
-        </button>
+        <div className={styles["regulation-detail-buttons"]}>
+          {hasEditPermission && (
+            <button
+              className={styles["edit-button"]}
+              onClick={handleToggleEditRegulationModal}
+            >
+              <img src={EditIcon} alt="Edit" className={styles["icon"]} />
+              Regeling bewerken
+            </button>
+          )}
+          {hasEditSponsorPermission && (
+            <button
+              className={styles["delete-button"]}
+              onClick={handleToggleEditSponsorModal}
+            >
+              <img src={EditIcon} alt="Edit" className={styles["icon"]} />
+              Sponsor bewerken
+            </button>
+          )}
+        </div>
       </div>
 
       <p>{regulationDetails.description}</p>
       <div className={styles["button-container"]}>
-        <button
-          className={styles["add-button"]}
-          onClick={handleToggleAddEmployeeModal}
-        >
-          Medewerkers
-        </button>
+        {hasCreateGrantPermission && (
+          <button
+            className={styles["add-button"]}
+            onClick={handleToggleAddEmployeeModal}
+          >
+            Medewerkers
+          </button>
+        )}
       </div>
 
       <GrantList
@@ -316,6 +367,17 @@ const RegulationDetail: React.FC<RegulationDetailProps> = ({
         currentName={regulationDetails.name}
         currentDescription={regulationDetails.description}
       />
+      <EditSponsor
+        isOpen={isEditSponsorModalOpen}
+        onClose={handleToggleEditSponsorModal}
+        isBlockingInteraction={isBlockingInteraction}
+        onSponsorEdited={handleSponsorEdited}
+        sponsorId={sponsorId}
+        hasEditSponsorPermission={hasEditSponsorPermission}
+        currentName={""}
+        currentUrl={""}
+      />
+
       <AddGrantDesktop
         isOpen={isAddGrantModalOpen}
         onClose={handleToggleAddGrantModal}

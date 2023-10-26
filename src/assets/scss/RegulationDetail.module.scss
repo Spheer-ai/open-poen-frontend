@@ -20,18 +20,22 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-
-    button {
+    .regulation-detail-buttons {
       display: flex;
-      border: none;
-      gap: 15px;
-      align-items: center;
-      font-size: 14px;
-      background-color: transparent;
-      cursor: pointer;
+      gap: 20px;
 
-      &:hover {
-        color: #2760d5;
+      button {
+        display: flex;
+        border: none;
+        gap: 15px;
+        align-items: center;
+        font-size: 14px;
+        background-color: transparent;
+        cursor: pointer;
+
+        &:hover {
+          color: #2760d5;
+        }
       }
     }
   }

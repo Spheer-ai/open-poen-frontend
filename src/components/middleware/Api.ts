@@ -622,3 +622,32 @@ export const addEmployeeToRegulation = async (
     throw error;
   }
 };
+
+export const editSponsor = async (
+  token: string,
+  funderId: number,
+  name: string,
+  url: string,
+) => {
+  try {
+    const response = await api.patch(
+      `/funder/${funderId}`,
+      {
+        name,
+        url,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+    return response.data;
+  } catch (error) {
+    console.error(
+      "Error editing funder:",
+      error.response ? error.response.data : error,
+    );
+    throw error;
+  }
+};
