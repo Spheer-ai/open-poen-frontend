@@ -36,7 +36,7 @@ const UserDropdown = ({
   };
 
   return (
-    <div ref={dropdownRef}>
+    <div className={styles["dot-menu-container"]} ref={dropdownRef}>
       <div
         className={styles["three-dots"]}
         onClick={() => setIsDropdownOpen(!isDropdownOpen)}
