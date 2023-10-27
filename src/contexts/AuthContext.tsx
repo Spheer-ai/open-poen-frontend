@@ -4,6 +4,13 @@ import { UserData, AuthContextValue } from "../types/AuthContextTypes";
 import { IntlProvider, createIntl, IntlShape } from "react-intl";
 import { messages, defaultLocale } from "../locale/messages";
 import { getLocale } from "../locale/locale";
+import jwtDecode from "jwt-decode";
+
+interface JwtPayload {
+  exp: number;
+  userId: string;
+  username: string;
+}
 
 const AuthContext = createContext<AuthContextValue>({
   user: null,
@@ -28,11 +35,61 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const locale = getLocale();
   const intl: IntlShape = createIntl({ locale, messages: messages[locale] });
 
+  const decodeToken = (token: string): JwtPayload | null => {
+    try {
+      const decodedToken = jwtDecode<JwtPayload>(token);
+      return decodedToken;
+    } catch (error) {
+      return null;
+    }
+  };
+
+  const isTokenExpired = (token: string) => {
+    const decodedToken = decodeToken(token);
+    if (!decodedToken || !decodedToken.exp) {
+      return true;
+    }
+
+    return decodedToken.exp * 1000 < Date.now();
+  };
+
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
-      setUser({ token });
+      if (isTokenExpired(token)) {
+        logout();
+      } else {
+        const decodedToken = decodeToken(token) as JwtPayload | null;
+        if (decodedToken) {
+          const userId: number | undefined =
+            Number(decodedToken?.userId) || undefined;
+          setUser({
+            token,
+            userId,
+            username: decodedToken.username || "",
+          });
+        }
+      }
     }
+  }, []);
+
+  useEffect(() => {
+    const checkTokenExpiration = () => {
+      const token = localStorage.getItem("token");
+      if (token) {
+        if (isTokenExpired(token)) {
+          window.location.href = "/login";
+        }
+      }
+    };
+
+    const tokenExpirationCheckInterval = setInterval(() => {
+      checkTokenExpiration();
+    }, 60000);
+
+    return () => {
+      clearInterval(tokenExpirationCheckInterval);
+    };
   }, []);
 
   const login = async (

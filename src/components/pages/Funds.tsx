@@ -81,11 +81,16 @@ export default function Funds() {
         onClose={handleToggleAddFundModal}
         isBlockingInteraction={isBlockingInteraction}
       />
-      <button onClick={handleShowPageContent}>
+      <button className={styles["button-temp"]} onClick={handleShowPageContent}>
         {showPageContent ? "Close PageContent" : "Show PageContent"}
       </button>
 
-      <button onClick={handleToggleAddFundModal}>Add Fund</button>
+      <button
+        className={styles["button-temp"]}
+        onClick={handleToggleAddFundModal}
+      >
+        Add Fund
+      </button>
 
       {showPageContent && (
         <PageContent
