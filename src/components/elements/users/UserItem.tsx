@@ -4,7 +4,6 @@ import ProfileIcon from "../../../assets/profile-icon.svg";
 import UserDropdown from "../dropdown-menu/UserDropwdown";
 import styles from "../../../assets/scss/Contacts.module.scss";
 import { usePermissions } from "../../../contexts/PermissionContext";
-
 import { useAuth } from "../../../contexts/AuthContext";
 
 const UserItem = ({
@@ -26,29 +25,20 @@ const UserItem = ({
   const [hasEditPermission, setHasEditPermission] = useState(false);
   const [permissionsFetched, setPermissionsFetched] = useState(false);
 
+  const [userPermissions, setUserPermissions] = useState<string[]>([]);
+
   useEffect(() => {
     async function fetchUserPermissions() {
       try {
         if (user.id && !permissionsFetched) {
-          const userPermissions = await fetchPermissions(
-            "User",
-            user.id,
-            token,
-          );
-          if (userPermissions && userPermissions.includes("edit")) {
-            setHasEditPermission(true);
-          } else {
-            setHasEditPermission(false);
-          }
+          const permissions = await fetchPermissions("User", user.id, token);
+          setUserPermissions(permissions || []);
           setPermissionsFetched(true);
-          console.log(
-            `Permissions fetched for user ${user.id}:`,
-            userPermissions,
-          );
+          console.log(`Permissions fetched for user ${user.id}:`, permissions);
         }
       } catch (error) {
         console.error(
-          `Failed to fetch user permissions for user ${user.id}:`,
+          `Failed to fetch permissions for user ${user.id}:`,
           error,
         );
       }
@@ -103,12 +93,13 @@ const UserItem = ({
               />
             </div>
           )}
-          {hasEditPermission && user.id && (
+          {user.id && userPermissions.includes("edit") && (
             <UserDropdown
               isOpen={dropdownOpen[user.id]}
               onEditClick={() => handleEditButtonClick(user.id)}
               onDeleteClick={() => handleOpenDeleteModal(user.id)}
               userId={user.id}
+              userPermissions={userPermissions}
             />
           )}
         </Link>

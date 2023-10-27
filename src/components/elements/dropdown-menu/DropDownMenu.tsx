@@ -6,19 +6,30 @@ const DropdownMenu: React.FC<DropdownMenuProps> = ({
   isOpen,
   onEditClick,
   onDeleteClick,
+  userPermissions,
 }) => {
   if (!isOpen) {
     return null;
   }
 
+  const hasEditPermission = userPermissions.includes("edit");
+  const hasDeletePermission = userPermissions.includes("delete");
+
   return (
     <div className={styles["dropdown-menu"]}>
-      <button className={styles["menu-option"]} onClick={onEditClick}>
-        Bewerken
-      </button>
-      <button className={styles["menu-option-delete"]} onClick={onDeleteClick}>
-        Verwijderen
-      </button>
+      {hasEditPermission && (
+        <button className={styles["menu-option"]} onClick={onEditClick}>
+          Bewerken
+        </button>
+      )}
+      {hasDeletePermission && (
+        <button
+          className={styles["menu-option-delete"]}
+          onClick={onDeleteClick}
+        >
+          Verwijderen
+        </button>
+      )}
     </div>
   );
 };

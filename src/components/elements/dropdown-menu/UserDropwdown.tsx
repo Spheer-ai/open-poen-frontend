@@ -1,8 +1,14 @@
 import React, { useState, useEffect, useRef } from "react";
-import DropdownMenu from "../dropdown-menu/DropDownMenu";
+import DropdownMenu from "./DropDownMenu";
 import styles from "../../../assets/scss/UserDropDown.module.scss";
 
-const UserDropdown = ({ isOpen, onEditClick, onDeleteClick, userId }) => {
+const UserDropdown = ({
+  isOpen,
+  onEditClick,
+  onDeleteClick,
+  userId,
+  userPermissions,
+}) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(isOpen);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
 
@@ -44,6 +50,7 @@ const UserDropdown = ({ isOpen, onEditClick, onDeleteClick, userId }) => {
           isOpen={isDropdownOpen}
           onEditClick={onEditClick}
           onDeleteClick={onDeleteClick}
+          userPermissions={userPermissions}
         />
       )}
     </div>
