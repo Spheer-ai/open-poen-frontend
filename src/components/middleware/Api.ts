@@ -313,26 +313,30 @@ export const getFunderById = async (token: string, funderId: number) => {
   }
 };
 
-export const fetchUserPermissions = async (
+export const fetchEntityPermissions = async (
+  entityClass: string,
   entityId?: number,
   token?: string,
 ): Promise<string[]> => {
   console.log(
-    "fetchUserPermissions called with entityId:",
+    "fetchEntityPermissions called with entityClass:",
+    entityClass,
+    "entityId:",
     entityId,
     "and token:",
     token,
   );
 
   try {
-    const params = {
-      entity_class: "User",
-    };
+    const params: Record<string, any> = {};
+    if (entityClass) {
+      params["entity_class"] = entityClass;
+    }
     if (entityId) {
       params["entity_id"] = entityId;
     }
 
-    const headers = {};
+    const headers: Record<string, string> = {};
     if (token) {
       headers["Authorization"] = `Bearer ${token}`;
     }
@@ -346,7 +350,7 @@ export const fetchUserPermissions = async (
 
     return response.data.actions;
   } catch (error) {
-    console.error("Failed to fetch user permissions:", error);
+    console.error(`Failed to fetch permissions for ${entityClass}:`, error);
     throw error;
   }
 };
@@ -535,6 +539,31 @@ export const editGrant = async (
   }
 };
 
+export const deleteGrant = async (
+  token: string,
+  funderId: number,
+  regulationId: number,
+  grantId: number,
+) => {
+  try {
+    const response = await api.delete(
+      `/funder/${funderId}/regulation/${regulationId}/grant/${grantId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+    return response.data;
+  } catch (error) {
+    console.error(
+      "Error deleting grant:",
+      error.response ? error.response.data : error,
+    );
+    throw error;
+  }
+};
+
 export const addOfficerToGrant = async (
   token: string,
   funderId: number,
@@ -588,6 +617,35 @@ export const addEmployeeToRegulation = async (
   } catch (error) {
     console.error(
       "Error adding employee to regulation:",
+      error.response ? error.response.data : error,
+    );
+    throw error;
+  }
+};
+
+export const editSponsor = async (
+  token: string,
+  funderId: number,
+  name: string,
+  url: string,
+) => {
+  try {
+    const response = await api.patch(
+      `/funder/${funderId}`,
+      {
+        name,
+        url,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+    return response.data;
+  } catch (error) {
+    console.error(
+      "Error editing funder:",
       error.response ? error.response.data : error,
     );
     throw error;

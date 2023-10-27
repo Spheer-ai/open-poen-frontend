@@ -20,18 +20,24 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    margin: 10px 0px;
 
-    button {
+    .regulation-detail-buttons {
       display: flex;
-      border: none;
-      gap: 15px;
-      align-items: center;
-      font-size: 14px;
-      background-color: transparent;
-      cursor: pointer;
+      gap: 20px;
 
-      &:hover {
-        color: #2760d5;
+      button {
+        display: flex;
+        border: none;
+        gap: 15px;
+        align-items: center;
+        font-size: 14px;
+        background-color: transparent;
+        cursor: pointer;
+
+        &:hover {
+          color: #2760d5;
+        }
       }
     }
   }
@@ -132,6 +138,23 @@
 
     :hover {
       color: #2760d5;
+    }
+
+    .delete-button {
+      background: transparent;
+      border: none;
+      color: #ea5252;
+      border-radius: 5px;
+      padding: 10px;
+      height: fit-content;
+      cursor: pointer;
+      align-items: center;
+      display: flex;
+      gap: 10px;
+
+      img {
+        color: red;
+      }
     }
 
     li {

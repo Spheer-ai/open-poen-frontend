@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { fetchSponsors } from "../middleware/Api";
 import styles from "../../assets/scss/SponsorList.module.scss";
+import { useFetchPermissions } from "../hooks/useFetchPermissions";
+import { fetchSponsors } from "../middleware/Api";
+import { useAuth } from "../../contexts/AuthContext";
 
 type Sponsor = {
   id: number;
@@ -14,12 +16,11 @@ interface SponsorListProps {
   refreshTrigger: number;
 }
 
-const SponsorList: React.FC<SponsorListProps> = ({
-  onShowPageContent,
-  refreshTrigger,
-}) => {
+const SponsorList: React.FC<SponsorListProps> = ({ refreshTrigger }) => {
+  const { fetchPermissions } = useFetchPermissions();
+  const { user } = useAuth();
   const [sponsors, setSponsors] = useState<Sponsor[]>([]);
-  const [activeSponsorId, setActiveSponsorId] = useState<string | null>(null);
+  const [activeSponsorId] = useState<string | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -36,7 +37,18 @@ const SponsorList: React.FC<SponsorListProps> = ({
   }, [refreshTrigger]);
 
   const handleSponsorClick = (sponsorId: string) => {
-    navigate(`/sponsors/${sponsorId}/regulations`);
+    if (user && user.token) {
+      fetchPermissions("Funder", parseInt(sponsorId), user.token)
+        .then((permissions) => {
+          console.log("Permissions for sponsor:", permissions);
+          navigate(`/sponsors/${sponsorId}/regulations`);
+        })
+        .catch((error) => {
+          console.error("Error fetching permissions:", error);
+        });
+    } else {
+      console.error("User is not authenticated or does not have a token.");
+    }
   };
 
   return (

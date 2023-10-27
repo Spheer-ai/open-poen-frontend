@@ -1,13 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useAuth } from "../../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { useIntl } from "react-intl";
 import styles from "../../assets/scss/Login.module.scss";
-import { usePermissions } from "../../contexts/PermissionContext";
 
 export default function Login({ onLogin }: { onLogin: () => void }) {
-  const { login, user, isLoading } = useAuth();
-  const { fetchPermissions } = usePermissions();
+  const { login, isLoading } = useAuth();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -28,10 +26,6 @@ export default function Login({ onLogin }: { onLogin: () => void }) {
 
       if (success) {
         onLogin();
-
-        if (user && user.token) {
-          await fetchPermissions(user.userId, user.token);
-        }
       } else {
         setError(intl.formatMessage({ id: "auth.usernamePasswordRequired" }));
       }

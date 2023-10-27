@@ -4,10 +4,9 @@ import styles from "../../assets/scss/RegulationList.module.scss";
 import TopNavigationBar from "../ui/top-navigation-bar/TopNavigationBar";
 import { fetchFunderRegulations } from "../middleware/Api";
 import { useAuth } from "../../contexts/AuthContext";
-import { usePermissions } from "../../contexts/PermissionContext";
 import RegulationDetail from "../pages/RegulationDetail";
 import AddRegulationDesktop from "../modals/AddRegulationDesktop";
-import AddRegulationMobile from "../modals/AddRegulationMobile";
+import { usePermissions } from "../../contexts/PermissionContext";
 
 type Regulation = {
   id: string;
@@ -21,16 +20,33 @@ const RegulationList = () => {
   const navigate = useNavigate();
   const [regulations, setRegulations] = useState<Regulation[]>([]);
   const { user } = useAuth();
-  const { globalPermissions } = usePermissions();
   const [selectedRegulationId, setSelectedRegulationId] = useState<
     string | null
   >(null);
   const [isBlockingInteraction, setIsBlockingInteraction] = useState(false);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
-  const isMobileScreen = window.innerWidth < 768;
-
+  const { fetchPermissions } = usePermissions();
+  const [permissionsFetched, setPermissionsFetched] = useState(false);
+  const [entityPermissions, setEntityPermissions] = useState<string[]>([]);
+  const hasPermission = entityPermissions.includes("create");
   const token = user?.token;
   useParams();
+
+  useEffect(() => {
+    console.log("action:", action);
+
+    if (user && user.token && !permissionsFetched) {
+      fetchPermissions("Funder", undefined, user.token)
+        .then((permissions) => {
+          setEntityPermissions(permissions || []);
+          setPermissionsFetched(true);
+        })
+        .catch((error) => {
+          console.error("Failed to fetch permissions:", error);
+          setPermissionsFetched(true);
+        });
+    }
+  }, [action, user, fetchPermissions, permissionsFetched]);
 
   useEffect(() => {
     async function getRegulations() {
@@ -109,7 +125,7 @@ const RegulationList = () => {
           onSettingsClick={() => {}}
           onSearch={handleSearch}
           onCtaClick={handleToggleAddRegulationModal}
-          globalPermissions={globalPermissions}
+          hasPermission={hasPermission}
         />
 
         {regulations.length > 0 ? (
@@ -130,25 +146,14 @@ const RegulationList = () => {
           <p>Geen gegevens gevonden</p>
         )}
       </div>
-      {isMobileScreen ? (
-        <AddRegulationMobile
-          isOpen={isModalOpen}
-          onClose={handleToggleAddRegulationModal}
-          isBlockingInteraction={isBlockingInteraction}
-          onRegulationAdded={handleRegulationAdded}
-          sponsorId={sponsorId}
-          refreshTrigger={refreshTrigger}
-        />
-      ) : (
-        <AddRegulationDesktop
-          isOpen={isModalOpen}
-          onClose={handleToggleAddRegulationModal}
-          isBlockingInteraction={isBlockingInteraction}
-          onRegulationAdded={handleRegulationAdded}
-          sponsorId={sponsorId}
-          refreshTrigger={refreshTrigger}
-        />
-      )}
+      <AddRegulationDesktop
+        isOpen={isModalOpen}
+        onClose={handleToggleAddRegulationModal}
+        isBlockingInteraction={isBlockingInteraction}
+        onRegulationAdded={handleRegulationAdded}
+        sponsorId={sponsorId}
+        refreshTrigger={refreshTrigger}
+      />
       {selectedRegulationId && (
         <div className={styles["detail-panel"]}>
           <RegulationDetail

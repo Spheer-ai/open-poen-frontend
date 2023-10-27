@@ -4,18 +4,17 @@ import { fetchRegulationDetails } from "../middleware/Api";
 import { useAuth } from "../../contexts/AuthContext";
 import styles from "../../assets/scss/RegulationDetail.module.scss";
 import EditRegulationDesktop from "../modals/EditRegulationDesktop";
-import EditRegulationMobile from "../modals/EditRegulationMobile";
 import AddGrantDesktop from "../modals/AddGrantDesktop";
 import EditIcon from "/edit-icon.svg";
-import AddGrantMobile from "../modals/AddGrantMobile";
 import EditGrantDesktop from "../modals/EditGrantDesktop";
-import EditGrantMobile from "../modals/EditGrantMobile";
 import AddOfficerDesktop from "../modals/AddOfficerDesktop";
-import AddOfficerMobile from "../modals/AddOfficerMobile";
 import { Officer } from "../../types/AddOfficerType";
 import Breadcrumb from "../ui/layout/BreadCrumbs";
 import AddEmployeeToRegulation from "../modals/AddEmployeeToRegulation";
-import AddEmployeeToRegulationMobile from "../modals/AddEmployeeToRegulationMobile";
+import { usePermissions } from "../../contexts/PermissionContext";
+import GrantList from "../lists/GrantList";
+import DeleteGrant from "../modals/DeleteGrant";
+import EditSponsor from "../modals/EditSponsor";
 
 type Grant = {
   id: number;
@@ -24,6 +23,7 @@ type Grant = {
   budget: number;
   income: number;
   expenses: number;
+  permissions: string[];
 };
 
 type RegulationDetailType = {
@@ -32,6 +32,7 @@ type RegulationDetailType = {
   grant_officers: Officer[];
   policy_officers: Officer[];
   grants: Grant[];
+  entityPermissions: string[];
 };
 
 interface RegulationDetailProps {
@@ -57,39 +58,73 @@ const RegulationDetail: React.FC<RegulationDetailProps> = ({
   const [isBlockingInteraction, setIsBlockingInteraction] = useState(false);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [isAddGrantModalOpen, setIsAddGrantModalOpen] = useState(false);
-  const isMobileScreen = window.innerWidth < 768;
   const [isGrantModalOpen, setIsGrantModalOpen] = useState(false);
+  const [isDeleteGrantModalOpen, setIsDeleteGrantModalOpen] = useState(false);
+  const [isEditSponsorModalOpen, setIsEditSponsorModalOpen] = useState(false);
   const [isAddEmployeeModalOpen, setIsAddEmployeeModalOpen] = useState(false);
   const [currentGrant, setCurrentGrant] = useState<Grant | null>(null);
   const [isAddOfficerModalOpen, setIsAddOfficerModalOpen] = useState(false);
   const [selectedGrantId, setSelectedGrantId] = useState<number | null>(null);
   const [availableOfficers, setAvailableOfficers] = useState<Officer[]>([]);
   const token = user?.token;
+  const { fetchPermissions } = usePermissions();
+  const [hasEditPermission, setHasEditPermission] = useState(false);
+  const [hasCreateGrantPermission, setHasCreateGrantPermission] =
+    useState(false);
+  const [hasEditSponsorPermission, setHasEditSponsorPermission] =
+    useState(false);
+  const [grantPermissions, setGrantPermissions] = useState<
+    Record<number, string[]>
+  >({});
+
   useParams();
 
   useEffect(() => {
     async function getRegulationDetails() {
       try {
-        console.log("Checking values: user.token", user?.token);
-        console.log("Checking values: sponsorId", sponsorId);
-        console.log("Checking values: regulationId", regulationId);
         if (user?.token && sponsorId && regulationId) {
+          const regulationPermissions: string[] | undefined =
+            await fetchPermissions(
+              "Regulation",
+              parseInt(regulationId),
+              user.token,
+            );
+          console.log(
+            "Fetched permissions for the regulation:",
+            regulationPermissions,
+          );
+
+          const funderPermissions: string[] | undefined =
+            await fetchPermissions("Funder", parseInt(sponsorId), user.token);
+          console.log("Fetched permissions for the funder:", funderPermissions);
+
+          if (regulationPermissions && regulationPermissions.includes("edit")) {
+            setHasEditPermission(true);
+          }
+
+          if (
+            regulationPermissions &&
+            regulationPermissions.includes("create_grant")
+          ) {
+            setHasCreateGrantPermission(true);
+          }
+
+          if (funderPermissions && funderPermissions.includes("edit")) {
+            setHasEditSponsorPermission(true);
+          }
+
           const details = await fetchRegulationDetails(
             user.token,
             sponsorId,
             regulationId,
           );
-          console.log("Fetched details:", details);
-          setRegulationDetails(details);
+          console.log("Fetched regulation details:", details);
           setRegulationDetails(details);
         } else {
-          console.error("Token, sponsorId, or regulationId is not available");
+          console.error("Token or sponsorId is not available");
         }
       } catch (error) {
         console.error("Failed to fetch regulation details:", error);
-      }
-      if (regulationDetails) {
-        setAvailableOfficers(regulationDetails.policy_officers);
       }
     }
     getRegulationDetails();
@@ -180,6 +215,46 @@ const RegulationDetail: React.FC<RegulationDetailProps> = ({
     }
   };
 
+  const handleToggleDeleteGrantModal = (grantId: number | null = null) => {
+    if (isDeleteGrantModalOpen) {
+      setIsBlockingInteraction(true);
+      setTimeout(() => {
+        setIsBlockingInteraction(false);
+        setIsDeleteGrantModalOpen(false);
+        navigate(`/sponsors/${sponsorId}/regulations/${regulationId}`);
+      }, 300);
+    } else if (grantId !== null) {
+      const grant = regulationDetails?.grants.find((g) => g.id === grantId);
+      if (grant) {
+        setCurrentGrant(grant);
+        setIsDeleteGrantModalOpen(true);
+        navigate(
+          `/sponsors/${sponsorId}/regulations/${regulationId}/delete-grant/${grantId}`,
+        );
+      }
+    }
+  };
+
+  const handleToggleEditSponsorModal = () => {
+    if (isEditSponsorModalOpen) {
+      setIsBlockingInteraction(true);
+      setTimeout(() => {
+        setIsBlockingInteraction(false);
+        setIsEditSponsorModalOpen(false);
+        navigate(`/sponsors/${sponsorId}/regulations/${regulationId}`);
+      }, 300);
+    } else {
+      setIsEditSponsorModalOpen(true);
+      navigate(
+        `/sponsors/${sponsorId}/regulations/${regulationId}/edit-sponsor/${sponsorId}`,
+      );
+    }
+  };
+
+  const handleSponsorEdited = () => {
+    setRefreshTrigger((prev) => prev + 1);
+  };
+
   const handleOfficerAdded = () => {
     setRefreshTrigger((prev) => prev + 1);
   };
@@ -207,63 +282,63 @@ const RegulationDetail: React.FC<RegulationDetailProps> = ({
     setRefreshTrigger((prev) => prev + 1);
   };
 
+  const handleGrantDeleted = () => {
+    setRefreshTrigger((prev) => prev + 1);
+  };
+
   return (
     <div className={styles["regulation-detail-container"]}>
       <Breadcrumb />
       <div className={styles["regulation-detail-header"]}>
         <h1>{regulationDetails.name}</h1>
-        <button
-          className={styles["edit-button"]}
-          onClick={handleToggleEditRegulationModal}
-        >
-          <img src={EditIcon} alt="Edit" className={styles["icon"]} />
-          Regeling bewerken
-        </button>
+        <div className={styles["regulation-detail-buttons"]}>
+          {hasEditPermission && (
+            <button
+              className={styles["edit-button"]}
+              onClick={handleToggleEditRegulationModal}
+            >
+              <img src={EditIcon} alt="Edit" className={styles["icon"]} />
+              Regeling bewerken
+            </button>
+          )}
+          {hasEditSponsorPermission && (
+            <button
+              className={styles["delete-button"]}
+              onClick={handleToggleEditSponsorModal}
+            >
+              <img src={EditIcon} alt="Edit" className={styles["icon"]} />
+              Sponsor bewerken
+            </button>
+          )}
+        </div>
       </div>
 
       <p>{regulationDetails.description}</p>
       <div className={styles["button-container"]}>
-        <button
-          className={styles["add-button"]}
-          onClick={handleToggleAddEmployeeModal}
-        >
-          Medewerkers
-        </button>
+        {hasCreateGrantPermission && (
+          <button
+            className={styles["add-button"]}
+            onClick={handleToggleAddEmployeeModal}
+          >
+            Medewerkers
+          </button>
+        )}
       </div>
-      <div className={styles["grant-container"]}>
-        <h3 className={styles["section-title"]}>BESCHIKKINGEN</h3>
-        <button
-          className={styles["add-button"]}
-          onClick={handleToggleAddGrantModal}
-        >
-          Beschikking toevoegen
-        </button>
-      </div>
-      <ul className={styles["grant-list"]}>
-        {regulationDetails.grants.map((grant, index) => (
-          <li key={index} className={styles["grant-item"]}>
-            {grant.name} | {grant.reference} | € {grant.budget}
-            <div className={styles["button-container"]}>
-              <button
-                className={styles["add-button"]}
-                onClick={() => {
-                  setSelectedGrantId(grant.id);
-                  handleToggleAddOfficerModal();
-                }}
-              >
-                Penvoerders
-              </button>
-              <button
-                className={styles["edit-button"]}
-                onClick={() => handleToggleEditGrantModal(grant)}
-              >
-                <img src={EditIcon} alt="Edit" className={styles["icon"]} />
-                Bewerken
-              </button>
-            </div>
-          </li>
-        ))}
-      </ul>
+
+      <GrantList
+        key={selectedRegulationId}
+        grants={regulationDetails.grants}
+        grantPermissions={grantPermissions}
+        hasCreateGrantPermission={hasCreateGrantPermission}
+        onAddGrantClick={handleToggleAddGrantModal}
+        onEditGrantClick={handleToggleEditGrantModal}
+        onDeleteGrantClick={handleToggleDeleteGrantModal}
+        onAddOfficerClick={(grantId) => {
+          setSelectedGrantId(grantId);
+          handleToggleAddOfficerModal();
+        }}
+      />
+
       <h3 className={styles["section-title"]}>Subsidiemedewerkers:</h3>
       <ul className={styles["officer-list"]}>
         {regulationDetails.grant_officers.map((officer, index) => (
@@ -281,121 +356,79 @@ const RegulationDetail: React.FC<RegulationDetailProps> = ({
           </li>
         ))}
       </ul>
-      {isMobileScreen ? (
-        <EditRegulationMobile
-          isOpen={isModalOpen}
-          onClose={handleToggleEditRegulationModal}
-          isBlockingInteraction={isBlockingInteraction}
-          onRegulationEdited={handleRegulationEdited}
-          sponsorId={sponsorId}
-          regulationId={regulationId}
-          refreshTrigger={refreshTrigger}
-          currentName={regulationDetails.name}
-          currentDescription={regulationDetails.description}
-        />
-      ) : (
-        <EditRegulationDesktop
-          isOpen={isModalOpen}
-          onClose={handleToggleEditRegulationModal}
-          isBlockingInteraction={isBlockingInteraction}
-          onRegulationEdited={handleRegulationEdited}
-          sponsorId={sponsorId}
-          regulationId={regulationId}
-          refreshTrigger={refreshTrigger}
-          currentName={regulationDetails.name}
-          currentDescription={regulationDetails.description}
-        />
-      )}
-      {isMobileScreen ? (
-        <AddGrantMobile
-          isOpen={isAddGrantModalOpen}
-          onClose={handleToggleAddGrantModal}
-          onGrantAdded={handleGrantAdded}
-          sponsorId={sponsorId}
-          regulationId={regulationId}
-          isBlockingInteraction={isBlockingInteraction}
-          refreshTrigger={refreshTrigger}
-        />
-      ) : (
-        <AddGrantDesktop
-          isOpen={isAddGrantModalOpen}
-          onClose={handleToggleAddGrantModal}
-          onGrantAdded={handleGrantAdded}
-          sponsorId={sponsorId}
-          regulationId={regulationId}
-          isBlockingInteraction={isBlockingInteraction}
-          refreshTrigger={refreshTrigger}
-        />
-      )}
-      {isMobileScreen ? (
-        <EditGrantMobile
-          isOpen={isGrantModalOpen}
-          onClose={() => handleToggleEditGrantModal(currentGrant)}
-          isBlockingInteraction={isBlockingInteraction}
-          onGrantEdited={handleGrantEdited}
-          sponsorId={sponsorId}
-          regulationId={regulationId}
-          grant={currentGrant}
-          currentName={currentGrant?.name || ""}
-          currentReference={currentGrant?.reference || ""}
-          currentBudget={currentGrant?.budget || 0}
-        />
-      ) : (
-        <EditGrantDesktop
-          isOpen={isGrantModalOpen}
-          onClose={() => handleToggleEditGrantModal(currentGrant)}
-          isBlockingInteraction={isBlockingInteraction}
-          onGrantEdited={handleGrantEdited}
-          sponsorId={sponsorId}
-          regulationId={regulationId}
-          grant={currentGrant}
-          currentName={currentGrant?.name || ""}
-          currentReference={currentGrant?.reference || ""}
-          currentBudget={currentGrant?.budget || 0}
-        />
-      )}
-      {isMobileScreen ? (
-        <AddOfficerMobile
-          isOpen={isAddOfficerModalOpen}
-          onClose={handleToggleAddOfficerModal}
-          onOfficerAdded={handleOfficerAdded}
-          sponsorId={sponsorId}
-          regulationId={regulationId}
-          grantId={selectedGrantId?.toString() || undefined}
-          officers={availableOfficers}
-          isBlockingInteraction={false}
-        />
-      ) : (
-        <AddOfficerDesktop
-          isOpen={isAddOfficerModalOpen}
-          onClose={handleToggleAddOfficerModal}
-          onOfficerAdded={handleOfficerAdded}
-          sponsorId={sponsorId}
-          regulationId={regulationId}
-          grantId={selectedGrantId?.toString() || undefined}
-          officers={availableOfficers}
-          isBlockingInteraction={false}
-        />
-      )}
-      {isMobileScreen ? (
-        <AddEmployeeToRegulationMobile
-          isOpen={isAddEmployeeModalOpen}
-          onClose={handleToggleAddEmployeeModal}
-          isBlockingInteraction={isBlockingInteraction}
-          onEmployeeAdded={handleEmployeeAdded}
-          sponsorId={sponsorId}
-          regulationId={regulationId}
-        />
-      ) : (
-        <AddEmployeeToRegulation
-          isOpen={isAddEmployeeModalOpen}
-          onClose={handleToggleAddEmployeeModal}
-          isBlockingInteraction={isBlockingInteraction}
-          onEmployeeAdded={handleEmployeeAdded}
-          sponsorId={sponsorId}
-          regulationId={regulationId}
-        />
-      )}
+      <EditRegulationDesktop
+        isOpen={isModalOpen}
+        onClose={handleToggleEditRegulationModal}
+        isBlockingInteraction={isBlockingInteraction}
+        onRegulationEdited={handleRegulationEdited}
+        sponsorId={sponsorId}
+        regulationId={regulationId}
+        refreshTrigger={refreshTrigger}
+        currentName={regulationDetails.name}
+        currentDescription={regulationDetails.description}
+      />
+      <EditSponsor
+        isOpen={isEditSponsorModalOpen}
+        onClose={handleToggleEditSponsorModal}
+        isBlockingInteraction={isBlockingInteraction}
+        onSponsorEdited={handleSponsorEdited}
+        sponsorId={sponsorId}
+        hasEditSponsorPermission={hasEditSponsorPermission}
+        currentName={""}
+        currentUrl={""}
+      />
+
+      <AddGrantDesktop
+        isOpen={isAddGrantModalOpen}
+        onClose={handleToggleAddGrantModal}
+        onGrantAdded={handleGrantAdded}
+        sponsorId={sponsorId}
+        regulationId={regulationId}
+        isBlockingInteraction={isBlockingInteraction}
+        refreshTrigger={refreshTrigger}
+      />
+      <EditGrantDesktop
+        isOpen={isGrantModalOpen}
+        onClose={() => handleToggleEditGrantModal(currentGrant)}
+        isBlockingInteraction={isBlockingInteraction}
+        onGrantEdited={handleGrantEdited}
+        sponsorId={sponsorId}
+        regulationId={regulationId}
+        grant={currentGrant}
+        currentName={currentGrant?.name || ""}
+        currentReference={currentGrant?.reference || ""}
+        currentBudget={currentGrant?.budget || 0}
+      />
+      <DeleteGrant
+        isOpen={isDeleteGrantModalOpen}
+        onClose={() => handleToggleDeleteGrantModal()}
+        isBlockingInteraction={isBlockingInteraction}
+        onGrantDeleted={handleGrantDeleted}
+        sponsorId={sponsorId}
+        regulationId={regulationId}
+        grant={currentGrant}
+        currentName={currentGrant?.name || ""}
+        currentReference={currentGrant?.reference || ""}
+        currentBudget={currentGrant?.budget || 0}
+      />
+      <AddOfficerDesktop
+        isOpen={isAddOfficerModalOpen}
+        onClose={handleToggleAddOfficerModal}
+        onOfficerAdded={handleOfficerAdded}
+        sponsorId={sponsorId}
+        regulationId={regulationId}
+        grantId={selectedGrantId?.toString() || undefined}
+        officers={availableOfficers}
+        isBlockingInteraction={false}
+      />
+      <AddEmployeeToRegulation
+        isOpen={isAddEmployeeModalOpen}
+        onClose={handleToggleAddEmployeeModal}
+        isBlockingInteraction={isBlockingInteraction}
+        onEmployeeAdded={handleEmployeeAdded}
+        sponsorId={sponsorId}
+        regulationId={regulationId}
+      />
     </div>
   );
 };

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import styles from "../../assets/scss/layout/AddFundModal.module.scss";
-import { editGrant } from "../middleware/Api";
+import styles from "../../assets/scss/layout/AddFundDesktop.module.scss";
+import { deleteGrant } from "../middleware/Api";
 
 type Grant = {
   name: string;
@@ -11,11 +11,11 @@ type Grant = {
   expenses: number;
 };
 
-interface EditGrantMobileProps {
+interface DeleteGrantProps {
   isOpen: boolean;
   onClose: () => void;
   isBlockingInteraction: boolean;
-  onGrantEdited: () => void;
+  onGrantDeleted: () => void;
   sponsorId?: string;
   regulationId?: string;
   grantId?: string;
@@ -25,11 +25,11 @@ interface EditGrantMobileProps {
   grant: Grant | null;
 }
 
-const EditGrantMobile: React.FC<EditGrantMobileProps> = ({
+const DeleteGrant: React.FC<DeleteGrantProps> = ({
   isOpen,
   onClose,
   isBlockingInteraction,
-  onGrantEdited,
+  onGrantDeleted,
   sponsorId,
   regulationId,
   grant,
@@ -44,9 +44,6 @@ const EditGrantMobile: React.FC<EditGrantMobileProps> = ({
   }
 
   const [modalIsOpen, setModalIsOpen] = useState(isOpen);
-  const [grantName, setGrantName] = useState(currentName);
-  const [grantReference, setGrantReference] = useState(currentReference);
-  const [grantBudget, setGrantBudget] = useState(currentBudget);
 
   useEffect(() => {
     if (isOpen) {
@@ -58,13 +55,7 @@ const EditGrantMobile: React.FC<EditGrantMobileProps> = ({
     }
   }, [isOpen]);
 
-  useEffect(() => {
-    setGrantName(currentName);
-    setGrantReference(currentReference);
-    setGrantBudget(currentBudget);
-  }, [currentName, currentReference, currentBudget]);
-
-  const handleEdit = async () => {
+  const handleDelete = async () => {
     try {
       const token = localStorage.getItem("token");
       if (!token) {
@@ -79,19 +70,16 @@ const EditGrantMobile: React.FC<EditGrantMobileProps> = ({
         return;
       }
 
-      await editGrant(
+      await deleteGrant(
         token,
         Number(sponsorId),
         Number(regulationId),
         Number(grantId),
-        grantName,
-        grantReference,
-        grantBudget,
       );
       handleClose();
-      onGrantEdited();
+      onGrantDeleted();
     } catch (error) {
-      console.error("Failed to edit grant:", error);
+      console.error("Failed to delete grant:", error);
     }
   };
 
@@ -113,39 +101,28 @@ const EditGrantMobile: React.FC<EditGrantMobileProps> = ({
         onClick={handleClose}
       ></div>
       <div className={`${styles.modal} ${modalIsOpen ? styles.open : ""}`}>
-        <h2 className={styles.title}>Beschikking bewerken</h2>
+        <h2 className={styles.title}>Beschikking verwijderen</h2>
         <hr></hr>
         <div className={styles.formGroup}>
           <h3>Info</h3>
+          <p>Weet je zekler dat je de beschikking wilt verwijderen?</p>
           <label className={styles.label}>Naam:</label>
-          <input
-            type="text"
-            value={grantName}
-            onChange={(e) => setGrantName(e.target.value)}
-          />
+          <span>{currentName}</span>
         </div>
         <div className={styles.formGroup}>
           <label className={styles.label}>Referentie:</label>
-          <input
-            type="text"
-            value={grantReference}
-            onChange={(e) => setGrantReference(e.target.value)}
-          />
+          <span>{currentReference}</span>
         </div>
         <div className={styles.formGroup}>
           <label className={styles.label}>Begroting:</label>
-          <input
-            type="number"
-            value={grantBudget.toString()}
-            onChange={(e) => setGrantBudget(Number(e.target.value))}
-          />
+          <span>{currentBudget}</span>
         </div>
         <div className={styles.buttonContainer}>
           <button onClick={handleClose} className={styles.cancelButton}>
             Annuleren
           </button>
-          <button onClick={handleEdit} className={styles.saveButton}>
-            Bewerken
+          <button onClick={handleDelete} className={styles.saveButton}>
+            Verwijderen
           </button>
         </div>
       </div>
@@ -153,4 +130,4 @@ const EditGrantMobile: React.FC<EditGrantMobileProps> = ({
   );
 };
 
-export default EditGrantMobile;
+export default DeleteGrant;

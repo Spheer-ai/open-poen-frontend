@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import jwtDecode from "jwt-decode";
 import { useAuth } from "../../contexts/AuthContext";
@@ -12,11 +12,8 @@ import ChangePasswordForm from "../forms/ChangePasswordForm";
 import EditUserProfileForm from "../forms/EditUserProfileForm";
 import EditIcon from "/edit-icon.svg";
 import ChangePasswordIcon from "/change-password-icon.svg";
-import {
-  fetchUserDetails,
-  fetchInitiatives,
-  fetchUserPermissions,
-} from "../middleware/Api";
+import { fetchUserDetails, fetchInitiatives } from "../middleware/Api";
+import { usePermissions } from "../../contexts/PermissionContext";
 
 const roleLabels = {
   administrator: "Beheerder",
@@ -31,6 +28,7 @@ interface DecodedToken {
 
 export default function UserDetailsPage() {
   const { user: authUser } = useAuth();
+  const { user } = useAuth();
   const token = authUser?.token;
   const { userId } = useParams<{ userId: string }>();
 
@@ -39,13 +37,38 @@ export default function UserDetailsPage() {
     const decodedToken: DecodedToken = jwtDecode(token);
     loggedInUserId = decodedToken.sub;
   }
-
   const [userDetails, setUserDetails] = useState<UserDetails | null>(null);
   const [initiatives, setInitiatives] = useState([]);
   const [activeAction, setActiveAction] = useState<string | null>(null);
-  const [viewedUserPermissions, setViewedUserPermissions] = useState<string[]>(
-    [],
-  );
+  const { fetchPermissions } = usePermissions();
+  const [entityPermissions, setEntityPermissions] = useState<string[]>([]);
+  const [hasEditPermission, setHasEditPermission] = useState(false);
+
+  useEffect(() => {
+    async function fetchUserPermissions() {
+      try {
+        if (user && user.token && userId) {
+          const userPermissions: string[] | undefined = await fetchPermissions(
+            "User",
+            parseInt(userId),
+            user.token,
+          );
+
+          if (userPermissions && userPermissions.includes("edit")) {
+            console.log("User has edit permission");
+            setHasEditPermission(true);
+          } else {
+            console.log("User does not have edit permission");
+            setHasEditPermission(false);
+          }
+        }
+      } catch (error) {
+        console.error("Failed to fetch user permissions:", error);
+      }
+    }
+
+    fetchUserPermissions();
+  }, [user, userId]);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -53,8 +76,6 @@ export default function UserDetailsPage() {
         try {
           const userResponse = await fetchUserDetails(userId, token);
           setUserDetails(userResponse);
-          const userPerms = await fetchUserPermissions(Number(userId), token);
-          setViewedUserPermissions(userPerms);
         } catch (error) {
           console.error("Error fetching user details:", error);
         }
@@ -88,9 +109,8 @@ export default function UserDetailsPage() {
     setActiveAction(null);
   };
 
-  const canEditUser = () => {
-    return viewedUserPermissions.includes("edit");
-  };
+  console.log("hasEditPermission:", hasEditPermission);
+  console.log("API Response for permissions:", entityPermissions);
 
   return (
     <>
@@ -129,7 +149,7 @@ export default function UserDetailsPage() {
                   )}
                 </div>
                 <div className={styles["top-right-button-container"]}>
-                  {canEditUser() && (
+                  {hasEditPermission && (
                     <div
                       className={styles["top-right-button"]}
                       onClick={handleEditClick}

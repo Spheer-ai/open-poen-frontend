@@ -1,33 +1,30 @@
 import React, { useEffect, useState } from "react";
-import styles from "../../assets/scss/layout/AddFundModal.module.scss";
-import { updateRegulationDetails } from "../middleware/Api";
+import styles from "../../assets/scss/layout/AddFundDesktop.module.scss";
+import { editSponsor } from "../middleware/Api";
 
-interface EditRegulationDesktopProps {
+interface EditSponsorProps {
   isOpen: boolean;
   onClose: () => void;
   isBlockingInteraction: boolean;
-  onRegulationEdited: () => void;
+  onSponsorEdited: () => void;
   sponsorId?: string;
-  regulationId?: string;
-  refreshTrigger: number;
   currentName: string;
-  currentDescription: string;
+  currentUrl: string;
+  hasEditSponsorPermission: boolean;
 }
 
-const EditRegulationDesktop: React.FC<EditRegulationDesktopProps> = ({
+const EditSponsor: React.FC<EditSponsorProps> = ({
   isOpen,
   onClose,
   isBlockingInteraction,
-  onRegulationEdited,
+  onSponsorEdited,
   sponsorId,
-  regulationId,
   currentName,
-  currentDescription,
+  currentUrl,
 }) => {
   const [modalIsOpen, setModalIsOpen] = useState(isOpen);
-  const [regulationName, setRegulationName] = useState(currentName);
-  const [regulationDescription, setRegulationDescription] =
-    useState(currentDescription);
+  const [funderName, setFunderName] = useState(currentName);
+  const [funderUrl, setFunderUrl] = useState(currentUrl);
 
   useEffect(() => {
     if (isOpen) {
@@ -40,9 +37,15 @@ const EditRegulationDesktop: React.FC<EditRegulationDesktopProps> = ({
   }, [isOpen]);
 
   useEffect(() => {
-    setRegulationName(currentName);
-    setRegulationDescription(currentDescription);
-  }, [currentName, currentDescription]);
+    setFunderName(currentName);
+    setFunderUrl(currentUrl);
+  }, [currentName, currentUrl]);
+
+  const isUrlValid = (url) => {
+    const urlPattern =
+      /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/;
+    return urlPattern.test(url);
+  };
 
   const handleSave = async () => {
     try {
@@ -52,22 +55,21 @@ const EditRegulationDesktop: React.FC<EditRegulationDesktopProps> = ({
         return;
       }
 
-      if (!sponsorId || !regulationId) {
-        console.error("Sponsor ID or Regulation ID is not available.");
+      if (!sponsorId) {
+        console.error("Sponsor ID is not available.");
         return;
       }
 
-      await updateRegulationDetails(
-        token,
-        Number(sponsorId),
-        Number(regulationId),
-        regulationName,
-        regulationDescription,
-      );
+      if (!isUrlValid(funderUrl)) {
+        console.error("Invalid URL format.");
+        return;
+      }
+
+      await editSponsor(token, Number(sponsorId), funderName, funderUrl);
       handleClose();
-      onRegulationEdited();
+      onSponsorEdited();
     } catch (error) {
-      console.error("Failed to edit regulation:", error);
+      console.error("Failed to edit funder:", error);
     }
   };
 
@@ -89,25 +91,25 @@ const EditRegulationDesktop: React.FC<EditRegulationDesktopProps> = ({
         onClick={handleClose}
       ></div>
       <div className={`${styles.modal} ${modalIsOpen ? styles.open : ""}`}>
-        <h2 className={styles.title}>Regeling Bewerken</h2>
+        <h2 className={styles.title}>Sponsor aanpassen</h2>
         <hr></hr>
         <div className={styles.formGroup}>
           <h3>Info</h3>
           <label className={styles.label}>Naam:</label>
           <input
             type="text"
-            placeholder="Voer een naam in"
-            value={regulationName}
-            onChange={(e) => setRegulationName(e.target.value)}
+            value={funderName}
+            onChange={(e) => setFunderName(e.target.value)}
+            className={styles.inputField}
           />
         </div>
         <div className={styles.formGroup}>
-          <label className={styles.label}>Beschrijving:</label>
+          <label className={styles.label}>URL:</label>
           <input
             type="text"
-            placeholder="Voer de beschrijving in"
-            value={regulationDescription}
-            onChange={(e) => setRegulationDescription(e.target.value)}
+            value={funderUrl}
+            onChange={(e) => setFunderUrl(e.target.value)}
+            className={styles.inputField}
           />
         </div>
         <div className={styles.buttonContainer}>
@@ -123,4 +125,4 @@ const EditRegulationDesktop: React.FC<EditRegulationDesktopProps> = ({
   );
 };
 
-export default EditRegulationDesktop;
+export default EditSponsor;

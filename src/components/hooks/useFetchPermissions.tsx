@@ -1,34 +1,28 @@
 import { useState } from "react";
-import { fetchUserPermissions } from "../middleware/Api";
+import { fetchEntityPermissions } from "../middleware/Api";
 
 export const useFetchPermissions = () => {
-  const [permissions, setPermissions] = useState<string[]>([]);
-  const [globalPermissions, setGlobalPermissions] = useState<string[]>([]);
+  const [permissions, setPermissions] = useState<Record<string, string[]>>({});
 
-  const fetchPermissionsWithEntityId = async (
+  const fetchPermissions = async (
+    entityClass: string,
     entityId?: number,
     token?: string,
   ) => {
     try {
-      const userPermissions = await fetchUserPermissions(entityId, token);
-      console.log("API Response for permissions:", userPermissions);
-      setPermissions(userPermissions);
-      return userPermissions;
+      const perms = await fetchEntityPermissions(entityClass, entityId, token);
+      setPermissions((prevPermissions) => ({
+        ...prevPermissions,
+        [entityClass]: perms,
+      }));
+      return perms;
     } catch (error) {
-      console.error("Error fetching permissions:", error);
+      console.error(`Error fetching permissions for ${entityClass}:`, error);
     }
-  };
-
-  const fetchGlobalPermissions = async (token: string): Promise<string[]> => {
-    const globalPerms = await fetchUserPermissions(undefined, token);
-    setGlobalPermissions(globalPerms);
-    return globalPerms;
   };
 
   return {
     permissions,
-    fetchPermissionsWithEntityId,
-    globalPermissions,
-    fetchGlobalPermissions,
+    fetchPermissions,
   };
 };
