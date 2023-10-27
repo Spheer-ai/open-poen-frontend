@@ -41,11 +41,8 @@ export default function UserDetailsPage() {
   const [initiatives, setInitiatives] = useState([]);
   const [activeAction, setActiveAction] = useState<string | null>(null);
   const { fetchPermissions } = usePermissions();
-  const [permissionsFetched, setPermissionsFetched] = useState(false);
-  const [userPermissions, setUserPermissions] = useState<string[]>([]);
   const [entityPermissions, setEntityPermissions] = useState<string[]>([]);
   const [hasEditPermission, setHasEditPermission] = useState(false);
-  const prevUserIdRef = useRef<string | null>(null);
 
   useEffect(() => {
     async function fetchUserPermissions() {

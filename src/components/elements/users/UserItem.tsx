@@ -3,6 +3,9 @@ import { Link } from "react-router-dom";
 import ProfileIcon from "../../../assets/profile-icon.svg";
 import UserDropdown from "../dropdown-menu/UserDropwdown";
 import styles from "../../../assets/scss/Contacts.module.scss";
+import { usePermissions } from "../../../contexts/PermissionContext";
+
+import { useAuth } from "../../../contexts/AuthContext";
 
 const UserItem = ({
   user,
@@ -16,6 +19,46 @@ const UserItem = ({
   isLoggedIn,
 }) => {
   const userItemId = user.id;
+  const { fetchPermissions } = usePermissions();
+  const { user: authUser } = useAuth();
+  const token = authUser?.token;
+
+  const [hasEditPermission, setHasEditPermission] = useState(false);
+  const [permissionsFetched, setPermissionsFetched] = useState(false);
+
+  useEffect(() => {
+    async function fetchUserPermissions() {
+      try {
+        if (user.id && !permissionsFetched) {
+          const userPermissions = await fetchPermissions(
+            "User",
+            user.id,
+            token,
+          );
+          if (userPermissions && userPermissions.includes("edit")) {
+            setHasEditPermission(true);
+          } else {
+            setHasEditPermission(false);
+          }
+          setPermissionsFetched(true);
+          console.log(
+            `Permissions fetched for user ${user.id}:`,
+            userPermissions,
+          );
+        }
+      } catch (error) {
+        console.error(
+          `Failed to fetch user permissions for user ${user.id}:`,
+          error,
+        );
+      }
+    }
+
+    fetchUserPermissions();
+  }, [user.id, fetchPermissions, permissionsFetched, token]);
+
+  console.log(`Rendered UserItem for user ${user.id}`);
+  console.log(`hasEditPermission for user ${user.id}:`, hasEditPermission);
 
   return (
     <li
@@ -60,7 +103,7 @@ const UserItem = ({
               />
             </div>
           )}
-          {user.id && (
+          {hasEditPermission && user.id && (
             <UserDropdown
               isOpen={dropdownOpen[user.id]}
               onEditClick={() => handleEditButtonClick(user.id)}
