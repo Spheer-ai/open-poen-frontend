@@ -174,6 +174,32 @@ export const updateUser = async (
   }
 };
 
+export const uploadProfileImage = async (
+  userId: string,
+  imageFile: File,
+  token: string,
+) => {
+  try {
+    const formData = new FormData();
+    formData.append("file", imageFile);
+
+    const response = await api.post(
+      `/user/${userId}/profile-picture`,
+      formData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+
+    return response.data;
+  } catch (error) {
+    console.error("Error uploading profile image:", error);
+    throw error;
+  }
+};
+
 export const getUserById = async (userId: string, token: string) => {
   try {
     const response = await api.get(`/user/${userId}`, {

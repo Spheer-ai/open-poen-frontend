@@ -1,19 +1,31 @@
 import React, { useState, useRef } from "react";
 import styles from "../../../assets/scss/ImageUploader.module.scss";
+import { uploadProfileImage } from "../../../components/middleware/Api";
 
 interface ImageUploaderProps {
   onImageUpload: (image: File) => void;
+  userId: string;
+  token: string;
 }
 
-const ImageUploader: React.FC<ImageUploaderProps> = ({ onImageUpload }) => {
+const ImageUploader: React.FC<ImageUploaderProps> = ({
+  onImageUpload,
+  userId,
+  token,
+}) => {
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      setSelectedImage(file);
-      onImageUpload(file);
+      try {
+        await uploadProfileImage(userId, file, token);
+        setSelectedImage(file);
+        onImageUpload(file);
+      } catch (error) {
+        console.error("Error uploading image:", error);
+      }
     }
   };
 

@@ -175,10 +175,16 @@ const EditUserProfileForm: React.FC<EditUserProfileFormProps> = ({
                 )}
               </div>
             </div>
-            <div className={styles["form-group"]}>
-              <label>Profielfoto</label>
-              <ImageUploader onImageUpload={handleImageUpload} />
-            </div>
+            {userId && (
+              <div className={styles["form-group"]}>
+                <label>Profielfoto</label>
+                <ImageUploader
+                  onImageUpload={handleImageUpload}
+                  userId={userId}
+                  token={user?.token || ""}
+                />
+              </div>
+            )}
             <hr />
             <h3>Instellingen</h3>
             <div className={styles["form-group"]}>
