@@ -62,7 +62,7 @@ export const fetchUserData = async (token: string, userId: string) => {
 
 export const fetchUserDetails = async (userId: string, token: string) => {
   try {
-    const response = await api.get(`/user/${userId}`, {
+    const response = await api.get(`/user/${userId}?expand=all`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -213,14 +213,19 @@ export const getUserById = async (userId: string, token: string) => {
   }
 };
 
-export const getUsersOrdered = async (token: string, ordering: string = "") => {
+export const getUsersOrdered = async (
+  token: string,
+  offset: number = 0,
+  limit: number = 20,
+) => {
   try {
     const response = await api.get("/users", {
       headers: {
         Authorization: `Bearer ${token}`,
       },
       params: {
-        ordering,
+        offset,
+        limit,
       },
     });
     return response.data.users;

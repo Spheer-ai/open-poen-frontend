@@ -112,7 +112,7 @@ export default function Contacts() {
           Authorization: `Bearer ${token || ""}`,
         });
 
-        const usersResponse = await getUsersOrdered(token || "");
+        const usersResponse = await getUsersOrdered(token || "", 0, 20);
 
         let originalUsers = [...usersResponse];
 

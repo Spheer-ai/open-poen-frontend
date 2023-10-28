@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import ProfileIcon from "../../../assets/profile-icon.svg";
 import UserDropdown from "../dropdown-menu/UserDropwdown";
@@ -70,13 +70,22 @@ const UserItem = ({
           }`}
         >
           <div className={styles["profile"]}>
-            <img
-              src="../../../profile-placeholder.png"
-              alt="Profile"
-              className={styles["profile-image"]}
-            />
+            {user.profile_picture && (
+              <img
+                src={user.profile_picture.attachment_url}
+                alt="Profile"
+                className={styles["profile-image"]}
+              />
+            )}
+            {!user.profile_picture && (
+              <img
+                src="../../../profile-placeholder.png"
+                alt="Profile"
+                className={styles["profile-image"]}
+              />
+            )}
             <div className={styles["user-info"]}>
-              <p data-tip={user.first_name + " " + user.last_name}>
+              <p data-tip={`${user.first_name} ${user.last_name}`}>
                 {user.first_name} {user.last_name}
               </p>
               <p className={styles["profile-email"]} data-tip={user.email}>
@@ -110,13 +119,22 @@ const UserItem = ({
           }`}
         >
           <div className={styles["profile"]}>
-            <img
-              src="../../../profile-placeholder.png"
-              alt="Profile"
-              className={styles["profile-image"]}
-            />
+            {user.profile_picture && (
+              <img
+                src={user.profile_picture.attachment_url}
+                alt="Profile"
+                className={styles["profile-image"]}
+              />
+            )}
+            {!user.profile_picture && (
+              <img
+                src="../../../profile-placeholder.png"
+                alt="Profile"
+                className={styles["profile-image"]}
+              />
+            )}
             <div className={styles["user-info"]}>
-              <p data-tip={user.first_name + " " + user.last_name}>
+              <p data-tip={`${user.first_name} ${user.last_name}`}>
                 {user.first_name} {user.last_name}
               </p>
               <p className={styles["profile-email"]} data-tip={user.email}>

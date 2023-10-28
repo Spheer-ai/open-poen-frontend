@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import jwtDecode from "jwt-decode";
 import { useAuth } from "../../contexts/AuthContext";
@@ -121,9 +121,12 @@ export default function UserDetailsPage() {
               <div className={styles["user-profile"]}>
                 <div>
                   <img
-                    src={ProfilePlaceholder}
+                    src={
+                      userDetails?.profile_picture?.attachment_url ||
+                      ProfilePlaceholder
+                    }
                     alt="Profile"
-                    className={styles["user-image circular"]}
+                    className={`${styles["user-image"]} ${styles["circular"]}`}
                   />
                 </div>
                 <div className={styles["user-container"]}>
