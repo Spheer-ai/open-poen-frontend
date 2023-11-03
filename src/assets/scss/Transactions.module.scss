@@ -1,9 +1,8 @@
-.side-panel {
+.transaction-container {
   background-color: #fff;
-  border-right: 1px solid #dee2e6;
   height: 100vh;
-  max-width: 460px;
-  min-width: 460px;
+  width: 100%;
   z-index: 1;
-  overflow: scroll;
+  padding: 75px;
+  position: relative;
 }

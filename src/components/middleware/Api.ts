@@ -604,7 +604,7 @@ export const addOfficerToGrant = async (
 ) => {
   try {
     const response = await api.patch(
-      `/funder/${funderId}/regulation/${regulationId}/grant/${grantId}/overseer`,
+      `/funder/${funderId}/regulation/${regulationId}/grant/${grantId}/overseers`,
       {
         user_ids: userIds,
       },

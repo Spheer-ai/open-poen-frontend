@@ -2,6 +2,7 @@ export interface UserData {
   userId?: number;
   username?: string;
   token: string;
+  id?: string;
 }
 
 export interface AuthContextValue {

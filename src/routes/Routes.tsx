@@ -18,6 +18,7 @@ import ResetPasswordRequest from "../components/pages/onboarding/ResetPasswordRe
 import SponsorDetail from "../components/pages/SponsorDetail";
 import PermissionChecker from "../components/pages/PermissionChecker";
 import RegulationList from "../components/lists/RegulationList";
+import BankConnections from "../components/lists/BankConnections";
 
 export default function AppRoutes() {
   const navigate = useNavigate();
@@ -124,7 +125,23 @@ export default function AppRoutes() {
           {isAuthenticated && (
             <>
               <Route
-                path="/transactions"
+                path="/transactions/*"
+                element={
+                  <InlineModalLayout navigate={navigate}>
+                    {<Transactions />}
+                  </InlineModalLayout>
+                }
+              />
+              <Route
+                path="/transactions/bankconnections"
+                element={
+                  <InlineModalLayout navigate={navigate}>
+                    {<Transactions />}
+                  </InlineModalLayout>
+                }
+              />
+              <Route
+                path="/transactions/bankconnections/add-bank"
                 element={
                   <InlineModalLayout navigate={navigate}>
                     {<Transactions />}
