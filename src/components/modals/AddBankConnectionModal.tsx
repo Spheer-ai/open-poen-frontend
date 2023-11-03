@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import styles from "../../assets/scss/layout/AddFundDesktop.module.scss";
+import Step1BankList from "../modals/steps-modal/Step1Banklist";
 
 interface AddBankConnectionModalProps {
   isOpen: boolean;
@@ -12,42 +13,86 @@ const AddBankConnectionModal: React.FC<AddBankConnectionModalProps> = ({
   onClose,
   isBlockingInteraction,
 }) => {
-  const [modalIsOpen, setModalIsOpen] = useState(isOpen);
+  const [currentStep, setCurrentStep] = useState(1);
+  const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
-      setModalIsOpen(true);
+      setIsVisible(true);
+      setCurrentStep(1);
     } else {
-      setTimeout(() => {
-        setModalIsOpen(false);
-      });
+      setIsVisible(false);
+      setCurrentStep(1);
     }
-  }, [isOpen, onClose]);
+  }, [isOpen]);
+
+  const handleNextStep = () => {
+    if (currentStep < 3) {
+      setCurrentStep(currentStep + 1);
+    }
+  };
+
+  const handlePrevStep = () => {
+    if (currentStep > 1) {
+      setCurrentStep(currentStep - 1);
+    }
+  };
 
   const handleClose = () => {
     if (!isBlockingInteraction) {
-      setModalIsOpen(false);
+      setIsVisible(false);
+      setCurrentStep(1);
       onClose();
     }
   };
 
+  const modalClasses = `${styles.modal} ${isVisible ? styles.open : ""}`;
+
   return (
-    <>
-      <div
-        className={`${styles.backdrop} ${modalIsOpen ? styles.open : ""}`}
-        onClick={onClose}
-      ></div>
-      <div className={`${styles.modal} ${modalIsOpen ? styles.open : ""}`}>
-        <h2 className={styles.title}>Add Bank Connection</h2>
-        <div className={styles.formGroup}></div>
-        <div className={styles.buttonContainer}>
-          <button onClick={handleClose} className={styles.cancelButton}>
-            Cancel
-          </button>
-          <button className={styles.saveButton}>Connect</button>
+    <div className={styles.modalWrapper}>
+      <div className={modalClasses}>
+        <div className={styles.modalContent}>
+          {currentStep > 1 && (
+            <button onClick={handlePrevStep} className={styles.prevButton}>
+              Previous
+            </button>
+          )}
+          {currentStep < 3 && (
+            <button onClick={handleNextStep} className={styles.nextButton}>
+              Next
+            </button>
+          )}
+          {currentStep === 3 && (
+            <button onClick={handleClose} className={styles.cancelButton}>
+              Close
+            </button>
+          )}
+        </div>
+        <div className={styles.modalBody}>
+          {currentStep === 1 && (
+            <>
+              <Step1BankList onNextStep={handleNextStep} />
+            </>
+          )}
+          {currentStep === 2 && (
+            <>
+              <h2 className={styles.title}>Step 2: Confirming Connection</h2>
+              {/* Add content for the second step here */}
+            </>
+          )}
+          {currentStep === 3 && (
+            <>
+              <h2 className={styles.title}>Step 3: Confirmation</h2>
+              {/* Add content for the last step here */}
+            </>
+          )}
         </div>
       </div>
-    </>
+      <div
+        className={`${styles.backdrop} ${isVisible ? styles.open : ""}`}
+        onClick={handleClose}
+      ></div>
+    </div>
   );
 };
 

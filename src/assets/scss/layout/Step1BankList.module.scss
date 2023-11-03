@@ -1,0 +1,21 @@
+.bank-item {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  transition: background-color 0.2s ease;
+  cursor: pointer;
+}
+
+.bank-item:hover {
+  background-color: #f0f0f0;
+}
+
+.bank-item img {
+  width: 64px;
+  height: 64px;
+  margin-right: 10px;
+}
+
+.bank-name {
+  font-size: 16px;
+}

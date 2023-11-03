@@ -682,3 +682,17 @@ export const editSponsor = async (
     throw error;
   }
 };
+
+export const fetchInstitutions = async () => {
+  try {
+    const response = await api.get("/utils/gocardless/institutions");
+
+    return response.data;
+  } catch (error) {
+    console.error(
+      "Error fetching institutions:",
+      error.response ? error.response.data : error,
+    );
+    throw error;
+  }
+};
