@@ -10,10 +10,15 @@ interface Bank {
 
 interface Step1BankListProps {
   onNextStep: () => void;
+  onSelectBank: (institutionId: string) => void;
 }
 
-const Step1BankList: React.FC<Step1BankListProps> = ({ onNextStep }) => {
+const Step1BankList: React.FC<Step1BankListProps> = ({
+  onNextStep,
+  onSelectBank,
+}) => {
   const [bankList, setBankList] = useState<Bank[]>([]);
+  const [selectedBank, setSelectedBank] = useState<string | null>(null);
 
   useEffect(() => {
     async function fetchBankData() {
@@ -26,18 +31,35 @@ const Step1BankList: React.FC<Step1BankListProps> = ({ onNextStep }) => {
     fetchBankData();
   }, []);
 
+  const handleSelectBank = (institutionId: string) => {
+    setSelectedBank(institutionId);
+    onSelectBank(institutionId);
+  };
+
+  const handleNextStep = () => {
+    if (selectedBank) {
+      onNextStep();
+    }
+  };
+
   return (
     <div>
       <h2>Step 1: Fetching List of Bank Accounts</h2>
       <ul>
         {bankList.map((bank) => (
-          <li key={bank.id} className={styles["bank-item"]}>
+          <li
+            key={bank.id}
+            className={`${styles["bank-item"]} ${
+              selectedBank === bank.id ? styles.selected : ""
+            }`}
+            onClick={() => handleSelectBank(bank.id)}
+          >
             <img src={bank.logo} alt={bank.name} />
             <span className={styles["bank-name"]}>{bank.name}</span>
           </li>
         ))}
       </ul>
-      <button onClick={onNextStep}>Next</button>
+      <button onClick={handleNextStep}>Next</button>
     </div>
   );
 };

@@ -696,3 +696,32 @@ export const fetchInstitutions = async () => {
     throw error;
   }
 };
+
+export const initiateGocardless = async (
+  userId: number,
+  institutionId: string,
+  nDaysAccess: number,
+  nDaysHistory: number,
+  token: string,
+) => {
+  try {
+    const response = await api.get(`/users/${userId}/gocardless-initiate`, {
+      params: {
+        institution_id: institutionId,
+        n_days_access: nDaysAccess,
+        n_days_history: nDaysHistory,
+      },
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error(
+      "Error initiating GoCardless:",
+      error.response ? error.response.data : error,
+    );
+    throw error;
+  }
+};
