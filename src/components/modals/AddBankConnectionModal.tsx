@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import styles from "../../assets/scss/layout/AddFundDesktop.module.scss";
 import Step1BankList from "../modals/steps-modal/Step1BankList";
 import Step2BankApproval from "./steps-modal/Step2BankApproval";
+import { useLocation } from "react-router-dom";
 
 interface AddBankConnectionModalProps {
   isOpen: boolean;
@@ -17,6 +18,7 @@ const AddBankConnectionModal: React.FC<AddBankConnectionModalProps> = ({
   const [currentStep, setCurrentStep] = useState(1);
   const [isVisible, setIsVisible] = useState(false);
   const [selectedBank, setSelectedBank] = useState<string | null>(null);
+  const location = useLocation();
 
   useEffect(() => {
     if (isOpen) {
@@ -27,6 +29,21 @@ const AddBankConnectionModal: React.FC<AddBankConnectionModalProps> = ({
       setCurrentStep(1);
     }
   }, [isOpen]);
+
+  useEffect(() => {
+    const searchParams = new URLSearchParams(location.search);
+    const stepParam = searchParams.get("step");
+    console.log("stepParam:", stepParam);
+
+    if (stepParam === "3") {
+      setTimeout(() => {
+        setCurrentStep(3);
+      }, 0);
+    } else if (location.pathname === "/transactions/bankaccounts/add-bank") {
+      setCurrentStep(1);
+    }
+    console.log("currentStep:", currentStep);
+  }, [location.search, location.pathname]);
 
   const handleNextStep = () => {
     if (currentStep < 3) {
@@ -47,6 +64,7 @@ const AddBankConnectionModal: React.FC<AddBankConnectionModalProps> = ({
       onClose();
     }
   };
+
   const handleSelectBank = (institutionId: string) => {
     setSelectedBank(institutionId);
     setCurrentStep(2);

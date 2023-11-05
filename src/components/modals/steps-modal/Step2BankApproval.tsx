@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { initiateGocardless } from "../../middleware/Api";
 import { useAuth } from "../../../contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 interface Step2BankApprovalProps {
   institutionId: string;
@@ -12,6 +13,7 @@ const Step2BankApproval: React.FC<Step2BankApprovalProps> = ({
   const { user } = useAuth();
   const token = user?.token;
   const [approvalInfo, setApprovalInfo] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     async function initiateGocardlessRequest() {
@@ -39,7 +41,18 @@ const Step2BankApproval: React.FC<Step2BankApprovalProps> = ({
 
   const handleOpenLink = () => {
     if (approvalInfo) {
-      window.open(approvalInfo, "_blank");
+      const externalLink = window.open(approvalInfo, "_blank");
+      if (externalLink) {
+        const checkExternalLink = setInterval(() => {
+          if (externalLink.closed) {
+            clearInterval(checkExternalLink);
+            // Redirect to the route with the step parameter
+            navigate(
+              "/transactions/bankconnections/add-bank/gocardless-success?step=3",
+            );
+          }
+        }, 1000);
+      }
     }
   };
 

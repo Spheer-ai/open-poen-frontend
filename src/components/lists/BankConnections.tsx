@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import styles from "../../assets/scss/BankList.module.scss";
 import AddBankConnectionModal from "../modals/AddBankConnectionModal";
 
@@ -14,6 +14,13 @@ const BankConnections = () => {
   const [isAddBankConnectionModalOpen, setIsAddBankConnectionModalOpen] =
     useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.pathname === "/transactions/bankconnections/add-bank") {
+      setIsAddBankConnectionModalOpen(true);
+    }
+  }, [location.pathname]);
 
   const handleToggleAddBankModal = () => {
     if (isAddBankConnectionModalOpen) {
@@ -31,13 +38,20 @@ const BankConnections = () => {
 
   return (
     <div className={styles["bank-connections-container"]}>
-      <h2>Bank Connections</h2>
-      <button onClick={handleToggleAddBankModal}>Add Bank Connection</button>
+      <h2 className={styles["title"]}>Bank Connections</h2>
       <ul>
         {bankConnections.map((connection) => (
-          <li key={connection.id}>{connection.name}</li>
+          <li key={connection.id} className={styles["bank-item"]}>
+            <span className={styles["bank-name"]}>{connection.name}</span>
+          </li>
         ))}
       </ul>
+      <button
+        className={styles["saveButton"]}
+        onClick={handleToggleAddBankModal}
+      >
+        Add Bank Connection
+      </button>
       <AddBankConnectionModal
         isOpen={isAddBankConnectionModalOpen}
         onClose={handleToggleAddBankModal}

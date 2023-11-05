@@ -1,12 +1,17 @@
 import React from "react";
+import { useLocation } from "react-router-dom";
 import styles from "../../../../assets/scss/layout/navigation/TabbedNavigation.module.scss";
 
 interface Props {
-  activeTab: string;
   onTabChange: (tab: string) => void;
 }
 
-const TabbedNavigation: React.FC<Props> = ({ activeTab, onTabChange }) => {
+const TabbedNavigation: React.FC<Props> = ({ onTabChange }) => {
+  const location = useLocation();
+  const activeTab = location.pathname.includes("/transactions/bankconnections")
+    ? "banken"
+    : "transactieoverzicht";
+
   return (
     <div className={styles["tab-container"]}>
       <button
