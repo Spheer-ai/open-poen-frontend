@@ -21,10 +21,14 @@ const EditSponsor: React.FC<EditSponsorProps> = ({
   sponsorId,
   currentName,
   currentUrl,
+  hasEditSponsorPermission,
 }) => {
   const [modalIsOpen, setModalIsOpen] = useState(isOpen);
   const [funderName, setFunderName] = useState(currentName);
   const [funderUrl, setFunderUrl] = useState(currentUrl);
+  const [isUrlValid, setIsUrlValid] = useState(true);
+  const [nameError, setNameError] = useState(false);
+  const [urlError, setUrlError] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
@@ -41,13 +45,36 @@ const EditSponsor: React.FC<EditSponsorProps> = ({
     setFunderUrl(currentUrl);
   }, [currentName, currentUrl]);
 
-  const isUrlValid = (url) => {
+  const validateUrl = (url) => {
     const urlPattern =
       /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/;
     return urlPattern.test(url);
   };
 
   const handleSave = async () => {
+    // Check if both name and URL are empty
+    if (funderName.trim() === "" && funderUrl.trim() === "") {
+      setNameError(true);
+      setUrlError(true);
+      return;
+    }
+
+    if (!validateUrl(funderUrl)) {
+      setIsUrlValid(false);
+      return;
+    } else {
+      setIsUrlValid(true);
+    }
+
+    if (funderName.trim() === "") {
+      setNameError(true);
+      return;
+    } else {
+      setNameError(false);
+    }
+
+    setUrlError(false);
+
     try {
       const token = localStorage.getItem("token");
       if (!token) {
@@ -57,11 +84,6 @@ const EditSponsor: React.FC<EditSponsorProps> = ({
 
       if (!sponsorId) {
         console.error("Sponsor ID is not available.");
-        return;
-      }
-
-      if (!isUrlValid(funderUrl)) {
-        console.error("Invalid URL format.");
         return;
       }
 
@@ -102,6 +124,11 @@ const EditSponsor: React.FC<EditSponsorProps> = ({
             onChange={(e) => setFunderName(e.target.value)}
             className={styles.inputField}
           />
+          {nameError && (
+            <span style={{ color: "red", display: "block", marginTop: "5px" }}>
+              Vul een naam in.
+            </span>
+          )}
         </div>
         <div className={styles.formGroup}>
           <label className={styles.label}>URL:</label>
@@ -111,6 +138,16 @@ const EditSponsor: React.FC<EditSponsorProps> = ({
             onChange={(e) => setFunderUrl(e.target.value)}
             className={styles.inputField}
           />
+          {!isUrlValid && (
+            <span style={{ color: "red", display: "block", marginTop: "5px" }}>
+              Vul een geldige URL in.
+            </span>
+          )}
+          {urlError && (
+            <span style={{ color: "red", display: "block", marginTop: "5px" }}>
+              Vul een naam en URL in.
+            </span>
+          )}
         </div>
         <div className={styles.buttonContainer}>
           <button onClick={handleClose} className={styles.cancelButton}>

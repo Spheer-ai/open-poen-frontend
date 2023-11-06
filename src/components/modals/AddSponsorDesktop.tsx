@@ -20,6 +20,7 @@ const AddSponsorDesktop: React.FC<AddSponsorDesktopProps> = ({
   const [sponsorUrl, setSponsorUrl] = useState("");
   const [isUrlValid, setIsUrlValid] = useState(true);
   const [nameError, setNameError] = useState(false);
+  const [urlError, setUrlError] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
@@ -41,12 +42,19 @@ const AddSponsorDesktop: React.FC<AddSponsorDesktopProps> = ({
   };
 
   const handleSave = async () => {
-    if (!isValidUrl(sponsorUrl)) {
-      setIsUrlValid(false);
+    if (sponsorName.trim() === "" && sponsorUrl.trim() === "") {
+      setNameError(true);
+      setUrlError(true);
       return;
     }
 
-    // Check if the name is empty
+    if (!isValidUrl(sponsorUrl)) {
+      setIsUrlValid(false);
+      return;
+    } else {
+      setIsUrlValid(true);
+    }
+
     if (sponsorName.trim() === "") {
       setNameError(true);
       return;
@@ -54,7 +62,7 @@ const AddSponsorDesktop: React.FC<AddSponsorDesktopProps> = ({
       setNameError(false);
     }
 
-    setIsUrlValid(true);
+    setUrlError(false);
 
     try {
       const token = localStorage.getItem("token");
@@ -124,6 +132,11 @@ const AddSponsorDesktop: React.FC<AddSponsorDesktopProps> = ({
           {!isUrlValid && (
             <span style={{ color: "red", display: "block", marginTop: "5px" }}>
               Vul een geldige URL in.
+            </span>
+          )}
+          {urlError && (
+            <span style={{ color: "red", display: "block", marginTop: "5px" }}>
+              Vul een naam en URL in.
             </span>
           )}
         </div>
