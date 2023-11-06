@@ -19,6 +19,7 @@ const AddSponsorDesktop: React.FC<AddSponsorDesktopProps> = ({
   const [sponsorName, setSponsorName] = useState("");
   const [sponsorUrl, setSponsorUrl] = useState("");
   const [isUrlValid, setIsUrlValid] = useState(true);
+  const [nameError, setNameError] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
@@ -43,6 +44,14 @@ const AddSponsorDesktop: React.FC<AddSponsorDesktopProps> = ({
     if (!isValidUrl(sponsorUrl)) {
       setIsUrlValid(false);
       return;
+    }
+
+    // Check if the name is empty
+    if (sponsorName.trim() === "") {
+      setNameError(true);
+      return;
+    } else {
+      setNameError(false);
     }
 
     setIsUrlValid(true);
@@ -98,6 +107,11 @@ const AddSponsorDesktop: React.FC<AddSponsorDesktopProps> = ({
             value={sponsorName}
             onChange={(e) => setSponsorName(e.target.value)}
           />
+          {nameError && (
+            <span style={{ color: "red", display: "block", marginTop: "5px" }}>
+              Vul een naam in.
+            </span>
+          )}
         </div>
         <div className={styles.formGroup}>
           <label className={styles.label}>URL:</label>
@@ -109,7 +123,7 @@ const AddSponsorDesktop: React.FC<AddSponsorDesktopProps> = ({
           />
           {!isUrlValid && (
             <span style={{ color: "red", display: "block", marginTop: "5px" }}>
-              Vul een geldigle URL in.
+              Vul een geldige URL in.
             </span>
           )}
         </div>
