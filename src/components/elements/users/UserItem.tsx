@@ -27,6 +27,7 @@ const UserItem = ({
 
   const [userPermissions, setUserPermissions] = useState<string[]>([]);
   const isUserHidden = user.hidden === true;
+  const isUserInactive = user.is_active === false;
 
   useEffect(() => {
     async function fetchUserPermissions() {
@@ -105,6 +106,9 @@ const UserItem = ({
           )}
           {isUserHidden && (
             <span className={styles["hidden-label"]}>Verborgen</span>
+          )}
+          {isUserInactive && (
+            <span className={styles["inactive-label"]}>Inactief</span>
           )}
           {user.id && userPermissions.includes("edit") && (
             <UserDropdown
