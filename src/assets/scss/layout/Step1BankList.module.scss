@@ -1,9 +1,24 @@
 .bank-item {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   padding: 10px;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  justify-content: left;
+  width: 100%;
   transition: background-color 0.2s ease;
   cursor: pointer;
+}
+
+.bank-item-content {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+
+  span {
+    color: #000000;
+    font-weight: 500;
+  }
 }
 
 .bank-item:hover {
@@ -12,10 +27,59 @@
 
 .bank-item img {
   width: 64px;
-  height: 64px;
   margin-right: 10px;
 }
 
 .bank-name {
   font-size: 16px;
+}
+
+.saveButton {
+  background-color: #2760d5;
+  border: none;
+  border-radius: 5px;
+  padding: 10px;
+  flex: 1;
+  color: white;
+  cursor: pointer;
+  display: flex;
+  width: fit-content;
+  margin-left: auto;
+  margin-top: 50px;
+  padding: 15px;
+}
+
+.button-container {
+  position: absolute;
+  align-content: right;
+  background: white;
+  border-top: solid 1px #d6d6d6;
+  width: 100%;
+  bottom: 0;
+  right: 0px;
+  display: flex;
+  align-content: center;
+  justify-content: right;
+  align-items: center;
+  padding: 20px;
+
+  .saveButton {
+    background-color: #2760d5;
+    border: none;
+    border-radius: 5px;
+    padding: 10px;
+    flex: unset;
+    color: white;
+    cursor: pointer;
+    display: block;
+    padding: 15px;
+    margin-top: auto;
+  }
+}
+
+.confirmation-container {
+  display: block;
+  height: 100%;
+  position: relative;
+  margin-top: 100px;
 }

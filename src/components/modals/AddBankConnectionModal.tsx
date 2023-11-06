@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import styles from "../../assets/scss/layout/AddFundDesktop.module.scss";
 import Step1BankList from "../modals/steps-modal/Step1BankList";
 import Step2BankApproval from "./steps-modal/Step2BankApproval";
+import Step3BankConfirmation from "./steps-modal/Step3BankConfirmation";
 import { useLocation } from "react-router-dom";
 
 interface AddBankConnectionModalProps {
@@ -75,26 +76,12 @@ const AddBankConnectionModal: React.FC<AddBankConnectionModalProps> = ({
   return (
     <div className={styles.modalWrapper}>
       <div className={modalClasses}>
-        <div className={styles.modalContent}>
-          {currentStep > 1 && (
-            <button onClick={handlePrevStep} className={styles.prevButton}>
-              Previous
-            </button>
-          )}
-          {currentStep < 3 && (
-            <button onClick={handleNextStep} className={styles.nextButton}>
-              Next
-            </button>
-          )}
-          {currentStep === 3 && (
-            <button onClick={handleClose} className={styles.cancelButton}>
-              Close
-            </button>
-          )}
-        </div>
         <div className={styles.modalBody}>
           {currentStep === 1 && (
             <>
+              <div className={styles["modal-top-section"]}>
+                <h2 className={styles.title}>Bank Account Toevoegen</h2>
+              </div>
               <Step1BankList
                 onNextStep={handleNextStep}
                 onSelectBank={handleSelectBank}
@@ -103,13 +90,18 @@ const AddBankConnectionModal: React.FC<AddBankConnectionModalProps> = ({
           )}
           {currentStep === 2 && selectedBank && (
             <>
-              <h2 className={styles.title}>Step 2: Confirming Connection</h2>
+              <div className={styles["modal-top-section"]}>
+                <h2 className={styles.title}>Bank Account Toevoegen</h2>
+              </div>
               <Step2BankApproval institutionId={selectedBank} />
             </>
           )}
           {currentStep === 3 && (
             <>
-              <h2 className={styles.title}>Step 3: Confirmation</h2>
+              <div className={styles["modal-top-section"]}>
+                <h2 className={styles.title}>Bank Account Toevoegen</h2>
+              </div>
+              <Step3BankConfirmation onClose={handleClose} />
             </>
           )}
         </div>

@@ -44,7 +44,6 @@ const Step1BankList: React.FC<Step1BankListProps> = ({
 
   return (
     <div>
-      <h2>Step 1: Fetching List of Bank Accounts</h2>
       <ul>
         {bankList.map((bank) => (
           <li
@@ -54,12 +53,13 @@ const Step1BankList: React.FC<Step1BankListProps> = ({
             }`}
             onClick={() => handleSelectBank(bank.id)}
           >
-            <img src={bank.logo} alt={bank.name} />
-            <span className={styles["bank-name"]}>{bank.name}</span>
+            <div className={styles["bank-item-content"]}>
+              <img src={bank.logo} alt={bank.name} />
+              <span className={styles["bank-name"]}>{bank.name}</span>
+            </div>
           </li>
         ))}
       </ul>
-      <button onClick={handleNextStep}>Next</button>
     </div>
   );
 };

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { initiateGocardless } from "../../middleware/Api";
 import { useAuth } from "../../../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
+import styles from "../../../assets/scss/layout/Step1BankList.module.scss";
 
 interface Step2BankApprovalProps {
   institutionId: string;
@@ -46,7 +47,6 @@ const Step2BankApproval: React.FC<Step2BankApprovalProps> = ({
         const checkExternalLink = setInterval(() => {
           if (externalLink.closed) {
             clearInterval(checkExternalLink);
-            // Redirect to the route with the step parameter
             navigate(
               "/transactions/bankconnections/add-bank/gocardless-success?step=3",
             );
@@ -58,16 +58,26 @@ const Step2BankApproval: React.FC<Step2BankApprovalProps> = ({
 
   return (
     <div>
-      <h2>Step 2: Bank Approval</h2>
       {approvalInfo ? (
         <div>
           <p>{`Bank: ${institutionId}`}</p>
-          <p>{`Random Info Request for Approval: ${approvalInfo}`}</p>
-          <button onClick={handleOpenLink}>Open Link</button>
+          <h3>Geef toestemming</h3>
+          <p>
+            Ik verklaar dat ik de Privacyverklaring heb gelezen en geef hierbij
+            toestemming aan Dyme B.V. om mijn betaalgegevens te ontvangen van
+            mijn bank. Ik begripjp dat hier gevoelige informatie bij kan zitten
+            en ik ga ermee akkoord dat Dyme ook deze persoonsgegevens ontvangt
+            en gebruikt
+          </p>
         </div>
       ) : (
         <p>Loading...</p>
       )}
+      <div className={styles["button-container"]}>
+        <button className={styles.saveButton} onClick={handleOpenLink}>
+          Accepteer en ga door
+        </button>
+      </div>
     </div>
   );
 };
