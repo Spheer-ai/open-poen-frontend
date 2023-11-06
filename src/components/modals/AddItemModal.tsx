@@ -79,22 +79,6 @@ const AddItemModal: React.FC<AddItemModalProps & { isConfirmed?: boolean }> = ({
                 }}
                 onClick={handleContentClick}
               >
-                <button
-                  className="close-button"
-                  onClick={handleConfirmClick}
-                  style={{
-                    background: "none",
-                    border: "none",
-                    color: "rgb(143, 142, 142)",
-                    fontSize: "30px",
-                    cursor: "pointer",
-                    position: "absolute",
-                    right: "41px",
-                    top: "30px",
-                  }}
-                >
-                  &times;
-                </button>
                 {children}
               </animated.div>
             </animated.div>
