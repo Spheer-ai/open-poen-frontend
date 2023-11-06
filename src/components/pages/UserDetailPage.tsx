@@ -162,7 +162,7 @@ export default function UserDetailsPage() {
                         alt="Edit"
                         className={styles["icon"]}
                       />
-                      Bewerken
+                      Profiel bewerken
                     </div>
                   )}
                   {loggedInUserId === userId && (

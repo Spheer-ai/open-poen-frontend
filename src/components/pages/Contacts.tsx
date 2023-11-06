@@ -39,6 +39,9 @@ export default function Contacts() {
   const [permissionsFetched, setPermissionsFetched] = useState(false);
   const [entityPermissions, setEntityPermissions] = useState<string[]>([]);
   const hasPermission = entityPermissions.includes("create");
+  const [isActionConfirmed, setIsActionConfirmed] = useState(false);
+  const [isConfirmed, setIsConfirmed] = useState(false);
+  const [isConfirmationStep, setIsConfirmationStep] = useState(false);
 
   useEffect(() => {
     if (user && user.token && !permissionsFetched) {
@@ -62,6 +65,7 @@ export default function Contacts() {
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
+    setIsConfirmed(false);
   };
 
   const handleCancel = () => {
@@ -86,6 +90,11 @@ export default function Contacts() {
 
   const handleOpenDeleteModal = (id) => {
     setIsDeleteModalOpen(true);
+  };
+
+  const handleConfirmAction = () => {
+    setIsConfirmed(true);
+    setIsConfirmationStep(true);
   };
 
   useEffect(() => {
@@ -192,10 +201,21 @@ export default function Contacts() {
         onSearch={handleSearch}
         hasPermission={hasPermission}
       />
-      <AddItemModal isOpen={isModalOpen} onClose={handleCloseModal}>
+      <AddItemModal
+        isOpen={isModalOpen}
+        onClose={() => {
+          setIsModalOpen(false);
+          if (isConfirmationStep) {
+            window.location.reload();
+          }
+        }}
+        onConfirm={handleConfirmAction}
+        isConfirmed={isConfirmed}
+      >
         <AddUserForm
           onContinue={() => {
             setIsModalOpen(false);
+            handleConfirmAction();
           }}
           onCancel={handleCancel}
         />

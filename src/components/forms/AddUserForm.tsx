@@ -100,6 +100,10 @@ const AddUserForm: React.FC<{
     }
   };
 
+  const handleConfirmAction = () => {
+    setIsConfirmed(true);
+  };
+
   return (
     <div>
       <FormLayout
@@ -170,7 +174,13 @@ const AddUserForm: React.FC<{
           <FormButtons
             continueLabel="Opslaan"
             cancelLabel="Annuleren"
-            onContinue={handleSubmit}
+            onContinue={() => {
+              if (isConfirmed) {
+                handleConfirmAction();
+              } else {
+                handleSubmit();
+              }
+            }}
             onCancel={() => {
               onCancel();
               window.location.reload();

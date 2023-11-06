@@ -26,6 +26,7 @@ const UserItem = ({
   const [permissionsFetched, setPermissionsFetched] = useState(false);
 
   const [userPermissions, setUserPermissions] = useState<string[]>([]);
+  const isUserHidden = user.hidden === true;
 
   useEffect(() => {
     async function fetchUserPermissions() {
@@ -101,6 +102,9 @@ const UserItem = ({
                 className={styles["profile-icon"]}
               />
             </div>
+          )}
+          {isUserHidden && (
+            <span className={styles["hidden-label"]}>Verborgen</span>
           )}
           {user.id && userPermissions.includes("edit") && (
             <UserDropdown
