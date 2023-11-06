@@ -94,11 +94,11 @@ const UserItem = ({
                 {user.email}
               </p>
               {isUserHidden && (
-            <span className={styles["hidden-label"]}>Verborgen</span>
-          )}
-          {isUserInactive && (
-            <span className={styles["inactive-label"]}>Inactief</span>
-          )}
+                <span className={styles["hidden-label"]}>Verborgen</span>
+              )}
+              {isUserInactive && (
+                <span className={styles["inactive-label"]}>Inactief</span>
+              )}
             </div>
           </div>
           {loggedInId == userItemId && (

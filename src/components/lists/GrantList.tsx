@@ -78,21 +78,12 @@ const GrantList: React.FC<GrantListProps> = ({
           >
             {grant.name} | {grant.reference} | € {grant.budget}
             <div className={styles["button-container"]}>
-              {hasCreateGrantPermission && (
-                <button
-                  className={styles["add-button"]}
-                  onClick={() => onAddOfficerClick(grant.id)}
-                >
-                  Penvoerders
-                </button>
-              )}
               {grantPermissionsMap[grant.id]?.includes("edit") && (
                 <button
                   className={styles["edit-button"]}
                   onClick={() => onEditGrantClick(grant)}
                 >
                   <img src={EditIcon} alt="Edit" className={styles["icon"]} />
-                  Bewerken
                 </button>
               )}
               {grantPermissionsMap[grant.id]?.includes("delete") && (
@@ -105,7 +96,14 @@ const GrantList: React.FC<GrantListProps> = ({
                     alt="Delete"
                     className={styles["icon"]}
                   />
-                  Verwijderen
+                </button>
+              )}
+              {hasCreateGrantPermission && (
+                <button
+                  className={styles["add-button"]}
+                  onClick={() => onAddOfficerClick(grant.id)}
+                >
+                  Penvoerders
                 </button>
               )}
             </div>
