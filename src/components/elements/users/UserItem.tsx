@@ -93,6 +93,12 @@ const UserItem = ({
               <p className={styles["profile-email"]} data-tip={user.email}>
                 {user.email}
               </p>
+              {isUserHidden && (
+            <span className={styles["hidden-label"]}>Verborgen</span>
+          )}
+          {isUserInactive && (
+            <span className={styles["inactive-label"]}>Inactief</span>
+          )}
             </div>
           </div>
           {loggedInId == userItemId && (
@@ -103,12 +109,6 @@ const UserItem = ({
                 className={styles["profile-icon"]}
               />
             </div>
-          )}
-          {isUserHidden && (
-            <span className={styles["hidden-label"]}>Verborgen</span>
-          )}
-          {isUserInactive && (
-            <span className={styles["inactive-label"]}>Inactief</span>
           )}
           {user.id && userPermissions.includes("edit") && (
             <UserDropdown
