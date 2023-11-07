@@ -137,8 +137,19 @@ const BankConnections = () => {
                     </div>
                     <div className={styles["bank-options"]}>
                       <span className={styles["bank-user-count"]}>
-                        Gedeeld met <b>{connection.user_count} personen</b>
+                        {connection.user_count === 1 ? (
+                          <span>
+                            Gedeeld met <b>1 persoon</b>
+                          </span>
+                        ) : connection.user_count > 1 ? (
+                          <span>
+                            Gedeeld met <b>{connection.user_count} personen</b>
+                          </span>
+                        ) : (
+                          "Niet gedeeld met personen"
+                        )}
                       </span>
+
                       <button>Personen uitnodigen</button>
                       <button className={styles["button-danger"]}>
                         Verwijderen
@@ -203,8 +214,19 @@ const BankConnections = () => {
                     </div>
                     <div className={styles["bank-options"]}>
                       <span className={styles["bank-user-count"]}>
-                        Gedeeld met <b>{connection.user_count} personen</b>
+                        {connection.user_count === 1 ? (
+                          <span>
+                            Gedeeld met <b>1 persoon</b>
+                          </span>
+                        ) : connection.user_count > 1 ? (
+                          <span>
+                            Gedeeld met <b>{connection.user_count} personen</b>
+                          </span>
+                        ) : (
+                          "Niet gedeeld met personen"
+                        )}
                       </span>
+
                       <button>Personen uitnodigen</button>
                       <button className={styles["button-danger"]}>
                         Verwijderen
