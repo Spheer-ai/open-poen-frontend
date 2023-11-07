@@ -5,7 +5,6 @@ import { useAuth } from "../../contexts/AuthContext";
 import UserDetails from "../../types/UserTypes";
 import ProfilePlaceholder from "/profile-placeholder.png";
 import styles from "../../assets/scss/UserDetailPage.module.scss";
-import InitiativeList from "../lists/InitiativeList";
 import LoadingDot from "../animation/LoadingDot";
 import AddItemModal from "../modals/AddItemModal";
 import ChangePasswordForm from "../forms/ChangePasswordForm";
