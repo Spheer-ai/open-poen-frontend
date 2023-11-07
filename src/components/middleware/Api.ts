@@ -756,3 +756,23 @@ export const fetchPayments = async (
     throw error;
   }
 };
+export const fetchBankConnections = async (userId, token) => {
+  try {
+    const response = await api.get(`/user/${userId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const ownedBankAccounts = response.data.owned_bank_accounts || [];
+    const usedBankAccounts = response.data.used_bank_accounts || [];
+
+    return { ownedBankAccounts, usedBankAccounts };
+  } catch (error) {
+    console.error(
+      "Error fetching bank connections:",
+      error.response ? error.response.data : error,
+    );
+    throw error;
+  }
+};

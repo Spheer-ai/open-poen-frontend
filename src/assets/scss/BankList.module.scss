@@ -1,7 +1,25 @@
-/* Bank list styles */
 .bank-list-container {
-  padding: 30px;
   padding-left: 0;
+}
+
+.bank-connections-container {
+  padding-left: 0;
+  padding-right: 0;
+  margin-top: 50px;
+  max-width: 1200px;
+
+  ul {
+    padding-left: 0px;
+
+    li {
+      padding-left: 0;
+      color: #696969;
+    }
+  }
+
+  h3 {
+    font-weight: normal;
+  }
 }
 
 .title {
@@ -11,15 +29,14 @@
   margin-bottom: 15px;
 }
 
-hr {
-  color: #ebebeb;
-}
 .bank-item {
   padding: 30px 15px;
+  padding-left: 0px;
   border-radius: 6px;
   margin-bottom: 10px;
   display: flex;
   gap: 20px;
+  border-top: solid 1px #ebebeb;
 
   .bank-name {
     font-weight: bold;
@@ -49,7 +66,6 @@ hr {
   padding: 15px;
 }
 
-/* Hover effect for bank items */
 .bank-item:hover {
   background-color: #f0f0f0;
 }
@@ -59,8 +75,53 @@ hr {
 }
 
 .bank-logo {
-  width: 50px; // or any appropriate size you want
-  height: 50px; // or any appropriate size you want
+  width: 80px;
+  height: 80px;
   background-size: contain;
   background-repeat: no-repeat;
+}
+
+.bank-details {
+  display: flex;
+  gap: 20px;
+
+  .bank-info {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    color: #696969;
+
+    .bank-name {
+      color: #000000;
+    }
+
+    .bank-expiration {
+      color: #f11818;
+    }
+  }
+}
+
+.bank-options {
+  display: flex;
+  align-items: center;
+  align-self: flex-start;
+  gap: 20px;
+
+  .bank-user-count {
+    color: #696969;
+  }
+
+  button {
+    background: transparent;
+    border: solid 1px grey;
+    border-radius: 5px;
+    padding: 10px;
+    height: fit-content;
+    cursor: pointer;
+  }
+
+  .button-danger {
+    border: solid 1px #dc3545;
+    color: #dc3545;
+  }
 }

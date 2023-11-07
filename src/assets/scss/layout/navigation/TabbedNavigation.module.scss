@@ -1,7 +1,8 @@
 .tab-container {
   display: flex;
   gap: 1rem;
-  margin-bottom: -10px;
+  border-bottom: solid 1px #ebebeb;
+  max-width: 1180px;
 }
 
 button {
