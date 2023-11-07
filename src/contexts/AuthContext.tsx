@@ -63,11 +63,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         if (decodedToken) {
           const userId: number | undefined =
             Number(decodedToken?.userId) || undefined;
-          setUser({
-            token,
-            userId,
-            username: decodedToken.username || "",
-          });
+
+          const fetchUserData = async () => {
+            try {
+              const userData = await getUserData(token);
+              setUser({
+                token,
+                userId: userData.id,
+                username: userData.username,
+              });
+            } catch (error) {
+              console.error("Error fetching user data:", error);
+            }
+          };
+
+          fetchUserData();
         }
       }
     }

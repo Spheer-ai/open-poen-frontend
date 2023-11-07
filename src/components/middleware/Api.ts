@@ -725,3 +725,34 @@ export const initiateGocardless = async (
     throw error;
   }
 };
+
+export const fetchPayments = async (
+  userId: number,
+  token: string,
+  offset: number = 0,
+  limit: number = 20,
+  initiativeName: string = "",
+  activityName: string = "",
+) => {
+  try {
+    const response = await api.get(`/payments/user/${userId}`, {
+      params: {
+        offset,
+        limit,
+        initiative_name: initiativeName,
+        activity_name: activityName,
+      },
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error(
+      "Error fetching payments:",
+      error.response ? error.response.data : error,
+    );
+    throw error;
+  }
+};

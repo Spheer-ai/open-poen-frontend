@@ -27,8 +27,8 @@ const Step2BankApproval: React.FC<Step2BankApprovalProps> = ({
         const response = await initiateGocardless(
           1,
           institutionId,
-          7,
-          7,
+          90,
+          90,
           token,
         );
         setApprovalInfo(response.url);
@@ -47,9 +47,7 @@ const Step2BankApproval: React.FC<Step2BankApprovalProps> = ({
         const checkExternalLink = setInterval(() => {
           if (externalLink.closed) {
             clearInterval(checkExternalLink);
-            navigate(
-              "/transactions/bankconnections/add-bank/gocardless-success?step=3",
-            );
+            navigate("/transactions/bankconnections/add-bank?step=3");
           }
         }, 1000);
       }
