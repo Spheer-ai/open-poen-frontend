@@ -1,5 +1,6 @@
 .transactionOverview {
   background: #fff;
+  overflow: hidden;
 
   h3 {
     color: #333;
@@ -8,7 +9,10 @@
 
   .transactionTable {
     width: 100%;
+    max-height: 900px;
+    overflow-y: auto;
     border-collapse: collapse;
+    display: block;
 
     tbody tr:first-child td {
       padding-top: 50px;
@@ -17,11 +21,12 @@
     thead {
       tr {
         th {
-          font-weight: 500;
+          font-weight: 300;
           color: #6b717d;
           text-transform: uppercase;
           padding: 10px;
           text-align: left;
+          min-width: 175px;
         }
       }
     }
@@ -44,7 +49,7 @@
         }
 
         td {
-          padding: 10px;
+          padding: 24px 10px;
           text-align: left;
           border-bottom: 1px solid #eaeaea;
 

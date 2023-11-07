@@ -60,7 +60,22 @@ const TransactionOverview = () => {
                 <td>{transaction.creditor_name}</td>
                 <td>{transaction.short_user_description}</td>
                 <td>{transaction.iban}</td>
-                <td>{transaction.transaction_amount}</td>
+                <td>
+                  <span
+                    style={{
+                      display: "inline-block",
+                      width: "20px",
+                      textAlign: "right",
+                    }}
+                  >
+                    {transaction.transaction_amount < 0 ? "-" : ""}
+                  </span>
+                  €{" "}
+                  {Math.abs(transaction.transaction_amount).toLocaleString(
+                    "nl-NL",
+                    { minimumFractionDigits: 2 },
+                  )}
+                </td>
               </tr>
             ))}
           </tbody>
