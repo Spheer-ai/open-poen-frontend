@@ -1,13 +1,20 @@
 .image-uploader-container {
   display: inline-flex;
   flex-direction: column;
-  height: 135px;
   cursor: pointer;
   width: 100%;
   justify-content: center;
   align-items: center;
   border: dotted 1px #c5c5c5;
   margin-top: 10px;
+  padding: 10px;
+
+  .loading-text {
+    p {
+      font-size: 10px;
+      color: #007bff;
+    }
+  }
 
   p {
     font-size: 12px;

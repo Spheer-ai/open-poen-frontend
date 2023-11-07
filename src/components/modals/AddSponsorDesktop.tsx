@@ -93,6 +93,13 @@ const AddSponsorDesktop: React.FC<AddSponsorDesktopProps> = ({
     }
   };
 
+  const handleEnterKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      handleSave();
+    }
+  };
+
   if (!isOpen && !modalIsOpen) {
     return null;
   }
@@ -114,6 +121,7 @@ const AddSponsorDesktop: React.FC<AddSponsorDesktopProps> = ({
             placeholder="Voer een naam in"
             value={sponsorName}
             onChange={(e) => setSponsorName(e.target.value)}
+            onKeyPress={handleEnterKeyPress}
           />
           {nameError && (
             <span style={{ color: "red", display: "block", marginTop: "5px" }}>
@@ -128,6 +136,7 @@ const AddSponsorDesktop: React.FC<AddSponsorDesktopProps> = ({
             placeholder="Voer de URL in"
             value={sponsorUrl}
             onChange={handleUrlChange}
+            onKeyPress={handleEnterKeyPress}
           />
           {!isUrlValid && (
             <span style={{ color: "red", display: "block", marginTop: "5px" }}>

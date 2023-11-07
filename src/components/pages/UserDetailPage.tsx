@@ -190,7 +190,6 @@ export default function UserDetailsPage() {
 
               <div className={styles["user-initiatives"]}>
                 <h3 className={styles["section-title"]}>Initiatieven</h3>
-                <InitiativeList initiatives={initiatives} />
               </div>
               <div className={styles["user-activities"]}>
                 <h3 className={styles["section-title"]}>Activiteiten</h3>
