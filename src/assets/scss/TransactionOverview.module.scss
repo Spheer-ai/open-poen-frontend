@@ -1,7 +1,5 @@
 .transactionOverview {
   background: #fff;
-  padding: 20px;
-  margin: 20px;
 
   h3 {
     color: #333;
@@ -12,24 +10,29 @@
     width: 100%;
     border-collapse: collapse;
 
+    tbody tr:first-child td {
+      padding-top: 50px;
+    }
+
     thead {
       tr {
-        background-color: #f3f3f3;
-
         th {
-          font-weight: 600;
-          color: #666;
+          font-weight: 500;
+          color: #6b717d;
+          text-transform: uppercase;
           padding: 10px;
           text-align: left;
-          border-bottom: 2px solid #eaeaea;
         }
       }
     }
 
     tbody {
+      margin-top: 50px;
+
       tr {
         &:nth-child(odd) {
-          background-color: #fafafa;
+          background-color: #ffffff;
+          padding-top: 20px;
         }
 
         &:nth-child(even) {

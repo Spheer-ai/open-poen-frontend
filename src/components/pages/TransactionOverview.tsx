@@ -8,6 +8,14 @@ const TransactionOverview = () => {
   const [transactions, setTransactions] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
+  const formatDate = (dateString: string) => {
+    const options: Intl.DateTimeFormatOptions = {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    };
+    return new Date(dateString).toLocaleDateString("nl-NL", options);
+  };
   useEffect(() => {
     const fetchTransactions = async () => {
       if (user && user.userId && user.token) {
@@ -28,7 +36,6 @@ const TransactionOverview = () => {
 
   return (
     <div className={styles.transactionOverview}>
-      <h3>Transaction Overview</h3>
       {isLoading ? (
         <p>Loading...</p>
       ) : (
@@ -47,7 +54,7 @@ const TransactionOverview = () => {
           <tbody>
             {transactions.map((transaction) => (
               <tr key={transaction.id}>
-                <td>{transaction.booking_date}</td>
+                <td>{formatDate(transaction.booking_date)}</td>
                 <td>{transaction.initiative_name}</td>
                 <td>{transaction.activity_name}</td>
                 <td>{transaction.creditor_name}</td>
