@@ -120,6 +120,15 @@ export default function UserDetailsPage() {
               <div className={styles["user-profile"]}>
                 <div>
                   <img
+                    srcSet={
+                      userDetails?.profile_picture
+                        ?.attachment_thumbnail_url_128 +
+                      " 128w, " +
+                      userDetails?.profile_picture
+                        ?.attachment_thumbnail_url_256 +
+                      " 256w"
+                    }
+                    sizes="(max-width: 768px) 128px, 256px"
                     src={
                       userDetails?.profile_picture?.attachment_url ||
                       ProfilePlaceholder

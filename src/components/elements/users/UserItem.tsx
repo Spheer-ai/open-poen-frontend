@@ -74,6 +74,12 @@ const UserItem = ({
           <div className={styles["profile"]}>
             {user.profile_picture && (
               <img
+                srcSet={`${
+                  user.profile_picture.attachment_thumbnail_url_128 || ""
+                } 128w, ${
+                  user.profile_picture.attachment_thumbnail_url_256 || ""
+                } 256w`}
+                sizes="(max-width: 768px) 128px, 256px"
                 src={user.profile_picture.attachment_url}
                 alt="Profile"
                 className={styles["profile-image"]}
@@ -86,6 +92,7 @@ const UserItem = ({
                 className={styles["profile-image"]}
               />
             )}
+
             <div className={styles["user-info"]}>
               <p data-tip={`${user.first_name} ${user.last_name}`}>
                 {user.first_name} {user.last_name}
