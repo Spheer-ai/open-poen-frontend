@@ -5,6 +5,7 @@ import AddBankConnectionModal from "../modals/AddBankConnectionModal";
 import { useAuth } from "../../contexts/AuthContext";
 import { fetchBankConnections } from "../middleware/Api";
 import { format, differenceInDays } from "date-fns";
+import InviteBankUsersModal from "../modals/InviteBankUsersModal";
 
 type BankConnection = {
   id: number;
@@ -20,6 +21,9 @@ const BankConnections = () => {
   const [isBlockingInteraction, setIsBlockingInteraction] = useState(false);
   const [isAddBankConnectionModalOpen, setIsAddBankConnectionModalOpen] =
     useState(false);
+  const [isInviteBankUsersModalOpen, setIsInviteBankUsersModalOpen] =
+    useState(false);
+
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useAuth();
@@ -69,6 +73,20 @@ const BankConnections = () => {
     } else {
       setIsAddBankConnectionModalOpen(true);
       navigate(`/transactions/bankconnections/add-bank`);
+    }
+  };
+
+  const handleToggleInviteBankUsersModal = () => {
+    if (isInviteBankUsersModalOpen) {
+      setIsBlockingInteraction(true);
+      setTimeout(() => {
+        setIsBlockingInteraction(false);
+        setIsInviteBankUsersModalOpen(false);
+        navigate(`/transactions/bankconnections`);
+      }, 300);
+    } else {
+      setIsInviteBankUsersModalOpen(true);
+      navigate(`/transactions/bankconnections/invite-user`);
     }
   };
 
@@ -150,7 +168,9 @@ const BankConnections = () => {
                         )}
                       </span>
 
-                      <button>Personen uitnodigen</button>
+                      <button onClick={handleToggleInviteBankUsersModal}>
+                        Personen uitnodigen
+                      </button>
                       <button className={styles["button-danger"]}>
                         Verwijderen
                       </button>
@@ -227,7 +247,9 @@ const BankConnections = () => {
                         )}
                       </span>
 
-                      <button>Personen uitnodigen</button>
+                      <button onClick={handleToggleInviteBankUsersModal}>
+                        Personen uitnodigen
+                      </button>
                       <button className={styles["button-danger"]}>
                         Verwijderen
                       </button>
@@ -250,6 +272,12 @@ const BankConnections = () => {
             isOpen={isAddBankConnectionModalOpen}
             onClose={handleToggleAddBankModal}
             isBlockingInteraction={isBlockingInteraction}
+          />
+          <InviteBankUsersModal
+            isOpen={isInviteBankUsersModalOpen}
+            onClose={handleToggleInviteBankUsersModal}
+            isBlockingInteraction={isBlockingInteraction}
+            bankAccountId={1}
           />
         </>
       )}

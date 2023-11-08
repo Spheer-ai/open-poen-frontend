@@ -776,3 +776,57 @@ export const fetchBankConnections = async (userId, token) => {
     throw error;
   }
 };
+
+export const linkUsersToBankAccount = async (
+  userId: number,
+  token: string,
+  bankAccountId: number,
+  user_ids: number[],
+) => {
+  try {
+    const response = await api.patch(
+      `/user/${userId}/bank-account/${bankAccountId}/users`,
+      {
+        user_ids,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+
+    return response.data;
+  } catch (error) {
+    console.error(
+      "Error linking users to bank account:",
+      error.response ? error.response.data : error,
+    );
+    throw error;
+  }
+};
+
+export const fetchBankAccount = async (userId, token, bankAccountId) => {
+  try {
+    const response = await api.get(
+      `/user/${userId}/bank-account/${bankAccountId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+
+    if (response.status === 200) {
+      return response.data;
+    } else {
+      throw new Error("Failed to fetch bank account data");
+    }
+  } catch (error) {
+    console.error(
+      "Error fetching bank account:",
+      error.response ? error.response.data : error,
+    );
+    throw error;
+  }
+};

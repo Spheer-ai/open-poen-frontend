@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { fetchInstitutions } from "../../middleware/Api";
-import styles from "../../../assets/scss/layout/Step1BankList.module.scss";
+import { fetchInstitutions } from "../../../middleware/Api";
+import styles from "../../../../assets/scss/layout/Step1BankList.module.scss";
 
 interface Bank {
   id: string;

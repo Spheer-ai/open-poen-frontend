@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { initiateGocardless } from "../../middleware/Api";
-import { useAuth } from "../../../contexts/AuthContext";
+import { initiateGocardless } from "../../../middleware/Api";
+import { useAuth } from "../../../../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
-import styles from "../../../assets/scss/layout/Step1BankList.module.scss";
+import styles from "../../../../assets/scss/layout/Step1BankList.module.scss";
 
 interface Step2BankApprovalProps {
   institutionId: string;

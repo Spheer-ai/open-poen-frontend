@@ -1,6 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import styles from "../../../assets/scss/layout/Step1BankList.module.scss";
+import styles from "../../../../assets/scss/layout/Step1BankList.module.scss";
 
 interface Step3BankConfirmationProps {
   onClose: () => void;

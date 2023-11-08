@@ -1,24 +1,24 @@
 import React, { useEffect, useState } from "react";
 import styles from "../../assets/scss/layout/AddFundDesktop.module.scss";
-import Step1BankList from "./steps-modal/bankconnection/Step1BankList";
-import Step2BankApproval from "./steps-modal/bankconnection/Step2BankApproval";
-import Step3BankConfirmation from "./steps-modal/bankconnection/Step3BankConfirmation";
+import Step1InviteUsers from "./steps-modal/invite-bank-users/Step1InviteUsers";
+import Step2Confirmation from "./steps-modal/invite-bank-users/Step2Confirmation";
 import { useLocation } from "react-router-dom";
 
-interface AddBankConnectionModalProps {
+interface InviteBankUsersModalProps {
   isOpen: boolean;
   onClose: () => void;
   isBlockingInteraction: boolean;
+  bankAccountId: number;
 }
 
-const AddBankConnectionModal: React.FC<AddBankConnectionModalProps> = ({
+const InviteBankUsersModal: React.FC<InviteBankUsersModalProps> = ({
   isOpen,
   onClose,
   isBlockingInteraction,
+  bankAccountId,
 }) => {
   const [currentStep, setCurrentStep] = useState(1);
   const [isVisible, setIsVisible] = useState(false);
-  const [selectedBank, setSelectedBank] = useState<string | null>(null);
   const location = useLocation();
 
   useEffect(() => {
@@ -36,18 +36,20 @@ const AddBankConnectionModal: React.FC<AddBankConnectionModalProps> = ({
     const stepParam = searchParams.get("step");
     console.log("stepParam:", stepParam);
 
-    if (stepParam === "3") {
+    if (stepParam === "2") {
       setTimeout(() => {
-        setCurrentStep(3);
+        setCurrentStep(2);
       }, 0);
-    } else if (location.pathname === "/transactions/bankaccounts/add-bank") {
+    } else if (
+      location.pathname === "/transactions/bankaccounts/invite-users"
+    ) {
       setCurrentStep(1);
     }
     console.log("currentStep:", currentStep);
   }, [location.search, location.pathname]);
 
   const handleNextStep = () => {
-    if (currentStep < 3) {
+    if (currentStep < 2) {
       setCurrentStep(currentStep + 1);
     }
   };
@@ -66,10 +68,7 @@ const AddBankConnectionModal: React.FC<AddBankConnectionModalProps> = ({
     }
   };
 
-  const handleSelectBank = (institutionId: string) => {
-    setSelectedBank(institutionId);
-    setCurrentStep(2);
-  };
+  console.log("isOpen:", isOpen);
 
   const modalClasses = `${styles.modal} ${isVisible ? styles.open : ""}`;
 
@@ -80,28 +79,20 @@ const AddBankConnectionModal: React.FC<AddBankConnectionModalProps> = ({
           {currentStep === 1 && (
             <>
               <div className={styles["modal-top-section"]}>
-                <h2 className={styles.title}>Bank Account Toevoegen</h2>
+                <h2 className={styles.title}>Invite Bank Users</h2>
               </div>
-              <Step1BankList
-                onNextStep={handleNextStep}
-                onSelectBank={handleSelectBank}
+              <Step1InviteUsers onNextStep={handleNextStep} />
+            </>
+          )}
+          {currentStep === 2 && (
+            <>
+              <div className={styles["modal-top-section"]}>
+                <h2 className={styles.title}>Invite Bank Users</h2>
+              </div>
+              <Step2Confirmation
+                onClose={handleClose}
+                bankAccountId={bankAccountId}
               />
-            </>
-          )}
-          {currentStep === 2 && selectedBank && (
-            <>
-              <div className={styles["modal-top-section"]}>
-                <h2 className={styles.title}>Bank Account Toevoegen</h2>
-              </div>
-              <Step2BankApproval institutionId={selectedBank} />
-            </>
-          )}
-          {currentStep === 3 && (
-            <>
-              <div className={styles["modal-top-section"]}>
-                <h2 className={styles.title}>Bank Account Toevoegen</h2>
-              </div>
-              <Step3BankConfirmation onClose={handleClose} />
             </>
           )}
         </div>
@@ -114,4 +105,4 @@ const AddBankConnectionModal: React.FC<AddBankConnectionModalProps> = ({
   );
 };
 
-export default AddBankConnectionModal;
+export default InviteBankUsersModal;

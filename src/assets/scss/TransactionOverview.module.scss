@@ -2,6 +2,17 @@
   background: #fff;
   overflow: hidden;
 
+  .transaction-search-input {
+    width: 350px;
+  }
+
+  .transaction-search-container {
+    display: block;
+    padding: 25px 0px;
+    border-bottom: 1px solid #eaeaea;
+    max-width: 1180px;
+  }
+
   h3 {
     color: #333;
     margin-bottom: 20px;
@@ -13,6 +24,7 @@
     overflow-y: auto;
     border-collapse: collapse;
     display: block;
+    margin-top: 20px;
 
     tbody tr:first-child td {
       padding-top: 50px;
@@ -101,4 +113,10 @@
       }
     }
   }
+}
+
+.highlight {
+  background-color: rgba(215, 176, 104, 0.5);
+  padding: 0 1px;
+  border-radius: 2px;
 }
