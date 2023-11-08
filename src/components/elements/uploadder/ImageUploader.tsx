@@ -15,16 +15,20 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
 }) => {
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
 
   const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       try {
+        setIsUploading(true);
         await uploadProfileImage(userId, file, token);
         setSelectedImage(file);
         onImageUpload(file);
       } catch (error) {
         console.error("Error uploading image:", error);
+      } finally {
+        setIsUploading(false);
       }
     }
   };
@@ -47,7 +51,13 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
         ref={fileInputRef}
         style={{ display: "none" }}
       />
-      {selectedImage && <p>Selected Image: {selectedImage.name}</p>}
+      {selectedImage && <p>Bestand: {selectedImage.name}</p>}
+
+      {isUploading && (
+        <div className={styles["loading-text"]}>
+          <p>Uploaden...</p>
+        </div>
+      )}
     </div>
   );
 };

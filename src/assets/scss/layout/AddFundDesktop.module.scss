@@ -20,7 +20,6 @@
 .title {
   font-size: 22px;
   font-weight: bold;
-  margin: 20px;
   text-align: left;
 }
 
@@ -527,4 +526,13 @@ input[type="text"] {
   .officer-checkbox {
     margin-top: 30px;
   }
+}
+
+.modal-top-section {
+  position: sticky;
+  margin-top: -20px;
+  top: -20px;
+  padding: 15px;
+  background-color: #ffffff;
+  border-bottom: 1px solid #e4e2e2;
 }

@@ -19,6 +19,8 @@ const AddSponsorDesktop: React.FC<AddSponsorDesktopProps> = ({
   const [sponsorName, setSponsorName] = useState("");
   const [sponsorUrl, setSponsorUrl] = useState("");
   const [isUrlValid, setIsUrlValid] = useState(true);
+  const [nameError, setNameError] = useState(false);
+  const [urlError, setUrlError] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
@@ -40,12 +42,27 @@ const AddSponsorDesktop: React.FC<AddSponsorDesktopProps> = ({
   };
 
   const handleSave = async () => {
-    if (!isValidUrl(sponsorUrl)) {
-      setIsUrlValid(false);
+    if (sponsorName.trim() === "" && sponsorUrl.trim() === "") {
+      setNameError(true);
+      setUrlError(true);
       return;
     }
 
-    setIsUrlValid(true);
+    if (!isValidUrl(sponsorUrl)) {
+      setIsUrlValid(false);
+      return;
+    } else {
+      setIsUrlValid(true);
+    }
+
+    if (sponsorName.trim() === "") {
+      setNameError(true);
+      return;
+    } else {
+      setNameError(false);
+    }
+
+    setUrlError(false);
 
     try {
       const token = localStorage.getItem("token");
@@ -76,6 +93,13 @@ const AddSponsorDesktop: React.FC<AddSponsorDesktopProps> = ({
     }
   };
 
+  const handleEnterKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      handleSave();
+    }
+  };
+
   if (!isOpen && !modalIsOpen) {
     return null;
   }
@@ -97,7 +121,13 @@ const AddSponsorDesktop: React.FC<AddSponsorDesktopProps> = ({
             placeholder="Voer een naam in"
             value={sponsorName}
             onChange={(e) => setSponsorName(e.target.value)}
+            onKeyPress={handleEnterKeyPress}
           />
+          {nameError && (
+            <span style={{ color: "red", display: "block", marginTop: "5px" }}>
+              Vul een naam in.
+            </span>
+          )}
         </div>
         <div className={styles.formGroup}>
           <label className={styles.label}>URL:</label>
@@ -106,10 +136,16 @@ const AddSponsorDesktop: React.FC<AddSponsorDesktopProps> = ({
             placeholder="Voer de URL in"
             value={sponsorUrl}
             onChange={handleUrlChange}
+            onKeyPress={handleEnterKeyPress}
           />
           {!isUrlValid && (
             <span style={{ color: "red", display: "block", marginTop: "5px" }}>
-              Vul een geldigle URL in.
+              Vul een geldige URL in.
+            </span>
+          )}
+          {urlError && (
+            <span style={{ color: "red", display: "block", marginTop: "5px" }}>
+              Vul een naam en URL in.
             </span>
           )}
         </div>

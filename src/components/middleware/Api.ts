@@ -602,7 +602,7 @@ export const addOfficerToGrant = async (
 ) => {
   try {
     const response = await api.patch(
-      `/funder/${funderId}/regulation/${regulationId}/grant/${grantId}/overseer`,
+      `/funder/${funderId}/regulation/${regulationId}/grant/${grantId}/overseers`,
       {
         user_ids: userIds,
       },
@@ -675,6 +675,154 @@ export const editSponsor = async (
   } catch (error) {
     console.error(
       "Error editing funder:",
+      error.response ? error.response.data : error,
+    );
+    throw error;
+  }
+};
+
+export const fetchInstitutions = async () => {
+  try {
+    const response = await api.get("/utils/gocardless/institutions");
+
+    return response.data;
+  } catch (error) {
+    console.error(
+      "Error fetching institutions:",
+      error.response ? error.response.data : error,
+    );
+    throw error;
+  }
+};
+
+export const initiateGocardless = async (
+  userId: number,
+  institutionId: string,
+  nDaysAccess: number,
+  nDaysHistory: number,
+  token: string,
+) => {
+  try {
+    const response = await api.get(`/users/${userId}/gocardless-initiate`, {
+      params: {
+        institution_id: institutionId,
+        n_days_access: nDaysAccess,
+        n_days_history: nDaysHistory,
+      },
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error(
+      "Error initiating GoCardless:",
+      error.response ? error.response.data : error,
+    );
+    throw error;
+  }
+};
+
+export const fetchPayments = async (
+  userId: number,
+  token: string,
+  offset: number = 0,
+  limit: number = 20,
+  initiativeName: string = "",
+  activityName: string = "",
+) => {
+  try {
+    const response = await api.get(`/payments/user/${userId}`, {
+      params: {
+        offset,
+        limit,
+        initiative_name: initiativeName,
+        activity_name: activityName,
+      },
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error(
+      "Error fetching payments:",
+      error.response ? error.response.data : error,
+    );
+    throw error;
+  }
+};
+export const fetchBankConnections = async (userId, token) => {
+  try {
+    const response = await api.get(`/user/${userId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const ownedBankAccounts = response.data.owned_bank_accounts || [];
+    const usedBankAccounts = response.data.used_bank_accounts || [];
+
+    return { ownedBankAccounts, usedBankAccounts };
+  } catch (error) {
+    console.error(
+      "Error fetching bank connections:",
+      error.response ? error.response.data : error,
+    );
+    throw error;
+  }
+};
+
+export const linkUsersToBankAccount = async (
+  userId: number,
+  token: string,
+  bankAccountId: number,
+  user_ids: number[],
+) => {
+  try {
+    const response = await api.patch(
+      `/user/${userId}/bank-account/${bankAccountId}/users`,
+      {
+        user_ids,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+
+    return response.data;
+  } catch (error) {
+    console.error(
+      "Error linking users to bank account:",
+      error.response ? error.response.data : error,
+    );
+    throw error;
+  }
+};
+
+export const fetchBankAccount = async (userId, token, bankAccountId) => {
+  try {
+    const response = await api.get(
+      `/user/${userId}/bank-account/${bankAccountId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+
+    if (response.status === 200) {
+      return response.data;
+    } else {
+      throw new Error("Failed to fetch bank account data");
+    }
+  } catch (error) {
+    console.error(
+      "Error fetching bank account:",
       error.response ? error.response.data : error,
     );
     throw error;

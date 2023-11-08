@@ -1,43 +1,40 @@
-import React, { useState } from "react";
-import TopNavigationBar from "../ui/top-navigation-bar/TopNavigationBar";
-import AddItemModal from "../modals/AddItemModal";
+import React, { useState, useEffect } from "react";
 import styles from "../../assets/scss/Transactions.module.scss";
-import { usePermissions } from "../../contexts/PermissionContext";
+import { useNavigate, useLocation } from "react-router-dom";
+import TabbedNavigation from "../ui/layout/navigation/TabbedNavigation";
+import BankConnections from "../lists/BankConnections";
+import TransactionOverview from "./TransactionOverview";
 
 export default function Transactions() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState("transactieoverzicht");
+  const navigate = useNavigate();
+  const location = useLocation();
 
-  const handleCtaClick = () => {
-    setIsModalOpen(true);
-    console.log("Opening modal in Transactions component");
+  useEffect(() => {
+    if (location.pathname.includes("/transactions/bankconnections")) {
+      setActiveTab("banken");
+    }
+  }, [location.pathname]);
+
+  const handleTabChange = (tabName) => {
+    setActiveTab(tabName);
+
+    if (tabName === "banken") {
+      navigate("/transactions/bankconnections");
+    }
+    if (tabName === "transactieoverzicht") {
+      navigate("/transactions");
+    }
   };
-
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-    console.log("Closing modal in Transactions component");
-  };
-
-  const handleSearch = (query) => {
-    console.log("Search query in Transactions component:", query);
-  };
-
-  const { globalPermissions } = usePermissions();
 
   return (
-    <div className={styles["side-panel"]}>
-      <TopNavigationBar
-        title="Transacties"
-        showSettings={true}
-        showCta={true}
-        onSettingsClick={() => {}}
-        onCtaClick={handleCtaClick}
-        onSearch={handleSearch}
-        globalPermissions={globalPermissions}
-      />
-
-      <AddItemModal isOpen={isModalOpen} onClose={handleCloseModal}>
-        <p>This is the modal content.</p>
-      </AddItemModal>
-    </div>
+    <>
+      <div className={styles["transaction-container"]}>
+        <h2>Transacties</h2>
+        <TabbedNavigation onTabChange={handleTabChange} />
+        {activeTab === "transactieoverzicht" && <TransactionOverview />}
+        {activeTab === "banken" && <BankConnections />}
+      </div>
+    </>
   );
 }

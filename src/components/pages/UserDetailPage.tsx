@@ -5,7 +5,6 @@ import { useAuth } from "../../contexts/AuthContext";
 import UserDetails from "../../types/UserTypes";
 import ProfilePlaceholder from "/profile-placeholder.png";
 import styles from "../../assets/scss/UserDetailPage.module.scss";
-import InitiativeList from "../lists/InitiativeList";
 import LoadingDot from "../animation/LoadingDot";
 import AddItemModal from "../modals/AddItemModal";
 import ChangePasswordForm from "../forms/ChangePasswordForm";
@@ -121,6 +120,15 @@ export default function UserDetailsPage() {
               <div className={styles["user-profile"]}>
                 <div>
                   <img
+                    srcSet={
+                      userDetails?.profile_picture
+                        ?.attachment_thumbnail_url_128 +
+                      " 128w, " +
+                      userDetails?.profile_picture
+                        ?.attachment_thumbnail_url_256 +
+                      " 256w"
+                    }
+                    sizes="(max-width: 768px) 128px, 256px"
                     src={
                       userDetails?.profile_picture?.attachment_url ||
                       ProfilePlaceholder
@@ -162,7 +170,7 @@ export default function UserDetailsPage() {
                         alt="Edit"
                         className={styles["icon"]}
                       />
-                      Bewerken
+                      Profiel bewerken
                     </div>
                   )}
                   {loggedInUserId === userId && (
@@ -190,7 +198,6 @@ export default function UserDetailsPage() {
 
               <div className={styles["user-initiatives"]}>
                 <h3 className={styles["section-title"]}>Initiatieven</h3>
-                <InitiativeList initiatives={initiatives} />
               </div>
               <div className={styles["user-activities"]}>
                 <h3 className={styles["section-title"]}>Activiteiten</h3>

@@ -5,7 +5,11 @@ import { useAuth } from "../../contexts/AuthContext";
 import { EditUserProfileFormProps } from "../../types/EditUserProfileFormType";
 import styles from "../../assets/scss/EditUserProfileForm.module.scss";
 import ImageUploader from "../elements/uploadder/ImageUploader";
-import { fetchUserProfileData, updateUserProfile } from "../middleware/Api";
+import {
+  fetchUserProfileData,
+  updateUserProfile,
+  uploadProfileImage,
+} from "../middleware/Api";
 
 const EditUserProfileForm: React.FC<EditUserProfileFormProps> = ({
   userId,
@@ -14,7 +18,7 @@ const EditUserProfileForm: React.FC<EditUserProfileFormProps> = ({
   const { user } = useAuth();
 
   const handleImageUpload = (image: File) => {
-    console.log("Image uploaded:", image);
+    setSelectedImage(image);
   };
 
   const [formData, setFormData] = useState({
@@ -28,6 +32,7 @@ const EditUserProfileForm: React.FC<EditUserProfileFormProps> = ({
   const [isSuccess, setIsSuccess] = useState(false);
   const [isError, setIsError] = useState(false);
   const [bioCharCount, setBioCharCount] = useState<number>(0);
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
 
   useEffect(() => {
     if (userId) {
@@ -65,6 +70,10 @@ const EditUserProfileForm: React.FC<EditUserProfileFormProps> = ({
       if (!userId) {
         console.error("userId is null");
         return;
+      }
+
+      if (selectedImage) {
+        await uploadProfileImage(userId, selectedImage, token);
       }
 
       const response = await updateUserProfile(userId, formData, token);

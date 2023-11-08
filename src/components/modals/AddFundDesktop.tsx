@@ -1,6 +1,5 @@
-// AddFundDesktop.js
 import React, { useEffect, useState } from "react";
-import styles from "../../assets/scss/layout/AddFundDesktop.module.scss"; // Import your CSS module
+import styles from "../../assets/scss/layout/AddFundDesktop.module.scss";
 
 interface AddFundDesktopProps {
   isOpen: boolean;
@@ -44,7 +43,6 @@ const AddFundDesktop: React.FC<AddFundDesktopProps> = ({
       ></div>
       <div className={`${styles.modal} ${modalIsOpen ? styles.open : ""}`}>
         <h2 className={styles.title}>Add Fund</h2>
-        {/* Form elements */}
         <div className={styles.formGroup}>
           <label className={styles.labelEmail}>Fund Name:</label>
           <input type="text" placeholder="Enter fund name" />
@@ -60,7 +58,6 @@ const AddFundDesktop: React.FC<AddFundDesktopProps> = ({
           <label className={styles.label}>Amount:</label>
           <input type="number" placeholder="Enter amount" />
         </div>
-        {/* Buttons */}
         <div className={styles.buttonContainer}>
           <button onClick={handleClose} className={styles.cancelButton}>
             Cancel
