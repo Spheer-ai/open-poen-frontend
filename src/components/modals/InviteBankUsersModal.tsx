@@ -4,12 +4,12 @@ import Step1InviteUsers from "./steps-modal/invite-bank-users/Step1InviteUsers";
 import Step2Confirmation from "./steps-modal/invite-bank-users/Step2Confirmation";
 import { useLocation } from "react-router-dom";
 
-interface InviteBankUsersModalProps {
+type InviteBankUsersModalProps = {
   isOpen: boolean;
   onClose: () => void;
   isBlockingInteraction: boolean;
-  bankAccountId: number;
-}
+  bankAccountId: number | null;
+};
 
 const InviteBankUsersModal: React.FC<InviteBankUsersModalProps> = ({
   isOpen,

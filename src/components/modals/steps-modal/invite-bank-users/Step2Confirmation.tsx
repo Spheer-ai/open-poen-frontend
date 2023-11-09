@@ -3,7 +3,7 @@ import styles from "../../../../assets/scss/layout/AddFundDesktop.module.scss";
 
 interface Step2ConfirmationProps {
   onClose: () => void;
-  bankAccountId: number;
+  bankAccountId: number | null;
 }
 
 const Step2Confirmation: React.FC<Step2ConfirmationProps> = ({
