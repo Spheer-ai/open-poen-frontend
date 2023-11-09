@@ -698,7 +698,7 @@ export const fetchInstitutions = async () => {
 };
 
 export const initiateGocardless = async (
-  userId: number,
+  userId: number | string,
   institutionId: string,
   nDaysAccess: number,
   nDaysHistory: number,
