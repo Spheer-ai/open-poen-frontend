@@ -98,7 +98,9 @@ const InviteBankUsersModal: React.FC<InviteBankUsersModalProps> = ({
               </div>
               <Step1InviteUsers
                 onNextStep={handleNextStep}
-                userEmails={userEmails}
+                bankAccountId={bankAccountId}
+                userId={userId}
+                token={token}
               />
             </>
           )}

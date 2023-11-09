@@ -862,3 +862,40 @@ export const fetchUsersEmails = async (userId, token, bankAccountId) => {
     throw error;
   }
 };
+
+export const searchUsersByEmail = async (
+  token,
+  email,
+  offset = 0,
+  limit = 20,
+) => {
+  try {
+    const response = await api.get("/users", {
+      params: {
+        email,
+        offset,
+        limit,
+      },
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (response.status === 200) {
+      const usersWithEmails = response.data.users.map((user) => ({
+        id: user.id,
+        email: user.email,
+      }));
+
+      return usersWithEmails;
+    } else {
+      throw new Error("Failed to search for users by email");
+    }
+  } catch (error) {
+    console.error(
+      "Error searching for users by email:",
+      error.response ? error.response.data : error,
+    );
+    throw error;
+  }
+};
