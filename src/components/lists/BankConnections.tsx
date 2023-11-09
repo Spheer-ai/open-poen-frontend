@@ -28,6 +28,8 @@ const BankConnections = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useAuth();
+  const userId = user?.userId;
+  const token = user?.token;
 
   const [ownedBankConnections, setOwnedBankConnections] = useState<
     BankConnection[]
@@ -290,6 +292,8 @@ const BankConnections = () => {
             onClose={() => handleToggleInviteBankUsersModal(null)}
             isBlockingInteraction={isBlockingInteraction}
             bankAccountId={selectedBankId}
+            userId={userId || 0}
+            token={token || ""}
           />
         </>
       )}

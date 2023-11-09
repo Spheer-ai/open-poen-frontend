@@ -3,12 +3,15 @@ import styles from "../../assets/scss/layout/AddFundDesktop.module.scss";
 import Step1InviteUsers from "./steps-modal/invite-bank-users/Step1InviteUsers";
 import Step2Confirmation from "./steps-modal/invite-bank-users/Step2Confirmation";
 import { useLocation } from "react-router-dom";
+import { fetchUsersEmails } from "../middleware/Api";
 
 type InviteBankUsersModalProps = {
   isOpen: boolean;
   onClose: () => void;
   isBlockingInteraction: boolean;
   bankAccountId: number | null;
+  userId: number;
+  token: string;
 };
 
 const InviteBankUsersModal: React.FC<InviteBankUsersModalProps> = ({
@@ -16,20 +19,32 @@ const InviteBankUsersModal: React.FC<InviteBankUsersModalProps> = ({
   onClose,
   isBlockingInteraction,
   bankAccountId,
+  userId,
+  token,
 }) => {
   const [currentStep, setCurrentStep] = useState(1);
   const [isVisible, setIsVisible] = useState(false);
   const location = useLocation();
+  const [userEmails, setUserEmails] = useState<string[]>([]);
 
   useEffect(() => {
     if (isOpen) {
       setIsVisible(true);
       setCurrentStep(1);
+
+      fetchUserEmails();
     } else {
       setIsVisible(false);
       setCurrentStep(1);
     }
   }, [isOpen]);
+
+  const fetchUserEmails = async () => {
+    try {
+      const emails = await fetchUsersEmails(userId, token, bankAccountId);
+      setUserEmails(emails);
+    } catch (error) {}
+  };
 
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
@@ -81,7 +96,10 @@ const InviteBankUsersModal: React.FC<InviteBankUsersModalProps> = ({
               <div className={styles["modal-top-section"]}>
                 <h2 className={styles.title}>Invite Bank Users</h2>
               </div>
-              <Step1InviteUsers onNextStep={handleNextStep} />
+              <Step1InviteUsers
+                onNextStep={handleNextStep}
+                userEmails={userEmails}
+              />
             </>
           )}
           {currentStep === 2 && (

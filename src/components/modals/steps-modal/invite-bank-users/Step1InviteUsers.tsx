@@ -3,9 +3,13 @@ import styles from "../../../../assets/scss/layout/AddFundDesktop.module.scss";
 
 interface Step1InviteUsersProps {
   onNextStep: () => void;
+  userEmails: string[];
 }
 
-const Step1InviteUsers: React.FC<Step1InviteUsersProps> = ({ onNextStep }) => {
+const Step1InviteUsers: React.FC<Step1InviteUsersProps> = ({
+  onNextStep,
+  userEmails,
+}) => {
   const [userIds, setUserIds] = useState<string[]>([]);
 
   const handleUserIdsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -23,6 +27,11 @@ const Step1InviteUsers: React.FC<Step1InviteUsersProps> = ({ onNextStep }) => {
       <p>
         Enter the user IDs of the users you want to invite (comma-separated):
       </p>
+      <ul>
+        {userEmails.map((email, index) => (
+          <li key={index}>{email}</li>
+        ))}
+      </ul>
       <input
         type="text"
         value={userIds.join(", ")}
