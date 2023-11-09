@@ -23,6 +23,7 @@ const BankConnections = () => {
     useState(false);
   const [isInviteBankUsersModalOpen, setIsInviteBankUsersModalOpen] =
     useState(false);
+  const [selectedBankId, setSelectedBankId] = useState<number | null>(null);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -76,7 +77,7 @@ const BankConnections = () => {
     }
   };
 
-  const handleToggleInviteBankUsersModal = () => {
+  const handleToggleInviteBankUsersModal = (bankId: number | null) => {
     if (isInviteBankUsersModalOpen) {
       setIsBlockingInteraction(true);
       setTimeout(() => {
@@ -86,6 +87,8 @@ const BankConnections = () => {
       }, 300);
     } else {
       setIsInviteBankUsersModalOpen(true);
+      setSelectedBankId(bankId);
+      console.log("Selected Bank ID:", bankId);
       navigate(`/transactions/bankconnections/invite-user`);
     }
   };
@@ -168,9 +171,14 @@ const BankConnections = () => {
                         )}
                       </span>
 
-                      <button onClick={handleToggleInviteBankUsersModal}>
+                      <button
+                        onClick={() =>
+                          handleToggleInviteBankUsersModal(connection.id)
+                        }
+                      >
                         Personen uitnodigen
                       </button>
+
                       <button className={styles["button-danger"]}>
                         Verwijderen
                       </button>
@@ -246,10 +254,14 @@ const BankConnections = () => {
                           "Niet gedeeld met personen"
                         )}
                       </span>
-
-                      <button onClick={handleToggleInviteBankUsersModal}>
+                      <button
+                        onClick={() =>
+                          handleToggleInviteBankUsersModal(connection.id)
+                        }
+                      >
                         Personen uitnodigen
                       </button>
+
                       <button className={styles["button-danger"]}>
                         Verwijderen
                       </button>
@@ -275,9 +287,9 @@ const BankConnections = () => {
           />
           <InviteBankUsersModal
             isOpen={isInviteBankUsersModalOpen}
-            onClose={handleToggleInviteBankUsersModal}
+            onClose={() => handleToggleInviteBankUsersModal(null)}
             isBlockingInteraction={isBlockingInteraction}
-            bankAccountId={1}
+            bankAccountId={selectedBankId}
           />
         </>
       )}

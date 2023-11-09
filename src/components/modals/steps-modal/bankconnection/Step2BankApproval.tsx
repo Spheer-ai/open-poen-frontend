@@ -12,11 +12,13 @@ const Step2BankApproval: React.FC<Step2BankApprovalProps> = ({
   institutionId,
 }) => {
   const { user } = useAuth();
+  const userId = user?.userId ? user.userId.toString() : null;
   const token = user?.token;
   const [approvalInfo, setApprovalInfo] = useState<string | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
+    console.log("userId being used:", userId);
     async function initiateGocardlessRequest() {
       try {
         if (!token) {
@@ -24,21 +26,25 @@ const Step2BankApproval: React.FC<Step2BankApprovalProps> = ({
           return;
         }
 
-        const response = await initiateGocardless(
-          1,
-          institutionId,
-          90,
-          90,
-          token,
-        );
-        setApprovalInfo(response.url);
+        if (userId !== null) {
+          const response = await initiateGocardless(
+            userId,
+            institutionId,
+            90,
+            90,
+            token,
+          );
+          setApprovalInfo(response.url);
+        } else {
+          console.error("Invalid or missing userId");
+        }
       } catch (error) {
         console.error("API Error:", error);
       }
     }
 
     initiateGocardlessRequest();
-  }, [institutionId, token]);
+  }, [userId, institutionId, token]);
 
   const handleOpenLink = () => {
     if (approvalInfo) {
