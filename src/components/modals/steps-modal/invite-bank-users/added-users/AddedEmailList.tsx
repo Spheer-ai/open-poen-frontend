@@ -1,4 +1,5 @@
 import React from "react";
+import styles from "../../../../../assets/scss/layout/AddFundDesktop.module.scss";
 
 interface AddedEmailsListProps {
   userEmails: string[];
@@ -7,10 +8,12 @@ interface AddedEmailsListProps {
 const AddedEmailsList: React.FC<AddedEmailsListProps> = ({ userEmails }) => {
   return (
     <div>
-      <h3>Added Email Addresses</h3>
-      <ul>
+      <ul className={styles["search-result"]}>
+        <h4>De volgende personen worden toegevoegd:</h4>
         {userEmails.map((email, index) => (
-          <li key={index}>{email}</li>
+          <>
+            <li key={index}>{email}</li>
+          </>
         ))}
       </ul>
     </div>
