@@ -828,3 +828,72 @@ export const fetchBankAccount = async (userId, token, bankAccountId) => {
     throw error;
   }
 };
+
+export const fetchUsersEmails = async (userId, token, bankAccountId) => {
+  try {
+    const response = await api.get(
+      `/user/${userId}/bank-account/${bankAccountId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+
+    if (response.status === 200) {
+      if (response.data.users && Array.isArray(response.data.users)) {
+        const userEmails = response.data.users.map((user) => user.email);
+        return userEmails;
+      } else {
+        throw new Error(
+          "Invalid response format: 'users' field is missing or not an array.",
+        );
+      }
+    } else {
+      throw new Error("Failed to fetch bank account data");
+    }
+  } catch (error) {
+    console.error(
+      "Error fetching users' email addresses:",
+      error.response ? error.response.data : error,
+    );
+    throw error;
+  }
+};
+
+export const searchUsersByEmail = async (
+  token,
+  email,
+  offset = 0,
+  limit = 20,
+) => {
+  try {
+    const response = await api.get("/users", {
+      params: {
+        email,
+        offset,
+        limit,
+      },
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (response.status === 200) {
+      const usersWithEmails = response.data.users.map((user) => ({
+        id: user.id,
+        email: user.email,
+      }));
+
+      return usersWithEmails;
+    } else {
+      throw new Error("Failed to search for users by email");
+    }
+  } catch (error) {
+    console.error(
+      "Error searching for users by email:",
+      error.response ? error.response.data : error,
+    );
+    throw error;
+  }
+};

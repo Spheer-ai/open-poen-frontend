@@ -6,27 +6,22 @@ interface Step2ConfirmationProps {
   bankAccountId: number | null;
 }
 
-const Step2Confirmation: React.FC<Step2ConfirmationProps> = ({
-  onClose,
-  bankAccountId,
-}) => {
-  const sendInvitations = async () => {
-    try {
-      onClose();
-    } catch (error) {
-      console.error("Error sending invitations:", error);
-    }
-  };
-
+const Step2Confirmation: React.FC<Step2ConfirmationProps> = ({ onClose }) => {
   return (
     <div className={styles.step2}>
-      <h3>Step 2: Confirmation</h3>
-      <p>Please review the information below before confirming:</p>
-      <ul>
-        <li>Bank Account ID: {bankAccountId}</li>
-      </ul>
-      <button onClick={sendInvitations}>Confirm</button>
-      <button onClick={onClose}>Cancel</button>
+      <div>
+        <h3 style={{ margin: "0", padding: "0" }}>
+          Toegang succesvol bijgewerkt.
+        </h3>
+        <p>
+          De toegangsstatus van personen is bijgewerkt. Het is belangrijk op te
+          merken dat toegang tot het bankrekeningnummer op elk gewenst moment
+          kan worden ingetrokken of gewijzigd door de eigenaar.
+        </p>
+      </div>
+      <button className={styles.saveButton} onClick={onClose}>
+        Terug naar het overzicht
+      </button>
     </div>
   );
 };
