@@ -5,8 +5,10 @@
 .bank-connections-container {
   padding-left: 0;
   padding-right: 0;
-  margin-top: 50px;
-  max-width: 1200px;
+  margin-top: 10px;
+  max-width: 100%;
+  max-height: 650px;
+  overflow: scroll;
 
   ul {
     padding-left: 0px;
@@ -51,19 +53,28 @@
   color: #696969;
 }
 
-.saveButton {
-  background-color: #2760d5;
-  border: none;
-  border-radius: 5px;
-  padding: 10px;
-  flex: 1;
-  color: white;
-  cursor: pointer;
-  display: flex;
-  width: fit-content;
-  margin-left: auto;
-  margin-top: 50px;
-  padding: 15px;
+.button-container {
+  max-width: 1200px;
+  padding: 30px;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  background: white;
+  width: 100%;
+
+  .saveButton {
+    background-color: #2760d5;
+    border: none;
+    border-radius: 5px;
+    padding: 10px;
+    flex: 1;
+    color: white;
+    cursor: pointer;
+    display: flex;
+    width: fit-content;
+    margin-left: auto;
+    padding: 15px;
+  }
 }
 
 .bank-item:hover {
@@ -90,6 +101,7 @@
     flex-direction: column;
     gap: 5px;
     color: #696969;
+    font-size: 14px;
 
     .bank-name {
       color: #000000;

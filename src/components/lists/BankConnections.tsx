@@ -104,200 +104,206 @@ const BankConnections = () => {
   };
 
   return (
-    <div className={styles["bank-connections-container"]}>
-      {isLoading ? (
-        <p>Loading...</p>
-      ) : (
-        <>
-          <section>
-            <h3 className={styles["section-title"]}>
-              Jouw gekoppelde rekeningnummers
-            </h3>
-            <ul>
-              {Array.isArray(ownedBankConnections) &&
-              ownedBankConnections.length > 0 ? (
-                ownedBankConnections.map((connection) => (
-                  <li key={connection.id} className={styles["bank-item"]}>
-                    <div className={styles["bank-details"]}>
-                      {connection.institution_logo !== null ? (
-                        <img
-                          src={connection.institution_logo}
-                          alt={`${connection.name} Logo`}
-                          className={styles["bank-logo"]}
-                        />
-                      ) : (
-                        connection.institution_name === "Sandbox" && (
+    <>
+      <div className={styles["bank-connections-container"]}>
+        {isLoading ? (
+          <p>Loading...</p>
+        ) : (
+          <>
+            <section>
+              <h3 className={styles["section-title"]}>
+                Jouw gekoppelde rekeningnummers
+              </h3>
+              <ul>
+                {Array.isArray(ownedBankConnections) &&
+                ownedBankConnections.length > 0 ? (
+                  ownedBankConnections.map((connection) => (
+                    <li key={connection.id} className={styles["bank-item"]}>
+                      <div className={styles["bank-details"]}>
+                        {connection.institution_logo !== null ? (
                           <img
-                            src="/sandbox-bank.png"
-                            alt="Sandbox Bank Logo"
+                            src={connection.institution_logo}
+                            alt={`${connection.name} Logo`}
                             className={styles["bank-logo"]}
                           />
-                        )
-                      )}
-                      <div className={styles["bank-info"]}>
-                        <span className={styles["bank-name"]}>
-                          {connection.institution_name}
-                        </span>
-                        <span className={styles["name"]}>
-                          {connection.name}
-                        </span>
-                        <span className={styles["bank-iban"]}>
-                          IBAN: {connection.iban}
-                        </span>
-                        <span className={styles["bank-expiration"]}>
-                          Vervalt op:{" "}
-                          {format(
-                            new Date(connection.expiration_date),
-                            "dd MMM yyyy",
-                          )}{" "}
-                          (
-                          {calculateDaysUntilExpiration(
-                            connection.expiration_date,
-                          )}{" "}
-                          dagen)
-                        </span>
-                      </div>
-                    </div>
-                    <div className={styles["bank-options"]}>
-                      <span className={styles["bank-user-count"]}>
-                        {connection.user_count === 1 ? (
-                          <span>
-                            Gedeeld met <b>1 persoon</b>
-                          </span>
-                        ) : connection.user_count > 1 ? (
-                          <span>
-                            Gedeeld met <b>{connection.user_count} personen</b>
-                          </span>
                         ) : (
-                          "Niet gedeeld met personen"
+                          connection.institution_name === "Sandbox" && (
+                            <img
+                              src="/sandbox-bank.png"
+                              alt="Sandbox Bank Logo"
+                              className={styles["bank-logo"]}
+                            />
+                          )
                         )}
-                      </span>
+                        <div className={styles["bank-info"]}>
+                          <span className={styles["bank-name"]}>
+                            {connection.institution_name}
+                          </span>
+                          <span className={styles["name"]}>
+                            {connection.name}
+                          </span>
+                          <span className={styles["bank-iban"]}>
+                            IBAN: {connection.iban}
+                          </span>
+                          <span className={styles["bank-expiration"]}>
+                            Vervalt op:{" "}
+                            {format(
+                              new Date(connection.expiration_date),
+                              "dd MMM yyyy",
+                            )}{" "}
+                            (
+                            {calculateDaysUntilExpiration(
+                              connection.expiration_date,
+                            )}{" "}
+                            dagen)
+                          </span>
+                        </div>
+                      </div>
+                      <div className={styles["bank-options"]}>
+                        <span className={styles["bank-user-count"]}>
+                          {connection.user_count === 1 ? (
+                            <span>
+                              Gedeeld met <b>1 persoon</b>
+                            </span>
+                          ) : connection.user_count > 1 ? (
+                            <span>
+                              Gedeeld met{" "}
+                              <b>{connection.user_count} personen</b>
+                            </span>
+                          ) : (
+                            "Niet gedeeld met personen"
+                          )}
+                        </span>
 
-                      <button
-                        onClick={() =>
-                          handleToggleInviteBankUsersModal(connection.id)
-                        }
-                      >
-                        Personen uitnodigen
-                      </button>
+                        <button
+                          onClick={() =>
+                            handleToggleInviteBankUsersModal(connection.id)
+                          }
+                        >
+                          Personen uitnodigen
+                        </button>
 
-                      <button className={styles["button-danger"]}>
-                        Verwijderen
-                      </button>
-                    </div>
-                  </li>
-                ))
-              ) : (
-                <li>Geen bankkoppelingen gevonden...</li>
-              )}
-            </ul>
-          </section>
+                        <button className={styles["button-danger"]}>
+                          Verwijderen
+                        </button>
+                      </div>
+                    </li>
+                  ))
+                ) : (
+                  <li>Geen bankkoppelingen gevonden...</li>
+                )}
+              </ul>
+            </section>
 
-          <section>
-            <h3 className={styles["section-title"]}>
-              Met jouw gedeelde rekeningnummers
-            </h3>
-            <ul>
-              {Array.isArray(usedBankConnections) &&
-              usedBankConnections.length > 0 ? (
-                usedBankConnections.map((connection) => (
-                  <li key={connection.id} className={styles["bank-item"]}>
-                    <div className={styles["bank-details"]}>
-                      {connection.institution_logo !== null ? (
-                        <img
-                          src={connection.institution_logo}
-                          alt={`${connection.institution_name} Logo`}
-                          className={styles["bank-logo"]}
-                        />
-                      ) : (
-                        connection.institution_name === "Sandbox" && (
+            <section>
+              <h3 className={styles["section-title"]}>
+                Met jouw gedeelde rekeningnummers
+              </h3>
+              <ul>
+                {Array.isArray(usedBankConnections) &&
+                usedBankConnections.length > 0 ? (
+                  usedBankConnections.map((connection) => (
+                    <li key={connection.id} className={styles["bank-item"]}>
+                      <div className={styles["bank-details"]}>
+                        {connection.institution_logo !== null ? (
                           <img
-                            src="/sandbox-bank.png"
-                            alt="Sandbox Bank Logo"
+                            src={connection.institution_logo}
+                            alt={`${connection.institution_name} Logo`}
                             className={styles["bank-logo"]}
                           />
-                        )
-                      )}
-                      <div className={styles["bank-info"]}>
-                        <span className={styles["bank-name"]}>
-                          {connection.institution_name}
-                        </span>
-                        <span className={styles["name"]}>
-                          {connection.name}
-                        </span>
-                        <span className={styles["bank-iban"]}>
-                          IBAN: {connection.iban}
-                        </span>
-                        <span className={styles["bank-expiration"]}>
-                          Vervalt op:{" "}
-                          {format(
-                            new Date(connection.expiration_date),
-                            "dd MMM yyyy",
-                          )}{" "}
-                          (
-                          {calculateDaysUntilExpiration(
-                            connection.expiration_date,
-                          )}{" "}
-                          dagen)
-                        </span>
-                      </div>
-                    </div>
-                    <div className={styles["bank-options"]}>
-                      <span className={styles["bank-user-count"]}>
-                        {connection.user_count === 1 ? (
-                          <span>
-                            Gedeeld met <b>1 persoon</b>
-                          </span>
-                        ) : connection.user_count > 1 ? (
-                          <span>
-                            Gedeeld met <b>{connection.user_count} personen</b>
-                          </span>
                         ) : (
-                          "Niet gedeeld met personen"
+                          connection.institution_name === "Sandbox" && (
+                            <img
+                              src="/sandbox-bank.png"
+                              alt="Sandbox Bank Logo"
+                              className={styles["bank-logo"]}
+                            />
+                          )
                         )}
-                      </span>
-                      <button
-                        onClick={() =>
-                          handleToggleInviteBankUsersModal(connection.id)
-                        }
-                      >
-                        Personen uitnodigen
-                      </button>
+                        <div className={styles["bank-info"]}>
+                          <span className={styles["bank-name"]}>
+                            {connection.institution_name}
+                          </span>
+                          <span className={styles["name"]}>
+                            {connection.name}
+                          </span>
+                          <span className={styles["bank-iban"]}>
+                            IBAN: {connection.iban}
+                          </span>
+                          <span className={styles["bank-expiration"]}>
+                            Vervalt op:{" "}
+                            {format(
+                              new Date(connection.expiration_date),
+                              "dd MMM yyyy",
+                            )}{" "}
+                            (
+                            {calculateDaysUntilExpiration(
+                              connection.expiration_date,
+                            )}{" "}
+                            dagen)
+                          </span>
+                        </div>
+                      </div>
+                      <div className={styles["bank-options"]}>
+                        <span className={styles["bank-user-count"]}>
+                          {connection.user_count === 1 ? (
+                            <span>
+                              Gedeeld met <b>1 persoon</b>
+                            </span>
+                          ) : connection.user_count > 1 ? (
+                            <span>
+                              Gedeeld met{" "}
+                              <b>{connection.user_count} personen</b>
+                            </span>
+                          ) : (
+                            "Niet gedeeld met personen"
+                          )}
+                        </span>
+                        <button
+                          onClick={() =>
+                            handleToggleInviteBankUsersModal(connection.id)
+                          }
+                        >
+                          Personen uitnodigen
+                        </button>
 
-                      <button className={styles["button-danger"]}>
-                        Verwijderen
-                      </button>
-                    </div>
-                  </li>
-                ))
-              ) : (
-                <li>Geen gedeelde bankrekeningnummers gevonden...</li>
-              )}
-            </ul>
-          </section>
+                        <button className={styles["button-danger"]}>
+                          Verwijderen
+                        </button>
+                      </div>
+                    </li>
+                  ))
+                ) : (
+                  <li>Geen gedeelde bankrekeningnummers gevonden...</li>
+                )}
+              </ul>
+            </section>
 
-          <button
-            className={styles["saveButton"]}
-            onClick={handleToggleAddBankModal}
-          >
-            Bankrekening toevoegen
-          </button>
-          <AddBankConnectionModal
-            isOpen={isAddBankConnectionModalOpen}
-            onClose={handleToggleAddBankModal}
-            isBlockingInteraction={isBlockingInteraction}
-          />
-          <InviteBankUsersModal
-            isOpen={isInviteBankUsersModalOpen}
-            onClose={() => handleToggleInviteBankUsersModal(null)}
-            isBlockingInteraction={isBlockingInteraction}
-            bankAccountId={selectedBankId}
-            userId={userId || 0}
-            token={token || ""}
-          />
-        </>
-      )}
-    </div>
+            <InviteBankUsersModal
+              isOpen={isInviteBankUsersModalOpen}
+              onClose={() => handleToggleInviteBankUsersModal(null)}
+              isBlockingInteraction={isBlockingInteraction}
+              bankAccountId={selectedBankId}
+              userId={userId || 0}
+              token={token || ""}
+            />
+          </>
+        )}
+      </div>
+      <div className={styles["button-container"]}>
+        <button
+          className={styles["saveButton"]}
+          onClick={handleToggleAddBankModal}
+        >
+          Bankrekening toevoegen
+        </button>
+        <AddBankConnectionModal
+          isOpen={isAddBankConnectionModalOpen}
+          onClose={handleToggleAddBankModal}
+          isBlockingInteraction={isBlockingInteraction}
+        />
+      </div>
+    </>
   );
 };
 
