@@ -6,6 +6,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import { fetchBankConnections } from "../middleware/Api";
 import { format, differenceInDays } from "date-fns";
 import InviteBankUsersModal from "../modals/InviteBankUsersModal";
+import DeleteBankAccountModal from "../modals/DeleteBankAccountModal";
 
 type BankConnection = {
   id: number;
@@ -24,13 +25,16 @@ const BankConnections = () => {
   const [isInviteBankUsersModalOpen, setIsInviteBankUsersModalOpen] =
     useState(false);
   const [selectedBankId, setSelectedBankId] = useState<number | null>(null);
+  const [isRevokeBankModalOpen, setIsRevokeBankModalOpen] = useState(false);
 
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useAuth();
-  const userId = user?.userId;
-  const token = user?.token;
-
+  const userId = user?.userId ? user.userId.toString() : null;
+  const token = user?.token ? user.token.toString() : null;
+  const userIdAsNumber = user?.userId || 0;
+  const userIdAsString = userIdAsNumber.toString();
+  const [modalTitle, setModalTitle] = useState("Bank account toevoegen");
   const [ownedBankConnections, setOwnedBankConnections] = useState<
     BankConnection[]
   >([]);
@@ -38,6 +42,11 @@ const BankConnections = () => {
     BankConnection[]
   >([]);
   const [isLoading, setIsLoading] = useState(true);
+
+  const handleOpenRevokeBankModal = (bankId: number) => {
+    setSelectedBankId(bankId);
+    setIsRevokeBankModalOpen(true);
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -65,7 +74,7 @@ const BankConnections = () => {
     }
   }, [location.pathname]);
 
-  const handleToggleAddBankModal = () => {
+  const handleToggleAddBankModal = (title: string) => {
     if (isAddBankConnectionModalOpen) {
       setIsBlockingInteraction(true);
       setTimeout(() => {
@@ -75,8 +84,13 @@ const BankConnections = () => {
       }, 300);
     } else {
       setIsAddBankConnectionModalOpen(true);
+      setModalTitle(title);
       navigate(`/transactions/bankconnections/add-bank`);
     }
+  };
+
+  const handleToggleAddBankModalWrapper = (title: string) => {
+    handleToggleAddBankModal(title);
   };
 
   const handleToggleInviteBankUsersModal = (bankId: number | null) => {
@@ -174,7 +188,16 @@ const BankConnections = () => {
                             "Niet gedeeld met personen"
                           )}
                         </span>
-
+                        <button
+                          className={styles["saveButton"]}
+                          onClick={() =>
+                            handleToggleAddBankModalWrapper(
+                              "Bank account vernieuwen",
+                            )
+                          }
+                        >
+                          Vernieuw nu
+                        </button>
                         <button
                           onClick={() =>
                             handleToggleInviteBankUsersModal(connection.id)
@@ -183,7 +206,12 @@ const BankConnections = () => {
                           Personen uitnodigen
                         </button>
 
-                        <button className={styles["button-danger"]}>
+                        <button
+                          onClick={() =>
+                            handleOpenRevokeBankModal(connection.id)
+                          }
+                          className={styles["button-danger"]}
+                        >
                           Verwijderen
                         </button>
                       </div>
@@ -260,6 +288,16 @@ const BankConnections = () => {
                           )}
                         </span>
                         <button
+                          className={styles["saveButton"]}
+                          onClick={() =>
+                            handleToggleAddBankModalWrapper(
+                              "Bank account vernieuwen",
+                            )
+                          }
+                        >
+                          Vernieuw nu
+                        </button>
+                        <button
                           onClick={() =>
                             handleToggleInviteBankUsersModal(connection.id)
                           }
@@ -267,7 +305,12 @@ const BankConnections = () => {
                           Personen uitnodigen
                         </button>
 
-                        <button className={styles["button-danger"]}>
+                        <button
+                          onClick={() =>
+                            handleOpenRevokeBankModal(connection.id)
+                          }
+                          className={styles["button-danger"]}
+                        >
                           Verwijderen
                         </button>
                       </div>
@@ -284,8 +327,16 @@ const BankConnections = () => {
               onClose={() => handleToggleInviteBankUsersModal(null)}
               isBlockingInteraction={isBlockingInteraction}
               bankAccountId={selectedBankId}
-              userId={userId || 0}
+              userId={userId as any}
               token={token || ""}
+            />
+            <DeleteBankAccountModal
+              isOpen={isRevokeBankModalOpen}
+              onClose={() => setIsRevokeBankModalOpen(false)}
+              isBlockingInteraction={isBlockingInteraction}
+              userId={userId ? userId.toString() : ""}
+              token={token ? token.toString() : ""}
+              bankAccountId={selectedBankId}
             />
           </>
         )}
@@ -293,14 +344,18 @@ const BankConnections = () => {
       <div className={styles["button-container"]}>
         <button
           className={styles["saveButton"]}
-          onClick={handleToggleAddBankModal}
+          onClick={() =>
+            handleToggleAddBankModalWrapper("Bank account toevoegen")
+          }
         >
           Bankrekening toevoegen
         </button>
         <AddBankConnectionModal
           isOpen={isAddBankConnectionModalOpen}
-          onClose={handleToggleAddBankModal}
+          onClose={(title) => handleToggleAddBankModal(title)}
           isBlockingInteraction={isBlockingInteraction}
+          isReconnecting={true}
+          title={modalTitle}
         />
       </div>
     </>

@@ -94,7 +94,7 @@ const InviteBankUsersModal: React.FC<InviteBankUsersModalProps> = ({
           {currentStep === 1 && (
             <>
               <div className={styles["modal-top-section"]}>
-                <h2 className={styles.title}>Invite Bank Users</h2>
+                <h2 className={styles.title}>Toegang beheren</h2>
               </div>
               <Step1InviteUsers
                 onNextStep={handleNextStep}
@@ -107,7 +107,7 @@ const InviteBankUsersModal: React.FC<InviteBankUsersModalProps> = ({
           {currentStep === 2 && (
             <>
               <div className={styles["modal-top-section"]}>
-                <h2 className={styles.title}>Invite Bank Users</h2>
+                <h2 className={styles.title}>Toegang beheren</h2>
               </div>
               <Step2Confirmation
                 onClose={handleClose}
