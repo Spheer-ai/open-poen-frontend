@@ -17,7 +17,7 @@ const AddBankConnectionModal: React.FC<AddBankConnectionModalProps> = ({
   isOpen,
   onClose,
   isBlockingInteraction,
-  isReconnecting, // New prop
+  isReconnecting,
   title,
 }) => {
   const [currentStep, setCurrentStep] = useState(1);
@@ -44,7 +44,7 @@ const AddBankConnectionModal: React.FC<AddBankConnectionModalProps> = ({
         setCurrentStep(3);
       }, 0);
     } else if (location.pathname === "/transactions/bankaccounts/add-bank") {
-      setCurrentStep(isReconnecting ? 2 : 1); // Skip Step 1 for reconnection
+      setCurrentStep(isReconnecting ? 2 : 1);
     }
   }, [location.search, location.pathname, isReconnecting]);
 
@@ -101,7 +101,7 @@ const AddBankConnectionModal: React.FC<AddBankConnectionModalProps> = ({
           {currentStep === 3 && (
             <>
               <div className={styles["modal-top-section"]}>
-                <h2 className={styles.title}>{title}</h2>
+                <h2 className={styles.title}></h2>
               </div>
               <Step3BankConfirmation onClose={handleClose} />
             </>

@@ -26,7 +26,7 @@ const BankConnections = () => {
     useState(false);
   const [selectedBankId, setSelectedBankId] = useState<number | null>(null);
   const [isRevokeBankModalOpen, setIsRevokeBankModalOpen] = useState(false);
-
+  const [selectedBank, setSelectedBank] = useState<string | null>(null);
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useAuth();
@@ -89,8 +89,18 @@ const BankConnections = () => {
     }
   };
 
-  const handleToggleAddBankModalWrapper = (title: string) => {
-    handleToggleAddBankModal(title);
+  const handleToggleAddBankModalWrapper = (
+    title: string,
+    institutionId?: string,
+  ) => {
+    if (institutionId) {
+      setIsBlockingInteraction(true);
+      setSelectedBank(institutionId);
+      setIsAddBankConnectionModalOpen(true);
+      setModalTitle(title);
+    } else {
+      handleToggleAddBankModal(title);
+    }
   };
 
   const handleToggleInviteBankUsersModal = (bankId: number | null) => {
@@ -271,48 +281,6 @@ const BankConnections = () => {
                             dagen)
                           </span>
                         </div>
-                      </div>
-                      <div className={styles["bank-options"]}>
-                        <span className={styles["bank-user-count"]}>
-                          {connection.user_count === 1 ? (
-                            <span>
-                              Gedeeld met <b>1 persoon</b>
-                            </span>
-                          ) : connection.user_count > 1 ? (
-                            <span>
-                              Gedeeld met{" "}
-                              <b>{connection.user_count} personen</b>
-                            </span>
-                          ) : (
-                            "Niet gedeeld met personen"
-                          )}
-                        </span>
-                        <button
-                          className={styles["saveButton"]}
-                          onClick={() =>
-                            handleToggleAddBankModalWrapper(
-                              "Bank account vernieuwen",
-                            )
-                          }
-                        >
-                          Vernieuw nu
-                        </button>
-                        <button
-                          onClick={() =>
-                            handleToggleInviteBankUsersModal(connection.id)
-                          }
-                        >
-                          Personen uitnodigen
-                        </button>
-
-                        <button
-                          onClick={() =>
-                            handleOpenRevokeBankModal(connection.id)
-                          }
-                          className={styles["button-danger"]}
-                        >
-                          Verwijderen
-                        </button>
                       </div>
                     </li>
                   ))
