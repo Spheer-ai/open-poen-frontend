@@ -1,5 +1,5 @@
 import React from "react";
-import styles from "../../../../assets/scss/layout/AddFundDesktop.module.scss";
+import styles from "../../../../assets/scss/layout/Step1BankList.module.scss";
 
 interface Step2DeleteConfirmationProps {
   onClose: () => void;
@@ -11,17 +11,18 @@ const Step2DeleteConfirmation: React.FC<Step2DeleteConfirmationProps> = ({
   return (
     <div className={styles.step2}>
       <div>
-        <h3 style={{ margin: "0", padding: "0" }}>
-          Bank Account Deleted Successfully.
-        </h3>
+        <h3 style={{ padding: "0" }}>Verwijderen voltooid.</h3>
         <p>
-          The bank account has been successfully deleted. You no longer have
-          access to this bank account.
+          De verwijdering van de bankrekening is succesvol voltooid. Alle
+          transacties die via deze rekening werden uitgevoerd, zijn nu permanent
+          uit ons systeem verwijderd.
         </p>
       </div>
-      <button className={styles.saveButton} onClick={onClose}>
-        Back to Overview
-      </button>
+      <div className={styles["button-container"]}>
+        <button className={styles.saveButton} onClick={onClose}>
+          Ga terug naar het overizcht
+        </button>
+      </div>
     </div>
   );
 };

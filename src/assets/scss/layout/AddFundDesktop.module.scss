@@ -63,7 +63,7 @@
   background-color: #2760d5;
   border: none;
   border-radius: 5px;
-  padding: 10px;
+  padding: 15px;
   flex: 1;
   color: white;
   cursor: pointer;
@@ -350,7 +350,7 @@ input[type="text"] {
     background-color: #2760d5;
     border: none;
     border-radius: 5px;
-    padding: 10px;
+    padding: 15px;
     flex: 1;
     color: white;
     cursor: pointer;
@@ -532,7 +532,7 @@ input[type="text"] {
   position: sticky;
   margin-top: -20px;
   top: -20px;
-  padding: 15px;
+  padding: 15px 0px;
   background-color: #ffffff;
   border-bottom: 1px solid #e4e2e2;
 }
@@ -599,7 +599,6 @@ input[type="text"] {
 
 .step1,
 .step2 {
-  padding: 10px;
   h3 {
     font-size: 18px !important;
     font-weight: bold !important;
@@ -628,4 +627,8 @@ input[type="text"] {
     display: flex;
     right: 30px;
   }
+}
+
+.modalBody {
+  padding: 0px 20px;
 }

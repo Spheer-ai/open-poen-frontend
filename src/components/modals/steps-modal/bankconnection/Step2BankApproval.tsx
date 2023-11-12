@@ -48,7 +48,7 @@ const Step2BankApproval: React.FC<Step2BankApprovalProps> = ({
 
   const handleOpenLink = () => {
     if (approvalInfo) {
-      const externalLink = window.open(approvalInfo, "_blank");
+      const externalLink = window.open(approvalInfo);
       if (externalLink) {
         const checkExternalLink = setInterval(() => {
           if (externalLink.closed) {
@@ -80,14 +80,14 @@ const Step2BankApproval: React.FC<Step2BankApprovalProps> = ({
           <h3>Geef toestemming</h3>
           <p>
             Ik verklaar dat ik de Privacyverklaring heb gelezen en geef hierbij
-            toestemming aan Dyme B.V. om mijn betaalgegevens te ontvangen van
-            mijn bank. Ik begripjp dat hier gevoelige informatie bij kan zitten
-            en ik ga ermee akkoord dat Dyme ook deze persoonsgegevens ontvangt
-            en gebruikt
+            toestemming aan Open Poen om mijn betaalgegevens te ontvangen van
+            mijn bank. Ik begrijp dat hier gevoelige informatie bij kan zitten
+            en ik ga ermee akkoord dat Open Poen ook deze persoonsgegevens
+            ontvangt en gebruikt
           </p>
         </div>
       ) : (
-        <p>Loading...</p>
+        <p>Laden...</p>
       )}
       <div className={styles["button-container"]}>
         <button className={styles.saveButton} onClick={handleOpenLink}>

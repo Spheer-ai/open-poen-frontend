@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { deleteBankAccount } from "../../../middleware/Api";
+import styles from "../../../../assets/scss/layout/Step1BankList.module.scss";
 
 interface Step1DeleteBankAccountProps {
   userId: string | null;
@@ -34,14 +35,21 @@ const Step1DeleteBankAccount: React.FC<Step1DeleteBankAccountProps> = ({
 
   return (
     <div>
-      <h2>Delete Bank Account</h2>
       <p>
-        Are you sure you want to delete this bank account? This action cannot be
-        undone.
+        Er staat een verwijdering van de bankkoppeling op het punt uitgevoerd te
+        worden. Belangrijk: deze actie resulteert in de definitieve verwijdering
+        van alle transacties die via deze bankrekening zijn verwerkt uit het
+        systeem. Deze handeling is onomkeerbaar.
       </p>
-      <button onClick={handleDeleteBankAccount} disabled={isLoading}>
-        {isLoading ? "Deleting..." : "Delete Bank Account"}
-      </button>
+      <div className={styles["button-container"]}>
+        <button
+          className={styles.deleteButton}
+          onClick={handleDeleteBankAccount}
+          disabled={isLoading}
+        >
+          {isLoading ? "Bezig met verijderen..." : "Bank account verwijderen"}
+        </button>
+      </div>
     </div>
   );
 };

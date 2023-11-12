@@ -10,9 +10,7 @@ const Step2Confirmation: React.FC<Step2ConfirmationProps> = ({ onClose }) => {
   return (
     <div className={styles.step2}>
       <div>
-        <h3 style={{ margin: "0", padding: "0" }}>
-          Toegang succesvol bijgewerkt.
-        </h3>
+        <h3 style={{ padding: "0" }}>Toegang succesvol bijgewerkt.</h3>
         <p>
           De toegangsstatus van personen is bijgewerkt. Het is belangrijk op te
           merken dat toegang tot het bankrekeningnummer op elk gewenst moment
