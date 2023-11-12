@@ -30,10 +30,12 @@ export default function Transactions() {
   return (
     <>
       <div className={styles["transaction-container"]}>
-        <h2>Transacties</h2>
-        <TabbedNavigation onTabChange={handleTabChange} />
-        {activeTab === "transactieoverzicht" && <TransactionOverview />}
-        {activeTab === "banken" && <BankConnections />}
+        <div className={styles["transaction-headers"]}>
+          <h2>Transacties</h2>
+          <TabbedNavigation onTabChange={handleTabChange} />
+          {activeTab === "transactieoverzicht" && <TransactionOverview />}
+          {activeTab === "banken" && <BankConnections />}
+        </div>
       </div>
     </>
   );

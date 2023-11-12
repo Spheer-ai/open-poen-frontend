@@ -7,14 +7,18 @@ import { useLocation } from "react-router-dom";
 
 interface AddBankConnectionModalProps {
   isOpen: boolean;
-  onClose: () => void;
+  onClose: (title: string) => void;
   isBlockingInteraction: boolean;
+  isReconnecting?: boolean;
+  title: string;
 }
 
 const AddBankConnectionModal: React.FC<AddBankConnectionModalProps> = ({
   isOpen,
   onClose,
   isBlockingInteraction,
+  isReconnecting,
+  title,
 }) => {
   const [currentStep, setCurrentStep] = useState(1);
   const [isVisible, setIsVisible] = useState(false);
@@ -34,17 +38,15 @@ const AddBankConnectionModal: React.FC<AddBankConnectionModalProps> = ({
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
     const stepParam = searchParams.get("step");
-    console.log("stepParam:", stepParam);
 
     if (stepParam === "3") {
       setTimeout(() => {
         setCurrentStep(3);
       }, 0);
     } else if (location.pathname === "/transactions/bankaccounts/add-bank") {
-      setCurrentStep(1);
+      setCurrentStep(isReconnecting ? 2 : 1);
     }
-    console.log("currentStep:", currentStep);
-  }, [location.search, location.pathname]);
+  }, [location.search, location.pathname, isReconnecting]);
 
   const handleNextStep = () => {
     if (currentStep < 3) {
@@ -62,7 +64,7 @@ const AddBankConnectionModal: React.FC<AddBankConnectionModalProps> = ({
     if (!isBlockingInteraction) {
       setIsVisible(false);
       setCurrentStep(1);
-      onClose();
+      onClose(title);
     }
   };
 
@@ -80,7 +82,7 @@ const AddBankConnectionModal: React.FC<AddBankConnectionModalProps> = ({
           {currentStep === 1 && (
             <>
               <div className={styles["modal-top-section"]}>
-                <h2 className={styles.title}>Bank Account Toevoegen</h2>
+                <h2 className={styles.title}>{title}</h2>
               </div>
               <Step1BankList
                 onNextStep={handleNextStep}
@@ -91,7 +93,7 @@ const AddBankConnectionModal: React.FC<AddBankConnectionModalProps> = ({
           {currentStep === 2 && selectedBank && (
             <>
               <div className={styles["modal-top-section"]}>
-                <h2 className={styles.title}>Bank Account Toevoegen</h2>
+                <h2 className={styles.title}>{title}</h2>
               </div>
               <Step2BankApproval institutionId={selectedBank} />
             </>
@@ -99,7 +101,7 @@ const AddBankConnectionModal: React.FC<AddBankConnectionModalProps> = ({
           {currentStep === 3 && (
             <>
               <div className={styles["modal-top-section"]}>
-                <h2 className={styles.title}>Bank Account Toevoegen</h2>
+                <h2 className={styles.title}></h2>
               </div>
               <Step3BankConfirmation onClose={handleClose} />
             </>

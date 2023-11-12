@@ -897,3 +897,54 @@ export const searchUsersByEmail = async (
     throw error;
   }
 };
+
+export const revokeBankConnection = async (userId, token, bankAccountId) => {
+  try {
+    const response = await api.patch(
+      `/user/${userId}/bank-account/${bankAccountId}`,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+
+    if (response.status === 200) {
+      return response.data;
+    } else {
+      throw new Error("Failed to revoke bank connection");
+    }
+  } catch (error) {
+    console.error(
+      "Error revoking bank connection:",
+      error.response ? error.response.data : error,
+    );
+    throw error;
+  }
+};
+
+export const deleteBankAccount = async (userId, token, bankAccountId) => {
+  try {
+    const response = await api.delete(
+      `/user/${userId}/bank-account/${bankAccountId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+
+    if (response.status === 204) {
+      return response.data;
+    } else {
+      throw new Error("Failed to delete bank account");
+    }
+  } catch (error) {
+    console.error(
+      "Error deleting bank account:",
+      error.response ? error.response.data : error,
+    );
+    throw error;
+  }
+};

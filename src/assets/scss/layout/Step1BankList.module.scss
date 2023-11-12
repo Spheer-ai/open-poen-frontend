@@ -81,3 +81,35 @@
   height: 100%;
   position: relative;
 }
+
+.step-container::before {
+  content: "";
+  position: absolute;
+  top: 94px;
+  left: 0;
+  width: 100%;
+  height: 200px;
+  background: linear-gradient(
+    to bottom,
+    rgba(164, 188, 239, 1),
+    rgba(255, 255, 255, 0)
+  );
+  z-index: -1;
+}
+
+.bankinfo-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 60px;
+  gap: 20px;
+
+  .logo {
+    height: 50px;
+    width: 50px;
+  }
+
+  .connector {
+    height: 30px;
+  }
+}
