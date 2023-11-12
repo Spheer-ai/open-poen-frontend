@@ -61,10 +61,22 @@ const Step2BankApproval: React.FC<Step2BankApprovalProps> = ({
   };
 
   return (
-    <div>
+    <div className={styles["step-container"]}>
+      <div className={styles["bankinfo-container"]}>
+        <img
+          className={styles["logo"]}
+          src="/open-poen-logo-blue.svg"
+          alt="Home Logo"
+        />
+        <img className={styles["connector"]} src="/connector.svg" alt="" />
+        <img
+          className={styles["logo"]}
+          src="/open-poen-logo-blue.svg"
+          alt="Home Logo"
+        />
+      </div>
       {approvalInfo ? (
         <div>
-          <p>{`Bank: ${institutionId}`}</p>
           <h3>Geef toestemming</h3>
           <p>
             Ik verklaar dat ik de Privacyverklaring heb gelezen en geef hierbij
