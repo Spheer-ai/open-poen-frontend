@@ -44,7 +44,7 @@ const Step1BankList: React.FC<Step1BankListProps> = ({
 
   return (
     <div>
-      <ul>
+      <ul className={styles["bank-list"]}>
         {bankList.map((bank) => (
           <li
             key={bank.id}

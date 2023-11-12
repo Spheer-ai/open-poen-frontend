@@ -19,8 +19,12 @@ const Step3BankConfirmation: React.FC<Step3BankConfirmationProps> = ({
   return (
     <>
       <div className={styles["confirmation-container"]}>
-        <h3>Koppelen voltooid!</h3>
-        <p>We hebben met succes verbinding gemaakt met jouw bank</p>
+        <div className={styles["confirmation-content"]}>
+          <h3>Koppelen voltooid!</h3>
+          <p>We hebben met succes verbinding gemaakt met jouw bank.</p>
+          <img className={styles["succes-icon"]} src="/succes.svg" alt="" />
+        </div>
+        <p>We hebben 100% van jouw transacties gecategoriseerd.</p>
       </div>
       <div className={styles["button-container"]}>
         <button onClick={handleBackToOverview} className={styles.saveButton}>

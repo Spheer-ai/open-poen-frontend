@@ -68,7 +68,7 @@ const DeleteBankAccountModal: React.FC<DeleteBankAccountModalProps> = ({
           {currentStep === 1 && (
             <>
               <div className={styles["modal-top-section"]}>
-                <h2 className={styles.title}>Delete Bank Account</h2>
+                <h2 className={styles.title}>Bank account verwijderen</h2>
               </div>
               <Step1DeleteBankAccount
                 userId={userId}
@@ -81,7 +81,7 @@ const DeleteBankAccountModal: React.FC<DeleteBankAccountModalProps> = ({
           {currentStep === 2 && (
             <>
               <div className={styles["modal-top-section"]}>
-                <h2 className={styles.title}>Delete Bank Account</h2>
+                <h2 className={styles.title}>Bank account verwijderen</h2>
               </div>
               <Step2DeleteBankConfirmation onClose={handleClose} />
             </>

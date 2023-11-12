@@ -185,101 +185,106 @@ const TransactionOverview = () => {
       {isLoading ? (
         <p>Loading...</p>
       ) : (
-        <table className={styles.transactionTable}>
-          <thead>
-            <tr>
-              <th
-                onClick={() => handleSort("booking_date")}
-                style={getHeaderStyle("booking_date")}
-              >
-                Datum {getSortIndicator("booking_date")}
-              </th>
-              <th
-                onClick={() => handleSort("initiative_name")}
-                style={getHeaderStyle("initiative_name")}
-              >
-                Initiatief {getSortIndicator("initiative_name")}
-              </th>
-              <th
-                onClick={() => handleSort("activity_name")}
-                style={getHeaderStyle("activity_name")}
-              >
-                Activiteit {getSortIndicator("activity_name")}
-              </th>
-              <th
-                onClick={() => handleSort("creditor_name")}
-                style={getHeaderStyle("creditor_name")}
-              >
-                Ontvanger {getSortIndicator("creditor_name")}
-              </th>
-              <th
-                onClick={() => handleSort("short_user_description")}
-                style={getHeaderStyle("short_user_description")}
-              >
-                Beschrijving {getSortIndicator("short_user_description")}
-              </th>
-              <th
-                onClick={() => handleSort("iban")}
-                style={getHeaderStyle("iban")}
-              >
-                IBAN {getSortIndicator("iban")}
-              </th>
-              <th
-                onClick={() => handleSort("transaction_amount")}
-                style={getHeaderStyle("transaction_amount")}
-              >
-                Bedrag {getSortIndicator("transaction_amount")}
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredTransactions.map((transaction) => (
-              <tr key={transaction.id}>
-                <td>
-                  {highlightMatch(
-                    formatDate(transaction.booking_date),
-                    lowercaseQuery,
-                  )}
-                </td>
-                <td>
-                  {highlightMatch(transaction.initiative_name, lowercaseQuery)}
-                </td>
-                <td>
-                  {highlightMatch(transaction.activity_name, lowercaseQuery)}
-                </td>
-                <td>
-                  {highlightMatch(transaction.creditor_name, lowercaseQuery)}
-                </td>
-                <td>
-                  {highlightMatch(
-                    transaction.short_user_description,
-                    lowercaseQuery,
-                  )}
-                </td>
-                <td>{highlightMatch(transaction.iban, lowercaseQuery)}</td>
-                <td>
-                  <span
-                    style={{
-                      display: "inline-block",
-                      width: "20px",
-                      textAlign: "right",
-                    }}
-                  >
-                    {transaction.transaction_amount < 0 ? "-" : ""}
-                  </span>
-                  €{" "}
-                  {highlightMatch(
-                    Math.abs(transaction.transaction_amount).toLocaleString(
-                      "nl-NL",
-                      { minimumFractionDigits: 2 },
-                    ),
-                    lowercaseQuery,
-                  )}
-                </td>
+        <div className={styles["transaction-table-container"]}>
+          <table className={styles.transactionTable}>
+            <thead>
+              <tr>
+                <th
+                  onClick={() => handleSort("booking_date")}
+                  style={getHeaderStyle("booking_date")}
+                >
+                  Datum {getSortIndicator("booking_date")}
+                </th>
+                <th
+                  onClick={() => handleSort("initiative_name")}
+                  style={getHeaderStyle("initiative_name")}
+                >
+                  Initiatief {getSortIndicator("initiative_name")}
+                </th>
+                <th
+                  onClick={() => handleSort("activity_name")}
+                  style={getHeaderStyle("activity_name")}
+                >
+                  Activiteit {getSortIndicator("activity_name")}
+                </th>
+                <th
+                  onClick={() => handleSort("creditor_name")}
+                  style={getHeaderStyle("creditor_name")}
+                >
+                  Ontvanger {getSortIndicator("creditor_name")}
+                </th>
+                <th
+                  onClick={() => handleSort("short_user_description")}
+                  style={getHeaderStyle("short_user_description")}
+                >
+                  Beschrijving {getSortIndicator("short_user_description")}
+                </th>
+                <th
+                  onClick={() => handleSort("iban")}
+                  style={getHeaderStyle("iban")}
+                >
+                  IBAN {getSortIndicator("iban")}
+                </th>
+                <th
+                  onClick={() => handleSort("transaction_amount")}
+                  style={getHeaderStyle("transaction_amount")}
+                >
+                  Bedrag {getSortIndicator("transaction_amount")}
+                </th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {filteredTransactions.map((transaction) => (
+                <tr key={transaction.id}>
+                  <td>
+                    {highlightMatch(
+                      formatDate(transaction.booking_date),
+                      lowercaseQuery,
+                    )}
+                  </td>
+                  <td>
+                    {highlightMatch(
+                      transaction.initiative_name,
+                      lowercaseQuery,
+                    )}
+                  </td>
+                  <td>
+                    {highlightMatch(transaction.activity_name, lowercaseQuery)}
+                  </td>
+                  <td>
+                    {highlightMatch(transaction.creditor_name, lowercaseQuery)}
+                  </td>
+                  <td>
+                    {highlightMatch(
+                      transaction.short_user_description,
+                      lowercaseQuery,
+                    )}
+                  </td>
+                  <td>{highlightMatch(transaction.iban, lowercaseQuery)}</td>
+                  <td>
+                    <span
+                      style={{
+                        display: "inline-block",
+                        width: "20px",
+                        textAlign: "right",
+                      }}
+                    >
+                      {transaction.transaction_amount < 0 ? "-" : ""}
+                    </span>
+                    €{" "}
+                    {highlightMatch(
+                      Math.abs(transaction.transaction_amount).toLocaleString(
+                        "nl-NL",
+                        { minimumFractionDigits: 2 },
+                      ),
+                      lowercaseQuery,
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
     </div>
   );

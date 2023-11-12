@@ -101,7 +101,7 @@ const AddBankConnectionModal: React.FC<AddBankConnectionModalProps> = ({
           {currentStep === 3 && (
             <>
               <div className={styles["modal-top-section"]}>
-                <h2 className={styles.title}></h2>
+                <h2 className={styles.title}>{title}</h2>
               </div>
               <Step3BankConfirmation onClose={handleClose} />
             </>
