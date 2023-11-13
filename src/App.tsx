@@ -7,6 +7,7 @@ import { IntlProvider } from "react-intl";
 import { messages } from "./locale/messages";
 import { getLocale } from "./locale/locale";
 import PermissionProvider from "./contexts/PermissionProvider";
+import FieldPermissionProvider from "./contexts/FieldPermissionProvider";
 
 export default function App() {
   const locale = getLocale();
@@ -14,16 +15,18 @@ export default function App() {
   return (
     <AppAuthProvider>
       <PermissionProvider>
-        <Router>
-          <IntlProvider
-            locale={locale}
-            messages={messages[locale] || messages["nl"]}
-          >
-            <div>
-              <AppRoutes />
-            </div>
-          </IntlProvider>
-        </Router>
+        <FieldPermissionProvider>
+          <Router>
+            <IntlProvider
+              locale={locale}
+              messages={messages[locale] || messages["nl"]}
+            >
+              <div>
+                <AppRoutes />
+              </div>
+            </IntlProvider>
+          </Router>
+        </FieldPermissionProvider>
       </PermissionProvider>
     </AppAuthProvider>
   );

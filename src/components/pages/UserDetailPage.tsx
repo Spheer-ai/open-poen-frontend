@@ -13,6 +13,7 @@ import EditIcon from "/edit-icon.svg";
 import ChangePasswordIcon from "/change-password-icon.svg";
 import { fetchUserDetails, fetchInitiatives } from "../middleware/Api";
 import { usePermissions } from "../../contexts/PermissionContext";
+import { useFieldPermissions } from "../../contexts/FieldPermissionContext";
 
 const roleLabels = {
   administrator: "Beheerder",
@@ -39,6 +40,7 @@ export default function UserDetailsPage() {
   const [userDetails, setUserDetails] = useState<UserDetails | null>(null);
   const [initiatives, setInitiatives] = useState([]);
   const [activeAction, setActiveAction] = useState<string | null>(null);
+  const { fetchFieldPermissions } = useFieldPermissions();
   const { fetchPermissions } = usePermissions();
   const [entityPermissions, setEntityPermissions] = useState<string[]>([]);
   const [hasEditPermission, setHasEditPermission] = useState(false);
@@ -68,6 +70,25 @@ export default function UserDetailsPage() {
 
     fetchUserPermissions();
   }, [user, userId]);
+
+  useEffect(() => {
+    async function fetchFieldPermissionsOnMount() {
+      try {
+        if (user && user.token && userId) {
+          const fieldPermissions: string[] | undefined =
+            await fetchFieldPermissions("User", parseInt(userId), user.token);
+
+          if (fieldPermissions) {
+            setEntityPermissions(fieldPermissions);
+          }
+        }
+      } catch (error) {
+        console.error("Failed to fetch field permissions:", error);
+      }
+    }
+
+    fetchFieldPermissionsOnMount();
+  }, [user, userId, fetchFieldPermissions]);
 
   useEffect(() => {
     const fetchUserData = async () => {

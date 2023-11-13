@@ -950,3 +950,34 @@ export const deleteBankAccount = async (userId, token, bankAccountId) => {
     throw error;
   }
 };
+
+export const getEditFieldsForEntity = async (entityClass, entityId, token) => {
+  console.log("API Request Parameters:", {
+    entity_class: entityClass,
+    entity_id: entityId,
+    token: token,
+  });
+  try {
+    const response = await api.get("/auth/entity-access/edit-fields", {
+      params: {
+        entity_class: entityClass,
+        entity_id: entityId,
+      },
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (response.status === 200) {
+      return response.data;
+    } else {
+      throw new Error("Failed to fetch editable fields for entity");
+    }
+  } catch (error) {
+    console.error(
+      "Error fetching editable fields for entity:",
+      error.response ? error.response.data : error,
+    );
+    throw error;
+  }
+};
