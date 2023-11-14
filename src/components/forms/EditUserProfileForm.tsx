@@ -42,6 +42,8 @@ const EditUserProfileForm: React.FC<EditUserProfileFormProps> = ({
     }
   }, [userId]);
 
+  console.log("fieldPermissions222:", fieldPermissions);
+
   const fetchUserProfileDataFromApi = async (userId: string, token: string) => {
     try {
       const profileData = await fetchUserProfileData(token, userId);
@@ -126,7 +128,7 @@ const EditUserProfileForm: React.FC<EditUserProfileFormProps> = ({
         ) : (
           <form>
             <h3>Info</h3>
-            {fieldPermissions.includes("first_name") && (
+            {fieldPermissions.fields.includes("first_name") && (
               <div className={styles["form-group"]}>
                 <label
                   className={styles["label-first_name"]}
@@ -145,7 +147,7 @@ const EditUserProfileForm: React.FC<EditUserProfileFormProps> = ({
                 />
               </div>
             )}
-            {fieldPermissions.includes("last_name") && (
+            {fieldPermissions.fields.includes("last_name") && (
               <div className={styles["form-group"]}>
                 <label
                   className={styles["label-last_name"]}
@@ -164,7 +166,7 @@ const EditUserProfileForm: React.FC<EditUserProfileFormProps> = ({
                 />
               </div>
             )}
-            {fieldPermissions.includes("biography") && (
+            {fieldPermissions.fields.includes("biography") && (
               <div className={styles["form-group"]}>
                 <label
                   className={styles["label-biography"]}
@@ -210,7 +212,7 @@ const EditUserProfileForm: React.FC<EditUserProfileFormProps> = ({
               </div>
             )}
             <hr />
-            {fieldPermissions.includes("hidden") && (
+            {fieldPermissions.fields.includes("hidden") && (
               <>
                 <h3>Instellingen</h3>
                 <div className={styles["form-group"]}>
