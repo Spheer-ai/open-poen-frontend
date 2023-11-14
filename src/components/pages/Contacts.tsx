@@ -172,25 +172,6 @@ export default function Contacts() {
         onSearch={handleSearch}
         hasPermission={hasPermission}
       />
-      <AddItemModal
-        isOpen={isModalOpen}
-        onClose={() => {
-          setIsModalOpen(false);
-          if (isConfirmationStep) {
-            window.location.reload();
-          }
-        }}
-        onConfirm={handleConfirmAction}
-        isConfirmed={isConfirmed}
-      >
-        <AddUserForm
-          onContinue={() => {
-            setIsModalOpen(false);
-            handleConfirmAction();
-          }}
-          onCancel={handleCancel}
-        />
-      </AddItemModal>
       {error ? (
         <p>Error: {error.message}</p>
       ) : (
@@ -223,6 +204,25 @@ export default function Contacts() {
           <Outlet />
         </div>
       )}
+      <AddItemModal
+        isOpen={isModalOpen}
+        onClose={() => {
+          setIsModalOpen(false);
+          if (isConfirmationStep) {
+            window.location.reload();
+          }
+        }}
+        onConfirm={handleConfirmAction}
+        isConfirmed={isConfirmed}
+      >
+        <AddUserForm
+          onContinue={() => {
+            setIsModalOpen(false);
+            handleConfirmAction();
+          }}
+          onCancel={handleCancel}
+        />
+      </AddItemModal>
     </div>
   );
 }

@@ -154,13 +154,11 @@ export const updateUser = async (
   userId: string,
   formData: any,
   token: string,
-  oldPassword: string,
-  newPassword: string,
 ) => {
   try {
     const response = await api.patch(
       `/user/${userId}`,
-      { ...formData, oldPassword, newPassword },
+      { ...formData },
       {
         headers: {
           Authorization: `Bearer ${token}`,

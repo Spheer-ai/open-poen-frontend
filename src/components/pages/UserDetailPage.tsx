@@ -10,6 +10,7 @@ import AddItemModal from "../modals/AddItemModal";
 import ChangePasswordForm from "../forms/ChangePasswordForm";
 import EditUserProfileForm from "../forms/EditUserProfileForm";
 import EditIcon from "/edit-icon.svg";
+import DeleteIcon from "/bin-icon.svg";
 import ChangePasswordIcon from "/change-password-icon.svg";
 import { fetchUserDetails, fetchInitiatives } from "../middleware/Api";
 import { usePermissions } from "../../contexts/PermissionContext";
@@ -42,11 +43,11 @@ export default function UserDetailsPage() {
   const [userDetails, setUserDetails] = useState<UserDetails | null>(null);
   const [initiatives, setInitiatives] = useState([]);
   const [activeAction, setActiveAction] = useState<string | null>(null);
-  const [activeUserAction, setActiveUserAction] = useState<string | null>(null);
   const { fetchFieldPermissions } = useFieldPermissions();
   const { fetchPermissions } = usePermissions();
   const [entityPermissions, setEntityPermissions] = useState<string[]>([]);
   const [hasEditPermission, setHasEditPermission] = useState(false);
+  const [hasDeletePermission, setHasDeletePermission] = useState(false);
 
   useEffect(() => {
     async function fetchUserPermissions() {
@@ -64,6 +65,14 @@ export default function UserDetailsPage() {
           } else {
             console.log("User does not have edit permission");
             setHasEditPermission(false);
+          }
+
+          if (userPermissions && userPermissions.includes("delete")) {
+            console.log("User has delete permission");
+            setHasDeletePermission(true);
+          } else {
+            console.log("User does not have delete permission");
+            setHasDeletePermission(false);
           }
         }
       } catch (error) {
@@ -154,11 +163,13 @@ export default function UserDetailsPage() {
                   <img
                     srcSet={
                       userDetails?.profile_picture
-                        ?.attachment_thumbnail_url_128 +
-                      " 128w, " +
-                      userDetails?.profile_picture
-                        ?.attachment_thumbnail_url_256 +
-                      " 256w"
+                        ? userDetails.profile_picture
+                            .attachment_thumbnail_url_128 +
+                          " 128w, " +
+                          userDetails.profile_picture
+                            .attachment_thumbnail_url_256 +
+                          " 256w"
+                        : undefined
                     }
                     sizes="(max-width: 768px) 128px, 256px"
                     src={
@@ -234,12 +245,16 @@ export default function UserDetailsPage() {
                     </div>
                   )}
 
-                  {hasEditPermission && (
+                  {hasDeletePermission && (
                     <div
                       className={styles["top-right-button"]}
                       onClick={handleDeleteUserClick}
                     >
-                      <img alt="Delete User" className={styles["icon"]} />
+                      <img
+                        alt="Delete User"
+                        className={styles["icon"]}
+                        src={DeleteIcon}
+                      />
                       Gebruiker verwijderen
                     </div>
                   )}
@@ -306,6 +321,8 @@ export default function UserDetailsPage() {
             userId={userId || ""}
             onCancel={handleCloseModal}
             onContinue={handleCloseModal}
+            fieldPermissions={entityPermissions}
+            fields={[]}
           />
         </AddItemModal>
       )}

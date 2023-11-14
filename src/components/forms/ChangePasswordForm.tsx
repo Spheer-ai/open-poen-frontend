@@ -7,7 +7,6 @@ import FormLayout from "./FormLayout";
 
 const ChangePasswordForm = ({ onClose, userId }) => {
   const { user } = useAuth();
-  const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -28,10 +27,11 @@ const ChangePasswordForm = ({ onClose, userId }) => {
         return;
       }
 
-      const formData = new FormData();
-      formData.append("password", newPassword);
+      const formData = {
+        password: newPassword,
+      };
 
-      await updateUser(userId, formData, token, currentPassword, newPassword);
+      await updateUser(userId, formData, token);
 
       setIsConfirmed(true);
     } catch (error) {
@@ -59,27 +59,6 @@ const ChangePasswordForm = ({ onClose, userId }) => {
           </div>
         ) : (
           <form onSubmit={handleSubmit} className={styles["change-pass-form"]}>
-            <h3>Info</h3>
-            <div className={styles["form-group"]}>
-              <label
-                htmlFor="currentPassword"
-                className={styles["label-email"]}
-              >
-                Huidig wachtwoord:
-              </label>
-              <input
-                type={showPassword ? "text" : "password"}
-                id="currentPassword"
-                name="currentPassword"
-                value={currentPassword}
-                onChange={(e) => setCurrentPassword(e.target.value)}
-                required
-                className={styles["input"]}
-              />
-              <p className={styles["input-description"]}>
-                Voer uw huidige wachtwoord in.
-              </p>
-            </div>
             <div className={styles["form-group"]}>
               <label htmlFor="newPassword" className={styles["label-email"]}>
                 Nieuw wachtwoord:
@@ -109,9 +88,6 @@ const ChangePasswordForm = ({ onClose, userId }) => {
                   />
                 </span>
               </div>
-              <p className={styles["input-description"]}>
-                Kies een nieuw wachtwoord.
-              </p>
             </div>
             <div className={styles["form-group"]}>
               <label
@@ -145,9 +121,6 @@ const ChangePasswordForm = ({ onClose, userId }) => {
                   />
                 </span>
               </div>
-              <p className={styles["input-description"]}>
-                Herhaal het nieuwe wachtwoord ter bevestiging.
-              </p>
             </div>
             {!isConfirmed && (
               <FormButtons
