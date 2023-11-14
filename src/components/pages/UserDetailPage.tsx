@@ -252,6 +252,19 @@ export default function UserDetailsPage() {
             last_name={""}
             biography={""}
             hidden={true}
+            fieldPermissions={[
+              "password",
+              "is_active",
+              "is_superuser",
+              "is_verified",
+              "hidden",
+              "first_name",
+              "last_name",
+              "role",
+              "email",
+              "biography",
+            ]}
+            fields={[]}
           />
         </AddItemModal>
       )}
