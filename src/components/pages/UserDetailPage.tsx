@@ -14,6 +14,8 @@ import ChangePasswordIcon from "/change-password-icon.svg";
 import { fetchUserDetails, fetchInitiatives } from "../middleware/Api";
 import { usePermissions } from "../../contexts/PermissionContext";
 import { useFieldPermissions } from "../../contexts/FieldPermissionContext";
+import EditUserForm from "../forms/EditUserForm";
+import DeleteUserForm from "../forms/DeleteUserForm";
 
 const roleLabels = {
   administrator: "Beheerder",
@@ -40,6 +42,7 @@ export default function UserDetailsPage() {
   const [userDetails, setUserDetails] = useState<UserDetails | null>(null);
   const [initiatives, setInitiatives] = useState([]);
   const [activeAction, setActiveAction] = useState<string | null>(null);
+  const [activeUserAction, setActiveUserAction] = useState<string | null>(null);
   const { fetchFieldPermissions } = useFieldPermissions();
   const { fetchPermissions } = usePermissions();
   const [entityPermissions, setEntityPermissions] = useState<string[]>([]);
@@ -129,6 +132,14 @@ export default function UserDetailsPage() {
     setActiveAction(null);
   };
 
+  const handleEditUserClick = () => {
+    setActiveAction("editUser");
+  };
+
+  const handleDeleteUserClick = () => {
+    setActiveAction("deleteUser");
+  };
+
   console.log("hasEditPermission:", hasEditPermission);
   console.log("API Response for permissions:", entityPermissions);
 
@@ -194,6 +205,7 @@ export default function UserDetailsPage() {
                       Profiel bewerken
                     </div>
                   )}
+
                   {loggedInUserId === userId && (
                     <div
                       className={styles["top-right-button"]}
@@ -205,6 +217,30 @@ export default function UserDetailsPage() {
                         className={styles["icon"]}
                       />
                       Verander wachtwoord
+                    </div>
+                  )}
+
+                  {hasEditPermission && (
+                    <div
+                      className={styles["top-right-button"]}
+                      onClick={handleEditUserClick}
+                    >
+                      <img
+                        src={EditIcon}
+                        alt="Edit User"
+                        className={styles["icon"]}
+                      />
+                      Gebruiker bewerken
+                    </div>
+                  )}
+
+                  {hasEditPermission && (
+                    <div
+                      className={styles["top-right-button"]}
+                      onClick={handleDeleteUserClick}
+                    >
+                      <img alt="Delete User" className={styles["icon"]} />
+                      Gebruiker verwijderen
                     </div>
                   )}
                 </div>
@@ -261,6 +297,26 @@ export default function UserDetailsPage() {
       {activeAction === "changePassword" && (
         <AddItemModal isOpen={true} onClose={handleCloseModal}>
           <ChangePasswordForm onClose={handleCloseModal} userId={userId} />
+        </AddItemModal>
+      )}
+
+      {activeAction === "editUser" && (
+        <AddItemModal isOpen={true} onClose={handleCloseModal}>
+          <EditUserForm
+            userId={userId || ""}
+            onCancel={handleCloseModal}
+            onContinue={handleCloseModal}
+          />
+        </AddItemModal>
+      )}
+
+      {activeAction === "deleteUser" && (
+        <AddItemModal isOpen={true} onClose={handleCloseModal}>
+          <DeleteUserForm
+            userId={userId || ""}
+            onCancel={handleCloseModal}
+            onContinue={handleCloseModal}
+          />
         </AddItemModal>
       )}
     </>

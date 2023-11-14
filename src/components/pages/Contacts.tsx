@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import LoadingDot from "../animation/LoadingDot";
 import { getUserById, getUsersOrdered } from "../middleware/Api";
@@ -8,8 +8,6 @@ import AddItemModal from "../../components/modals/AddItemModal";
 import AddUserForm from "../forms/AddUserForm";
 import styles from "../../assets/scss/Contacts.module.scss";
 import { UserData } from "../../types/ContactsTypes";
-import EditUserForm from "../forms/EditUserForm";
-import DeleteUserForm from "../forms/DeleteUserForm";
 import { usePermissions } from "../../contexts/PermissionContext";
 import { useAuth } from "../../contexts/AuthContext";
 import UserItem from "../elements/users/UserItem";
@@ -28,18 +26,11 @@ export default function Contacts() {
   const [userListLoaded, setUserListLoaded] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [dropdownOpen, setDropdownOpen] = useState<{ [key: string]: boolean }>(
-    {},
-  );
   const [filteredData, setFilteredData] = useState<UserData[]>([]);
-  const dropdownRef = useRef(null as HTMLDivElement | null);
   const { fetchPermissions } = usePermissions();
   const [permissionsFetched, setPermissionsFetched] = useState(false);
   const [entityPermissions, setEntityPermissions] = useState<string[]>([]);
   const hasPermission = entityPermissions.includes("create");
-  const [isActionConfirmed, setIsActionConfirmed] = useState(false);
   const [isConfirmed, setIsConfirmed] = useState(false);
   const [isConfirmationStep, setIsConfirmationStep] = useState(false);
 
@@ -63,11 +54,6 @@ export default function Contacts() {
     setIsModalOpen(true);
   };
 
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-    setIsConfirmed(false);
-  };
-
   const handleCancel = () => {
     setIsModalOpen(false);
   };
@@ -78,18 +64,6 @@ export default function Contacts() {
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
-  };
-
-  const handleOpenEditModal = () => {
-    setIsEditModalOpen(true);
-  };
-
-  const handleEditButtonClick = (id) => {
-    handleOpenEditModal();
-  };
-
-  const handleOpenDeleteModal = (id) => {
-    setIsDeleteModalOpen(true);
   };
 
   const handleConfirmAction = () => {
@@ -187,9 +161,6 @@ export default function Contacts() {
     }
   }, [activeUserId, navigate, isLoggedIn]);
 
-  console.log("isEditModalOpen:", isEditModalOpen);
-  console.log("activeUserId:", activeUserId);
-
   return (
     <div className={styles["side-panel"]}>
       <TopNavigationBar
@@ -220,40 +191,6 @@ export default function Contacts() {
           onCancel={handleCancel}
         />
       </AddItemModal>
-
-      {isEditModalOpen && activeUserId && (
-        <AddItemModal
-          isOpen={isEditModalOpen}
-          onClose={() => setIsEditModalOpen(false)}
-        >
-          <EditUserForm
-            userId={activeUserId}
-            onCancel={() => {
-              setIsEditModalOpen(false);
-            }}
-            onContinue={() => {
-              setIsEditModalOpen(false);
-            }}
-            navigate={navigate}
-          />
-        </AddItemModal>
-      )}
-      {isDeleteModalOpen && activeUserId && (
-        <AddItemModal
-          isOpen={isDeleteModalOpen}
-          onClose={() => setIsDeleteModalOpen(false)}
-        >
-          <DeleteUserForm
-            userId={activeUserId}
-            onCancel={() => {
-              setIsDeleteModalOpen(false);
-            }}
-            onContinue={() => {
-              setIsDeleteModalOpen(false);
-            }}
-          />
-        </AddItemModal>
-      )}
       {error ? (
         <p>Error: {error.message}</p>
       ) : (
@@ -278,9 +215,6 @@ export default function Contacts() {
                     activeUserId === user.id && loggedInUserId === user.id
                   }
                   handleUserClick={handleUserClick}
-                  handleEditButtonClick={handleEditButtonClick}
-                  handleOpenDeleteModal={handleOpenDeleteModal}
-                  dropdownOpen={dropdownOpen}
                   isLoggedIn={isLoggedIn}
                 />
               ))}
