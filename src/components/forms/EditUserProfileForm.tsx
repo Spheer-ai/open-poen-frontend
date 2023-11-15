@@ -97,8 +97,6 @@ const EditUserProfileForm: React.FC<EditUserProfileFormProps> = ({
 
   const handleCancel = () => {
     onCancel();
-
-    window.location.reload();
   };
 
   const handleBioChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {

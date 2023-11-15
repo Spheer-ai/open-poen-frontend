@@ -15,7 +15,6 @@ const ChangePasswordForm = ({ onClose, userId }) => {
 
   const handleCancel = () => {
     onClose();
-    window.location.reload();
   };
 
   const handleSubmit = async () => {

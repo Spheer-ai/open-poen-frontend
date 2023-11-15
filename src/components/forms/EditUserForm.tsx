@@ -74,14 +74,8 @@ const EditUserForm: React.FC<EditUserFormProps> = ({
     }
   };
 
-  const handleReloadWindow = () => {
-    onCancel();
-    window.location.reload();
-  };
-
   const handleCancel = () => {
     onCancel();
-    window.location.reload();
   };
 
   return (
@@ -90,7 +84,7 @@ const EditUserForm: React.FC<EditUserFormProps> = ({
         title={`Bewerk ${"gebruiker"}`}
         showIcon={false}
         showOverviewButton={isConfirmed}
-        reloadWindow={handleReloadWindow}
+        reloadWindow={onCancel}
       >
         {isConfirmed ? (
           <div className={styles["confirmation-container"]}>
