@@ -47,6 +47,10 @@ const EditGrantDesktop: React.FC<EditGrantDesktopProps> = ({
   const [grantName, setGrantName] = useState(currentName);
   const [grantReference, setGrantReference] = useState(currentReference);
   const [grantBudget, setGrantBudget] = useState(currentBudget);
+  const [nameError, setNameError] = useState(false);
+  const [apiError, setApiError] = useState("");
+  const [referenceError, setReferenceError] = useState(false);
+  const [budgetError, setBudgetError] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
@@ -64,7 +68,53 @@ const EditGrantDesktop: React.FC<EditGrantDesktopProps> = ({
     setGrantBudget(currentBudget);
   }, [currentName, currentReference, currentBudget]);
 
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      handleEdit();
+    }
+  };
+
   const handleEdit = async () => {
+    if (grantName.trim() === "") {
+      setNameError(true);
+      setApiError("");
+      return;
+    }
+
+    if (grantReference.trim() === "") {
+      setReferenceError(true);
+      setApiError("");
+      if (grantBudget < 0 || grantBudget === 0 || grantBudget > 999999) {
+        setBudgetError(true);
+        setApiError(
+          grantBudget < 0
+            ? "Begroting mag niet negatief zijn"
+            : grantBudget === 0
+            ? "Vul een begroting in"
+            : "Het bedrag is te hoog, vul een lager bedrag in",
+        );
+      } else {
+        setBudgetError(false);
+      }
+      return;
+    }
+
+    if (grantBudget < 0 || grantBudget === 0 || grantBudget > 999999) {
+      setBudgetError(true);
+      setApiError(
+        grantBudget < 0
+          ? "Begroting mag niet negatief zijn"
+          : grantBudget === 0
+          ? "Vul een begroting in"
+          : "Het bedrag is te hoog, vul een lager bedrag in",
+      );
+      if (referenceError) {
+        setReferenceError(false);
+      }
+      return;
+    }
+
     try {
       const token = localStorage.getItem("token");
       if (!token) {
@@ -88,10 +138,19 @@ const EditGrantDesktop: React.FC<EditGrantDesktopProps> = ({
         grantReference,
         grantBudget,
       );
+
+      setNameError(false);
+      setReferenceError(false);
+      setBudgetError(false);
+      setApiError("");
+
       handleClose();
       onGrantEdited();
     } catch (error) {
       console.error("Failed to edit grant:", error);
+      if (error.response && error.response.status === 409) {
+        setApiError("Naam is al in gebruik");
+      }
     }
   };
 
@@ -121,16 +180,46 @@ const EditGrantDesktop: React.FC<EditGrantDesktopProps> = ({
           <input
             type="text"
             value={grantName}
-            onChange={(e) => setGrantName(e.target.value)}
+            onChange={(e) => {
+              setGrantName(e.target.value);
+              setNameError(false);
+              setApiError("");
+            }}
+            onKeyPress={handleKeyPress}
           />
+          {nameError && (
+            <span style={{ color: "red", display: "block", marginTop: "5px" }}>
+              Vul een naam in.
+            </span>
+          )}
+          {apiError && !budgetError && (
+            <span style={{ color: "red", display: "block", marginTop: "5px" }}>
+              {apiError}
+            </span>
+          )}
         </div>
         <div className={styles.formGroup}>
           <label className={styles.label}>Referentie:</label>
           <input
             type="text"
             value={grantReference}
-            onChange={(e) => setGrantReference(e.target.value)}
+            onChange={(e) => {
+              setGrantReference(e.target.value);
+              setReferenceError(false);
+              setApiError("");
+            }}
+            onKeyPress={handleKeyPress}
           />
+          {referenceError && (
+            <span style={{ color: "red", display: "block", marginTop: "5px" }}>
+              Vul een referentie in.
+            </span>
+          )}
+          {apiError && !budgetError && (
+            <span style={{ color: "red", display: "block", marginTop: "5px" }}>
+              {apiError}
+            </span>
+          )}
         </div>
         <div className={styles.formGroup}>
           <label className={styles.label}>Begroting:</label>
@@ -138,7 +227,13 @@ const EditGrantDesktop: React.FC<EditGrantDesktopProps> = ({
             type="number"
             value={grantBudget.toString()}
             onChange={(e) => setGrantBudget(Number(e.target.value))}
+            onKeyPress={handleKeyPress}
           />
+          {budgetError && (
+            <span style={{ color: "red", display: "block", marginTop: "5px" }}>
+              {apiError}
+            </span>
+          )}
         </div>
         <div className={styles.buttonContainer}>
           <button onClick={handleClose} className={styles.cancelButton}>

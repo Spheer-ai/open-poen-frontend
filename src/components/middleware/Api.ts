@@ -473,6 +473,9 @@ export const addRegulation = async (
     );
     return response.data;
   } catch (error) {
+    if (error.response && error.response.status === 409) {
+      throw new Error("Naam is al in gebruik.");
+    }
     console.error(
       "Error creating regulation:",
       error.response ? error.response.data : error,

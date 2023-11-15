@@ -24,6 +24,9 @@ const AddGrantDesktop: React.FC<AddGrantDesktopProps> = ({
   const [grantName, setGrantName] = useState("");
   const [grantReference, setGrantReference] = useState("");
   const [grantBudget, setGrantBudget] = useState("");
+  const [nameError, setNameError] = useState("");
+  const [referenceError, setReferenceError] = useState("");
+  const [budgetError, setBudgetError] = useState("");
 
   useEffect(() => {
     if (isOpen) {
@@ -35,7 +38,50 @@ const AddGrantDesktop: React.FC<AddGrantDesktopProps> = ({
     }
   }, [isOpen]);
 
+  const validateFields = () => {
+    let isValid = true;
+
+    if (!grantName) {
+      setNameError("Vul een naam in.");
+      isValid = false;
+    } else {
+      setNameError("");
+    }
+
+    if (!grantReference) {
+      setReferenceError("Vul een referentie in.");
+      isValid = false;
+    } else {
+      setReferenceError("");
+    }
+
+    if (!grantBudget) {
+      setBudgetError("Vul een begroting in.");
+      isValid = false;
+    } else {
+      const budgetValue = parseFloat(grantBudget);
+      if (budgetValue < 0) {
+        setBudgetError("Begroting mag niet negatief zijn.");
+        isValid = false;
+      } else if (budgetValue === 0) {
+        setBudgetError("Vul een begroting in.");
+        isValid = false;
+      } else if (budgetValue > 999999) {
+        setBudgetError("Het bedrag is te hoog, vul een lager bedrag in.");
+        isValid = false;
+      } else {
+        setBudgetError("");
+      }
+    }
+
+    return isValid;
+  };
+
   const handleAdd = async () => {
+    if (!validateFields()) {
+      return;
+    }
+
     try {
       const token = localStorage.getItem("token");
       if (!token) {
@@ -93,7 +139,15 @@ const AddGrantDesktop: React.FC<AddGrantDesktopProps> = ({
             placeholder="Vul een naam in"
             value={grantName}
             onChange={(e) => setGrantName(e.target.value)}
+            onKeyUp={(e) => {
+              if (e.key === "Enter") {
+                handleAdd();
+              }
+            }}
           />
+          <p style={{ color: "red", display: "block", marginTop: "5px" }}>
+            {nameError}
+          </p>
         </div>
         <div className={styles.formGroup}>
           <label className={styles.label}>Referentie:</label>
@@ -102,7 +156,15 @@ const AddGrantDesktop: React.FC<AddGrantDesktopProps> = ({
             placeholder="Vul een referentie in"
             value={grantReference}
             onChange={(e) => setGrantReference(e.target.value)}
+            onKeyUp={(e) => {
+              if (e.key === "Enter") {
+                handleAdd();
+              }
+            }}
           />
+          <p style={{ color: "red", display: "block", marginTop: "5px" }}>
+            {referenceError}
+          </p>
         </div>
         <div className={styles.formGroup}>
           <label className={styles.label}>Begroting:</label>
@@ -111,7 +173,15 @@ const AddGrantDesktop: React.FC<AddGrantDesktopProps> = ({
             placeholder="Vul een begroting in"
             value={grantBudget}
             onChange={(e) => setGrantBudget(e.target.value)}
+            onKeyUp={(e) => {
+              if (e.key === "Enter") {
+                handleAdd();
+              }
+            }}
           />
+          <p style={{ color: "red", display: "block", marginTop: "5px" }}>
+            {budgetError}
+          </p>
         </div>
         <div className={styles.buttonContainer}>
           <button onClick={handleClose} className={styles.cancelButton}>
