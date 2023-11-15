@@ -80,6 +80,9 @@ const RegulationDetail: React.FC<RegulationDetailProps> = ({
   useParams();
 
   useEffect(() => {
+    setHasCreateGrantPermission(false);
+    setHasEditPermission(false);
+
     async function getRegulationDetails() {
       try {
         if (user?.token && sponsorId && regulationId) {
@@ -89,6 +92,7 @@ const RegulationDetail: React.FC<RegulationDetailProps> = ({
               parseInt(regulationId),
               user.token,
             );
+
           console.log(
             "Fetched permissions for the regulation:",
             regulationPermissions,

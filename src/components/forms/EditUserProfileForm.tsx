@@ -14,7 +14,9 @@ import {
 const EditUserProfileForm: React.FC<EditUserProfileFormProps> = ({
   userId,
   onCancel,
+  fieldPermissions,
 }) => {
+  console.log("fieldPermissions:", fieldPermissions);
   const { user } = useAuth();
 
   const handleImageUpload = (image: File) => {
@@ -39,6 +41,8 @@ const EditUserProfileForm: React.FC<EditUserProfileFormProps> = ({
       fetchUserProfileDataFromApi(userId, user?.token || "");
     }
   }, [userId]);
+
+  console.log("fieldPermissions222:", fieldPermissions);
 
   const fetchUserProfileDataFromApi = async (userId: string, token: string) => {
     try {
@@ -93,8 +97,6 @@ const EditUserProfileForm: React.FC<EditUserProfileFormProps> = ({
 
   const handleCancel = () => {
     onCancel();
-
-    window.location.reload();
   };
 
   const handleBioChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -124,66 +126,79 @@ const EditUserProfileForm: React.FC<EditUserProfileFormProps> = ({
         ) : (
           <form>
             <h3>Info</h3>
-            <div className={styles["form-group"]}>
-              <label
-                className={styles["label-first_name"]}
-                htmlFor="first_name"
-              >
-                Voornaam
-              </label>
-              <input
-                type="text"
-                id="first_name"
-                name="first_name"
-                placeholder="Voer de voornaam in"
-                value={formData.first_name}
-                onChange={handleChange}
-                className={isSuccess ? "success" : isError ? "error" : ""}
-              />
-            </div>
-            <div className={styles["form-group"]}>
-              <label className={styles["label-last_name"]} htmlFor="last_name">
-                Achternaam
-              </label>
-              <input
-                type="text"
-                id="last_name"
-                name="last_name"
-                placeholder="Voer de achternaam in"
-                value={formData.last_name}
-                onChange={handleChange}
-                className={isSuccess ? "success" : isError ? "error" : ""}
-              />
-            </div>
-            <div className={styles["form-group"]}>
-              <label className={styles["label-biography"]} htmlFor="biography">
-                Biografie
-              </label>
-              <textarea
-                id="biography"
-                name="biography"
-                placeholder="Voer een biografie in"
-                value={formData.biography}
-                onChange={handleBioChange}
-                className={isSuccess ? "success" : isError ? "error" : ""}
-              />
-              <div className={styles["chart-count-container"]}>
-                <div
-                  className={
-                    bioCharCount > 500
-                      ? styles["char-count-error"]
-                      : styles["char-count"]
-                  }
+            {fieldPermissions.fields.includes("first_name") && (
+              <div className={styles["form-group"]}>
+                <label
+                  className={styles["label-first_name"]}
+                  htmlFor="first_name"
                 >
-                  {bioCharCount}/500
-                </div>
-                {bioCharCount > 500 && (
-                  <div className={styles["error-message"]}>
-                    Biografie mag maximaal 500 tekens bevatten.
-                  </div>
-                )}
+                  Voornaam
+                </label>
+                <input
+                  type="text"
+                  id="first_name"
+                  name="first_name"
+                  placeholder="Voer de voornaam in"
+                  value={formData.first_name}
+                  onChange={handleChange}
+                  className={isSuccess ? "success" : isError ? "error" : ""}
+                />
               </div>
-            </div>
+            )}
+            {fieldPermissions.fields.includes("last_name") && (
+              <div className={styles["form-group"]}>
+                <label
+                  className={styles["label-last_name"]}
+                  htmlFor="last_name"
+                >
+                  Achternaam
+                </label>
+                <input
+                  type="text"
+                  id="last_name"
+                  name="last_name"
+                  placeholder="Voer de achternaam in"
+                  value={formData.last_name}
+                  onChange={handleChange}
+                  className={isSuccess ? "success" : isError ? "error" : ""}
+                />
+              </div>
+            )}
+            {fieldPermissions.fields.includes("biography") && (
+              <div className={styles["form-group"]}>
+                <label
+                  className={styles["label-biography"]}
+                  htmlFor="biography"
+                >
+                  Biografie
+                </label>
+                <textarea
+                  id="biography"
+                  name="biography"
+                  placeholder="Voer een biografie in"
+                  value={formData.biography}
+                  onChange={handleBioChange}
+                  className={isSuccess ? "success" : isError ? "error" : ""}
+                />
+
+                <div className={styles["chart-count-container"]}>
+                  <div
+                    className={
+                      bioCharCount > 500
+                        ? styles["char-count-error"]
+                        : styles["char-count"]
+                    }
+                  >
+                    {bioCharCount}/500
+                  </div>
+                  {bioCharCount > 500 && (
+                    <div className={styles["error-message"]}>
+                      Biografie mag maximaal 500 tekens bevatten.
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
             {userId && (
               <div className={styles["form-group"]}>
                 <label>Profielfoto</label>
@@ -195,19 +210,23 @@ const EditUserProfileForm: React.FC<EditUserProfileFormProps> = ({
               </div>
             )}
             <hr />
-            <h3>Instellingen</h3>
-            <div className={styles["form-group"]}>
-              <label>
-                <input
-                  type="checkbox"
-                  name="hidden"
-                  checked={formData.hidden}
-                  onChange={handleChange}
-                />
+            {fieldPermissions.fields.includes("hidden") && (
+              <>
+                <h3>Instellingen</h3>
+                <div className={styles["form-group"]}>
+                  <label>
+                    <input
+                      type="checkbox"
+                      name="hidden"
+                      checked={formData.hidden}
+                      onChange={handleChange}
+                    />
 
-                <p>Gebruiker verbergen in overzicht</p>
-              </label>
-            </div>
+                    <p>Gebruiker verbergen in overzicht</p>
+                  </label>
+                </div>
+              </>
+            )}
           </form>
         )}
         {!isConfirmed && (

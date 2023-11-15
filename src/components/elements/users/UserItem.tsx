@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import ProfileIcon from "../../../assets/profile-icon.svg";
-import UserDropdown from "../dropdown-menu/UserDropwdown";
 import styles from "../../../assets/scss/Contacts.module.scss";
 import { usePermissions } from "../../../contexts/PermissionContext";
 import { useAuth } from "../../../contexts/AuthContext";
@@ -12,9 +11,6 @@ const UserItem = ({
   loggedInId,
   isLoggedActiveUser,
   handleUserClick,
-  handleEditButtonClick,
-  handleOpenDeleteModal,
-  dropdownOpen,
   isLoggedIn,
 }) => {
   const userItemId = user.id;
@@ -116,15 +112,6 @@ const UserItem = ({
                 className={styles["profile-icon"]}
               />
             </div>
-          )}
-          {user.id && userPermissions.includes("edit") && (
-            <UserDropdown
-              isOpen={dropdownOpen[user.id]}
-              onEditClick={() => handleEditButtonClick(user.id)}
-              onDeleteClick={() => handleOpenDeleteModal(user.id)}
-              userId={user.id}
-              userPermissions={userPermissions}
-            />
           )}
         </Link>
       ) : (

@@ -6,4 +6,6 @@ export interface EditUserProfileFormProps {
   last_name: string;
   biography: string;
   hidden: true;
+  fieldPermissions;
+  fields: string[];
 }

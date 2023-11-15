@@ -10,7 +10,6 @@ import Sponsors from "../components/pages/Sponsors";
 import InlineModalLayout from "../components/ui/layout/InlideModalLayout";
 import styles from "../assets/scss/Routes.module.scss";
 import UserDetailsPage from "../components/pages/UserDetailPage";
-import EditUserForm from "../components/forms/EditUserForm";
 import FundDetail from "../components/pages/FundDetail";
 import ResetPassword from "../components/pages/onboarding/ResetPassword";
 import ResetPasswordLayout from "../components/pages/onboarding/ResetPasswordLayout";
@@ -18,7 +17,6 @@ import ResetPasswordRequest from "../components/pages/onboarding/ResetPasswordRe
 import SponsorDetail from "../components/pages/SponsorDetail";
 import PermissionChecker from "../components/pages/PermissionChecker";
 import RegulationList from "../components/lists/RegulationList";
-import BankConnections from "../components/lists/BankConnections";
 
 export default function AppRoutes() {
   const navigate = useNavigate();
@@ -85,19 +83,6 @@ export default function AppRoutes() {
                 <Contacts />
                 <Routes>
                   <Route path="user/:userId" element={<UserDetailsPage />} />
-                  <Route
-                    path="/edit/user/:user_id"
-                    element={
-                      <InlineModalLayout navigate={navigate}>
-                        <EditUserForm
-                          onCancel={() => {}}
-                          onContinue={() => {}}
-                          userId={""}
-                          navigate={navigate}
-                        />
-                      </InlineModalLayout>
-                    }
-                  />
                 </Routes>
               </InlineModalLayout>
             }

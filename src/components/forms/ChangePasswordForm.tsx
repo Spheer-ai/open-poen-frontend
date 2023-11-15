@@ -15,7 +15,6 @@ const ChangePasswordForm = ({ onClose, userId }) => {
 
   const handleCancel = () => {
     onClose();
-    window.location.reload();
   };
 
   const handleSubmit = async () => {
@@ -59,7 +58,6 @@ const ChangePasswordForm = ({ onClose, userId }) => {
           </div>
         ) : (
           <form onSubmit={handleSubmit} className={styles["change-pass-form"]}>
-            <h3>Wachtwoord wijzigen</h3>
             <div className={styles["form-group"]}>
               <label htmlFor="newPassword" className={styles["label-email"]}>
                 Nieuw wachtwoord:
@@ -89,9 +87,6 @@ const ChangePasswordForm = ({ onClose, userId }) => {
                   />
                 </span>
               </div>
-              <p className={styles["input-description"]}>
-                Kies een nieuw wachtwoord.
-              </p>
             </div>
             <div className={styles["form-group"]}>
               <label
@@ -125,9 +120,6 @@ const ChangePasswordForm = ({ onClose, userId }) => {
                   />
                 </span>
               </div>
-              <p className={styles["input-description"]}>
-                Herhaal het nieuwe wachtwoord ter bevestiging.
-              </p>
             </div>
             {!isConfirmed && (
               <FormButtons

@@ -21,6 +21,9 @@ const AddRegulationDesktop: React.FC<AddRegulationDesktopProps> = ({
   const [modalIsOpen, setModalIsOpen] = useState(isOpen);
   const [regulationName, setRegulationName] = useState("");
   const [regulationDescription, setRegulationDescription] = useState("");
+  const [nameError, setNameError] = useState(false);
+  const [uniqueNameError, setUniqueNameError] = useState(false);
+  const [descriptionError, setDescriptionError] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
@@ -33,6 +36,27 @@ const AddRegulationDesktop: React.FC<AddRegulationDesktopProps> = ({
   }, [isOpen]);
 
   const handleSave = async () => {
+    if (regulationName.trim() === "" && regulationDescription.trim() === "") {
+      setNameError(true);
+      setDescriptionError(true);
+      setUniqueNameError(false);
+      return;
+    }
+
+    if (regulationName.trim() === "") {
+      setNameError(true);
+      setDescriptionError(false);
+      setUniqueNameError(false);
+      return;
+    }
+
+    if (regulationDescription.trim() === "") {
+      setDescriptionError(true);
+      setNameError(false);
+      setUniqueNameError(false);
+      return;
+    }
+
     try {
       const token = localStorage.getItem("token");
       if (!token) {
@@ -51,13 +75,25 @@ const AddRegulationDesktop: React.FC<AddRegulationDesktopProps> = ({
         regulationName,
         regulationDescription,
       );
+
+      setNameError(false);
+      setUniqueNameError(false);
+
       setRegulationName("");
       setRegulationDescription("");
       handleClose();
 
       onRegulationAdded();
     } catch (error) {
-      console.error("Failed to create regulation:", error);
+      console.error("Error object:", error);
+      console.log("Error message:", error.message);
+      console.error("Failed to create regulation:", error.message);
+      if (error.message === "Naam is al in gebruik.") {
+        setUniqueNameError(true);
+        setNameError(false);
+      } else {
+        setDescriptionError(true);
+      }
     }
   };
 
@@ -65,6 +101,13 @@ const AddRegulationDesktop: React.FC<AddRegulationDesktopProps> = ({
     if (!isBlockingInteraction) {
       setModalIsOpen(false);
       onClose();
+    }
+  };
+
+  const handleEnterKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      handleSave();
     }
   };
 
@@ -88,8 +131,23 @@ const AddRegulationDesktop: React.FC<AddRegulationDesktopProps> = ({
             type="text"
             placeholder="Voer een naam in"
             value={regulationName}
-            onChange={(e) => setRegulationName(e.target.value)}
+            onChange={(e) => {
+              setRegulationName(e.target.value);
+              setNameError(false);
+              setUniqueNameError(false);
+            }}
+            onKeyPress={handleEnterKeyPress}
           />
+          {nameError && (
+            <span style={{ color: "red", display: "block", marginTop: "5px" }}>
+              Vul een naam in.
+            </span>
+          )}
+          {uniqueNameError && (
+            <span style={{ color: "red", display: "block", marginTop: "5px" }}>
+              Naam is al in gebruik.
+            </span>
+          )}
         </div>
         <div className={styles.formGroup}>
           <label className={styles.label}>Beschrijving:</label>
@@ -97,8 +155,17 @@ const AddRegulationDesktop: React.FC<AddRegulationDesktopProps> = ({
             type="text"
             placeholder="Voer de beschrijving in"
             value={regulationDescription}
-            onChange={(e) => setRegulationDescription(e.target.value)}
+            onChange={(e) => {
+              setRegulationDescription(e.target.value);
+              setDescriptionError(false);
+            }}
+            onKeyPress={handleEnterKeyPress}
           />
+          {descriptionError && (
+            <span style={{ color: "red", display: "block", marginTop: "5px" }}>
+              Vul een beschrijving in.
+            </span>
+          )}
         </div>
         <div className={styles.buttonContainer}>
           <button onClick={handleClose} className={styles.cancelButton}>

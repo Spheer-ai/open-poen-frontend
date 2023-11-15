@@ -10,9 +10,13 @@ import AddItemModal from "../modals/AddItemModal";
 import ChangePasswordForm from "../forms/ChangePasswordForm";
 import EditUserProfileForm from "../forms/EditUserProfileForm";
 import EditIcon from "/edit-icon.svg";
+import DeleteIcon from "/bin-icon.svg";
 import ChangePasswordIcon from "/change-password-icon.svg";
 import { fetchUserDetails, fetchInitiatives } from "../middleware/Api";
 import { usePermissions } from "../../contexts/PermissionContext";
+import { useFieldPermissions } from "../../contexts/FieldPermissionContext";
+import EditUserForm from "../forms/EditUserForm";
+import DeleteUserForm from "../forms/DeleteUserForm";
 
 const roleLabels = {
   administrator: "Beheerder",
@@ -39,9 +43,11 @@ export default function UserDetailsPage() {
   const [userDetails, setUserDetails] = useState<UserDetails | null>(null);
   const [initiatives, setInitiatives] = useState([]);
   const [activeAction, setActiveAction] = useState<string | null>(null);
+  const { fetchFieldPermissions } = useFieldPermissions();
   const { fetchPermissions } = usePermissions();
   const [entityPermissions, setEntityPermissions] = useState<string[]>([]);
   const [hasEditPermission, setHasEditPermission] = useState(false);
+  const [hasDeletePermission, setHasDeletePermission] = useState(false);
 
   useEffect(() => {
     async function fetchUserPermissions() {
@@ -60,6 +66,14 @@ export default function UserDetailsPage() {
             console.log("User does not have edit permission");
             setHasEditPermission(false);
           }
+
+          if (userPermissions && userPermissions.includes("delete")) {
+            console.log("User has delete permission");
+            setHasDeletePermission(true);
+          } else {
+            console.log("User does not have delete permission");
+            setHasDeletePermission(false);
+          }
         }
       } catch (error) {
         console.error("Failed to fetch user permissions:", error);
@@ -68,6 +82,25 @@ export default function UserDetailsPage() {
 
     fetchUserPermissions();
   }, [user, userId]);
+
+  useEffect(() => {
+    async function fetchFieldPermissionsOnMount() {
+      try {
+        if (user && user.token && userId) {
+          const fieldPermissions: string[] | undefined =
+            await fetchFieldPermissions("User", parseInt(userId), user.token);
+
+          if (fieldPermissions) {
+            setEntityPermissions(fieldPermissions);
+          }
+        }
+      } catch (error) {
+        console.error("Failed to fetch field permissions:", error);
+      }
+    }
+
+    fetchFieldPermissionsOnMount();
+  }, [user, userId, fetchFieldPermissions]);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -108,6 +141,14 @@ export default function UserDetailsPage() {
     setActiveAction(null);
   };
 
+  const handleEditUserClick = () => {
+    setActiveAction("editUser");
+  };
+
+  const handleDeleteUserClick = () => {
+    setActiveAction("deleteUser");
+  };
+
   console.log("hasEditPermission:", hasEditPermission);
   console.log("API Response for permissions:", entityPermissions);
 
@@ -122,11 +163,13 @@ export default function UserDetailsPage() {
                   <img
                     srcSet={
                       userDetails?.profile_picture
-                        ?.attachment_thumbnail_url_128 +
-                      " 128w, " +
-                      userDetails?.profile_picture
-                        ?.attachment_thumbnail_url_256 +
-                      " 256w"
+                        ? userDetails.profile_picture
+                            .attachment_thumbnail_url_128 +
+                          " 128w, " +
+                          userDetails.profile_picture
+                            .attachment_thumbnail_url_256 +
+                          " 256w"
+                        : undefined
                     }
                     sizes="(max-width: 768px) 128px, 256px"
                     src={
@@ -173,6 +216,7 @@ export default function UserDetailsPage() {
                       Profiel bewerken
                     </div>
                   )}
+
                   {loggedInUserId === userId && (
                     <div
                       className={styles["top-right-button"]}
@@ -184,6 +228,34 @@ export default function UserDetailsPage() {
                         className={styles["icon"]}
                       />
                       Verander wachtwoord
+                    </div>
+                  )}
+
+                  {hasEditPermission && (
+                    <div
+                      className={styles["top-right-button"]}
+                      onClick={handleEditUserClick}
+                    >
+                      <img
+                        src={EditIcon}
+                        alt="Edit User"
+                        className={styles["icon"]}
+                      />
+                      Gebruiker bewerken
+                    </div>
+                  )}
+
+                  {hasDeletePermission && (
+                    <div
+                      className={styles["top-right-button"]}
+                      onClick={handleDeleteUserClick}
+                    >
+                      <img
+                        alt="Delete User"
+                        className={styles["icon"]}
+                        src={DeleteIcon}
+                      />
+                      Gebruiker verwijderen
                     </div>
                   )}
                 </div>
@@ -231,6 +303,8 @@ export default function UserDetailsPage() {
             last_name={""}
             biography={""}
             hidden={true}
+            fieldPermissions={entityPermissions}
+            fields={[]}
           />
         </AddItemModal>
       )}
@@ -238,6 +312,28 @@ export default function UserDetailsPage() {
       {activeAction === "changePassword" && (
         <AddItemModal isOpen={true} onClose={handleCloseModal}>
           <ChangePasswordForm onClose={handleCloseModal} userId={userId} />
+        </AddItemModal>
+      )}
+
+      {activeAction === "editUser" && (
+        <AddItemModal isOpen={true} onClose={handleCloseModal}>
+          <EditUserForm
+            userId={userId || ""}
+            onCancel={handleCloseModal}
+            onContinue={handleCloseModal}
+            fieldPermissions={entityPermissions}
+            fields={[]}
+          />
+        </AddItemModal>
+      )}
+
+      {activeAction === "deleteUser" && (
+        <AddItemModal isOpen={true} onClose={handleCloseModal}>
+          <DeleteUserForm
+            userId={userId || ""}
+            onCancel={handleCloseModal}
+            onContinue={handleCloseModal}
+          />
         </AddItemModal>
       )}
     </>
