@@ -294,7 +294,9 @@ const RegulationDetail: React.FC<RegulationDetailProps> = ({
     <div className={styles["regulation-detail-container"]}>
       <Breadcrumb />
       <div className={styles["regulation-detail-header"]}>
-        <h1>{regulationDetails.name}</h1>
+        <h1 className={styles["regulation-detail-name"]}>
+          {regulationDetails.name}
+        </h1>
         <div className={styles["regulation-detail-buttons"]}>
           {hasEditPermission && (
             <button

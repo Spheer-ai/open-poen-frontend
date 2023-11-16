@@ -50,6 +50,11 @@
 .regulation-info {
   padding: 20px;
   font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 375px;
+  display: block;
 }
 
 .regulation-link {

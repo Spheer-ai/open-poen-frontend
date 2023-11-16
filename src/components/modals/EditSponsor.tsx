@@ -29,6 +29,7 @@ const EditSponsor: React.FC<EditSponsorProps> = ({
   const [isUrlValid, setIsUrlValid] = useState(true);
   const [nameError, setNameError] = useState(false);
   const [urlError, setUrlError] = useState(false);
+  const [maxNameLength] = useState(128);
 
   useEffect(() => {
     if (isOpen) {
@@ -52,7 +53,6 @@ const EditSponsor: React.FC<EditSponsorProps> = ({
   };
 
   const handleSave = async () => {
-    // Check if both name and URL are empty
     if (funderName.trim() === "" && funderUrl.trim() === "") {
       setNameError(true);
       setUrlError(true);
@@ -71,6 +71,11 @@ const EditSponsor: React.FC<EditSponsorProps> = ({
       return;
     } else {
       setNameError(false);
+    }
+
+    if (funderName.length > maxNameLength) {
+      setNameError(true);
+      return;
     }
 
     setUrlError(false);
@@ -124,7 +129,13 @@ const EditSponsor: React.FC<EditSponsorProps> = ({
             onChange={(e) => setFunderName(e.target.value)}
             className={styles.inputField}
           />
-          {nameError && (
+          {funderName.length > maxNameLength && (
+            <span style={{ color: "red", display: "block", marginTop: "5px" }}>
+              Sponsor naam mag niet meer dan {maxNameLength} karakters bevatten.
+            </span>
+          )}
+
+          {nameError && funderName.length <= maxNameLength && (
             <span style={{ color: "red", display: "block", marginTop: "5px" }}>
               Vul een naam in.
             </span>
@@ -145,7 +156,7 @@ const EditSponsor: React.FC<EditSponsorProps> = ({
           )}
           {urlError && (
             <span style={{ color: "red", display: "block", marginTop: "5px" }}>
-              Vul een naam en URL in.
+              Vul een URL in.
             </span>
           )}
         </div>

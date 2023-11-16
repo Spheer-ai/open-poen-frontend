@@ -214,7 +214,7 @@ export default function UserDetailsPage() {
                         alt="Profiel"
                         className={styles["icon"]}
                       />
-                     Profiel
+                      Profiel
                     </div>
                   )}
                   {hasEditPermission && (

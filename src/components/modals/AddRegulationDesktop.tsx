@@ -24,6 +24,7 @@ const AddRegulationDesktop: React.FC<AddRegulationDesktopProps> = ({
   const [nameError, setNameError] = useState(false);
   const [uniqueNameError, setUniqueNameError] = useState(false);
   const [descriptionError, setDescriptionError] = useState(false);
+  const [maxNameLength] = useState(128);
 
   useEffect(() => {
     if (isOpen) {
@@ -53,6 +54,13 @@ const AddRegulationDesktop: React.FC<AddRegulationDesktopProps> = ({
     if (regulationDescription.trim() === "") {
       setDescriptionError(true);
       setNameError(false);
+      setUniqueNameError(false);
+      return;
+    }
+
+    if (regulationName.length > maxNameLength) {
+      setNameError(true);
+      setDescriptionError(false);
       setUniqueNameError(false);
       return;
     }
@@ -138,7 +146,13 @@ const AddRegulationDesktop: React.FC<AddRegulationDesktopProps> = ({
             }}
             onKeyPress={handleEnterKeyPress}
           />
-          {nameError && (
+          {nameError && regulationName.length > maxNameLength && (
+            <span style={{ color: "red", display: "block", marginTop: "5px" }}>
+              Naam mag niet meer dan {maxNameLength} karakters bevatten.
+            </span>
+          )}
+
+          {nameError && regulationName.length <= maxNameLength && (
             <span style={{ color: "red", display: "block", marginTop: "5px" }}>
               Vul een naam in.
             </span>
