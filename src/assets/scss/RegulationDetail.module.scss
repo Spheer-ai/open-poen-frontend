@@ -22,6 +22,14 @@
     align-items: center;
     margin: 10px 0px;
 
+    .regulation-detail-name {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: block;
+      max-width: 500px;
+    }
+
     .regulation-detail-buttons {
       display: flex;
       gap: 20px;

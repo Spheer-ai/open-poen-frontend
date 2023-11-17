@@ -68,7 +68,7 @@ const SponsorList: React.FC<SponsorListProps> = ({ refreshTrigger }) => {
                 <a
                   target="_blank"
                   rel="noopener noreferrer"
-                  className={styles["sponsor-link"]}
+                  className={`${styles["sponsor-link"]}`}
                   onClick={(e) => {
                     e.preventDefault();
                     handleSponsorClick(sponsor.id.toString());

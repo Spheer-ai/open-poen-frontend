@@ -11,6 +11,7 @@ import ChangePasswordForm from "../forms/ChangePasswordForm";
 import EditUserProfileForm from "../forms/EditUserProfileForm";
 import EditIcon from "/edit-icon.svg";
 import DeleteIcon from "/bin-icon.svg";
+import SettingsIcon from "/setting-icon.svg";
 import ChangePasswordIcon from "/change-password-icon.svg";
 import { fetchUserDetails, fetchInitiatives } from "../middleware/Api";
 import { usePermissions } from "../../contexts/PermissionContext";
@@ -210,10 +211,23 @@ export default function UserDetailsPage() {
                     >
                       <img
                         src={EditIcon}
-                        alt="Edit"
+                        alt="Profiel"
                         className={styles["icon"]}
                       />
-                      Profiel bewerken
+                      Profiel
+                    </div>
+                  )}
+                  {hasEditPermission && (
+                    <div
+                      className={styles["top-right-button"]}
+                      onClick={handleEditUserClick}
+                    >
+                      <img
+                        src={SettingsIcon}
+                        alt="Instellingen"
+                        className={styles["icon"]}
+                      />
+                      Instellingen
                     </div>
                   )}
 
@@ -227,24 +241,9 @@ export default function UserDetailsPage() {
                         alt="Change Password"
                         className={styles["icon"]}
                       />
-                      Verander wachtwoord
+                      Wachtwoord
                     </div>
                   )}
-
-                  {hasEditPermission && (
-                    <div
-                      className={styles["top-right-button"]}
-                      onClick={handleEditUserClick}
-                    >
-                      <img
-                        src={EditIcon}
-                        alt="Edit User"
-                        className={styles["icon"]}
-                      />
-                      Gebruiker bewerken
-                    </div>
-                  )}
-
                   {hasDeletePermission && (
                     <div
                       className={styles["top-right-button"]}
@@ -255,7 +254,7 @@ export default function UserDetailsPage() {
                         className={styles["icon"]}
                         src={DeleteIcon}
                       />
-                      Gebruiker verwijderen
+                      Verwijderen
                     </div>
                   )}
                 </div>

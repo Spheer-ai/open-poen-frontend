@@ -21,6 +21,7 @@ const AddSponsorDesktop: React.FC<AddSponsorDesktopProps> = ({
   const [isUrlValid, setIsUrlValid] = useState(true);
   const [nameError, setNameError] = useState(false);
   const [urlError, setUrlError] = useState(false);
+  const [maxNameLength] = useState(128);
 
   useEffect(() => {
     if (isOpen) {
@@ -60,6 +61,11 @@ const AddSponsorDesktop: React.FC<AddSponsorDesktopProps> = ({
       return;
     } else {
       setNameError(false);
+    }
+
+    if (sponsorName.length > maxNameLength) {
+      setNameError(true);
+      return;
     }
 
     setUrlError(false);
@@ -123,9 +129,12 @@ const AddSponsorDesktop: React.FC<AddSponsorDesktopProps> = ({
             onChange={(e) => setSponsorName(e.target.value)}
             onKeyPress={handleEnterKeyPress}
           />
+
           {nameError && (
             <span style={{ color: "red", display: "block", marginTop: "5px" }}>
-              Vul een naam in.
+              {sponsorName.length > maxNameLength
+                ? "Naam mag niet meer dan 128 karakters bevatten."
+                : "Vul een naam in."}
             </span>
           )}
         </div>

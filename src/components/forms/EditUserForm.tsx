@@ -19,6 +19,8 @@ const EditUserForm: React.FC<EditUserFormProps> = ({
     is_active: false,
     hidden: false,
   });
+  const [emailError, setEmailError] = useState("");
+  const [hasSubmitted, setHasSubmitted] = useState(false);
 
   useEffect(() => {
     if (userId) {
@@ -55,7 +57,25 @@ const EditUserForm: React.FC<EditUserFormProps> = ({
     }
   };
 
+  const validateEmail = (email: string) => {
+    const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email) {
+      setEmailError("Vul een e-mailadres in");
+    } else if (!pattern.test(email)) {
+      setEmailError("Vul een geldig e-mailadres in");
+    } else {
+      setEmailError("");
+    }
+  };
+
   const handleSubmit = async () => {
+    setHasSubmitted(true);
+    validateEmail(formData.email);
+
+    if (emailError) {
+      return;
+    }
+
     try {
       const token = user?.token || "";
 
@@ -76,6 +96,13 @@ const EditUserForm: React.FC<EditUserFormProps> = ({
 
   const handleCancel = () => {
     onCancel();
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      handleSubmit();
+    }
   };
 
   return (
@@ -106,7 +133,20 @@ const EditUserForm: React.FC<EditUserFormProps> = ({
                   placeholder="Voer het e-mailadres in"
                   value={formData.email}
                   onChange={handleChange}
+                  onKeyPress={handleKeyPress}
                 />
+                {hasSubmitted && emailError && (
+                  <p
+                    style={{
+                      color: "red",
+                      display: "block",
+                      marginTop: "5px",
+                      marginBottom: "0px",
+                    }}
+                  >
+                    {emailError}
+                  </p>
+                )}
               </div>
             )}
             <hr />
@@ -162,7 +202,7 @@ const EditUserForm: React.FC<EditUserFormProps> = ({
                         checked={formData.is_active}
                         onChange={handleChange}
                       />
-                      Initiatiefaccount is actief
+                      Account is actief
                     </label>
                   </>
                 )}

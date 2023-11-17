@@ -30,7 +30,8 @@ const EditRegulationDesktop: React.FC<EditRegulationDesktopProps> = ({
     useState(currentDescription);
   const [nameError, setNameError] = useState(false);
   const [descriptionError, setDescriptionError] = useState(false);
-  const [apiError, setApiError] = useState(""); // New state to handle API errors
+  const [apiError, setApiError] = useState("");
+  const [maxNameLength] = useState(128);
 
   useEffect(() => {
     if (isOpen) {
@@ -63,6 +64,12 @@ const EditRegulationDesktop: React.FC<EditRegulationDesktopProps> = ({
     if (regulationDescription.trim() === "") {
       setDescriptionError(true);
       setNameError(false);
+      return;
+    }
+
+    if (regulationName.length > maxNameLength) {
+      setNameError(true);
+      setDescriptionError(false);
       return;
     }
 
@@ -141,7 +148,13 @@ const EditRegulationDesktop: React.FC<EditRegulationDesktopProps> = ({
             }}
             onKeyPress={handleEnterKeyPress}
           />
-          {nameError && (
+          {nameError && regulationName.length > maxNameLength && (
+            <span style={{ color: "red", display: "block", marginTop: "5px" }}>
+              Naam mag niet meer dan {maxNameLength} karakters bevatten.
+            </span>
+          )}
+
+          {nameError && regulationName.length <= maxNameLength && (
             <span style={{ color: "red", display: "block", marginTop: "5px" }}>
               Vul een naam in.
             </span>

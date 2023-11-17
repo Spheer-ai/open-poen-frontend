@@ -105,17 +105,17 @@ const DeleteGrant: React.FC<DeleteGrantProps> = ({
         <hr></hr>
         <div className={styles.formGroup}>
           <h3>Info</h3>
-          <p>Weet je zekler dat je de beschikking wilt verwijderen?</p>
+          <p>Weet je zeker dat je de beschikking wilt verwijderen?</p>
           <label className={styles.label}>Naam:</label>
-          <span>{currentName}</span>
+          <span> {currentName}</span>
         </div>
         <div className={styles.formGroup}>
           <label className={styles.label}>Referentie:</label>
-          <span>{currentReference}</span>
+          <span> {currentReference}</span>
         </div>
         <div className={styles.formGroup}>
           <label className={styles.label}>Begroting:</label>
-          <span>{currentBudget}</span>
+          <span>€ {currentBudget}</span>
         </div>
         <div className={styles.buttonContainer}>
           <button onClick={handleClose} className={styles.cancelButton}>
