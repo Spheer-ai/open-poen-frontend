@@ -60,14 +60,14 @@ const EditUserProfileForm: React.FC<EditUserProfileFormProps> = ({
   };
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     const { name, value } = e.target;
-  
+
     if (name === "hidden" && !fieldPermissions.fields.includes("hidden")) {
       return;
     }
-  
+
     if (e.target.type === "checkbox") {
       setFormData({
         ...formData,
@@ -80,17 +80,16 @@ const EditUserProfileForm: React.FC<EditUserProfileFormProps> = ({
       });
     }
   };
-  
 
   const handleSubmit = async () => {
     try {
       const token = user?.token || "";
-  
+
       if (!userId) {
         console.error("userId is null");
         return;
       }
-  
+
       if (selectedImage) {
         await uploadProfileImage(userId, selectedImage, token);
       }
@@ -99,24 +98,25 @@ const EditUserProfileForm: React.FC<EditUserProfileFormProps> = ({
         first_name: formData.first_name,
         last_name: formData.last_name,
         biography: formData.biography,
-        ...(fieldPermissions.fields.includes("hidden") && { hidden: formData.hidden }),
+        ...(fieldPermissions.fields.includes("hidden") && {
+          hidden: formData.hidden,
+        }),
       };
-  
+
       const response = await updateUserProfile(userId, formDataToSend, token);
-  
+
       console.log("User profile updated:", response);
-  
+
       setIsConfirmed(true);
       setIsSuccess(true);
       setIsError(false);
     } catch (error) {
       console.error("Failed to update user profile:", error);
-  
+
       setIsError(true);
       setIsSuccess(false);
     }
   };
-  
 
   const handleCancel = () => {
     onCancel();
