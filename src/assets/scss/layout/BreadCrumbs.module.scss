@@ -4,17 +4,34 @@
   display: flex;
   align-items: center;
   margin-top: 0;
+}
 
-  li {
-    padding-left: 0;
-  }
+.breadcrumbItem {
+  display: flex;
+  align-items: center;
+  padding: 10px 5px;
 }
 
 .breadcrumbItem a {
   margin-right: 5px;
+  text-decoration: none;
+  color: #686868;
 }
 
-.breadcrumbItem.active a {
-  font-weight: bold;
-  color: grey !important;
+.breadcrumbItem:last-child a {
+  color: #265ed4;
+}
+
+.breadcrumbItem:not(:last-child)::after {
+  content: "";
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  background-image: url("/right-arrow-icon.svg");
+  background-size: cover;
+  margin: 0 5px;
+}
+
+.breadcrumbItem:first-child::after {
+  display: none;
 }

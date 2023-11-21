@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import { getFunderById } from "../middleware/Api";
 import Breadcrumb from "../ui/layout/BreadCrumbs";
@@ -48,7 +48,13 @@ const SponsorDetail = () => {
 
   return (
     <div className={styles["sponsor-detail-container"]}>
-      <Breadcrumb />
+      <Breadcrumb
+        customBreadcrumbs={[
+          <Link key="sponsors" to="/sponsors">
+            Sponsoren
+          </Link>,
+        ]}
+      />
       <h2>Sponsor Details</h2>
       <p>Name: {sponsorData.name}</p>
       <p>URL: {sponsorData.url}</p>
