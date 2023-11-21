@@ -1,7 +1,12 @@
 import React, { useEffect, useState } from "react";
 import styles from "../../assets/scss/layout/AddFundDesktop.module.scss";
-import { addOfficerToGrant, getUsers } from "../middleware/Api";
+import {
+  addOfficerToGrant,
+  getUsers,
+  getGrantOverseers,
+} from "../middleware/Api";
 import { Officer } from "../../types/AddOfficerType";
+import deleteIcon from "/delete-icon.svg";
 
 interface AddOfficerDesktopProps {
   isOpen: boolean;
@@ -43,29 +48,66 @@ const AddOfficerDesktop: React.FC<AddOfficerDesktopProps> = ({
   }, [isOpen]);
 
   useEffect(() => {
-    async function fetchAndSetUsers() {
+    async function fetchAndSetOverseers() {
       try {
         const token = localStorage.getItem("token");
         if (!token) {
           console.error("Token is not available in localStorage");
           return;
         }
+
+        if (!sponsorId || !regulationId || !grantId) {
+          console.error("Required IDs are not available.");
+          return;
+        }
+
+        const overseers = await getGrantOverseers(
+          Number(sponsorId),
+          Number(regulationId),
+          Number(grantId),
+          token,
+        );
+
+        const overseerEmails = overseers.map((overseer) => ({
+          id: overseer.id,
+          email: overseer.email,
+        }));
+
+        setAddedOfficers(overseerEmails);
+      } catch (error) {
+        console.error("Error fetching overseers:", error);
+      }
+    }
+    fetchAndSetOverseers();
+  }, [sponsorId, regulationId, grantId]);
+
+  useEffect(() => {
+    async function fetchAllUsers() {
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) {
+          console.error("Token is not available in localStorage");
+          return;
+        }
+
         const response = await getUsers(token);
+
         setAllUsers(response.users);
       } catch (error) {
         console.error("Error fetching all users:", error);
       }
     }
-    fetchAndSetUsers();
+    fetchAllUsers();
   }, []);
 
   const handleOfficerSelect = (officer: Officer) => {
-    if (!addedOfficers.includes(officer)) {
+    if (!addedOfficers.some((added) => added.id === officer.id)) {
       setAddedOfficers((prev) => [...prev, officer]);
     }
     setSelectedOfficerId(officer.id);
     setSearchTerm("");
   };
+
   const handleAddOfficer = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -84,18 +126,39 @@ const AddOfficerDesktop: React.FC<AddOfficerDesktopProps> = ({
         return;
       }
 
+      let officerIds = addedOfficers.map((officer) => officer.id);
+
+      if (selectedOfficerId && !officerIds.includes(selectedOfficerId)) {
+        officerIds.push(selectedOfficerId);
+      }
+
+      console.log("officerIds to send:", officerIds);
+
+      if (officerIds.length === 0) {
+        console.error("No officer IDs to send.");
+        return;
+      }
+
       await addOfficerToGrant(
         token,
         Number(sponsorId),
         Number(regulationId),
         Number(grantId),
-        [selectedOfficerId],
+        officerIds,
       );
+
       handleClose();
       onOfficerAdded();
     } catch (error) {
       console.error("Failed to add officer:", error);
     }
+  };
+
+  const handleRemoveOfficer = (officerId: number) => {
+    const updatedOfficers = addedOfficers.filter(
+      (officer) => officer.id !== officerId,
+    );
+    setAddedOfficers(updatedOfficers);
   };
 
   const handleClose = () => {
@@ -122,10 +185,17 @@ const AddOfficerDesktop: React.FC<AddOfficerDesktopProps> = ({
           <h3>Penvoerders</h3>
           <ul className={styles["officers-list"]}>
             {addedOfficers.map((officer) => (
-              <li key={officer.id}>{officer.email}</li>
+              <li key={officer.id}>
+                {officer.email}
+                <img
+                  src={deleteIcon}
+                  alt="Delete"
+                  className={styles.deleteIcon}
+                  onClick={() => handleRemoveOfficer(officer.id)}
+                />
+              </li>
             ))}
           </ul>
-          <label className={styles.label}>Selecteer een penvoerder...</label>
           <input
             type="text"
             value={searchTerm}
