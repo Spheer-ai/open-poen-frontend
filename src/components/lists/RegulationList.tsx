@@ -120,12 +120,13 @@ const RegulationList = () => {
         <TopNavigationBar
           title={`Regelingen`}
           onBackArrowClick={handleBackClick}
-          showSettings={true}
+          showSettings={false}
           showCta={true}
           onSettingsClick={() => {}}
           onSearch={handleSearch}
           onCtaClick={handleToggleAddRegulationModal}
           hasPermission={hasPermission}
+          showSearch={false}
         />
 
         {regulations.length > 0 ? (

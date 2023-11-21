@@ -11,4 +11,5 @@ export interface TopNavigationBarProps {
   entityClass?: string;
   children?: ReactNode;
   hasPermission: boolean;
+  showSearch: boolean;
 }

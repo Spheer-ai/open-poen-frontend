@@ -165,12 +165,13 @@ export default function Contacts() {
     <div className={styles["side-panel"]}>
       <TopNavigationBar
         title={`Gebruikers ${userData.length}`}
-        showSettings={true}
+        showSettings={false}
         showCta={true}
         onSettingsClick={() => {}}
         onCtaClick={handleCtaClick}
         onSearch={handleSearch}
         hasPermission={hasPermission}
+        showSearch={false}
       />
       {error ? (
         <p>Error: {error.message}</p>
