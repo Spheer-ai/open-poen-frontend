@@ -982,3 +982,60 @@ export const getEditFieldsForEntity = async (entityClass, entityId, token) => {
     throw error;
   }
 };
+
+export const getUsersByEmail = async (
+  token: string,
+  searchTerm: string,
+  offset: number = 0,
+  limit: number = 20,
+) => {
+  try {
+    const response = await api.get("/users", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      params: {
+        email: searchTerm,
+        offset,
+        limit,
+      },
+    });
+    return response.data.users;
+  } catch (error) {
+    console.error(
+      "Error searching users by email:",
+      error.response ? error.response.data : error,
+    );
+    throw error;
+  }
+};
+
+export const getGrantOverseers = async (
+  funderId,
+  regulationId,
+  grantId,
+  token,
+) => {
+  try {
+    const response = await api.get(
+      `/funder/${funderId}/regulation/${regulationId}/grant/${grantId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+
+    if (response.status === 200) {
+      return response.data.overseers;
+    } else {
+      throw new Error("Failed to fetch overseers for grant");
+    }
+  } catch (error) {
+    console.error(
+      "Error fetching overseers for grant:",
+      error.response ? error.response.data : error,
+    );
+    throw error;
+  }
+};

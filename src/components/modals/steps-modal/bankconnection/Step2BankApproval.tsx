@@ -53,7 +53,9 @@ const Step2BankApproval: React.FC<Step2BankApprovalProps> = ({
         const checkExternalLink = setInterval(() => {
           if (externalLink.closed) {
             clearInterval(checkExternalLink);
-            navigate("/transactions/bankconnections/add-bank?step=3");
+            navigate(
+              "/transactions/bankconnections/add-bank?step=3&message=${message}",
+            );
           }
         }, 1000);
       }

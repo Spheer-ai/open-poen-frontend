@@ -23,7 +23,6 @@ const GrantList: React.FC<GrantListProps> = ({
   onEditGrantClick,
   onDeleteGrantClick,
   onAddOfficerClick,
-  grantPermissions,
 }) => {
   const { user } = useAuth();
   const { fetchPermissions } = usePermissions();

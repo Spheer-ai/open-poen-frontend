@@ -1,7 +1,12 @@
 import React, { useEffect, useState } from "react";
 import styles from "../../assets/scss/layout/AddFundDesktop.module.scss";
-import { addEmployeeToRegulation, getUsers } from "../middleware/Api";
+import {
+  addEmployeeToRegulation,
+  getUsers,
+  fetchRegulationDetails,
+} from "../middleware/Api";
 import { Officer } from "../../types/AddOfficerType";
+import deleteIcon from "/delete-icon.svg";
 
 interface AddEmployeeToRegulationProps {
   isOpen: boolean;
@@ -17,14 +22,34 @@ const AddEmployeeToRegulation: React.FC<AddEmployeeToRegulationProps> = ({
   onClose,
   isBlockingInteraction,
   onEmployeeAdded,
-  sponsorId,
-  regulationId,
+  sponsorId = "",
+  regulationId = "",
 }) => {
   const [modalIsOpen, setModalIsOpen] = useState(isOpen);
-  const [selectedEmployees, setSelectedEmployees] = useState<Officer[]>([]);
   const [allUsers, setAllUsers] = useState<Officer[]>([]);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedRole, setSelectedRole] = useState("");
+  const [searchTermGrantOfficer, setSearchTermGrantOfficer] = useState("");
+  const [searchTermPolicyOfficer, setSearchTermPolicyOfficer] = useState("");
+  const [filteredGrantOfficers, setFilteredGrantOfficers] = useState<Officer[]>(
+    [],
+  );
+  const [filteredPolicyOfficers, setFilteredPolicyOfficers] = useState<
+    Officer[]
+  >([]);
+  const [selectedGrantOfficers, setSelectedGrantOfficers] = useState<Officer[]>(
+    [],
+  );
+  const [selectedPolicyOfficers, setSelectedPolicyOfficers] = useState<
+    Officer[]
+  >([]);
+  const [addedGrantOfficers, setAddedGrantOfficers] = useState<Officer[]>([]);
+  const [removedGrantOfficers, setRemovedGrantOfficers] = useState<Officer[]>(
+    [],
+  );
+  const [addedPolicyOfficers, setAddedPolicyOfficers] = useState<Officer[]>([]);
+  const [removedPolicyOfficers, setRemovedPolicyOfficers] = useState<Officer[]>(
+    [],
+  );
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
@@ -37,31 +62,85 @@ const AddEmployeeToRegulation: React.FC<AddEmployeeToRegulationProps> = ({
   }, [isOpen]);
 
   useEffect(() => {
-    async function fetchAndSetUsers() {
+    async function fetchData(searchTerm: string) {
       try {
+        setIsLoading(true);
         const token = localStorage.getItem("token");
         if (!token) {
           console.error("Token is not available in localStorage");
           return;
         }
-        const response = await getUsers(token);
-        setAllUsers(response.users);
+
+        const regulationDetails = await fetchRegulationDetails(
+          token,
+          sponsorId,
+          regulationId,
+        );
+        const grantOfficers = regulationDetails.grant_officers || [];
+        const policyOfficers = regulationDetails.policy_officers || [];
+
+        setSelectedGrantOfficers(grantOfficers);
+        setSelectedPolicyOfficers(policyOfficers);
+
+        console.log("Searching for users by email...");
+        const allUsersResponse = await getUsers(token);
+        console.log("allUsersResponse:", allUsersResponse);
+
+        if (allUsersResponse && allUsersResponse.users) {
+          setFilteredGrantOfficers(allUsersResponse.users);
+          setFilteredPolicyOfficers(allUsersResponse.users);
+        } else {
+          console.log("No users found in allUsersResponse.");
+        }
+
+        setIsLoading(false);
       } catch (error) {
-        console.error("Error fetching all users:", error);
+        console.error("Error fetching data:", error);
+        setIsLoading(false);
       }
     }
-    fetchAndSetUsers();
-  }, []);
 
-  const handleEmployeeSelect = (employee: Officer) => {
-    if (!selectedEmployees.some((selected) => selected.id === employee.id)) {
-      setSelectedEmployees((prevSelected) => [...prevSelected, employee]);
-    }
-    setSearchTerm("");
+    fetchData(searchTermGrantOfficer);
+  }, [sponsorId, regulationId]);
+
+  const handleDeleteGrantOfficer = (user: Officer) => {
+    setRemovedGrantOfficers((prevRemoved) => [...prevRemoved, user]);
+    setSelectedGrantOfficers((prevSelected) =>
+      prevSelected.filter((officer) => officer.id !== user.id),
+    );
+    setAddedGrantOfficers((prevAdded) =>
+      prevAdded.filter((officer) => officer.id !== user.id),
+    );
+    setSearchTermGrantOfficer("");
   };
 
-  const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSelectedRole(event.target.value);
+  const handleDeletePolicyOfficer = (user: Officer) => {
+    setRemovedPolicyOfficers((prevRemoved) => [...prevRemoved, user]);
+    setSelectedPolicyOfficers((prevSelected) =>
+      prevSelected.filter((officer) => officer.id !== user.id),
+    );
+    setAddedPolicyOfficers((prevAdded) =>
+      prevAdded.filter((officer) => officer.id !== user.id),
+    );
+    setSearchTermPolicyOfficer("");
+  };
+
+  const handleAddToGrantOfficers = (user: Officer) => {
+    setAddedGrantOfficers((prevAdded) => [...prevAdded, user]);
+    setSelectedGrantOfficers((prevSelected) => [...prevSelected, user]);
+    setFilteredGrantOfficers((prevFiltered) =>
+      prevFiltered.filter((officer) => officer.id !== user.id),
+    );
+    setSearchTermGrantOfficer("");
+  };
+
+  const handleAddToPolicyOfficers = (user: Officer) => {
+    setAddedPolicyOfficers((prevAdded) => [...prevAdded, user]);
+    setSelectedPolicyOfficers((prevSelected) => [...prevSelected, user]);
+    setRemovedPolicyOfficers((prevRemoved) =>
+      prevRemoved.filter((officer) => officer.id !== user.id),
+    );
+    setSearchTermPolicyOfficer("");
   };
 
   const handleAddEmployee = async () => {
@@ -72,33 +151,30 @@ const AddEmployeeToRegulation: React.FC<AddEmployeeToRegulationProps> = ({
         return;
       }
 
-      console.log("sponsorId", sponsorId);
-      console.log("regulationId", regulationId);
-      console.log("selectedEmployees", selectedEmployees);
-      console.log("selectedRole", selectedRole);
-
-      if (
-        !sponsorId ||
-        !regulationId ||
-        selectedEmployees.length === 0 ||
-        !selectedRole
-      ) {
+      if (!sponsorId || !regulationId) {
         console.error("Required data is not available.");
         return;
       }
-      const formattedRole =
-        selectedRole === "grantOfficer" ? "grant officer" : "policy officer";
-      const selectedEmployeeIds = selectedEmployees.map(
-        (employee) => employee.id,
-      );
 
-      await addEmployeeToRegulation(
-        token,
-        Number(sponsorId),
-        Number(regulationId),
-        selectedEmployeeIds,
-        formattedRole,
-      );
+      await Promise.all([
+        addEmployeeToRegulation(
+          token,
+          Number(sponsorId),
+          Number(regulationId),
+          selectedGrantOfficers.map((employee) => employee.id),
+          "grant officer",
+        ),
+        addEmployeeToRegulation(
+          token,
+          Number(sponsorId),
+          Number(regulationId),
+          selectedPolicyOfficers.map((employee) => employee.id),
+          "policy officer",
+        ),
+      ]);
+
+      console.log("API requests completed successfully");
+
       handleClose();
       onEmployeeAdded();
     } catch (error) {
@@ -127,71 +203,92 @@ const AddEmployeeToRegulation: React.FC<AddEmployeeToRegulationProps> = ({
         <h2 className={styles.title}>Medewerker aanmaken</h2>
         <hr></hr>
         <div className={styles.formGroup}>
-          <h3>Medewerkers</h3>
-          {selectedEmployees.length > 0 && (
-            <ul className={styles["officers-list"]}>
-              {selectedEmployees.map((employee) => (
-                <li key={employee.id}>{employee.email}</li>
-              ))}
-            </ul>
-          )}
-          <label className={styles.label}>Selecteer een medewerker...</label>
+          <h3>Subsidiemedewerkers</h3>
+          <ul className={styles["officers-list"]}>
+            {selectedGrantOfficers.map((employee) => (
+              <li key={employee.id}>
+                {employee.email}
+                <img
+                  src={deleteIcon}
+                  alt="Delete"
+                  onClick={() => handleDeleteGrantOfficer(employee)}
+                />
+              </li>
+            ))}
+          </ul>
           <input
             type="text"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            value={searchTermGrantOfficer}
+            onChange={(e) => setSearchTermGrantOfficer(e.target.value)}
             placeholder="Vul een e-mailadres in..."
             className={`${styles.inputDefault} ${
-              searchTerm && styles.inputWithResults
+              searchTermGrantOfficer && styles.inputWithResults
             }`}
           />
-          {searchTerm && (
-            <div
-              className={`${styles.dropdownContainer} ${
-                searchTerm && styles.dropdownWithResults
-              }`}
-            >
+          {searchTermGrantOfficer && (
+            <div className={styles.dropdownContainer}>
               <div className={styles.dropdown}>
-                {allUsers
-                  .filter((user) => user.email.includes(searchTerm))
-                  .map((user) => (
+                {isLoading ? (
+                  <div>Zoeken...</div>
+                ) : filteredGrantOfficers.length > 0 ? (
+                  filteredGrantOfficers.map((user) => (
                     <div
                       key={user.id}
-                      onClick={() => handleEmployeeSelect(user)}
+                      onClick={() => handleAddToGrantOfficers(user)}
                     >
                       {user.email}
                     </div>
-                  ))}
+                  ))
+                ) : (
+                  <div>Geen resultaten gevonden</div>
+                )}
               </div>
             </div>
           )}
-          <div className={styles["officer-checkbox"]}>
-            <label className={styles.label}>Selecteer een rol:</label>
-            <div className={styles.checkboxContainer}>
-              <div className={styles.checkboxLabel}>
-                <label htmlFor="policyOfficer">Beleidsmedewerker</label>
-                <input
-                  type="checkbox"
-                  id="policyOfficer"
-                  name="role"
-                  value="policyOfficer"
-                  checked={selectedRole === "policyOfficer"}
-                  onChange={handleCheckboxChange}
+        </div>
+        <div className={styles.formGroup}>
+          <h3>Beleidsmedewerkers</h3>
+          <ul className={styles["officers-list"]}>
+            {selectedPolicyOfficers.map((employee) => (
+              <li key={employee.id}>
+                {employee.email}
+                <img
+                  src={deleteIcon}
+                  alt="Delete"
+                  onClick={() => handleDeletePolicyOfficer(employee)}
                 />
-              </div>
-              <div className={styles.checkboxLabel}>
-                <label htmlFor="grantOfficer">Subsidiemedewerker</label>
-                <input
-                  type="checkbox"
-                  id="grantOfficer"
-                  name="role"
-                  value="grantOfficer"
-                  checked={selectedRole === "grantOfficer"}
-                  onChange={handleCheckboxChange}
-                />
+              </li>
+            ))}
+          </ul>
+          <input
+            type="text"
+            value={searchTermPolicyOfficer}
+            onChange={(e) => setSearchTermPolicyOfficer(e.target.value)}
+            placeholder="Vul een e-mailadres in..."
+            className={`${styles.inputDefault} ${
+              searchTermPolicyOfficer && styles.inputWithResults
+            }`}
+          />
+          {searchTermPolicyOfficer && (
+            <div className={styles.dropdownContainer}>
+              <div className={styles.dropdown}>
+                {isLoading ? (
+                  <div>Zoeken...</div>
+                ) : filteredPolicyOfficers.length > 0 ? (
+                  filteredPolicyOfficers.map((user) => (
+                    <div
+                      key={user.id}
+                      onClick={() => handleAddToPolicyOfficers(user)}
+                    >
+                      {user.email}
+                    </div>
+                  ))
+                ) : (
+                  <div>Geen resultaten gevonden</div>
+                )}
               </div>
             </div>
-          </div>
+          )}
         </div>
         <div className={styles.buttonContainer}>
           <button onClick={handleClose} className={styles.cancelButton}>

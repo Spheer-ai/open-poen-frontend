@@ -12,6 +12,7 @@ const TopNavigationBar: React.FC<TopNavigationBarProps> = ({
   hasPermission,
   onSearch,
   onBackArrowClick,
+  showSearch = true,
 }) => {
   const hasBackArrow = Boolean(onBackArrowClick);
 
@@ -43,7 +44,7 @@ const TopNavigationBar: React.FC<TopNavigationBarProps> = ({
           )}
         </div>
       </div>
-      <Search onSearch={onSearch} />
+      {showSearch && <Search onSearch={onSearch} />}
     </div>
   );
 };

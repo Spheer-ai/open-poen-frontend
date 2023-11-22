@@ -68,12 +68,13 @@ export default function Funds() {
       <div className={styles["side-panel"]}>
         <TopNavigationBar
           title="Initiatieven"
-          showSettings={true}
+          showSettings={false}
           showCta={true}
           onSettingsClick={() => {}}
           onCtaClick={handleToggleAddFundModal}
           onSearch={handleSearch}
           hasPermission={hasPermission}
+          showSearch={false}
         />
       </div>
       <AddFundDesktop

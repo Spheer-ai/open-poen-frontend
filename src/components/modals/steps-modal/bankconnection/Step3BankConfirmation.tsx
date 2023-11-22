@@ -4,27 +4,64 @@ import styles from "../../../../assets/scss/layout/Step1BankList.module.scss";
 
 interface Step3BankConfirmationProps {
   onClose: () => void;
+  message: string;
 }
 
 const Step3BankConfirmation: React.FC<Step3BankConfirmationProps> = ({
   onClose,
+  message,
 }) => {
   const navigate = useNavigate();
 
   const handleBackToOverview = () => {
     onClose();
-    navigate("/transactions/bankconnections/add-bank?step=3");
+
+    const callbackUrl = `/transactions/bankconnections/add-bank?step=3&message=${message}`;
+    navigate(callbackUrl);
   };
+
+  let title, description, iconSrc;
+
+  if (message === "success") {
+    title = "Koppelen voltooid!";
+    description = "We hebben met succes verbinding gemaakt met jouw bank.";
+    iconSrc = "/succes.svg";
+  } else if (message === "third-party-error") {
+    title = "Fout bij Externe Dienst";
+    description =
+      "Er is een probleem opgetreden tijdens de communicatie met een externe dienst.";
+  } else if (message === "jwt-token-expired") {
+    title = "Aanmelding Verlopen";
+    description = "Je aanmelding is verlopen tijdens het proces.";
+  } else if (message === "jwt-validation-error") {
+    title = "Fout bij Aanmelding";
+    description =
+      "Er is een probleem opgetreden bij het valideren van je aanmelding.";
+  } else if (message === "user-404") {
+    title = "Gebruiker Niet Gevonden";
+    description = "We konden de gebruiker niet vinden tijdens het proces.";
+  } else if (message === "requisition-404") {
+    title = "Aanvraag Niet Gevonden";
+    description = "We konden de gevraagde informatie niet vinden.";
+  } else {
+    title = "Onbekende foutmelding";
+    description =
+      "Er is een obekende foutmelding opgetreden. Er is geen bank account toegevoegd. Probeer het opniew";
+  }
 
   return (
     <>
       <div className={styles["confirmation-container"]}>
         <div className={styles["confirmation-content"]}>
-          <h3>Koppelen voltooid!</h3>
-          <p>We hebben met succes verbinding gemaakt met jouw bank.</p>
-          <img className={styles["succes-icon"]} src="/succes.svg" alt="" />
+          <h3>{title}</h3>
+          <p>{description}</p>
+          {iconSrc && (
+            <img className={styles["success-icon"]} src={iconSrc} alt="" />
+          )}
         </div>
-        <p>We hebben 100% van jouw transacties gecategoriseerd.</p>
+        {message === "success" && (
+          <p>We hebben 100% van jouw transacties gecategoriseerd.</p>
+        )}
       </div>
       <div className={styles["button-container"]}>
         <button onClick={handleBackToOverview} className={styles.saveButton}>

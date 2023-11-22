@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { fetchRegulationDetails } from "../middleware/Api";
 import { useAuth } from "../../contexts/AuthContext";
 import styles from "../../assets/scss/RegulationDetail.module.scss";
@@ -292,7 +292,22 @@ const RegulationDetail: React.FC<RegulationDetailProps> = ({
 
   return (
     <div className={styles["regulation-detail-container"]}>
-      <Breadcrumb />
+      <Breadcrumb
+        customBreadcrumbs={[
+          <Link key="sponsors" to="/sponsors">
+            Sponsoren
+          </Link>,
+          <Link key="regulations" to={`/sponsors/${sponsorId}/regulations`}>
+            Regelingen
+          </Link>,
+          <Link
+            key="regulation"
+            to={`/sponsors/${sponsorId}/regulations/${regulationId}`}
+          >
+            {regulationDetails.name}
+          </Link>,
+        ]}
+      />
       <div className={styles["regulation-detail-header"]}>
         <h1 className={styles["regulation-detail-name"]}>
           {regulationDetails.name}

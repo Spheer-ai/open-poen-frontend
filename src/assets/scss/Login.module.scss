@@ -46,17 +46,20 @@
   height: 40px;
 }
 
-.input-container {
-  display: flex;
-  align-items: center;
-  border-radius: 30px;
-  padding: 10px;
-  margin-bottom: 10px;
-  box-shadow: 0 5px 5px rgba(0, 0, 0, 0.1);
+.login-box {
+  .input-container {
+    display: flex;
+    align-items: center;
+    border-radius: 30px;
+    padding: 10px;
+    margin-bottom: 10px;
+    box-shadow: 0 5px 5px rgba(0, 0, 0, 0.1);
 
-  input {
-    margin-top: 0 !important;
-    border: 0 !important;
+    input {
+      margin-top: 0 !important;
+      border: 0 !important;
+      font-size: 14px;
+    }
   }
 }
 

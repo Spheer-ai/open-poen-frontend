@@ -75,12 +75,13 @@ export default function Sponsors() {
         {!isRegulationListVisible && (
           <TopNavigationBar
             title="Sponsors"
-            showSettings={true}
+            showSettings={false}
             showCta={true}
             onSettingsClick={() => {}}
             onCtaClick={handleToggleAddSponsorModal}
             onSearch={handleSearch}
             hasPermission={hasPermission}
+            showSearch={false}
           />
         )}
         {sponsorId ? (
