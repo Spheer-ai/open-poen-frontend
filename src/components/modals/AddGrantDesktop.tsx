@@ -131,7 +131,7 @@ const AddGrantDesktop: React.FC<AddGrantDesktopProps> = ({
       <div className={`${styles.modal} ${modalIsOpen ? styles.open : ""}`}>
         <h2 className={styles.title}>Beschikking aanmaken</h2>
         <hr></hr>
-        <div className={styles.formGroup}>
+        <div className={styles.formGroup} style={{ margin: "0px 20px" }}>
           <h3>Info</h3>
           <label className={styles.label}>Naam:</label>
           <input
@@ -149,7 +149,7 @@ const AddGrantDesktop: React.FC<AddGrantDesktopProps> = ({
             {nameError}
           </p>
         </div>
-        <div className={styles.formGroup}>
+        <div className={styles.formGroup} style={{ margin: "0px 20px" }}>
           <label className={styles.label}>Referentie:</label>
           <input
             type="text"
@@ -166,7 +166,7 @@ const AddGrantDesktop: React.FC<AddGrantDesktopProps> = ({
             {referenceError}
           </p>
         </div>
-        <div className={styles.formGroup}>
+        <div className={styles.formGroup} style={{ margin: "0px 20px" }}>
           <label className={styles.label}>Begroting:</label>
           <input
             type="number"

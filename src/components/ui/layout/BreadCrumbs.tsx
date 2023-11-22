@@ -16,8 +16,7 @@ const Breadcrumb = ({ customBreadcrumbs }) => {
           </Link>
         </li>
         {customBreadcrumbs
-          ?
-            customBreadcrumbs.map((breadcrumb, index) => (
+          ? customBreadcrumbs.map((breadcrumb, index) => (
               <li
                 key={index}
                 className={`${styles.breadcrumbItem} ${
@@ -35,8 +34,7 @@ const Breadcrumb = ({ customBreadcrumbs }) => {
                 {index === 0 && breadcrumb}
               </li>
             ))
-          : 
-            pathnames.map((name, index) => {
+          : pathnames.map((name, index) => {
               const routeTo = `/${pathnames.slice(0, index + 1).join("/")}`;
               const isLast = index === pathnames.length - 1;
               const isActive = isLast ? styles.active : "";

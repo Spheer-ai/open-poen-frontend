@@ -174,7 +174,7 @@ const EditGrantDesktop: React.FC<EditGrantDesktopProps> = ({
       <div className={`${styles.modal} ${modalIsOpen ? styles.open : ""}`}>
         <h2 className={styles.title}>Beschikking bewerken</h2>
         <hr></hr>
-        <div className={styles.formGroup}>
+        <div className={styles.formGroup} style={{ margin: "10px 20px" }}>
           <h3>Info</h3>
           <label className={styles.label}>Naam:</label>
           <input
@@ -198,7 +198,7 @@ const EditGrantDesktop: React.FC<EditGrantDesktopProps> = ({
             </span>
           )}
         </div>
-        <div className={styles.formGroup}>
+        <div className={styles.formGroup} style={{ margin: "10px 20px" }}>
           <label className={styles.label}>Referentie:</label>
           <input
             type="text"
@@ -221,7 +221,7 @@ const EditGrantDesktop: React.FC<EditGrantDesktopProps> = ({
             </span>
           )}
         </div>
-        <div className={styles.formGroup}>
+        <div className={styles.formGroup} style={{ margin: "10px 20px" }}>
           <label className={styles.label}>Begroting:</label>
           <input
             type="number"

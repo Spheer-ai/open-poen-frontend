@@ -24,6 +24,8 @@ const AddBankConnectionModal: React.FC<AddBankConnectionModalProps> = ({
   const [isVisible, setIsVisible] = useState(false);
   const [selectedBank, setSelectedBank] = useState<string | null>(null);
   const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const message = searchParams.get("message");
 
   useEffect(() => {
     if (isOpen) {
@@ -36,7 +38,6 @@ const AddBankConnectionModal: React.FC<AddBankConnectionModalProps> = ({
   }, [isOpen]);
 
   useEffect(() => {
-    const searchParams = new URLSearchParams(location.search);
     const stepParam = searchParams.get("step");
 
     if (stepParam === "3") {
@@ -46,7 +47,7 @@ const AddBankConnectionModal: React.FC<AddBankConnectionModalProps> = ({
     } else if (location.pathname === "/transactions/bankaccounts/add-bank") {
       setCurrentStep(isReconnecting ? 2 : 1);
     }
-  }, [location.search, location.pathname, isReconnecting]);
+  }, [location.search, location.pathname, isReconnecting, searchParams]);
 
   const handleNextStep = () => {
     if (currentStep < 3) {
@@ -103,7 +104,10 @@ const AddBankConnectionModal: React.FC<AddBankConnectionModalProps> = ({
               <div className={styles["modal-top-section"]}>
                 <h2 className={styles.title}>{title}</h2>
               </div>
-              <Step3BankConfirmation onClose={handleClose} />
+              <Step3BankConfirmation
+                onClose={handleClose}
+                message={message || ""}
+              />
             </>
           )}
         </div>
