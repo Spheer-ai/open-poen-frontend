@@ -14,7 +14,6 @@ import AddEmployeeToRegulation from "../modals/AddEmployeeToRegulation";
 import { usePermissions } from "../../contexts/PermissionContext";
 import GrantList from "../lists/GrantList";
 import DeleteGrant from "../modals/DeleteGrant";
-import EditSponsor from "../modals/EditSponsor";
 
 type Grant = {
   id: number;
@@ -239,26 +238,6 @@ const RegulationDetail: React.FC<RegulationDetailProps> = ({
     }
   };
 
-  const handleToggleEditSponsorModal = () => {
-    if (isEditSponsorModalOpen) {
-      setIsBlockingInteraction(true);
-      setTimeout(() => {
-        setIsBlockingInteraction(false);
-        setIsEditSponsorModalOpen(false);
-        navigate(`/sponsors/${sponsorId}/regulations/${regulationId}`);
-      }, 300);
-    } else {
-      setIsEditSponsorModalOpen(true);
-      navigate(
-        `/sponsors/${sponsorId}/regulations/${regulationId}/edit-sponsor/${sponsorId}`,
-      );
-    }
-  };
-
-  const handleSponsorEdited = () => {
-    setRefreshTrigger((prev) => prev + 1);
-  };
-
   const handleOfficerAdded = () => {
     setRefreshTrigger((prev) => prev + 1);
   };
@@ -322,15 +301,6 @@ const RegulationDetail: React.FC<RegulationDetailProps> = ({
               Regeling bewerken
             </button>
           )}
-          {hasEditSponsorPermission && (
-            <button
-              className={styles["delete-button"]}
-              onClick={handleToggleEditSponsorModal}
-            >
-              <img src={EditIcon} alt="Edit" className={styles["icon"]} />
-              Sponsor bewerken
-            </button>
-          )}
         </div>
       </div>
 
@@ -388,17 +358,6 @@ const RegulationDetail: React.FC<RegulationDetailProps> = ({
         currentName={regulationDetails.name}
         currentDescription={regulationDetails.description}
       />
-      <EditSponsor
-        isOpen={isEditSponsorModalOpen}
-        onClose={handleToggleEditSponsorModal}
-        isBlockingInteraction={isBlockingInteraction}
-        onSponsorEdited={handleSponsorEdited}
-        sponsorId={sponsorId}
-        hasEditSponsorPermission={hasEditSponsorPermission}
-        currentName={""}
-        currentUrl={""}
-      />
-
       <AddGrantDesktop
         isOpen={isAddGrantModalOpen}
         onClose={handleToggleAddGrantModal}
