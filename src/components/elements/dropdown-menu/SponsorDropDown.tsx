@@ -8,6 +8,7 @@ const SponsorDropdown = ({
   onDeleteClick,
   sponsorId,
   userPermissions,
+  hasDeletePermission,
 }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(isOpen);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
@@ -51,6 +52,7 @@ const SponsorDropdown = ({
           onEditClick={onEditClick} // Pass the callback function here
           onDeleteClick={onDeleteClick}
           userPermissions={userPermissions}
+          hasDeletePermission={hasDeletePermission}
         />
       )}
     </div>

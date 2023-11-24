@@ -157,6 +157,14 @@ export default function AppRoutes() {
                 }
               />
               <Route
+                path="/sponsors/:sponsorId/delete-sponsor"
+                element={
+                  <InlineModalLayout navigate={navigate}>
+                    {<SponsorList />}
+                  </InlineModalLayout>
+                }
+              />
+              <Route
                 path="/sponsors/:sponsorId/regulations"
                 element={
                   <InlineModalLayout navigate={navigate}>

@@ -8,6 +8,7 @@ import SponsorDropdown from "../elements/dropdown-menu/SponsorDropDown";
 import EditSponsor from "../modals/EditSponsor";
 import TopNavigationBar from "../ui/top-navigation-bar/TopNavigationBar";
 import AddSponsorDesktop from "../modals/AddSponsorDesktop";
+import DeleteSponsor from "../modals/DeleteSponsor";
 
 type Sponsor = {
   id: string;
@@ -29,15 +30,24 @@ const SponsorList = () => {
   const [entityPermissions, setEntityPermissions] = useState<string[]>([]);
   const hasPermission = entityPermissions.includes("create");
   const [isEditSponsorModalOpen, setIsEditSponsorModalOpen] = useState(false);
+  const [isDeleteSponsorModalOpen, setIsDeleteSponsorModalOpen] =
+    useState(false);
   const [hasEditSponsorPermission, setHasEditSponsorPermission] =
     useState(false);
+  const [editPermissions, setEditPermissions] = useState<{
+    [key: string]: boolean;
+  }>({});
+  const [permissionsFetchedForSession, setPermissionsFetchedForSession] =
+    useState(false);
+  const [fetchedSponsorPermissions, setFetchedSponsorPermissions] = useState<{
+    [key: string]: string[];
+  }>({});
+
   const navigate = useNavigate();
   const [selectedSponsorData, setSelectedSponsorData] =
     useState<Sponsor | null>(null);
 
   useEffect(() => {
-    console.log("action:");
-
     if (user && user.token && !permissionsFetched) {
       fetchPermissions("Funder", undefined, user.token)
         .then((permissions) => {
@@ -64,16 +74,49 @@ const SponsorList = () => {
     fetchData();
   }, [refreshTrigger]);
 
+  useEffect(() => {
+    if (user && user.token && sponsors.length > 0 && !permissionsFetched) {
+      const fetchEditPermissions = async () => {
+        const editPermissionsMap: { [key: string]: boolean } = {};
+
+        for (const sponsor of sponsors) {
+          try {
+            const permissions = await fetchPermissions(
+              "Funder",
+              parseInt(sponsor.id),
+              user.token,
+            );
+            editPermissionsMap[sponsor.id] = (permissions || []).includes(
+              "edit",
+            );
+          } catch (error) {
+            console.error("Error fetching permissions:", error);
+            editPermissionsMap[sponsor.id] = false;
+          }
+        }
+
+        setEditPermissions(editPermissionsMap);
+      };
+
+      fetchEditPermissions();
+    }
+  }, [user, sponsors, fetchPermissions, permissionsFetched]);
+
   const handleSponsorClick = (sponsorId: string) => {
     if (user && user.token) {
-      fetchPermissions("Funder", parseInt(sponsorId), user.token)
-        .then((permissions) => {
-          console.log("Permissions for sponsor:", permissions);
-          navigate(`/sponsors/${sponsorId}/regulations`);
-        })
-        .catch((error) => {
-          console.error("Error fetching permissions:", error);
-        });
+      if (!permissionsFetchedForSession) {
+        fetchPermissions("Funder", undefined, user.token)
+          .then((permissions) => {
+            setEntityPermissions(permissions || []);
+            setPermissionsFetchedForSession(true);
+          })
+          .catch((error) => {
+            console.error("Failed to fetch permissions:", error);
+            setPermissionsFetchedForSession(true);
+          });
+      }
+
+      navigate(`/sponsors/${sponsorId}/regulations`);
     } else {
       console.error("User is not authenticated or does not have a token.");
     }
@@ -98,10 +141,6 @@ const SponsorList = () => {
     fetchSpecificSponsorData();
   }, [sponsorId, user]);
 
-  const handleDeleteSponsor = (sponsorId) => {
-    // ...
-  };
-
   const handleToggleEditSponsorModal = (sponsorId?: string) => {
     console.log("sponsorId in handleToggleEditSponsorModal:", sponsorId);
     if (isEditSponsorModalOpen) {
@@ -116,9 +155,30 @@ const SponsorList = () => {
       navigate(`/sponsors/${sponsorId}/edit-sponsor`);
     }
   };
+
   const handleSponsorEdited = () => {
     setRefreshTrigger((prev) => prev + 1);
   };
+
+  const handleToggleDeleteSponsorModal = (sponsorId?: string) => {
+    console.log("sponsorId in handleToggleDeleteSponsorModal:", sponsorId);
+    if (isDeleteSponsorModalOpen) {
+      setIsBlockingInteraction(true);
+      setTimeout(() => {
+        setIsBlockingInteraction(false);
+        setIsDeleteSponsorModalOpen(false);
+        navigate(`/sponsors`);
+      }, 300);
+    } else {
+      setIsDeleteSponsorModalOpen(true);
+      navigate(`/sponsors/${sponsorId}/delete-sponsor`);
+    }
+  };
+
+  const handleSponsorDeleted = () => {
+    setRefreshTrigger((prev) => prev + 1);
+  };
+
   const handleToggleAddSponsorModal = () => {
     if (isModalOpen) {
       setIsBlockingInteraction(true);
@@ -158,6 +218,7 @@ const SponsorList = () => {
           <ul className={styles["sponsor-list"]}>
             {sponsors.map((sponsor) => {
               const isActive = activeSponsorId === sponsor.id.toString();
+              const hasEditPermission = editPermissions[sponsor.id.toString()];
               return (
                 <li
                   key={sponsor.id}
@@ -185,11 +246,18 @@ const SponsorList = () => {
                   <SponsorDropdown
                     isOpen={false}
                     onEditClick={() =>
-                      handleToggleEditSponsorModal(sponsor.id.toString())
+                      hasEditPermission
+                        ? handleToggleEditSponsorModal(sponsor.id.toString())
+                        : null
                     }
-                    onDeleteClick={() => handleDeleteSponsor(sponsor.id)}
+                    onDeleteClick={() =>
+                      hasEditPermission
+                        ? handleToggleDeleteSponsorModal(sponsor.id.toString())
+                        : null
+                    }
                     sponsorId={sponsor.id.toString()}
-                    userPermissions={undefined}
+                    userPermissions={hasEditPermission}
+                    hasDeletePermission={undefined}
                   />
                 </li>
               );
@@ -204,6 +272,13 @@ const SponsorList = () => {
             hasEditSponsorPermission={hasEditSponsorPermission}
             currentName={selectedSponsorData?.name || ""}
             currentUrl={selectedSponsorData?.url || ""}
+          />
+          <DeleteSponsor
+            isOpen={isDeleteSponsorModalOpen}
+            onClose={handleToggleDeleteSponsorModal}
+            isBlockingInteraction={isBlockingInteraction}
+            onSponsorDeleted={handleSponsorDeleted}
+            sponsorId={sponsorId}
           />
         </div>
       </div>

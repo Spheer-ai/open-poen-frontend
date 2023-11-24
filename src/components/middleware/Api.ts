@@ -1039,3 +1039,20 @@ export const getGrantOverseers = async (
     throw error;
   }
 };
+
+export const deleteSponsor = async (token: string, funderId: number) => {
+  try {
+    const response = await api.delete(`/funder/${funderId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error(
+      "Error deleting funder:",
+      error.response ? error.response.data : error,
+    );
+    throw error;
+  }
+};
