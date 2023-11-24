@@ -14,7 +14,7 @@
   width: 100%;
   border: 1px solid #dee2e6;
   transition: background-color 0.3s ease;
-  align-items: flex-start;
+  align-items: center;
   -webkit-animation-duration: 0.3s;
   animation-duration: 0.3s;
   -webkit-animation-fill-mode: forwards;
@@ -25,9 +25,7 @@
   border: 1px solid #dee2e6;
   border-radius: 8px;
   display: flex;
-  flex-direction: column;
   gap: 10px;
-  justify-content: center;
   align-content: center;
   margin: 5px 0;
   padding: 12px;

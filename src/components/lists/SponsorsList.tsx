@@ -4,6 +4,7 @@ import styles from "../../assets/scss/SponsorList.module.scss";
 import { useFetchPermissions } from "../hooks/useFetchPermissions";
 import { fetchSponsors } from "../middleware/Api";
 import { useAuth } from "../../contexts/AuthContext";
+import SponsorDropdown from "../elements/dropdown-menu/SponsorDropDown";
 
 type Sponsor = {
   id: number;
@@ -51,6 +52,12 @@ const SponsorList: React.FC<SponsorListProps> = ({ refreshTrigger }) => {
     }
   };
 
+  const handleEditSponsor = (sponsorId) => {
+  };
+
+  const handleDeleteSponsor = (sponsorId) => {
+  };
+
   return (
     <div>
       <ul className={styles["sponsor-list"]}>
@@ -59,12 +66,14 @@ const SponsorList: React.FC<SponsorListProps> = ({ refreshTrigger }) => {
           return (
             <li
               key={sponsor.id}
-              onClick={() => handleSponsorClick(sponsor.id.toString())}
               className={`${styles["sponsor-list-item"]} ${
                 isActive ? styles["active-sponsor"] : ""
               }`}
             >
-              <div className={styles["sponsor-info"]}>
+              <div
+                className={styles["sponsor-info"]}
+                onClick={() => handleSponsorClick(sponsor.id.toString())}
+              >
                 <a
                   target="_blank"
                   rel="noopener noreferrer"
@@ -78,6 +87,13 @@ const SponsorList: React.FC<SponsorListProps> = ({ refreshTrigger }) => {
                 </a>
                 <p className={styles["sponsor-website"]}>{sponsor.url}</p>
               </div>
+              <SponsorDropdown
+                isOpen={false}
+                onEditClick={() => handleEditSponsor(sponsor.id)}
+                onDeleteClick={() => handleDeleteSponsor(sponsor.id)}
+                sponsorId={sponsor.id}
+                userPermissions={undefined}
+              />
             </li>
           );
         })}
