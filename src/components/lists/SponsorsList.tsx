@@ -243,22 +243,26 @@ const SponsorList = () => {
                     </a>
                     <p className={styles["sponsor-website"]}>{sponsor.url}</p>
                   </div>
-                  <SponsorDropdown
-                    isOpen={false}
-                    onEditClick={() =>
-                      hasEditPermission
-                        ? handleToggleEditSponsorModal(sponsor.id.toString())
-                        : null
-                    }
-                    onDeleteClick={() =>
-                      hasEditPermission
-                        ? handleToggleDeleteSponsorModal(sponsor.id.toString())
-                        : null
-                    }
-                    sponsorId={sponsor.id.toString()}
-                    userPermissions={hasEditPermission}
-                    hasDeletePermission={undefined}
-                  />
+                  {hasEditPermission && (
+                    <SponsorDropdown
+                      isOpen={false}
+                      onEditClick={() =>
+                        hasEditPermission
+                          ? handleToggleEditSponsorModal(sponsor.id.toString())
+                          : null
+                      }
+                      onDeleteClick={() =>
+                        hasEditPermission
+                          ? handleToggleDeleteSponsorModal(
+                              sponsor.id.toString(),
+                            )
+                          : null
+                      }
+                      sponsorId={sponsor.id.toString()}
+                      userPermissions={hasEditPermission}
+                      hasDeletePermission={undefined}
+                    />
+                  )}
                 </li>
               );
             })}
