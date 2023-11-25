@@ -24,7 +24,7 @@ const SponsorList = () => {
   const [sponsors, setSponsors] = useState<Sponsor[]>([]);
   const [isBlockingInteraction, setIsBlockingInteraction] = useState(false);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
-  const [activeSponsorId, setActiveSponsorId] = useState<string | null>(null);
+  const [activeSponsorId] = useState<string | null>(null);
   const { fetchPermissions } = usePermissions();
   const [permissionsFetched, setPermissionsFetched] = useState(false);
   const [entityPermissions, setEntityPermissions] = useState<string[]>([]);
@@ -32,11 +32,8 @@ const SponsorList = () => {
   const [isEditSponsorModalOpen, setIsEditSponsorModalOpen] = useState(false);
   const [isDeleteSponsorModalOpen, setIsDeleteSponsorModalOpen] =
     useState(false);
-  const [hasEditSponsorPermission, setHasEditSponsorPermission] =
+  const [hasEditSponsorPermission] =
     useState(false);
-  const [editPermissions, setEditPermissions] = useState<{
-    [key: string]: boolean;
-  }>({});
   const [permissionsFetchedForSession, setPermissionsFetchedForSession] =
     useState(false);
   const [fetchedSponsorPermissions, setFetchedSponsorPermissions] = useState<{
@@ -77,7 +74,7 @@ const SponsorList = () => {
   useEffect(() => {
     if (user && user.token && sponsors.length > 0 && !permissionsFetched) {
       const fetchEditPermissions = async () => {
-        const editPermissionsMap: { [key: string]: boolean } = {};
+        const permissionsMap: { [key: string]: string[] } = {};
 
         for (const sponsor of sponsors) {
           try {
@@ -86,16 +83,14 @@ const SponsorList = () => {
               parseInt(sponsor.id),
               user.token,
             );
-            editPermissionsMap[sponsor.id] = (permissions || []).includes(
-              "edit",
-            );
+            permissionsMap[sponsor.id] = permissions || [];
           } catch (error) {
             console.error("Error fetching permissions:", error);
-            editPermissionsMap[sponsor.id] = false;
+            permissionsMap[sponsor.id] = [];
           }
         }
 
-        setEditPermissions(editPermissionsMap);
+        setFetchedSponsorPermissions(permissionsMap);
       };
 
       fetchEditPermissions();
@@ -218,7 +213,13 @@ const SponsorList = () => {
           <ul className={styles["sponsor-list"]}>
             {sponsors.map((sponsor) => {
               const isActive = activeSponsorId === sponsor.id.toString();
-              const hasEditPermission = editPermissions[sponsor.id.toString()];
+              const permissions =
+                fetchedSponsorPermissions[sponsor.id.toString()];
+              const hasEditPermission =
+                Array.isArray(permissions) && permissions.includes("edit");
+              const hasDeletePermission =
+                Array.isArray(permissions) && permissions.includes("delete");
+
               return (
                 <li
                   key={sponsor.id}
@@ -247,20 +248,14 @@ const SponsorList = () => {
                     <SponsorDropdown
                       isOpen={false}
                       onEditClick={() =>
-                        hasEditPermission
-                          ? handleToggleEditSponsorModal(sponsor.id.toString())
-                          : null
+                        handleToggleEditSponsorModal(sponsor.id.toString())
                       }
                       onDeleteClick={() =>
-                        hasEditPermission
-                          ? handleToggleDeleteSponsorModal(
-                              sponsor.id.toString(),
-                            )
-                          : null
+                        handleToggleDeleteSponsorModal(sponsor.id.toString())
                       }
                       sponsorId={sponsor.id.toString()}
                       userPermissions={hasEditPermission}
-                      hasDeletePermission={undefined}
+                      hasDeletePermission={hasDeletePermission}
                     />
                   )}
                 </li>

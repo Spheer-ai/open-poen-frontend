@@ -49,7 +49,7 @@ const SponsorDropdown = ({
       {isDropdownOpen && (
         <DropdownMenu
           isOpen={isDropdownOpen}
-          onEditClick={onEditClick} // Pass the callback function here
+          onEditClick={onEditClick}
           onDeleteClick={onDeleteClick}
           userPermissions={userPermissions}
           hasDeletePermission={hasDeletePermission}
