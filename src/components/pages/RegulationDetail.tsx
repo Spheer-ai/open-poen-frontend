@@ -6,6 +6,7 @@ import styles from "../../assets/scss/RegulationDetail.module.scss";
 import EditRegulationDesktop from "../modals/EditRegulationDesktop";
 import AddGrantDesktop from "../modals/AddGrantDesktop";
 import EditIcon from "/edit-icon.svg";
+import DeleteIcon from "/delete-icon.svg";
 import EditGrantDesktop from "../modals/EditGrantDesktop";
 import AddOfficerDesktop from "../modals/AddOfficerDesktop";
 import { Officer } from "../../types/AddOfficerType";
@@ -14,6 +15,7 @@ import AddEmployeeToRegulation from "../modals/AddEmployeeToRegulation";
 import { usePermissions } from "../../contexts/PermissionContext";
 import GrantList from "../lists/GrantList";
 import DeleteGrant from "../modals/DeleteGrant";
+import DeleteRegulation from "../modals/DeleteRegulation";
 
 type Grant = {
   id: number;
@@ -38,6 +40,7 @@ interface RegulationDetailProps {
   regulationId?: string;
   isBlockingInteraction: boolean;
   onRegulationEdited: () => void;
+  onRegulationDeleted: () => void;
 }
 
 const RegulationDetail: React.FC<RegulationDetailProps> = ({
@@ -61,6 +64,8 @@ const RegulationDetail: React.FC<RegulationDetailProps> = ({
   const [isDeleteGrantModalOpen, setIsDeleteGrantModalOpen] = useState(false);
   const [isEditSponsorModalOpen, setIsEditSponsorModalOpen] = useState(false);
   const [isAddEmployeeModalOpen, setIsAddEmployeeModalOpen] = useState(false);
+  const [isDeleteRegulationModalOpen, setIsDeleteRegulationModalOpen] =
+    useState(false);
   const [currentGrant, setCurrentGrant] = useState<Grant | null>(null);
   const [isAddOfficerModalOpen, setIsAddOfficerModalOpen] = useState(false);
   const [selectedGrantId, setSelectedGrantId] = useState<number | null>(null);
@@ -68,6 +73,7 @@ const RegulationDetail: React.FC<RegulationDetailProps> = ({
   const token = user?.token;
   const { fetchPermissions } = usePermissions();
   const [hasEditPermission, setHasEditPermission] = useState(false);
+  const [hasDeletePermission, setHasDeletePermission] = useState(false);
   const [hasCreateGrantPermission, setHasCreateGrantPermission] =
     useState(false);
   const [hasEditSponsorPermission, setHasEditSponsorPermission] =
@@ -81,6 +87,7 @@ const RegulationDetail: React.FC<RegulationDetailProps> = ({
   useEffect(() => {
     setHasCreateGrantPermission(false);
     setHasEditPermission(false);
+    setHasDeletePermission(false);
 
     async function getRegulationDetails() {
       try {
@@ -103,6 +110,13 @@ const RegulationDetail: React.FC<RegulationDetailProps> = ({
 
           if (regulationPermissions && regulationPermissions.includes("edit")) {
             setHasEditPermission(true);
+          }
+
+          if (
+            regulationPermissions &&
+            regulationPermissions.includes("delete")
+          ) {
+            setHasDeletePermission(true);
           }
 
           if (
@@ -156,6 +170,22 @@ const RegulationDetail: React.FC<RegulationDetailProps> = ({
     }
   };
 
+  const handleToggleDeleteRegulationModal = () => {
+    if (isDeleteRegulationModalOpen) {
+      setIsBlockingInteraction(true);
+      setTimeout(() => {
+        setIsBlockingInteraction(false);
+        setIsDeleteRegulationModalOpen(false);
+        navigate(`/sponsors/${sponsorId}/regulations`);
+      }, 300);
+    } else {
+      setIsDeleteRegulationModalOpen(true);
+      navigate(
+        `/sponsors/${sponsorId}/regulations/${regulationId}/delete-regulation`,
+      );
+    }
+  };
+
   const handleToggleAddEmployeeModal = () => {
     if (isAddEmployeeModalOpen) {
       setIsBlockingInteraction(true);
@@ -191,6 +221,10 @@ const RegulationDetail: React.FC<RegulationDetailProps> = ({
     if (onRegulationEdited) {
       onRegulationEdited();
     }
+  };
+
+  const handleRegulationDeleted = () => {
+    setRefreshTrigger((prev) => prev + 1);
   };
 
   const handleGrantAdded = () => {
@@ -293,13 +327,24 @@ const RegulationDetail: React.FC<RegulationDetailProps> = ({
         </h1>
         <div className={styles["regulation-detail-buttons"]}>
           {hasEditPermission && (
-            <button
-              className={styles["edit-button"]}
-              onClick={handleToggleEditRegulationModal}
-            >
-              <img src={EditIcon} alt="Edit" className={styles["icon"]} />
-              Regeling bewerken
-            </button>
+            <>
+              <button
+                className={styles["edit-button"]}
+                onClick={handleToggleEditRegulationModal}
+              >
+                <img src={EditIcon} alt="Edit" className={styles["icon"]} />
+              </button>
+            </>
+          )}
+          {hasDeletePermission && (
+            <>
+              <button
+                className={styles["delete-button"]}
+                onClick={handleToggleDeleteRegulationModal}
+              >
+                <img src={DeleteIcon} alt="Delete" className={styles["icon"]} />
+              </button>
+            </>
           )}
         </div>
       </div>
@@ -352,6 +397,17 @@ const RegulationDetail: React.FC<RegulationDetailProps> = ({
         onClose={handleToggleEditRegulationModal}
         isBlockingInteraction={isBlockingInteraction}
         onRegulationEdited={handleRegulationEdited}
+        sponsorId={sponsorId}
+        regulationId={regulationId}
+        refreshTrigger={refreshTrigger}
+        currentName={regulationDetails.name}
+        currentDescription={regulationDetails.description}
+      />
+      <DeleteRegulation
+        isOpen={isDeleteRegulationModalOpen}
+        onClose={handleToggleDeleteRegulationModal}
+        isBlockingInteraction={isBlockingInteraction}
+        onRegulationDeleted={handleRegulationDeleted}
         sponsorId={sponsorId}
         regulationId={regulationId}
         refreshTrigger={refreshTrigger}

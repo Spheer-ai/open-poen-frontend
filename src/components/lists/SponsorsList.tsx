@@ -32,8 +32,7 @@ const SponsorList = () => {
   const [isEditSponsorModalOpen, setIsEditSponsorModalOpen] = useState(false);
   const [isDeleteSponsorModalOpen, setIsDeleteSponsorModalOpen] =
     useState(false);
-  const [hasEditSponsorPermission] =
-    useState(false);
+  const [hasEditSponsorPermission] = useState(false);
   const [permissionsFetchedForSession, setPermissionsFetchedForSession] =
     useState(false);
   const [fetchedSponsorPermissions, setFetchedSponsorPermissions] = useState<{

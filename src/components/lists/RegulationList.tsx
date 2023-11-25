@@ -114,6 +114,10 @@ const RegulationList = () => {
     setRefreshTrigger((prev) => prev + 1);
   };
 
+  const handleRegulationDeleted = () => {
+    setRefreshTrigger((prev) => prev + 1);
+  };
+
   return (
     <div className={styles["container"]}>
       <div className={styles["side-panel"]}>
@@ -161,6 +165,7 @@ const RegulationList = () => {
             regulationId={selectedRegulationId}
             isBlockingInteraction={false}
             onRegulationEdited={handleRegulationEdited}
+            onRegulationDeleted={handleRegulationDeleted}
           />
         </div>
       )}

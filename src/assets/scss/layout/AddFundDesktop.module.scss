@@ -654,3 +654,21 @@ input[type="text"] {
 .modalBody {
   padding: 0px 20px;
 }
+
+.deleteLabels {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  padding: 20px 0px;
+
+  label {
+    font-weight: 600;
+    font-size: 16px;
+    color: #000000;
+  }
+
+  p {
+    font-weight: 400;
+    font-size: 14px;
+  }
+}
