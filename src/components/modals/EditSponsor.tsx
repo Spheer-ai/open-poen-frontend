@@ -21,8 +21,11 @@ const EditSponsor: React.FC<EditSponsorProps> = ({
   sponsorId,
   currentName,
   currentUrl,
-  hasEditSponsorPermission,
 }) => {
+  console.log("EditSponsor props - isOpen:", isOpen);
+  console.log("EditSponsor props - sponsorId:", sponsorId);
+  console.log("EditSponsor props - currentName:", currentName);
+  console.log("EditSponsor props - currentUrl:", currentUrl);
   const [modalIsOpen, setModalIsOpen] = useState(isOpen);
   const [funderName, setFunderName] = useState(currentName);
   const [funderUrl, setFunderUrl] = useState(currentUrl);
@@ -107,6 +110,13 @@ const EditSponsor: React.FC<EditSponsorProps> = ({
     }
   };
 
+  const handleEnterKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      handleSave();
+    }
+  };
+
   if (!isOpen && !modalIsOpen) {
     return null;
   }
@@ -127,6 +137,7 @@ const EditSponsor: React.FC<EditSponsorProps> = ({
             type="text"
             value={funderName}
             onChange={(e) => setFunderName(e.target.value)}
+            onKeyPress={handleEnterKeyPress}
             className={styles.inputField}
           />
           {funderName.length > maxNameLength && (
@@ -147,6 +158,7 @@ const EditSponsor: React.FC<EditSponsorProps> = ({
             type="text"
             value={funderUrl}
             onChange={(e) => setFunderUrl(e.target.value)}
+            onKeyPress={handleEnterKeyPress}
             className={styles.inputField}
           />
           {!isUrlValid && (

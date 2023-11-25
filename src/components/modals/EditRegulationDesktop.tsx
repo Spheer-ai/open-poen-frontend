@@ -95,7 +95,7 @@ const EditRegulationDesktop: React.FC<EditRegulationDesktopProps> = ({
 
       setNameError(false);
       setDescriptionError(false);
-      setApiError(""); // Reset API error
+      setApiError("");
 
       handleClose();
       onRegulationEdited();

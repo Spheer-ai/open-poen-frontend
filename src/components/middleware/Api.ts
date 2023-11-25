@@ -1039,3 +1039,47 @@ export const getGrantOverseers = async (
     throw error;
   }
 };
+
+export const deleteSponsor = async (token: string, funderId: number) => {
+  try {
+    const response = await api.delete(`/funder/${funderId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error(
+      "Error deleting funder:",
+      error.response ? error.response.data : error,
+    );
+    throw error;
+  }
+};
+
+export const deleteRegulation = async (token, funderId, regulationId) => {
+  try {
+    const response = await api.delete(
+      `/funder/${funderId}/regulation/${regulationId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+
+    if (response.status === 204) {
+      return;
+    } else {
+      console.error(
+        "Failed to delete regulation. Server returned status code:",
+        response.status,
+      );
+      console.error("Response data:", response.data);
+      throw new Error("Failed to delete regulation");
+    }
+  } catch (error) {
+    console.error("Error deleting regulation:", error);
+    throw error;
+  }
+};

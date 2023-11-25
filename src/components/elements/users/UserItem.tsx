@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
 import ProfileIcon from "../../../assets/profile-icon.svg";
 import styles from "../../../assets/scss/Contacts.module.scss";
-import { usePermissions } from "../../../contexts/PermissionContext";
 import { useAuth } from "../../../contexts/AuthContext";
 
 const UserItem = ({
@@ -14,39 +13,10 @@ const UserItem = ({
   isLoggedIn,
 }) => {
   const userItemId = user.id;
-  const { fetchPermissions } = usePermissions();
   const { user: authUser } = useAuth();
   const token = authUser?.token;
-
-  const [hasEditPermission, setHasEditPermission] = useState(false);
-  const [permissionsFetched, setPermissionsFetched] = useState(false);
-
-  const [userPermissions, setUserPermissions] = useState<string[]>([]);
   const isUserHidden = user.hidden === true;
   const isUserInactive = user.is_active === false;
-
-  useEffect(() => {
-    async function fetchUserPermissions() {
-      try {
-        if (user.id && !permissionsFetched) {
-          const permissions = await fetchPermissions("User", user.id, token);
-          setUserPermissions(permissions || []);
-          setPermissionsFetched(true);
-          console.log(`Permissions fetched for user ${user.id}:`, permissions);
-        }
-      } catch (error) {
-        console.error(
-          `Failed to fetch permissions for user ${user.id}:`,
-          error,
-        );
-      }
-    }
-
-    fetchUserPermissions();
-  }, [user.id, fetchPermissions, permissionsFetched, token]);
-
-  console.log(`Rendered UserItem for user ${user.id}`);
-  console.log(`hasEditPermission for user ${user.id}:`, hasEditPermission);
 
   return (
     <li

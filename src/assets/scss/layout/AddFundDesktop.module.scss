@@ -50,7 +50,7 @@
 }
 
 .cancelButton {
-  background-color: #ccc;
+  background-color: #f4f4f4;
   border: none;
   border-radius: 5px;
   padding: 10px;
@@ -61,6 +61,16 @@
 
 .saveButton {
   background-color: #2760d5;
+  border: none;
+  border-radius: 5px;
+  padding: 15px;
+  flex: 1;
+  color: white;
+  cursor: pointer;
+}
+
+.deleteButton {
+  background-color: #dc3545;
   border: none;
   border-radius: 5px;
   padding: 15px;
@@ -643,4 +653,22 @@ input[type="text"] {
 
 .modalBody {
   padding: 0px 20px;
+}
+
+.deleteLabels {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  padding: 20px 0px;
+
+  label {
+    font-weight: 600;
+    font-size: 16px;
+    color: #000000;
+  }
+
+  p {
+    font-weight: 400;
+    font-size: 14px;
+  }
 }

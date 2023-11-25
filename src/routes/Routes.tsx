@@ -6,7 +6,6 @@ import Contacts from "../components/pages/Contacts";
 import Funds from "../components/pages/Funds";
 import Transactions from "../components/pages/Transactions";
 import Login from "../components/pages/Login";
-import Sponsors from "../components/pages/Sponsors";
 import InlineModalLayout from "../components/ui/layout/InlideModalLayout";
 import styles from "../assets/scss/Routes.module.scss";
 import UserDetailsPage from "../components/pages/UserDetailPage";
@@ -14,9 +13,9 @@ import FundDetail from "../components/pages/FundDetail";
 import ResetPassword from "../components/pages/onboarding/ResetPassword";
 import ResetPasswordLayout from "../components/pages/onboarding/ResetPasswordLayout";
 import ResetPasswordRequest from "../components/pages/onboarding/ResetPasswordRequest";
-import SponsorDetail from "../components/pages/SponsorDetail";
 import PermissionChecker from "../components/pages/PermissionChecker";
 import RegulationList from "../components/lists/RegulationList";
+import SponsorList from "../components/lists/SponsorsList";
 
 export default function AppRoutes() {
   const navigate = useNavigate();
@@ -145,13 +144,23 @@ export default function AppRoutes() {
                 path="/sponsors/*"
                 element={
                   <InlineModalLayout navigate={navigate}>
-                    {<Sponsors />}
-                    <Routes>
-                      <Route
-                        path="/detail/:funderId"
-                        element={<SponsorDetail />}
-                      />
-                    </Routes>
+                    {<SponsorList />}
+                  </InlineModalLayout>
+                }
+              />
+              <Route
+                path="/sponsors/:sponsorId/edit-sponsor"
+                element={
+                  <InlineModalLayout navigate={navigate}>
+                    {<SponsorList />}
+                  </InlineModalLayout>
+                }
+              />
+              <Route
+                path="/sponsors/:sponsorId/delete-sponsor"
+                element={
+                  <InlineModalLayout navigate={navigate}>
+                    {<SponsorList />}
                   </InlineModalLayout>
                 }
               />
@@ -188,14 +197,6 @@ export default function AppRoutes() {
                 }
               />
               <Route
-                path="/sponsors/:sponsorId/regulations/:regulationId/edit-sponsor/:sponsorId"
-                element={
-                  <InlineModalLayout navigate={navigate}>
-                    <RegulationList />
-                  </InlineModalLayout>
-                }
-              />
-              <Route
                 path="/sponsors/:sponsorId/regulations/:regulationId/edit-grant/:grantId"
                 element={
                   <InlineModalLayout navigate={navigate}>
@@ -220,21 +221,19 @@ export default function AppRoutes() {
                   </InlineModalLayout>
                 }
               />
-
               <Route
-                path="/sponsors/:sponsorId/regulations/:action"
+                path="/sponsors/:sponsorId/regulations/:regulationId/delete-regulation"
                 element={
                   <InlineModalLayout navigate={navigate}>
                     <RegulationList />
                   </InlineModalLayout>
                 }
               />
-
               <Route
-                path="/sponsors/:action"
+                path="/sponsors/:sponsorId/regulations/:action"
                 element={
                   <InlineModalLayout navigate={navigate}>
-                    <Sponsors />
+                    <RegulationList />
                   </InlineModalLayout>
                 }
               />

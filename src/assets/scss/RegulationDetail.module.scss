@@ -18,9 +18,9 @@
 
   .regulation-detail-header {
     display: flex;
-    justify-content: space-between;
     align-items: center;
     margin: 10px 0px;
+    gap: 30px;
 
     .regulation-detail-name {
       white-space: nowrap;
@@ -32,12 +32,12 @@
 
     .regulation-detail-buttons {
       display: flex;
-      gap: 20px;
+      gap: 10px;
 
       button {
         display: flex;
         border: none;
-        gap: 15px;
+        gap: 10px;
         align-items: center;
         font-size: 14px;
         background-color: transparent;

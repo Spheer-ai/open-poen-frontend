@@ -3,4 +3,5 @@ export interface DropdownMenuProps {
   onEditClick: () => void;
   onDeleteClick: () => void;
   userPermissions;
+  hasDeletePermission;
 }
