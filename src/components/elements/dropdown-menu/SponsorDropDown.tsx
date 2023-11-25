@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import DropdownMenu from "./DropDownMenu";
-import styles from "../../../assets/scss/SponsorDropdown.module.scss";
+import styles from "../../../assets/scss/SponsorDropDown.module.scss";
 
 const SponsorDropdown = ({
   isOpen,
