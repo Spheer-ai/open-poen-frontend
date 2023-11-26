@@ -183,7 +183,6 @@ const AddUserForm: React.FC<{
             }}
             onCancel={() => {
               onCancel();
-              window.location.reload();
             }}
           />
         )}

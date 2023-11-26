@@ -175,7 +175,6 @@ const SponsorList = () => {
 
   const handleToggleAddSponsorModal = () => {
     if (isModalOpen) {
-      setIsBlockingInteraction(true);
       setTimeout(() => {
         setIsBlockingInteraction(false);
         setIsModalOpen(false);
