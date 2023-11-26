@@ -135,7 +135,7 @@ export default function Contacts() {
 
   const handleUserClick = (clickedUserId: string) => {
     setActiveUserId(clickedUserId);
-    navigate(`/contacts/user/${clickedUserId}`);
+    navigate(`/contacts/${clickedUserId}`);
   };
 
   const handleSearch = (query: string) => {
@@ -157,6 +157,10 @@ export default function Contacts() {
   };
 
   const handleUserAdded = () => {
+    setRefreshTrigger((prev) => prev + 1);
+  };
+
+  const handleUserDeleted = () => {
     setRefreshTrigger((prev) => prev + 1);
   };
 
@@ -212,7 +216,7 @@ export default function Contacts() {
           onUserAdded={handleUserAdded}
         />
       </div>
-      <UserDetailsPage />
+      <UserDetailsPage onUserDeleted={handleUserDeleted} />
     </div>
   );
 }

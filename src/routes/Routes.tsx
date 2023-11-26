@@ -121,7 +121,15 @@ export default function AppRoutes() {
                 }
               />
               <Route
-                path="/contacts/user/:userId"
+                path="/contacts/:userId/delete-user"
+                element={
+                  <InlineModalLayout navigate={navigate}>
+                    <Contacts />
+                  </InlineModalLayout>
+                }
+              />
+              <Route
+                path="/contacts/:userId"
                 element={
                   <InlineModalLayout navigate={navigate}>
                     <Contacts />
