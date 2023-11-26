@@ -232,12 +232,95 @@ export const getUsersOrdered = async (
   }
 };
 
-export const fetchInitiatives = async () => {
+export const fetchInitiatives = async (token: string) => {
   try {
-    const response = await api.get(`/initiatives`);
+    const response = await api.get(`/initiatives`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
     return response.data.initiatives;
   } catch (error) {
     console.error("Error fetching initiatives:", error);
+    throw error;
+  }
+};
+
+export const fetchActivities = async (initiativeId: number, token: string) => {
+  try {
+    const response = await api.get(`/initiative/${initiativeId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching activities:", error);
+    throw error;
+  }
+};
+
+export const addFund = async (
+  funderId: number,
+  regulationId: number,
+  grantId: number,
+  token: string,
+  data: {
+    name?: string;
+    description?: string;
+    purpose?: string;
+    target_audience?: string;
+    owner?: string;
+    owner_email?: string;
+    legal_entity?: string;
+    address_applicant?: string;
+    kvk_registration?: string;
+    location?: string;
+    hidden_sponsors?: boolean;
+    hidden?: boolean;
+    budget?: number;
+  },
+) => {
+  try {
+    console.log("Data being sent to the server:", data);
+    const response = await api.post(
+      `/funder/${funderId}/regulation/${regulationId}/grant/${grantId}/initiative`,
+      data,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      },
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error adding initiative:", error);
+    throw error;
+  }
+};
+
+export const AddActivity = async (
+  initiativeId: number,
+  token: string,
+  activityData: object,
+) => {
+  try {
+    const response = await api.post(
+      `/initiative/${initiativeId}/activity`,
+      activityData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      },
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error adding activity:", error);
     throw error;
   }
 };

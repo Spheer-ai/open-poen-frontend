@@ -125,18 +125,8 @@ export default function UserDetailsPage({
       }
     };
 
-    const fetchUserInitiatives = async () => {
-      try {
-        const initiativesResponse = await fetchInitiatives();
-        setInitiatives(initiativesResponse);
-      } catch (error) {
-        console.error("Error fetching initiatives:", error);
-      }
-    };
-
     if (userId) {
       fetchUserData();
-      fetchUserInitiatives();
     }
   }, [userId, token, refreshTrigger]);
 

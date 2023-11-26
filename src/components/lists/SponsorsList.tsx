@@ -20,7 +20,6 @@ const SponsorList = () => {
   const { sponsorId } = useParams<{ sponsorId?: string }>();
   const { user } = useAuth();
   const [isModalOpen, setIsModalOpen] = useState(false);
-
   const [sponsors, setSponsors] = useState<Sponsor[]>([]);
   const [isBlockingInteraction, setIsBlockingInteraction] = useState(false);
   const [refreshTrigger, setRefreshTrigger] = useState(0);

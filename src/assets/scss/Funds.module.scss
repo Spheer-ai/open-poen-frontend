@@ -9,15 +9,12 @@
   overflow-x: hidden;
 }
 
-.temp-container {
-  position: relative;
+.container {
   display: flex;
-  height: 100%;
   width: 100%;
-  align-items: center;
-  justify-content: center;
+  position: relative;
 }
 
-.button-temp {
-  display: none;
+.side-panel {
+  flex: 1;
 }

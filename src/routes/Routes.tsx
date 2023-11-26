@@ -15,6 +15,7 @@ import ResetPasswordRequest from "../components/pages/onboarding/ResetPasswordRe
 import PermissionChecker from "../components/pages/PermissionChecker";
 import RegulationList from "../components/lists/RegulationList";
 import SponsorList from "../components/lists/SponsorsList";
+import Activities from "../components/pages/Activities";
 
 export default function AppRoutes() {
   const navigate = useNavigate();
@@ -90,6 +91,23 @@ export default function AppRoutes() {
                 <Routes>
                   <Route path="/detail" element={<FundDetail />} />
                 </Routes>
+              </InlineModalLayout>
+            }
+          />
+          <Route
+            path="/funds/:initiativeId/activities"
+            element={
+              <InlineModalLayout navigate={navigate}>
+                <Activities />
+              </InlineModalLayout>
+            }
+          />
+
+          <Route
+            path="/funds/:initiativeId/activities/:activityId/add-activity"
+            element={
+              <InlineModalLayout navigate={navigate}>
+                <Activities />
               </InlineModalLayout>
             }
           />

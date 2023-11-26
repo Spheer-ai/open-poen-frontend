@@ -93,7 +93,7 @@ export default function Contacts() {
 
         if (filteredUsers.length > 0) {
           setActiveUserId(filteredUsers[0].id);
-          navigate(`/contacts/user/${filteredUsers[0].id}`);
+          navigate(`/contacts/${filteredUsers[0].id}`);
         }
       } catch (error) {
         setError(error);

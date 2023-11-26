@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import TopNavigationBar from "../ui/top-navigation-bar/TopNavigationBar";
 import styles from "../../assets/scss/Funds.module.scss";
-import AddFundDesktop from "../modals/AddFundDesktop";
 import { usePermissions } from "../../contexts/PermissionContext";
 import { useAuth } from "../../contexts/AuthContext";
-import { fetchInitiatives } from "../middleware/Api";
+import { fetchActivities } from "../middleware/Api";
+import AddActivity from "../modals/AddActivity";
 
-interface Initiative {
+interface Activities {
   id: number;
   name: string;
   budget: number;
@@ -15,8 +15,9 @@ interface Initiative {
   expenses: number;
 }
 
-export default function Funds() {
+export default function ActivitiesPage() {
   const navigate = useNavigate();
+  const { action } = useParams();
   const { user } = useAuth();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isBlockingInteraction, setIsBlockingInteraction] = useState(false);
@@ -24,12 +25,19 @@ export default function Funds() {
   const { fetchPermissions } = usePermissions();
   const [permissionsFetched, setPermissionsFetched] = useState(false);
   const [entityPermissions, setEntityPermissions] = useState<string[]>([]);
-  const hasPermission = entityPermissions.includes("create");
-  const [initiatives, setInitiatives] = useState<Initiative[]>([]);
+  const hasPermission = entityPermissions.includes("create_activity");
+  const [activities, setActivities] = useState<Activities[]>([]);
+  const initiativeId = useParams()?.initiativeId || "";
 
   useEffect(() => {
+    console.log("action:", action);
+    if (!initiativeId) {
+      console.error("initiativeId is not defined.");
+      return;
+    }
+
     if (user?.token && !permissionsFetched) {
-      fetchPermissions("Funder", undefined, user.token)
+      fetchPermissions("Initiative", parseInt(initiativeId), user.token)
         .then((permissions) => {
           console.log("Fetched permissions:", permissions);
           setEntityPermissions(permissions || []);
@@ -42,88 +50,94 @@ export default function Funds() {
     } else {
       console.log("Token is not available or permissions are already fetched.");
     }
-  }, [user, fetchPermissions, permissionsFetched]);
+  }, [
+    action,
+    user,
+    fetchPermissions,
+    permissionsFetched,
+    initiativeId,
+    refreshTrigger,
+  ]);
 
   useEffect(() => {
-    if (user?.token) {
-      fetchInitiatives(user.token)
-        .then((initiativesData) => {
-          console.log("Fetched initiatives:", initiativesData);
-          setInitiatives(initiativesData || []);
+    if (initiativeId && user?.token) {
+      fetchActivities(Number(initiativeId), user.token)
+        .then((initiativeData) => {
+          console.log("Fetched activities:", initiativeData.activities);
+          setActivities(initiativeData.activities || []);
         })
         .catch((error) => {
           console.error("Error fetching initiatives:", error);
         });
     }
-  }, [user, permissionsFetched, refreshTrigger]);
+  }, [initiativeId, user, refreshTrigger]);
 
   const handleSearch = (query) => {
     console.log("Search query in UserDetailsPage:", query);
   };
 
-  const handleToggleAddFundModal = () => {
+  const handleBackClick = () => {
+    navigate("/funds");
+  };
+
+  const handleToggleAddActivityModal = () => {
     if (isModalOpen) {
       setIsBlockingInteraction(true);
       setTimeout(() => {
         setIsBlockingInteraction(false);
-        setIsModalOpen(!isModalOpen);
-        navigate(`/funds`);
+        setIsModalOpen(false);
+        navigate(`/funds/${initiativeId}/activities`);
       }, 300);
     } else {
       setIsModalOpen(true);
-      navigate(`/funds/add-fund`);
     }
   };
 
-  const handleFundAdded = () => {
+  const handleActivityAdded = () => {
+    console.log("Activity added. Refreshing activities list...");
     setRefreshTrigger((prev) => prev + 1);
   };
 
-  const navigateToActivities = (initiativeId) => {
-    navigate(`/funds/${initiativeId}/activities`);
-  };
+  console.log("initiativeId:", initiativeId);
 
   return (
     <div className={styles["container"]}>
       <div className={styles["side-panel"]}>
         <TopNavigationBar
-          title="Initiatieven"
+          title="Activiteiten"
           showSettings={false}
           showCta={true}
+          onBackArrowClick={handleBackClick}
           onSettingsClick={() => {}}
-          onCtaClick={handleToggleAddFundModal}
+          onCtaClick={handleToggleAddActivityModal}
           onSearch={handleSearch}
           hasPermission={hasPermission}
           showSearch={false}
         />
-        {initiatives.length === 0 ? (
+        {Array.isArray(activities) && activities.length === 0 ? (
           <p>Geen resultaten gevonden</p>
         ) : (
           <ul>
-            {initiatives.map((initiative) => (
-              <li key={initiative.id}>
-                <a onClick={() => navigateToActivities(initiative.id)}>
-                  <strong>{initiative.name}</strong>
-                </a>
+            {activities.map((activity) => (
+              <li key={activity.id}>
+                <strong>{activity.name}</strong>
                 <br />
-                Budget: €{initiative.budget}
+                Budget: €{activity.budget}
                 <br />
-                Income: €{initiative.income}
+                Income: €{activity.income}
                 <br />
-                Expenses: €{initiative.expenses}
+                Expenses: €{activity.expenses}
               </li>
             ))}
           </ul>
         )}
       </div>
-      <AddFundDesktop
+      <AddActivity
         isOpen={isModalOpen}
-        onClose={handleToggleAddFundModal}
+        onClose={handleToggleAddActivityModal}
         isBlockingInteraction={isBlockingInteraction}
-        onFundAdded={handleFundAdded}
-        funderId={1}
-        regulationId={4}
-        grantId={3}
+        onActivityAdded={handleActivityAdded}
+        refreshTrigger={refreshTrigger}
       />
     </div>
   );

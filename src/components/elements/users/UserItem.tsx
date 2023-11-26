@@ -32,7 +32,7 @@ const UserItem = ({
     >
       {isLoggedIn ? (
         <Link
-          to={`/contacts/user/${userItemId}`}
+          to={`/contacts/${userItemId}`}
           className={`${styles["user-link"]} ${
             isLoggedActiveUser ? styles["logged-in"] : ""
           }`}
