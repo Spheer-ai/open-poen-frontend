@@ -26,6 +26,7 @@ export default function Funds() {
   const [entityPermissions, setEntityPermissions] = useState<string[]>([]);
   const hasPermission = entityPermissions.includes("create");
   const [initiatives, setInitiatives] = useState<Initiative[]>([]);
+  const [showDummyItem, setShowDummyItem] = useState(true);
 
   useEffect(() => {
     if (user?.token && !permissionsFetched) {
@@ -49,13 +50,40 @@ export default function Funds() {
       fetchInitiatives(user.token)
         .then((initiativesData) => {
           console.log("Fetched initiatives:", initiativesData);
-          setInitiatives(initiativesData || []);
+          const updatedInitiatives = [...(initiativesData || [])];
+  
+          if (showDummyItem) {
+            const dummyInitiative = {
+              id: -1,
+              name: "Dummy Initiative",
+              budget: 100,
+              income: 20,
+              expenses: 80,
+            };
+            updatedInitiatives.unshift(dummyInitiative);
+          }
+  
+          for (let i = 1; i <= 3; i++) {
+            const total = 800 + i * 100;
+            const income = Math.floor(Math.random() * total);
+            const expenses = total - income; 
+            const dummyInitiative = {
+              id: -1 - i,
+              name: `Dummy Initiative ${i}`,
+              budget: total,
+              income: income,
+              expenses: expenses,
+            };
+            updatedInitiatives.unshift(dummyInitiative);
+          }
+  
+          setInitiatives(updatedInitiatives);
         })
         .catch((error) => {
           console.error("Error fetching initiatives:", error);
         });
     }
-  }, [user, permissionsFetched, refreshTrigger]);
+  }, [user, permissionsFetched, refreshTrigger, showDummyItem]);
 
   const handleSearch = (query) => {
     console.log("Search query in UserDetailsPage:", query);
@@ -83,11 +111,27 @@ export default function Funds() {
     navigate(`/funds/${initiativeId}/activities`);
   };
 
+  const calculateBarWidth = (income, expenses) => {
+    const total = income + expenses;
+    if (total === 0) {
+      return {
+        incomeWidth: "50%",
+        expensesWidth: "50%",
+      };
+    }
+    const incomeWidth = `${(income / total) * 100}%`;
+    const expensesWidth = `${(expenses / total) * 100}%`;
+    return {
+      incomeWidth,
+      expensesWidth,
+    };
+  };
+
   return (
     <div className={styles["container"]}>
       <div className={styles["side-panel"]}>
         <TopNavigationBar
-          title="Initiatieven"
+          title={`Initiatieven ${initiatives.length}`}
           showSettings={false}
           showCta={true}
           onSettingsClick={() => {}}
@@ -99,19 +143,67 @@ export default function Funds() {
         {initiatives.length === 0 ? (
           <p>Geen resultaten gevonden</p>
         ) : (
-          <ul>
+          <ul className={styles["shared-unordered-list"]}>
             {initiatives.map((initiative) => (
-              <li key={initiative.id}>
-                <a onClick={() => navigateToActivities(initiative.id)}>
-                  <strong>{initiative.name}</strong>
-                </a>
-                <br />
-                Budget: €{initiative.budget}
-                <br />
-                Income: €{initiative.income}
-                <br />
-                Expenses: €{initiative.expenses}
-              </li>
+              <div className={styles["shared-styling"]}>
+                <li key={initiative.id} className={styles["shared-name"]}>
+                  <a onClick={() => navigateToActivities(initiative.id)}>
+                    <strong>{initiative.name}</strong>
+                  </a>
+                </li>
+                <div className={styles["values-bar"]}>
+                  <div
+                    key={`income-${initiative.id}`}
+                    className={styles["income-bar"]}
+                    style={{
+                      width: calculateBarWidth(
+                        initiative.income,
+                        initiative.expenses,
+                      ).incomeWidth,
+                    }}
+                  ></div>
+                  <div
+                    key={`expenses-${initiative.id}`}
+                    className={styles["expenses-bar"]}
+                    style={{
+                      width: calculateBarWidth(
+                        initiative.income,
+                        initiative.expenses,
+                      ).expensesWidth,
+                    }}
+                  ></div>
+                </div>
+                <li key={initiative.id} className={styles["shared-list"]}>
+                  <div className={styles["shared-values"]}>
+                    <label>Begroting:</label>
+                    <span>€{initiative.budget}</span>
+                  </div>
+                  <div className={styles["shared-values"]}>
+                    <label
+                      className={
+                        initiative.income
+                          ? styles["value-income"]
+                          : styles["value-expenses"]
+                      }
+                    >
+                      Beschikbaar:
+                    </label>
+                    <span>€{initiative.income}</span>
+                  </div>
+                  <div className={styles["shared-values"]}>
+                    <label
+                      className={
+                        initiative.expenses
+                          ? styles["value-expenses"]
+                          : styles["value-income"]
+                      }
+                    >
+                      Besteed:
+                    </label>
+                    <span>€{initiative.expenses}</span>
+                  </div>
+                </li>
+              </div>
             ))}
           </ul>
         )}
