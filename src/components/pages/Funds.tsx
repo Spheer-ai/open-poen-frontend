@@ -56,9 +56,9 @@ export default function Funds() {
             const dummyInitiative = {
               id: -1,
               name: "Dummy Initiative",
-              budget: 100,
-              income: 20,
-              expenses: 80,
+              budget: 1000,
+              income: 700,
+              expenses: 300,
             };
             updatedInitiatives.unshift(dummyInitiative);
           }

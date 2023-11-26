@@ -72,8 +72,8 @@ export default function ActivitiesPage() {
               id: -1,
               name: "Dummy Activity",
               budget: 1000,
-              income: 500,
-              expenses: 500,
+              income: 800,
+              expenses: 200,
             };
             updatedActivities.unshift(dummyActivity);
           }
