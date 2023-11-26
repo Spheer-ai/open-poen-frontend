@@ -2,28 +2,10 @@ import React, { useEffect, useState } from "react";
 import styles from "../../assets/scss/layout/AddFundDesktop.module.scss";
 import { createUser } from "../middleware/Api";
 
-export type UserFormData = {
-  email: string;
-  first_name: string;
-  last_name: string;
-  biography: string;
-  role: string[];
-  is_active: boolean;
-  is_superuser: boolean;
-  is_verified: boolean;
-  hidden: boolean;
-};
-
-const initialFormData: UserFormData = {
-  email: "",
-  first_name: "",
-  last_name: "",
-  biography: "",
-  role: [],
-  is_active: true,
-  is_superuser: false,
-  is_verified: true,
-  hidden: false,
+const roleLabels = {
+  administrator: "Beheerder",
+  financial: "Financieel",
+  user: "Gebruiker",
 };
 
 interface AddUserProps {
@@ -40,14 +22,18 @@ const AddUser: React.FC<AddUserProps> = ({
   onUserAdded,
 }) => {
   const [modalIsOpen, setModalIsOpen] = useState(isOpen);
-  const [formData, setFormData] = useState(initialFormData);
+  const [formData, setFormData] = useState({
+    email: "",
+    first_name: "",
+    last_name: "",
+    biography: "",
+    role: "user",
+    is_active: true,
+    is_superuser: false,
+    is_verified: true,
+    hidden: false,
+  });
   const [error, setError] = useState<string | null>(null);
-
-  const roleLabels = {
-    administrator: "Beheerder",
-    financial: "Financieel",
-    user: "Gebruiker",
-  };
 
   useEffect(() => {
     if (isOpen) {
@@ -55,51 +41,38 @@ const AddUser: React.FC<AddUserProps> = ({
     } else {
       setTimeout(() => {
         setModalIsOpen(false);
+        setFormData({
+          email: "",
+          first_name: "",
+          last_name: "",
+          biography: "",
+          role: "user",
+          is_active: true,
+          is_superuser: false,
+          is_verified: true,
+          hidden: false,
+        });
       }, 300);
+      setError(null);
     }
   }, [isOpen]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
-  };
-
-  const handleRoleChange = (checked: boolean) => {
-    setFormData((prevFormData: UserFormData) => {
-      // Clone the existing role array and add/remove the selected role
-      const updatedRole: string[] = checked
-        ? [...prevFormData.role, "user"] // Add role to the array
-        : prevFormData.role.filter((r) => r !== "user"); // Remove role from the array
-
-      return {
-        ...prevFormData,
-        role: updatedRole,
-      };
-    });
-  };
-
-  const handleCheckboxChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    role: string,
-  ) => {
-    const { checked } = e.target;
-    setFormData((prevFormData: UserFormData) => {
-      // Clone the existing role array and add/remove the selected role
-      const updatedRoles: string[] = checked
-        ? [...prevFormData.role, role] // Add role to the array
-        : prevFormData.role.filter((r) => r !== role); // Remove role from the array
-
-      return {
-        ...prevFormData,
-        role: updatedRoles,
-      };
-    });
+  const isValidEmail = (email: string) => {
+    const emailPattern = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
+    return emailPattern.test(email);
   };
 
   const handleSave = async () => {
+    if (!formData.email.trim()) {
+      setError("Voer een e-mailadres in.");
+      return;
+    }
+
+    if (!isValidEmail(formData.email)) {
+      setError("Voer een geldig e-mailadres in.");
+      return;
+    }
+
     try {
       const token = localStorage.getItem("token");
       if (!token) {
@@ -119,14 +92,45 @@ const AddUser: React.FC<AddUserProps> = ({
       onUserAdded();
     } catch (error) {
       console.error("Failed to create user:", error);
-      setError("Failed to create user. Please try again.");
+
+      if (error.response && error.response.status === 409) {
+        setError("Gebruiker reeds bekend");
+      } else {
+        setError(
+          "Er is een fout opgetreden bij het aanmaken van de gebruiker.",
+        );
+      }
     }
+  };
+
+  const handleRoleChange = (selectedRole: string) => {
+    setFormData({
+      ...formData,
+      role: selectedRole.toLowerCase(),
+    });
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
   };
 
   const handleClose = () => {
     if (!isBlockingInteraction) {
       setModalIsOpen(false);
       onClose();
+    }
+  };
+
+  const handleEnterKeyPress = (
+    event: React.KeyboardEvent<HTMLInputElement>,
+  ) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      handleSave();
     }
   };
 
@@ -156,8 +160,15 @@ const AddUser: React.FC<AddUserProps> = ({
               placeholder="Voer het e-mailadres in"
               value={formData.email}
               onChange={handleChange}
+              onKeyDown={handleEnterKeyPress}
             />
-            {error && <p className={styles.error}>{error}</p>}
+            {error && (
+              <span
+                style={{ color: "red", display: "block", marginTop: "5px" }}
+              >
+                {error}
+              </span>
+            )}
             <p className={styles.description}>
               Als er nog geen gebruiker bestaat met dit e-mailadres, ontvangt
               deze een uitnodigingsmail met daarin een link om een wachtwoord
@@ -174,9 +185,10 @@ const AddUser: React.FC<AddUserProps> = ({
                 <label key={apiRole} className={styles.roleLabel}>
                   <input
                     type="checkbox"
-                    name={apiRole} // Use a unique name for each checkbox
-                    checked={formData.role.includes(apiRole)} // Check if the role is in the array
-                    onChange={(e) => handleCheckboxChange(e, apiRole)} // Pass the role as a parameter
+                    name="role"
+                    value={apiRole.toLowerCase()}
+                    checked={formData.role === apiRole.toLowerCase()}
+                    onChange={() => handleRoleChange(apiRole)}
                   />
                   {displayRole}
                 </label>
