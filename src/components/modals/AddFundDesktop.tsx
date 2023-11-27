@@ -119,9 +119,9 @@ const AddFundDesktop: React.FC<AddFundDesktopProps> = ({
         onClick={handleClose}
       ></div>
       <div className={`${styles.modal} ${modalIsOpen ? styles.open : ""}`}>
-        <h2 className={styles.title}>Add Fund</h2>
+        <h2 className={styles.title}>Initiatief toevoegen</h2>
         <div className={styles.formGroup}>
-          <label className={styles.labelEmail}>Fund Name:</label>
+          <label className={styles.labelField}>Over initiatief</label>
           <input
             type="text"
             placeholder="Enter fund name"
@@ -131,7 +131,7 @@ const AddFundDesktop: React.FC<AddFundDesktopProps> = ({
           />
         </div>
         <div className={styles.formGroup}>
-          <label className={styles.label}>Description:</label>
+          <label className={styles.labelField}>Beschrijving:</label>
           <textarea
             className={styles.description}
             placeholder="Enter fund description"
@@ -141,7 +141,7 @@ const AddFundDesktop: React.FC<AddFundDesktopProps> = ({
           ></textarea>
         </div>
         <div className={styles.formGroup}>
-          <label className={styles.label}>Purpose:</label>
+          <label className={styles.labelField}>Doel:</label>
           <input
             type="text"
             placeholder="Enter fund purpose"
@@ -151,7 +151,7 @@ const AddFundDesktop: React.FC<AddFundDesktopProps> = ({
           />
         </div>
         <div className={styles.formGroup}>
-          <label className={styles.label}>Target Audience:</label>
+          <label className={styles.labelField}>Doelgroep:</label>
           <input
             type="text"
             placeholder="Enter target audience"
@@ -161,7 +161,7 @@ const AddFundDesktop: React.FC<AddFundDesktopProps> = ({
           />
         </div>
         <div className={styles.formGroup}>
-          <label className={styles.label}>Amount:</label>
+          <label className={styles.labelField}>Begroting:</label>
           <input
             type="number"
             placeholder="Enter amount"

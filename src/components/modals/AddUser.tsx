@@ -150,7 +150,7 @@ const AddUser: React.FC<AddUserProps> = ({
         <form>
           <div className={styles.formGroup}>
             <h3>Info</h3>
-            <label className={styles.labelEmail} htmlFor="email">
+            <label className={styles.labelField} htmlFor="email">
               E-mail
             </label>
             <input

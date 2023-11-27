@@ -28,7 +28,6 @@ export default function ActivitiesPage() {
   const hasPermission = entityPermissions.includes("create_activity");
   const [activities, setActivities] = useState<Activities[]>([]);
   const initiativeId = useParams()?.initiativeId || "";
-  const [showDummyItem, setShowDummyItem] = useState(true);
 
   useEffect(() => {
     console.log("action:", action);
@@ -67,38 +66,13 @@ export default function ActivitiesPage() {
           console.log("Fetched activities:", initiativeData.activities);
           const updatedActivities = initiativeData.activities || [];
 
-          if (showDummyItem) {
-            const dummyActivity = {
-              id: -1,
-              name: "Dummy Activity",
-              budget: 1000,
-              income: 800,
-              expenses: 200,
-            };
-            updatedActivities.unshift(dummyActivity);
-          }
-
-          for (let i = 1; i <= 3; i++) {
-            const total = 800 + i * 100;
-            const income = Math.floor(Math.random() * total);
-            const expenses = total - income; 
-            const dummyActivity = {
-              id: -1 - i,
-              name: `Dummy Activity${i}`,
-              budget: total,
-              income: income,
-              expenses: expenses,
-            };
-            updatedActivities.unshift(dummyActivity);
-          }
-
           setActivities(updatedActivities);
         })
         .catch((error) => {
           console.error("Error fetching activities:", error);
         });
     }
-  }, [initiativeId, user, refreshTrigger, showDummyItem]);
+  }, [initiativeId, user, refreshTrigger]);
 
   const calculateBarWidth = (income, expenses) => {
     const total = income + expenses;
@@ -159,12 +133,12 @@ export default function ActivitiesPage() {
           showSearch={false}
         />
         {Array.isArray(activities) && activities.length === 0 ? (
-          <p>Geen resultaten gevonden</p>
+          <p>Activiteiten worden geladen...</p>
         ) : (
           <ul className={styles["shared-unordered-list"]}>
             {activities.map((activity) => (
-              <div className={styles["shared-styling"]}>
-                <li key={activity.id} className={styles["shared-name"]}>
+              <div className={styles["shared-styling"]} key={activity.id}>
+                <li className={styles["shared-name"]}>
                   <strong>{activity.name}</strong>
                 </li>
                 <div className={styles["values-bar"]}>

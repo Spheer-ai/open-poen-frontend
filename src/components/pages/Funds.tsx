@@ -26,7 +26,6 @@ export default function Funds() {
   const [entityPermissions, setEntityPermissions] = useState<string[]>([]);
   const hasPermission = entityPermissions.includes("create");
   const [initiatives, setInitiatives] = useState<Initiative[]>([]);
-  const [showDummyItem, setShowDummyItem] = useState(true);
 
   useEffect(() => {
     if (user?.token && !permissionsFetched) {
@@ -51,39 +50,14 @@ export default function Funds() {
         .then((initiativesData) => {
           console.log("Fetched initiatives:", initiativesData);
           const updatedInitiatives = [...(initiativesData || [])];
-  
-          if (showDummyItem) {
-            const dummyInitiative = {
-              id: -1,
-              name: "Dummy Initiative",
-              budget: 1000,
-              income: 700,
-              expenses: 300,
-            };
-            updatedInitiatives.unshift(dummyInitiative);
-          }
-  
-          for (let i = 1; i <= 3; i++) {
-            const total = 800 + i * 100;
-            const income = Math.floor(Math.random() * total);
-            const expenses = total - income; 
-            const dummyInitiative = {
-              id: -1 - i,
-              name: `Dummy Initiative ${i}`,
-              budget: total,
-              income: income,
-              expenses: expenses,
-            };
-            updatedInitiatives.unshift(dummyInitiative);
-          }
-  
+
           setInitiatives(updatedInitiatives);
         })
         .catch((error) => {
           console.error("Error fetching initiatives:", error);
         });
     }
-  }, [user, permissionsFetched, refreshTrigger, showDummyItem]);
+  }, [user, permissionsFetched, refreshTrigger]);
 
   const handleSearch = (query) => {
     console.log("Search query in UserDetailsPage:", query);
@@ -141,12 +115,12 @@ export default function Funds() {
           showSearch={false}
         />
         {initiatives.length === 0 ? (
-          <p>Geen resultaten gevonden</p>
+          <p>Initiatieven worden geladen...</p>
         ) : (
           <ul className={styles["shared-unordered-list"]}>
             {initiatives.map((initiative) => (
-              <div className={styles["shared-styling"]}>
-                <li key={initiative.id} className={styles["shared-name"]}>
+              <div className={styles["shared-styling"]} key={initiative.id}>
+                <li className={styles["shared-name"]}>
                   <a onClick={() => navigateToActivities(initiative.id)}>
                     <strong>{initiative.name}</strong>
                   </a>
@@ -173,7 +147,7 @@ export default function Funds() {
                     }}
                   ></div>
                 </div>
-                <li key={initiative.id} className={styles["shared-list"]}>
+                <li className={styles["shared-list"]}>
                   <div className={styles["shared-values"]}>
                     <label>Begroting:</label>
                     <span>€{initiative.budget}</span>

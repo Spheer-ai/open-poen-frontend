@@ -81,7 +81,7 @@ const AddActivity: React.FC<AddActivityProps> = ({
       <div className={`${styles.modal} ${modalIsOpen ? styles.open : ""}`}>
         <h2 className={styles.title}>Add Activity</h2>
         <div className={styles.formGroup}>
-          <label className={styles.labelEmail}>Activity Name:</label>
+          <label className={styles.labelField}>Activity Name:</label>
           <input
             type="text"
             placeholder="Enter activity name"
@@ -91,7 +91,7 @@ const AddActivity: React.FC<AddActivityProps> = ({
           />
         </div>
         <div className={styles.formGroup}>
-          <label className={styles.label}>Description:</label>
+          <label className={styles.labelField}>Beschrijving:</label>
           <textarea
             className={styles.description}
             placeholder="Enter activity description"
@@ -100,7 +100,7 @@ const AddActivity: React.FC<AddActivityProps> = ({
           ></textarea>
         </div>
         <div className={styles.formGroup}>
-          <label className={styles.label}>Budget:</label>
+          <label className={styles.labelField}>Begroting:</label>
           <input
             type="number"
             placeholder="Enter budget"
@@ -109,7 +109,7 @@ const AddActivity: React.FC<AddActivityProps> = ({
           />
         </div>
         <div className={styles.formGroup}>
-          <label className={styles.label}>Purpose:</label>
+          <label className={styles.labelField}>Doel:</label>
           <input
             type="text"
             placeholder="Enter purpose"
@@ -118,7 +118,7 @@ const AddActivity: React.FC<AddActivityProps> = ({
           />
         </div>
         <div className={styles.formGroup}>
-          <label className={styles.label}>Target Audience:</label>
+          <label className={styles.labelField}>Doelgroep:</label>
           <input
             type="text"
             placeholder="Enter target audience"
@@ -127,7 +127,7 @@ const AddActivity: React.FC<AddActivityProps> = ({
           />
         </div>
         <div className={styles.formGroup}>
-          <label className={styles.label}>Hidden:</label>
+          <label className={styles.labelField}>Activiteit verbergen</label>
           <input
             type="checkbox"
             checked={hidden}
