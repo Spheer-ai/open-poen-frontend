@@ -204,6 +204,7 @@ export default function ActivitiesPage() {
         isBlockingInteraction={isBlockingInteraction}
         onActivityAdded={handleActivityAdded}
         refreshTrigger={refreshTrigger}
+        initiativeId={Number(initiativeId)}
       />
     </div>
   );

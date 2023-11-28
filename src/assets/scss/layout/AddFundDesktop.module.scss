@@ -24,11 +24,10 @@
 }
 
 .formGroup {
-  margin: 20px;
+  margin: 0px 20px 30px 20px;
 }
 
 .labelField {
-  font-weight: bold;
   font-size: 14px;
 }
 
@@ -676,4 +675,32 @@ input[type="text"] {
 .roleOptions {
   display: flex;
   flex-direction: column;
+
+  .labelField input {
+    width: 24px !important;
+    height: 24px !important;
+    margin-top: 5px !important;
+    margin-right: 10px;
+    font-size: 14px;
+  }
+}
+
+.grantDropdown {
+  width: 100%;
+  padding: 10px;
+  border: solid 1px #d5d4dc;
+  border-radius: 8px;
+  margin-top: 10px;
+}
+
+.grantOption {
+  width: 100%;
+  padding: 10px;
+  border: solid 1px #d5d4dc;
+  border-radius: 8px;
+  margin-top: 10px;
+}
+
+.description {
+  margin-bottom: 0;
 }

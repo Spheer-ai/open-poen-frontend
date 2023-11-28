@@ -8,6 +8,7 @@ interface AddActivityProps {
   isBlockingInteraction: boolean;
   onActivityAdded: () => void;
   refreshTrigger: number;
+  initiativeId: number;
 }
 
 const AddActivity: React.FC<AddActivityProps> = ({
@@ -15,6 +16,7 @@ const AddActivity: React.FC<AddActivityProps> = ({
   onClose,
   isBlockingInteraction,
   onActivityAdded,
+  initiativeId,
 }) => {
   const [modalIsOpen, setModalIsOpen] = useState(isOpen);
   const [activityName, setActivityName] = useState("");
@@ -52,7 +54,6 @@ const AddActivity: React.FC<AddActivityProps> = ({
         hidden: hidden,
       };
 
-      const initiativeId = 1;
       await addActivityApi(initiativeId, token, activityData);
       onActivityAdded();
       handleClose();
@@ -79,12 +80,13 @@ const AddActivity: React.FC<AddActivityProps> = ({
         onClick={handleClose}
       ></div>
       <div className={`${styles.modal} ${modalIsOpen ? styles.open : ""}`}>
-        <h2 className={styles.title}>Add Activity</h2>
+        <h2 className={styles.title}>Activiteit aanmaken</h2>
+        <hr></hr>
         <div className={styles.formGroup}>
-          <label className={styles.labelField}>Activity Name:</label>
+          <label className={styles.labelField}>Naam activiteit:</label>
           <input
             type="text"
-            placeholder="Enter activity name"
+            placeholder="Vul de naam van het activiteit in"
             value={activityName}
             onChange={(e) => setActivityName(e.target.value)}
             ref={activityNameRef}
@@ -94,25 +96,16 @@ const AddActivity: React.FC<AddActivityProps> = ({
           <label className={styles.labelField}>Beschrijving:</label>
           <textarea
             className={styles.description}
-            placeholder="Enter activity description"
+            placeholder="Vul de omschrijving van het activiteit  in"
             value={activityDescription}
             onChange={(e) => setActivityDescription(e.target.value)}
           ></textarea>
         </div>
         <div className={styles.formGroup}>
-          <label className={styles.labelField}>Begroting:</label>
-          <input
-            type="number"
-            placeholder="Enter budget"
-            value={activityBudget}
-            onChange={(e) => setActivityBudget(Number(e.target.value))}
-          />
-        </div>
-        <div className={styles.formGroup}>
           <label className={styles.labelField}>Doel:</label>
           <input
             type="text"
-            placeholder="Enter purpose"
+            placeholder="Vul de doelstelling van het acitviteit in"
             value={purpose}
             onChange={(e) => setPurpose(e.target.value)}
           />
@@ -121,18 +114,31 @@ const AddActivity: React.FC<AddActivityProps> = ({
           <label className={styles.labelField}>Doelgroep:</label>
           <input
             type="text"
-            placeholder="Enter target audience"
+            placeholder="Vul de doelgroep van het acitviteit in"
             value={targetAudience}
             onChange={(e) => setTargetAudience(e.target.value)}
           />
         </div>
         <div className={styles.formGroup}>
-          <label className={styles.labelField}>Activiteit verbergen</label>
+          <label className={styles.labelField}>Begroting:</label>
           <input
-            type="checkbox"
-            checked={hidden}
-            onChange={(e) => setHidden(e.target.checked)}
+            type="number"
+            placeholder="Vul het begrootte bedrag in"
+            value={activityBudget}
+            onChange={(e) => setActivityBudget(Number(e.target.value))}
           />
+        </div>
+        <div className={styles.formGroup}>
+          <div className={styles.roleOptions}>
+            <label className={styles.labelField}>
+              <input
+                type="checkbox"
+                checked={hidden}
+                onChange={(e) => setHidden(e.target.checked)}
+              />
+              Activiteit verbergen
+            </label>
+          </div>
         </div>
         <div className={styles.buttonContainer}>
           <button onClick={handleClose} className={styles.cancelButton}>

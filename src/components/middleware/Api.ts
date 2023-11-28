@@ -232,9 +232,19 @@ export const getUsersOrdered = async (
   }
 };
 
-export const fetchInitiatives = async (token: string) => {
+export const fetchInitiatives = async (
+  token: string,
+  onlyMine: boolean,
+  offset: number = 0,
+  limit: number = 20,
+) => {
   try {
     const response = await api.get(`/initiatives`, {
+      params: {
+        only_mine: onlyMine,
+        offset: offset,
+        limit: limit,
+      },
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
@@ -1163,6 +1173,24 @@ export const deleteRegulation = async (token, funderId, regulationId) => {
     }
   } catch (error) {
     console.error("Error deleting regulation:", error);
+    throw error;
+  }
+};
+
+export const getUserGrants = async (userId: string, token: string) => {
+  try {
+    const response = await api.get(`/user/${userId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    const grants = response.data.grants.map((grant) => ({
+      id: grant.id,
+      name: grant.name,
+    }));
+
+    return grants;
+  } catch (error) {
     throw error;
   }
 };

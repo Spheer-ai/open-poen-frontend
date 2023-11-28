@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from "react";
 import styles from "../../assets/scss/layout/AddFundDesktop.module.scss";
-import { addFund } from "../middleware/Api";
+import { addFund, getUserGrants } from "../middleware/Api";
+import { useAuth } from "../../contexts/AuthContext";
 
 interface AddFundDesktopProps {
   isOpen: boolean;
   onClose: () => void;
   isBlockingInteraction: boolean;
   onFundAdded: () => void;
-  funderId: number;
-  regulationId: number;
-  grantId: number;
+  funderId?: number;
+  regulationId?: number;
 }
 
 const AddFundDesktop: React.FC<AddFundDesktopProps> = ({
@@ -19,9 +19,15 @@ const AddFundDesktop: React.FC<AddFundDesktopProps> = ({
   onFundAdded,
   funderId,
   regulationId,
-  grantId,
 }) => {
   const [modalIsOpen, setModalIsOpen] = useState(isOpen);
+  const { user } = useAuth();
+  const [selectedGrantId, setSelectedGrantId] = useState<number | undefined>(
+    undefined,
+  );
+  const [userGrants, setUserGrants] = useState<{ id: number; name: string }[]>(
+    [],
+  );
 
   const [fundData, setFundData] = useState({
     name: "",
@@ -48,6 +54,32 @@ const AddFundDesktop: React.FC<AddFundDesktopProps> = ({
     }
   }, [isOpen]);
 
+  useEffect(() => {
+    const fetchUserGrants = async () => {
+      try {
+        if (!user?.token) {
+          console.error("Token is not available in user object");
+          return;
+        }
+
+        // Ensure userId is of type string if it's defined
+        const userIdAsString = user.userId ? user.userId.toString() : undefined;
+
+        if (userIdAsString) {
+          // Use the user's token and the converted userId to fetch the user's grants
+          const userGrants = await getUserGrants(userIdAsString, user.token);
+
+          // Set the fetched grants in the state
+          setUserGrants(userGrants);
+        }
+      } catch (error) {
+        console.error("Failed to fetch user grants:", error);
+      }
+    };
+
+    fetchUserGrants();
+  }, [user]);
+
   const handleSave = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -55,6 +87,22 @@ const AddFundDesktop: React.FC<AddFundDesktopProps> = ({
         console.error("Token is not available in localStorage");
         return;
       }
+
+      if (funderId === undefined || regulationId === undefined) {
+        console.error("Missing required IDs (funderId or regulationId)");
+        return;
+      }
+
+      if (selectedGrantId === undefined) {
+        console.error("No grant selected");
+        return;
+      }
+
+      const sanitizedFunderId = funderId === undefined ? 0 : funderId;
+      const sanitizedRegulationId =
+        regulationId === undefined ? 0 : regulationId;
+
+      console.log("Selected grantId:", selectedGrantId); // Log the selected grantId
 
       const requestData = {
         name: fundData.name,
@@ -75,9 +123,9 @@ const AddFundDesktop: React.FC<AddFundDesktopProps> = ({
       console.log("Data being sent to the server:", requestData);
 
       const response = await addFund(
-        funderId,
-        regulationId,
-        grantId,
+        sanitizedFunderId,
+        sanitizedRegulationId,
+        selectedGrantId, // Use selectedGrantId here
         token,
         requestData,
       );
@@ -120,11 +168,33 @@ const AddFundDesktop: React.FC<AddFundDesktopProps> = ({
       ></div>
       <div className={`${styles.modal} ${modalIsOpen ? styles.open : ""}`}>
         <h2 className={styles.title}>Initiatief toevoegen</h2>
+        <hr></hr>
         <div className={styles.formGroup}>
-          <label className={styles.labelField}>Over initiatief</label>
+          <h3>Over het initiatief</h3>
+          <label className={styles.labelField}>Kies een beschikking:</label>
+          <select
+            className={`${styles.grantDropdown}`}
+            name="grantId"
+            value={selectedGrantId || ""}
+            onChange={(e) => setSelectedGrantId(Number(e.target.value))}
+          >
+            <option value="">Kies een beschikking</option>
+            {userGrants.map((grant) => (
+              <option
+                className={styles.customOption}
+                key={grant.id}
+                value={grant.id}
+              >
+                {grant.name}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className={styles.formGroup}>
+          <label className={styles.labelField}>Naam initiatief:</label>
           <input
             type="text"
-            placeholder="Enter fund name"
+            placeholder="Vul de naam van het initiatief in"
             name="name"
             value={fundData.name}
             onChange={handleInputChange}
@@ -134,7 +204,7 @@ const AddFundDesktop: React.FC<AddFundDesktopProps> = ({
           <label className={styles.labelField}>Beschrijving:</label>
           <textarea
             className={styles.description}
-            placeholder="Enter fund description"
+            placeholder="Vul de omschrijving van het initiatief in"
             name="description"
             value={fundData.description}
             onChange={handleInputChange}
@@ -144,7 +214,7 @@ const AddFundDesktop: React.FC<AddFundDesktopProps> = ({
           <label className={styles.labelField}>Doel:</label>
           <input
             type="text"
-            placeholder="Enter fund purpose"
+            placeholder="Vul de doelstelling van het initiatief in"
             name="purpose"
             value={fundData.purpose}
             onChange={handleInputChange}
@@ -154,7 +224,7 @@ const AddFundDesktop: React.FC<AddFundDesktopProps> = ({
           <label className={styles.labelField}>Doelgroep:</label>
           <input
             type="text"
-            placeholder="Enter target audience"
+            placeholder="Vul de doelgroep van het initiatief in"
             name="target_audience"
             value={fundData.target_audience}
             onChange={handleInputChange}
@@ -164,7 +234,7 @@ const AddFundDesktop: React.FC<AddFundDesktopProps> = ({
           <label className={styles.labelField}>Begroting:</label>
           <input
             type="number"
-            placeholder="Enter amount"
+            placeholder="Vul het begrootte bedrag in"
             name="budget"
             value={fundData.budget}
             onChange={handleInputChange}
