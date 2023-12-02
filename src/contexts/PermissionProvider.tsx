@@ -5,6 +5,7 @@ import { useAuth } from "./AuthContext";
 
 interface PermissionProviderProps {
   children: React.ReactNode;
+  entityClasses: string[]; // Add this prop
 }
 
 const PermissionProvider: React.FC<PermissionProviderProps> = ({

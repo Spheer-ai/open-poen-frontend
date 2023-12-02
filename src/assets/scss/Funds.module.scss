@@ -158,6 +158,14 @@
   align-content: center;
 }
 
+.loading-container-small {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-content: center;
+  height: 200px;
+}
+
 @keyframes fadeIn {
   from {
     opacity: 0;

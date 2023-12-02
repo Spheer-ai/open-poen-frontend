@@ -214,7 +214,7 @@ export const getUserById = async (userId: string, token: string) => {
 export const getUsersOrdered = async (
   token: string,
   offset: number = 0,
-  limit: number = 20,
+  limit: number = 3,
 ) => {
   try {
     const response = await api.get("/users", {
@@ -236,7 +236,7 @@ export const fetchInitiatives = async (
   token: string,
   onlyMine: boolean,
   offset: number = 0,
-  limit: number = 20,
+  limit: number = 3,
 ) => {
   try {
     const response = await api.get(`/initiatives`, {
@@ -250,7 +250,20 @@ export const fetchInitiatives = async (
         "Content-Type": "application/json",
       },
     });
-    return response.data.initiatives;
+
+    // Modify the response data to include only the desired fields
+    const filteredInitiatives = response.data.initiatives.map((initiative) => ({
+      id: initiative.id,
+      name: initiative.name,
+      owner: initiative.owner,
+      owner_email: initiative.owner_email,
+      hidden: initiative.hidden,
+      budget: initiative.budget,
+      income: initiative.income,
+      expenses: initiative.expenses,
+    }));
+
+    return filteredInitiatives;
   } catch (error) {
     console.error("Error fetching initiatives:", error);
     throw error;

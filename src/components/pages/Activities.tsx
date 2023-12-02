@@ -6,6 +6,7 @@ import { usePermissions } from "../../contexts/PermissionContext";
 import { useAuth } from "../../contexts/AuthContext";
 import { fetchActivities } from "../middleware/Api";
 import AddActivity from "../modals/AddActivity";
+import LoadingDot from "../animation/LoadingDot";
 
 interface Activities {
   id: number;
@@ -122,7 +123,7 @@ export default function ActivitiesPage() {
     <div className={styles["container"]}>
       <div className={styles["side-panel"]}>
         <TopNavigationBar
-          title={`Activiteiten ${activities.length}`}
+          title={`Activiteiten`}
           showSettings={false}
           showCta={true}
           onBackArrowClick={handleBackClick}
