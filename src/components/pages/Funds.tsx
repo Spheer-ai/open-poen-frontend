@@ -74,10 +74,11 @@ export default function Funds() {
         offset,
         limit,
       });
+
       const cleanup = fetchAndDisplayInitiatives(
         user.token,
         onlyMine,
-        offset,
+        0,
         limit,
       );
       setInitialFetchDone(true);
@@ -89,7 +90,6 @@ export default function Funds() {
     refreshTrigger,
     entityPermissions,
     initialFetchDone,
-    offset,
     limit,
   ]);
 
@@ -116,9 +116,6 @@ export default function Funds() {
             ...initiativesData,
           ]);
 
-          // Remove this line
-          // setTotalFetchedInitiatives((prev) => prev + initiativesData.length);
-
           if (onlyMine) {
             setMyInitiatives((prevMyInitiatives) => [
               ...prevMyInitiatives,
@@ -131,7 +128,6 @@ export default function Funds() {
             ]);
           }
 
-          // Check if all initiatives have been fetched based on allFetchedInitiatives length
           if (allFetchedInitiatives.length >= totalInitiatives) {
             setAllInitiativesFetched(true);
           }
@@ -164,8 +160,6 @@ export default function Funds() {
     console.log("Current Offset:", offset);
     console.log("Current Limit:", limit);
     console.log("New Offset:", newOffset);
-
-    // Update the offset state
     setOffset(newOffset);
 
     console.log("Fetching more initiatives...");
@@ -248,6 +242,7 @@ export default function Funds() {
               setOnlyMine(true);
               setOffset(0);
               setLimit(3);
+              setRefreshTrigger((prevTrigger) => prevTrigger + 1);
             }}
           >
             Mijn Initiatieven
