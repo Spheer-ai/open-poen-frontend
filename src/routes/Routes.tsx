@@ -8,7 +8,6 @@ import Transactions from "../components/pages/Transactions";
 import Login from "../components/pages/Login";
 import InlineModalLayout from "../components/ui/layout/InlideModalLayout";
 import styles from "../assets/scss/Routes.module.scss";
-import UserDetailsPage from "../components/pages/UserDetailPage";
 import FundDetail from "../components/pages/FundDetail";
 import ResetPassword from "../components/pages/onboarding/ResetPassword";
 import ResetPasswordLayout from "../components/pages/onboarding/ResetPasswordLayout";
@@ -16,6 +15,7 @@ import ResetPasswordRequest from "../components/pages/onboarding/ResetPasswordRe
 import PermissionChecker from "../components/pages/PermissionChecker";
 import RegulationList from "../components/lists/RegulationList";
 import SponsorList from "../components/lists/SponsorsList";
+import Activities from "../components/pages/Activities";
 
 export default function AppRoutes() {
   const navigate = useNavigate();
@@ -80,9 +80,6 @@ export default function AppRoutes() {
             element={
               <InlineModalLayout navigate={navigate}>
                 <Contacts />
-                <Routes>
-                  <Route path="user/:userId" element={<UserDetailsPage />} />
-                </Routes>
               </InlineModalLayout>
             }
           />
@@ -98,6 +95,23 @@ export default function AppRoutes() {
             }
           />
           <Route
+            path="/funds/:initiativeId/activities"
+            element={
+              <InlineModalLayout navigate={navigate}>
+                <Activities />
+              </InlineModalLayout>
+            }
+          />
+
+          <Route
+            path="/funds/:initiativeId/activities/:activityId/add-activity"
+            element={
+              <InlineModalLayout navigate={navigate}>
+                <Activities />
+              </InlineModalLayout>
+            }
+          />
+          <Route
             path="/funds/:action"
             element={
               <InlineModalLayout navigate={navigate}>
@@ -108,6 +122,38 @@ export default function AppRoutes() {
 
           {isAuthenticated && (
             <>
+              <Route
+                path="/contacts/*"
+                element={
+                  <InlineModalLayout navigate={navigate}>
+                    <Contacts />
+                  </InlineModalLayout>
+                }
+              />
+              <Route
+                path="/contacts/add-user"
+                element={
+                  <InlineModalLayout navigate={navigate}>
+                    <Contacts />
+                  </InlineModalLayout>
+                }
+              />
+              <Route
+                path="/contacts/:userId/delete-user"
+                element={
+                  <InlineModalLayout navigate={navigate}>
+                    <Contacts />
+                  </InlineModalLayout>
+                }
+              />
+              <Route
+                path="/contacts/:userId"
+                element={
+                  <InlineModalLayout navigate={navigate}>
+                    <Contacts />
+                  </InlineModalLayout>
+                }
+              />
               <Route
                 path="/transactions/*"
                 element={

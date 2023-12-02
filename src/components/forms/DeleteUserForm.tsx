@@ -29,13 +29,17 @@ const DeleteUserForm: React.FC<DeleteUserFormProps> = ({
     }
   };
 
+  const reloadWindow = () => {
+    window.location.reload();
+  };
+
   return (
     <div>
       <FormLayout
         title="Gebruiker verwijderen"
         showIcon={true}
         showOverviewButton={isConfirmed}
-        reloadWindow={onCancel}
+        reloadWindow={reloadWindow}
       >
         {isConfirmed ? (
           <div className={styles["confirmation-container"]}>

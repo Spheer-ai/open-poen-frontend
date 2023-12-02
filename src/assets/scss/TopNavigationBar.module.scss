@@ -61,7 +61,7 @@ h2 {
 }
 
 .settings-icon svg,
-.cta-button button {
+.cta-button {
   font-size: 24px;
   cursor: pointer;
   background: none;
@@ -75,14 +75,10 @@ h2 {
   display: block;
 }
 
-.cta-button button {
-  background-color: transparent;
-}
-
 .cta-button {
   width: 40px;
   height: 40px;
-  border-radius: 99px;
+  border-radius: 100%;
   background-color: #2760d5;
   color: white;
   border: none;
@@ -92,6 +88,7 @@ h2 {
   align-items: center;
   font-size: 20px;
   transition: background-color 0.3s ease;
+  padding: unset;
 }
 
 .cta-button:hover {

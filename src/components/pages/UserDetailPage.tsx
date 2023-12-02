@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import jwtDecode from "jwt-decode";
 import { useAuth } from "../../contexts/AuthContext";
 import UserDetails from "../../types/UserTypes";
@@ -17,7 +17,7 @@ import { fetchUserDetails, fetchInitiatives } from "../middleware/Api";
 import { usePermissions } from "../../contexts/PermissionContext";
 import { useFieldPermissions } from "../../contexts/FieldPermissionContext";
 import EditUserForm from "../forms/EditUserForm";
-import DeleteUserForm from "../forms/DeleteUserForm";
+import DeleteUser from "../modals/DeleteUser";
 
 const roleLabels = {
   administrator: "Beheerder",
@@ -30,7 +30,13 @@ interface DecodedToken {
   sub: string;
 }
 
-export default function UserDetailsPage() {
+interface UserDetailsPageProps {
+  onUserDeleted: () => void;
+}
+
+export default function UserDetailsPage({
+  onUserDeleted,
+}: UserDetailsPageProps) {
   const { user: authUser } = useAuth();
   const { user } = useAuth();
   const token = authUser?.token;
@@ -42,7 +48,11 @@ export default function UserDetailsPage() {
     loggedInUserId = decodedToken.sub;
   }
   const [userDetails, setUserDetails] = useState<UserDetails | null>(null);
+  const navigate = useNavigate();
   const [initiatives, setInitiatives] = useState([]);
+  const [isBlockingInteraction, setIsBlockingInteraction] = useState(false);
+  const [isDeleteUserModalOpen, setIsDeleteUserModalOpen] = useState(false);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [activeAction, setActiveAction] = useState<string | null>(null);
   const { fetchFieldPermissions } = useFieldPermissions();
   const { fetchPermissions } = usePermissions();
@@ -115,20 +125,10 @@ export default function UserDetailsPage() {
       }
     };
 
-    const fetchUserInitiatives = async () => {
-      try {
-        const initiativesResponse = await fetchInitiatives();
-        setInitiatives(initiativesResponse);
-      } catch (error) {
-        console.error("Error fetching initiatives:", error);
-      }
-    };
-
     if (userId) {
       fetchUserData();
-      fetchUserInitiatives();
     }
-  }, [userId, token]);
+  }, [userId, token, refreshTrigger]);
 
   const handleEditClick = () => {
     setActiveAction("edit");
@@ -146,8 +146,27 @@ export default function UserDetailsPage() {
     setActiveAction("editUser");
   };
 
-  const handleDeleteUserClick = () => {
-    setActiveAction("deleteUser");
+  const handleToggleDeleteUsertModal = () => {
+    if (isDeleteUserModalOpen) {
+      setIsBlockingInteraction(true);
+      setTimeout(() => {
+        setIsBlockingInteraction(false);
+        setIsDeleteUserModalOpen(false);
+        if (onUserDeleted) {
+          onUserDeleted();
+        }
+      }, 300);
+    } else {
+      setIsDeleteUserModalOpen(true);
+    }
+  };
+
+  const handleUserDeleted = () => {
+    setRefreshTrigger((prev) => prev + 1);
+    if (onUserDeleted) {
+      onUserDeleted();
+    }
+    navigate(`/contacts/${loggedInUserId}`);
   };
 
   console.log("hasEditPermission:", hasEditPermission);
@@ -247,7 +266,7 @@ export default function UserDetailsPage() {
                   {hasDeletePermission && (
                     <div
                       className={styles["top-right-button"]}
-                      onClick={handleDeleteUserClick}
+                      onClick={handleToggleDeleteUsertModal}
                     >
                       <img
                         alt="Delete User"
@@ -325,16 +344,13 @@ export default function UserDetailsPage() {
           />
         </AddItemModal>
       )}
-
-      {activeAction === "deleteUser" && (
-        <AddItemModal isOpen={true} onClose={handleCloseModal}>
-          <DeleteUserForm
-            userId={userId || ""}
-            onCancel={handleCloseModal}
-            onContinue={handleCloseModal}
-          />
-        </AddItemModal>
-      )}
+      <DeleteUser
+        isOpen={isDeleteUserModalOpen}
+        onClose={handleToggleDeleteUsertModal}
+        onUserDeleted={handleUserDeleted}
+        userId={userId}
+        isBlockingInteraction={isBlockingInteraction}
+      />
     </>
   );
 }

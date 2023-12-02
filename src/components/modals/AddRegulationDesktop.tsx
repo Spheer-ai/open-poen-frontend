@@ -89,9 +89,8 @@ const AddRegulationDesktop: React.FC<AddRegulationDesktopProps> = ({
 
       setRegulationName("");
       setRegulationDescription("");
-      handleClose();
-
       onRegulationAdded();
+      handleClose();
     } catch (error) {
       console.error("Error object:", error);
       console.log("Error message:", error.message);

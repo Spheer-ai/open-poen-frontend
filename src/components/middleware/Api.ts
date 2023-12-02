@@ -214,7 +214,7 @@ export const getUserById = async (userId: string, token: string) => {
 export const getUsersOrdered = async (
   token: string,
   offset: number = 0,
-  limit: number = 20,
+  limit: number = 3,
 ) => {
   try {
     const response = await api.get("/users", {
@@ -232,12 +232,118 @@ export const getUsersOrdered = async (
   }
 };
 
-export const fetchInitiatives = async () => {
+export const fetchInitiatives = async (
+  token: string,
+  onlyMine: boolean,
+  offset: number = 0,
+  limit: number = 3,
+) => {
   try {
-    const response = await api.get(`/initiatives`);
-    return response.data.initiatives;
+    const response = await api.get(`/initiatives`, {
+      params: {
+        only_mine: onlyMine,
+        offset: offset,
+        limit: limit,
+      },
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    // Modify the response data to include only the desired fields
+    const filteredInitiatives = response.data.initiatives.map((initiative) => ({
+      id: initiative.id,
+      name: initiative.name,
+      owner: initiative.owner,
+      owner_email: initiative.owner_email,
+      hidden: initiative.hidden,
+      budget: initiative.budget,
+      income: initiative.income,
+      expenses: initiative.expenses,
+    }));
+
+    return filteredInitiatives;
   } catch (error) {
     console.error("Error fetching initiatives:", error);
+    throw error;
+  }
+};
+
+export const fetchActivities = async (initiativeId: number, token: string) => {
+  try {
+    const response = await api.get(`/initiative/${initiativeId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching activities:", error);
+    throw error;
+  }
+};
+
+export const addFund = async (
+  funderId: number,
+  regulationId: number,
+  grantId: number,
+  token: string,
+  data: {
+    name?: string;
+    description?: string;
+    purpose?: string;
+    target_audience?: string;
+    owner?: string;
+    owner_email?: string;
+    legal_entity?: string;
+    address_applicant?: string;
+    kvk_registration?: string;
+    location?: string;
+    hidden_sponsors?: boolean;
+    hidden?: boolean;
+    budget?: number;
+  },
+) => {
+  try {
+    console.log("Data being sent to the server:", data);
+    const response = await api.post(
+      `/funder/${funderId}/regulation/${regulationId}/grant/${grantId}/initiative`,
+      data,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      },
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error adding initiative:", error);
+    throw error;
+  }
+};
+
+export const AddActivity = async (
+  initiativeId: number,
+  token: string,
+  activityData: object,
+) => {
+  try {
+    const response = await api.post(
+      `/initiative/${initiativeId}/activity`,
+      activityData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      },
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error adding activity:", error);
     throw error;
   }
 };
@@ -1080,6 +1186,24 @@ export const deleteRegulation = async (token, funderId, regulationId) => {
     }
   } catch (error) {
     console.error("Error deleting regulation:", error);
+    throw error;
+  }
+};
+
+export const getUserGrants = async (userId: string, token: string) => {
+  try {
+    const response = await api.get(`/user/${userId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    const grants = response.data.grants.map((grant) => ({
+      id: grant.id,
+      name: grant.name,
+    }));
+
+    return grants;
+  } catch (error) {
     throw error;
   }
 };
