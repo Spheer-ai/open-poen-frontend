@@ -22,9 +22,10 @@ const AddFundDesktop: React.FC<AddFundDesktopProps> = ({
 }) => {
   const [modalIsOpen, setModalIsOpen] = useState(isOpen);
   const { user } = useAuth();
-  const [selectedGrantId, setSelectedGrantId] = useState<number | undefined>(
-    undefined,
+  const [selectedGrantId, setSelectedGrantId] = useState<string | undefined>(
+    "",
   );
+
   const [userGrants, setUserGrants] = useState<{ id: number; name: string }[]>(
     [],
   );
@@ -44,6 +45,15 @@ const AddFundDesktop: React.FC<AddFundDesktopProps> = ({
     hidden: false,
   });
 
+  const [errors, setErrors] = useState({
+    grantId: "",
+    name: "",
+    description: "",
+    purpose: "",
+    target_audience: "",
+    budget: "",
+  });
+
   useEffect(() => {
     if (isOpen) {
       setModalIsOpen(true);
@@ -61,15 +71,10 @@ const AddFundDesktop: React.FC<AddFundDesktopProps> = ({
           console.error("Token is not available in user object");
           return;
         }
-
-        // Ensure userId is of type string if it's defined
         const userIdAsString = user.userId ? user.userId.toString() : undefined;
 
         if (userIdAsString) {
-          // Use the user's token and the converted userId to fetch the user's grants
           const userGrants = await getUserGrants(userIdAsString, user.token);
-
-          // Set the fetched grants in the state
           setUserGrants(userGrants);
         }
       } catch (error) {
@@ -79,6 +84,66 @@ const AddFundDesktop: React.FC<AddFundDesktopProps> = ({
 
     fetchUserGrants();
   }, [user]);
+
+  const validateFields = () => {
+    let isValid = true;
+
+    const validationErrors = {
+      grantId: "",
+      name: "",
+      description: "",
+      purpose: "",
+      target_audience: "",
+      budget: "",
+    };
+
+    if (selectedGrantId === undefined) {
+      validationErrors.grantId =
+        "Kies een beschikking om een initiatief toe te voegen";
+    }
+
+    if (!fundData.name) {
+      validationErrors.name = "Vul een naam in";
+      isValid = false;
+    }
+
+    if (!fundData.description) {
+      validationErrors.description = "Vul een beschrijving in";
+      isValid = false;
+    }
+
+    if (!fundData.purpose) {
+      validationErrors.purpose = "Vul een doel in";
+      isValid = false;
+    }
+
+    if (!fundData.target_audience) {
+      validationErrors.target_audience = "Vul een doelgroep in";
+      isValid = false;
+    }
+
+    if (!fundData.budget || isNaN(parseFloat(fundData.budget))) {
+      validationErrors.budget = "Vul een geldig begrotingsbedrag in";
+      isValid = false;
+    } else {
+      const budgetValue = parseFloat(fundData.budget);
+      if (budgetValue < 0) {
+        validationErrors.budget = "Begroting mag niet negatief zijn.";
+        isValid = false;
+      } else if (budgetValue === 0) {
+        validationErrors.budget = "Vul een begroting in.";
+        isValid = false;
+      } else if (budgetValue > 999999) {
+        validationErrors.budget =
+          "Het bedrag is te hoog, vul een lager bedrag in.";
+        isValid = false;
+      }
+    }
+
+    setErrors(validationErrors);
+
+    return isValid;
+  };
 
   const handleSave = async () => {
     try {
@@ -94,15 +159,20 @@ const AddFundDesktop: React.FC<AddFundDesktopProps> = ({
       }
 
       if (selectedGrantId === undefined) {
-        console.error("No grant selected");
+        setErrors({
+          ...errors,
+          grantId: "Kies een beschikking om een initiatief aan te maken",
+        });
+        return;
+      }
+
+      if (!validateFields()) {
         return;
       }
 
       const sanitizedFunderId = funderId === undefined ? 0 : funderId;
       const sanitizedRegulationId =
         regulationId === undefined ? 0 : regulationId;
-
-      console.log("Selected grantId:", selectedGrantId); // Log the selected grantId
 
       const requestData = {
         name: fundData.name,
@@ -120,12 +190,10 @@ const AddFundDesktop: React.FC<AddFundDesktopProps> = ({
         budget: parseFloat(fundData.budget),
       };
 
-      console.log("Data being sent to the server:", requestData);
-
       const response = await addFund(
         sanitizedFunderId,
         sanitizedRegulationId,
-        selectedGrantId, // Use selectedGrantId here
+        Number(selectedGrantId),
         token,
         requestData,
       );
@@ -135,7 +203,29 @@ const AddFundDesktop: React.FC<AddFundDesktopProps> = ({
       handleClose();
       onFundAdded();
     } catch (error) {
-      console.error("Failed to create fund:", error);
+      if (error.response) {
+        if (error.response.status === 404) {
+          setErrors({
+            ...errors,
+            grantId: "Kies een beschikking om een initiatief aan te maken",
+          });
+        } else if (error.response.status === 409) {
+          setErrors({
+            ...errors,
+            name: "Naam is al in gebruik",
+          });
+        } else if (error.response.status === 422) {
+          setErrors({
+            ...errors,
+            name: "Naam mag maximaal 65 tekens bevatten",
+            purpose: "Doel mag maximaal 65 tekens bevatten",
+            target_audience: "Doelgroep mag maximaal 65 tekens bevatten",
+            description: "Beschrijving mag maximaal 200 tekens bevatten",
+          });
+        } else {
+          console.error("Failed to create fund:", error);
+        }
+      }
     }
   };
 
@@ -143,6 +233,12 @@ const AddFundDesktop: React.FC<AddFundDesktopProps> = ({
     if (!isBlockingInteraction) {
       setModalIsOpen(false);
       onClose();
+    }
+  };
+
+  const handleEnterKeyPress = (e) => {
+    if (e.key === "Enter") {
+      handleSave();
     }
   };
 
@@ -176,7 +272,7 @@ const AddFundDesktop: React.FC<AddFundDesktopProps> = ({
             className={`${styles.grantDropdown}`}
             name="grantId"
             value={selectedGrantId || ""}
-            onChange={(e) => setSelectedGrantId(Number(e.target.value))}
+            onChange={(e) => setSelectedGrantId(String(e.target.value))}
           >
             <option value="">Kies een beschikking</option>
             {userGrants.map((grant) => (
@@ -189,6 +285,11 @@ const AddFundDesktop: React.FC<AddFundDesktopProps> = ({
               </option>
             ))}
           </select>
+          {errors.grantId && (
+            <span style={{ color: "red", display: "block", marginTop: "5px" }}>
+              {errors.grantId}
+            </span>
+          )}
         </div>
         <div className={styles.formGroup}>
           <label className={styles.labelField}>Naam initiatief:</label>
@@ -198,7 +299,13 @@ const AddFundDesktop: React.FC<AddFundDesktopProps> = ({
             name="name"
             value={fundData.name}
             onChange={handleInputChange}
+            onKeyDown={handleEnterKeyPress}
           />
+          {errors.name && (
+            <span style={{ color: "red", display: "block", marginTop: "5px" }}>
+              {errors.name}
+            </span>
+          )}
         </div>
         <div className={styles.formGroup}>
           <label className={styles.labelField}>Beschrijving:</label>
@@ -209,6 +316,11 @@ const AddFundDesktop: React.FC<AddFundDesktopProps> = ({
             value={fundData.description}
             onChange={handleInputChange}
           ></textarea>
+          {errors.description && (
+            <span style={{ color: "red", display: "block", marginTop: "5px" }}>
+              {errors.description}
+            </span>
+          )}
         </div>
         <div className={styles.formGroup}>
           <label className={styles.labelField}>Doel:</label>
@@ -218,7 +330,13 @@ const AddFundDesktop: React.FC<AddFundDesktopProps> = ({
             name="purpose"
             value={fundData.purpose}
             onChange={handleInputChange}
+            onKeyDown={handleEnterKeyPress}
           />
+          {errors.purpose && (
+            <span style={{ color: "red", display: "block", marginTop: "5px" }}>
+              {errors.purpose}
+            </span>
+          )}
         </div>
         <div className={styles.formGroup}>
           <label className={styles.labelField}>Doelgroep:</label>
@@ -228,7 +346,13 @@ const AddFundDesktop: React.FC<AddFundDesktopProps> = ({
             name="target_audience"
             value={fundData.target_audience}
             onChange={handleInputChange}
+            onKeyDown={handleEnterKeyPress}
           />
+          {errors.target_audience && (
+            <span style={{ color: "red", display: "block", marginTop: "5px" }}>
+              {errors.target_audience}
+            </span>
+          )}
         </div>
         <div className={styles.formGroup}>
           <label className={styles.labelField}>Begroting:</label>
@@ -238,7 +362,31 @@ const AddFundDesktop: React.FC<AddFundDesktopProps> = ({
             name="budget"
             value={fundData.budget}
             onChange={handleInputChange}
+            onKeyDown={handleEnterKeyPress}
           />
+          {errors.budget && (
+            <span style={{ color: "red", display: "block", marginTop: "5px" }}>
+              {errors.budget}
+            </span>
+          )}
+        </div>
+        <div className={styles.formGroup}>
+          <div className={styles.roleOptions}>
+            <label className={styles.labelField}>
+              <input
+                type="checkbox"
+                name="hidden"
+                checked={fundData.hidden}
+                onChange={(e) =>
+                  setFundData({
+                    ...fundData,
+                    hidden: e.target.checked,
+                  })
+                }
+              />
+              Verberg initiatief
+            </label>
+          </div>
         </div>
         <div className={styles.buttonContainer}>
           <button onClick={handleClose} className={styles.cancelButton}>
