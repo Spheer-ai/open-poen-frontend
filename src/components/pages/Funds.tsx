@@ -37,7 +37,6 @@ export default function Funds() {
   const [initialFetchDone, setInitialFetchDone] = useState(false);
   const [offset, setOffset] = useState(0);
   const [limit, setLimit] = useState(3);
-  const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [totalInitiatives, setTotalInitiatives] = useState(0);
 
   const [allFetchedInitiatives, setAllFetchedInitiatives] = useState<
@@ -189,7 +188,9 @@ export default function Funds() {
   };
 
   const handleFundAdded = () => {
-    setRefreshTrigger((prev) => prev + 1);
+    setMyInitiatives([]);
+    setAllInitiatives([]);
+    fetchAndDisplayInitiatives(user?.token, onlyMine, 0, limit);
   };
 
   const calculateBarWidth = (income, expenses) => {
@@ -230,10 +231,16 @@ export default function Funds() {
               setOnlyMine(false);
               setOffset(0);
               setLimit(3);
+              setIsFetchingInitiatives(true);
+              setInitiatives([]);
+              setAllInitiatives([]);
+              setMyInitiatives([]);
+              fetchAndDisplayInitiatives(user?.token, false, 0, 3);
             }}
           >
             Alle Initiatieven
           </button>
+
           <button
             className={
               onlyMine ? styles["active-button"] : styles["filter-button"]
@@ -242,7 +249,11 @@ export default function Funds() {
               setOnlyMine(true);
               setOffset(0);
               setLimit(3);
-              setRefreshTrigger((prevTrigger) => prevTrigger + 1);
+              setIsFetchingInitiatives(true);
+              setInitiatives([]);
+              setAllInitiatives([]);
+              setMyInitiatives([]);
+              fetchAndDisplayInitiatives(user?.token, true, 0, 3);
             }}
           >
             Mijn Initiatieven
@@ -337,7 +348,9 @@ export default function Funds() {
               <LoadingDot delay={0.2} />
             </div>
           ) : (
-            <button onClick={handleLoadMoreClick}>Load more...</button>
+            <button onClick={handleLoadMoreClick}>
+              Meer initiatieven laden..
+            </button>
           )}
         </ul>
       </div>
