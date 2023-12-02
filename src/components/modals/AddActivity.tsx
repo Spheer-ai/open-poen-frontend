@@ -84,7 +84,8 @@ const AddActivity: React.FC<AddActivityProps> = ({
       validationErrors.budget = "Vul een geldig begrotingsbedrag in";
       isValid = false;
     } else if (Number(activityBudget) > 999999) {
-      validationErrors.budget = "Het bedrag is te hoog, vul een lager bedrag in.";
+      validationErrors.budget =
+        "Het bedrag is te hoog, vul een lager bedrag in.";
       isValid = false;
     }
 
@@ -171,7 +172,7 @@ const AddActivity: React.FC<AddActivityProps> = ({
         <h2 className={styles.title}>Activiteit aanmaken</h2>
         <hr></hr>
         <div className={styles.formGroup}>
-        <h3>Info</h3>
+          <h3>Info</h3>
           <label className={styles.labelField}>Naam activiteit:</label>
           <input
             type="text"
