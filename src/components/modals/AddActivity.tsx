@@ -21,10 +21,18 @@ const AddActivity: React.FC<AddActivityProps> = ({
   const [modalIsOpen, setModalIsOpen] = useState(isOpen);
   const [activityName, setActivityName] = useState("");
   const [activityDescription, setActivityDescription] = useState("");
-  const [activityBudget, setActivityBudget] = useState(0);
+  const [activityBudget, setActivityBudget] = useState<number | string>("");
   const [purpose, setPurpose] = useState("");
   const [targetAudience, setTargetAudience] = useState("");
   const [hidden, setHidden] = useState(false);
+  const [errors, setErrors] = useState({
+    name: "",
+    description: "",
+    purpose: "",
+    target_audience: "",
+    budget: "",
+  });
+
   const activityNameRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
@@ -37,6 +45,54 @@ const AddActivity: React.FC<AddActivityProps> = ({
     }
   }, [isOpen]);
 
+  const validateFields = () => {
+    let isValid = true;
+
+    const validationErrors = {
+      name: "",
+      description: "",
+      purpose: "",
+      target_audience: "",
+      budget: "",
+    };
+
+    if (!activityName) {
+      validationErrors.name = "Vul een naam in";
+      isValid = false;
+    }
+
+    if (!activityDescription) {
+      validationErrors.description = "Vul een beschrijving in";
+      isValid = false;
+    }
+
+    if (!purpose) {
+      validationErrors.purpose = "Vul een doel in";
+      isValid = false;
+    }
+
+    if (!targetAudience) {
+      validationErrors.target_audience = "Vul een doelgroep in";
+      isValid = false;
+    }
+
+    if (
+      !activityBudget ||
+      isNaN(Number(activityBudget)) ||
+      Number(activityBudget) < 0
+    ) {
+      validationErrors.budget = "Vul een geldig begrotingsbedrag in";
+      isValid = false;
+    } else if (Number(activityBudget) > 999999) {
+      validationErrors.budget = "Het bedrag is te hoog, vul een lager bedrag in.";
+      isValid = false;
+    }
+
+    setErrors(validationErrors);
+
+    return isValid;
+  };
+
   const handleSave = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -45,10 +101,14 @@ const AddActivity: React.FC<AddActivityProps> = ({
         return;
       }
 
+      if (!validateFields()) {
+        return;
+      }
+
       const activityData = {
         name: activityName,
         description: activityDescription,
-        budget: activityBudget,
+        budget: Number(activityBudget),
         purpose: purpose,
         target_audience: targetAudience,
         hidden: hidden,
@@ -58,7 +118,29 @@ const AddActivity: React.FC<AddActivityProps> = ({
       onActivityAdded();
       handleClose();
     } catch (error) {
-      console.error("Failed to add activity:", error);
+      if (error.response) {
+        if (error.response.status === 404) {
+          setErrors({
+            ...errors,
+            name: "Initiative not found",
+          });
+        } else if (error.response.status === 409) {
+          setErrors({
+            ...errors,
+            name: "Name already in use",
+          });
+        } else if (error.response.status === 422) {
+          setErrors({
+            ...errors,
+            name: "Name must be max 65 characters",
+            purpose: "Purpose must be max 65 characters",
+            target_audience: "Target audience must be max 65 characters",
+            description: "Description must be max 200 characters",
+          });
+        } else {
+          console.error("Failed to add activity:", error);
+        }
+      }
     }
   };
 
@@ -66,6 +148,12 @@ const AddActivity: React.FC<AddActivityProps> = ({
     if (!isBlockingInteraction) {
       setModalIsOpen(false);
       onClose();
+    }
+  };
+
+  const handleEnterKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      handleSave();
     }
   };
 
@@ -83,6 +171,7 @@ const AddActivity: React.FC<AddActivityProps> = ({
         <h2 className={styles.title}>Activiteit aanmaken</h2>
         <hr></hr>
         <div className={styles.formGroup}>
+        <h3>Info</h3>
           <label className={styles.labelField}>Naam activiteit:</label>
           <input
             type="text"
@@ -90,7 +179,13 @@ const AddActivity: React.FC<AddActivityProps> = ({
             value={activityName}
             onChange={(e) => setActivityName(e.target.value)}
             ref={activityNameRef}
+            onKeyDown={handleEnterKeyPress}
           />
+          {errors.name && (
+            <span style={{ color: "red", display: "block", marginTop: "5px" }}>
+              {errors.name}
+            </span>
+          )}
         </div>
         <div className={styles.formGroup}>
           <label className={styles.labelField}>Beschrijving:</label>
@@ -100,6 +195,11 @@ const AddActivity: React.FC<AddActivityProps> = ({
             value={activityDescription}
             onChange={(e) => setActivityDescription(e.target.value)}
           ></textarea>
+          {errors.description && (
+            <span style={{ color: "red", display: "block", marginTop: "5px" }}>
+              {errors.description}
+            </span>
+          )}
         </div>
         <div className={styles.formGroup}>
           <label className={styles.labelField}>Doel:</label>
@@ -108,7 +208,13 @@ const AddActivity: React.FC<AddActivityProps> = ({
             placeholder="Vul de doelstelling van het acitviteit in"
             value={purpose}
             onChange={(e) => setPurpose(e.target.value)}
+            onKeyDown={handleEnterKeyPress}
           />
+          {errors.purpose && (
+            <span style={{ color: "red", display: "block", marginTop: "5px" }}>
+              {errors.purpose}
+            </span>
+          )}
         </div>
         <div className={styles.formGroup}>
           <label className={styles.labelField}>Doelgroep:</label>
@@ -117,7 +223,13 @@ const AddActivity: React.FC<AddActivityProps> = ({
             placeholder="Vul de doelgroep van het acitviteit in"
             value={targetAudience}
             onChange={(e) => setTargetAudience(e.target.value)}
+            onKeyDown={handleEnterKeyPress}
           />
+          {errors.target_audience && (
+            <span style={{ color: "red", display: "block", marginTop: "5px" }}>
+              {errors.target_audience}
+            </span>
+          )}
         </div>
         <div className={styles.formGroup}>
           <label className={styles.labelField}>Begroting:</label>
@@ -125,8 +237,14 @@ const AddActivity: React.FC<AddActivityProps> = ({
             type="number"
             placeholder="Vul het begrootte bedrag in"
             value={activityBudget}
-            onChange={(e) => setActivityBudget(Number(e.target.value))}
+            onChange={(e) => setActivityBudget(e.target.value)}
+            onKeyDown={handleEnterKeyPress}
           />
+          {errors.budget && (
+            <span style={{ color: "red", display: "block", marginTop: "5px" }}>
+              {errors.budget}
+            </span>
+          )}
         </div>
         <div className={styles.formGroup}>
           <div className={styles.roleOptions}>

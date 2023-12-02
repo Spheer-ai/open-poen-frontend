@@ -266,7 +266,7 @@ const AddFundDesktop: React.FC<AddFundDesktopProps> = ({
         <h2 className={styles.title}>Initiatief toevoegen</h2>
         <hr></hr>
         <div className={styles.formGroup}>
-          <h3>Over het initiatief</h3>
+          <h3>Info</h3>
           <label className={styles.labelField}>Kies een beschikking:</label>
           <select
             className={`${styles.grantDropdown}`}
