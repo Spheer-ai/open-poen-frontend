@@ -51,7 +51,7 @@ export default function AppRoutes() {
             path="/"
             element={
               <InlineModalLayout navigate={navigate}>
-                {<Contacts />}
+                {<Funds />}
               </InlineModalLayout>
             }
           />
@@ -289,7 +289,7 @@ export default function AppRoutes() {
             path="/login"
             element={
               isAuthenticated ? (
-                <Navigate to="/contacts" />
+                <Navigate to="/funds" />
               ) : (
                 <Login onLogin={handleLogin} />
               )

@@ -277,11 +277,10 @@ export default function Funds() {
                 style={{
                   animationDelay: `${index * 0.2}s`,
                 }}
+                onClick={() => navigateToActivities(initiative?.id)}
               >
                 <li className={styles["shared-name"]}>
-                  <a onClick={() => navigateToActivities(initiative?.id)}>
-                    <strong>{initiative?.name}</strong>
-                  </a>
+                  <strong>{initiative?.name}</strong>
                 </li>
 
                 <div className={styles["values-bar"]}>
