@@ -1,4 +1,10 @@
-import React, { useEffect, useState, useMemo, useCallback } from "react";
+import React, {
+  useEffect,
+  useState,
+  useMemo,
+  useCallback,
+  useRef,
+} from "react";
 import { useNavigate } from "react-router-dom";
 import TopNavigationBar from "../ui/top-navigation-bar/TopNavigationBar";
 import styles from "../../assets/scss/Funds.module.scss";
@@ -27,7 +33,7 @@ export default function Funds() {
     [entityPermissions],
   );
   const [onlyMine, setOnlyMine] = useState(false);
-  const [refreshTrigger, setRefreshTrigger] = useState(1);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [initiatives, setInitiatives] = useState<Initiative[]>([]);
   const [isBlockingInteraction, setIsBlockingInteraction] = useState(false);
   const [isFetchingInitiatives, setIsFetchingInitiatives] = useState(false);
@@ -45,6 +51,7 @@ export default function Funds() {
   const [isLoadingMoreInitiatives, setIsLoadingMoreInitiatives] =
     useState(false);
   const [allInitiativesFetched, setAllInitiativesFetched] = useState(false);
+  const initialFetchDoneRef = useRef(false);
 
   useEffect(() => {
     if (user?.token && entityPermissions.length === 0) {
@@ -57,14 +64,10 @@ export default function Funds() {
           console.error("Failed to fetch permissions:", error);
         });
     }
-  }, [user, entityPermissions, fetchPermissions]);
+  }, [user, entityPermissions]);
 
   useEffect(() => {
-    if (
-      user?.token &&
-      entityPermissions.length > 0 &&
-      (!initialFetchDone || refreshTrigger > 1)
-    ) {
+    if (!initialFetchDoneRef.current) {
       console.log("useEffect triggered for initial fetch", {
         user,
         onlyMine,
@@ -75,22 +78,15 @@ export default function Funds() {
       });
 
       const cleanup = fetchAndDisplayInitiatives(
-        user.token,
+        user?.token,
         onlyMine,
         0,
         limit,
       );
-      setInitialFetchDone(true);
+      initialFetchDoneRef.current = true;
       return cleanup;
     }
-  }, [
-    user,
-    onlyMine,
-    refreshTrigger,
-    entityPermissions,
-    initialFetchDone,
-    limit,
-  ]);
+  }, [user?.token, onlyMine, entityPermissions, offset, limit]);
 
   const fetchAndDisplayInitiatives = useCallback(
     (token, onlyMine, offset, limit) => {
@@ -106,7 +102,9 @@ export default function Funds() {
         setIsLoadingMoreInitiatives(true);
       }
 
-      fetchInitiatives(token, onlyMine, offset, limit)
+      const apiToken = user?.token || "";
+
+      fetchInitiatives(apiToken, onlyMine, offset, limit)
         .then((initiativesData: Initiative[]) => {
           console.log("Fetched initiatives:", initiativesData);
 
@@ -151,7 +149,7 @@ export default function Funds() {
           setIsLoadingMoreInitiatives(false);
         });
     },
-    [refreshTrigger],
+    [user, limit],
   );
 
   const handleLoadMoreClick = () => {
