@@ -13,6 +13,7 @@ interface GrantListProps {
   onEditGrantClick: (grant: Grant) => void;
   onDeleteGrantClick: (grantId: number) => void;
   onAddOfficerClick: (grantId: number) => void;
+  onAddFundClick: (grantId: number) => void;
   grantPermissions: Record<number, string[]>;
 }
 
@@ -23,6 +24,7 @@ const GrantList: React.FC<GrantListProps> = ({
   onEditGrantClick,
   onDeleteGrantClick,
   onAddOfficerClick,
+  onAddFundClick,
 }) => {
   const { user } = useAuth();
   const { fetchPermissions } = usePermissions();
@@ -105,6 +107,12 @@ const GrantList: React.FC<GrantListProps> = ({
                   Penvoerders
                 </button>
               )}
+              <button
+                className={styles["add-button"]}
+                onClick={() => onAddFundClick(grant.id)}
+              >
+                Initiatief
+              </button>
             </div>
           </li>
         ))}

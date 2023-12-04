@@ -16,6 +16,7 @@ import { usePermissions } from "../../contexts/PermissionContext";
 import GrantList from "../lists/GrantList";
 import DeleteGrant from "../modals/DeleteGrant";
 import DeleteRegulation from "../modals/DeleteRegulation";
+import AddFundDesktop from "../modals/AddFundDesktop";
 
 type Grant = {
   id: number;
@@ -64,6 +65,7 @@ const RegulationDetail: React.FC<RegulationDetailProps> = ({
   const [isDeleteGrantModalOpen, setIsDeleteGrantModalOpen] = useState(false);
   const [isEditSponsorModalOpen, setIsEditSponsorModalOpen] = useState(false);
   const [isAddEmployeeModalOpen, setIsAddEmployeeModalOpen] = useState(false);
+  const [isAddFundModalOpen, setisAddFundModalOpen] = useState(false);
   const [isDeleteRegulationModalOpen, setIsDeleteRegulationModalOpen] =
     useState(false);
   const [currentGrant, setCurrentGrant] = useState<Grant | null>(null);
@@ -214,6 +216,24 @@ const RegulationDetail: React.FC<RegulationDetailProps> = ({
       setIsAddGrantModalOpen(true);
       navigate(`/sponsors/${sponsorId}/regulations/${regulationId}/add-grant`);
     }
+  };
+
+  const handleToggleAddFundModal = () => {
+    if (isAddFundModalOpen) {
+      setIsBlockingInteraction(true);
+      setTimeout(() => {
+        setIsBlockingInteraction(false);
+        setisAddFundModalOpen(false);
+        navigate(`/sponsors/${sponsorId}/regulations/${regulationId}`);
+      }, 300);
+    } else {
+      setisAddFundModalOpen(true);
+      navigate(`/sponsors/${sponsorId}/regulations/${regulationId}/add-fund`);
+    }
+  };
+
+  const handleFundAdded = () => {
+    setRefreshTrigger((prev) => prev + 1);
   };
 
   const handleRegulationEdited = () => {
@@ -373,6 +393,10 @@ const RegulationDetail: React.FC<RegulationDetailProps> = ({
           setSelectedGrantId(grantId);
           handleToggleAddOfficerModal();
         }}
+        onAddFundClick={(grantId) => {
+          setSelectedGrantId(grantId);
+          handleToggleAddFundModal();
+        }}
       />
 
       <h3 className={styles["section-title"]}>Subsidiemedewerkers:</h3>
@@ -464,6 +488,14 @@ const RegulationDetail: React.FC<RegulationDetailProps> = ({
         onEmployeeAdded={handleEmployeeAdded}
         sponsorId={sponsorId}
         regulationId={regulationId}
+      />
+      <AddFundDesktop
+        isOpen={isAddFundModalOpen}
+        onClose={handleToggleAddFundModal}
+        isBlockingInteraction={isBlockingInteraction}
+        onFundAdded={handleFundAdded}
+        funderId={0}
+        regulationId={0}
       />
     </div>
   );

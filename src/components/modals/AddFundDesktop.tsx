@@ -8,8 +8,8 @@ interface AddFundDesktopProps {
   onClose: () => void;
   isBlockingInteraction: boolean;
   onFundAdded: () => void;
-  funderId?: number;
-  regulationId?: number;
+  funderId: number;
+  regulationId: number;
 }
 
 const AddFundDesktop: React.FC<AddFundDesktopProps> = ({
