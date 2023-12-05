@@ -1,7 +1,21 @@
 import React, { useEffect, useState } from "react";
 import styles from "../../assets/scss/layout/AddFundDesktop.module.scss";
-import { addFund, getUserGrants } from "../middleware/Api";
-import { useAuth } from "../../contexts/AuthContext";
+import { addFund } from "../middleware/Api";
+
+const initialFormData = {
+  name: "",
+  description: "",
+  purpose: "",
+  target_audience: "",
+  budget: "0",
+  owner: "",
+  owner_email: "",
+  legal_entity: "stichting",
+  address_applicant: "",
+  location: "",
+  hidden_sponsors: false,
+  hidden: false,
+};
 
 interface AddFundDesktopProps {
   isOpen: boolean;
@@ -10,6 +24,7 @@ interface AddFundDesktopProps {
   onFundAdded: () => void;
   funderId: number;
   regulationId: number;
+  grantId?: string;
 }
 
 const AddFundDesktop: React.FC<AddFundDesktopProps> = ({
@@ -19,32 +34,10 @@ const AddFundDesktop: React.FC<AddFundDesktopProps> = ({
   onFundAdded,
   funderId,
   regulationId,
+  grantId,
 }) => {
   const [modalIsOpen, setModalIsOpen] = useState(isOpen);
-  const { user } = useAuth();
-  const [selectedGrantId, setSelectedGrantId] = useState<string | undefined>(
-    "",
-  );
-
-  const [userGrants, setUserGrants] = useState<{ id: number; name: string }[]>(
-    [],
-  );
-
-  const [fundData, setFundData] = useState({
-    name: "",
-    description: "",
-    purpose: "",
-    target_audience: "",
-    budget: "0",
-    owner: "",
-    owner_email: "",
-    legal_entity: "stichting",
-    address_applicant: "",
-    location: "",
-    hidden_sponsors: false,
-    hidden: false,
-  });
-
+  const [fundData, setFundData] = useState(initialFormData);
   const [errors, setErrors] = useState({
     grantId: "",
     name: "",
@@ -64,27 +57,6 @@ const AddFundDesktop: React.FC<AddFundDesktopProps> = ({
     }
   }, [isOpen]);
 
-  useEffect(() => {
-    const fetchUserGrants = async () => {
-      try {
-        if (!user?.token) {
-          console.error("Token is not available in user object");
-          return;
-        }
-        const userIdAsString = user.userId ? user.userId.toString() : undefined;
-
-        if (userIdAsString) {
-          const userGrants = await getUserGrants(userIdAsString, user.token);
-          setUserGrants(userGrants);
-        }
-      } catch (error) {
-        console.error("Failed to fetch user grants:", error);
-      }
-    };
-
-    fetchUserGrants();
-  }, [user]);
-
   const validateFields = () => {
     let isValid = true;
 
@@ -96,11 +68,6 @@ const AddFundDesktop: React.FC<AddFundDesktopProps> = ({
       target_audience: "",
       budget: "",
     };
-
-    if (selectedGrantId === undefined) {
-      validationErrors.grantId =
-        "Kies een beschikking om een initiatief toe te voegen";
-    }
 
     if (!fundData.name) {
       validationErrors.name = "Vul een naam in";
@@ -158,14 +125,6 @@ const AddFundDesktop: React.FC<AddFundDesktopProps> = ({
         return;
       }
 
-      if (selectedGrantId === undefined) {
-        setErrors({
-          ...errors,
-          grantId: "Kies een beschikking om een initiatief aan te maken",
-        });
-        return;
-      }
-
       if (!validateFields()) {
         return;
       }
@@ -173,6 +132,7 @@ const AddFundDesktop: React.FC<AddFundDesktopProps> = ({
       const sanitizedFunderId = funderId === undefined ? 0 : funderId;
       const sanitizedRegulationId =
         regulationId === undefined ? 0 : regulationId;
+      const sanitizedGrantId = grantId === undefined ? 0 : grantId;
 
       const requestData = {
         name: fundData.name,
@@ -193,7 +153,7 @@ const AddFundDesktop: React.FC<AddFundDesktopProps> = ({
       const response = await addFund(
         sanitizedFunderId,
         sanitizedRegulationId,
-        Number(selectedGrantId),
+        Number(sanitizedGrantId),
         token,
         requestData,
       );
@@ -204,12 +164,7 @@ const AddFundDesktop: React.FC<AddFundDesktopProps> = ({
       onFundAdded();
     } catch (error) {
       if (error.response) {
-        if (error.response.status === 404) {
-          setErrors({
-            ...errors,
-            grantId: "Kies een beschikking om een initiatief aan te maken",
-          });
-        } else if (error.response.status === 409) {
+        if (error.response.status === 409) {
           setErrors({
             ...errors,
             name: "Naam is al in gebruik",
@@ -231,6 +186,16 @@ const AddFundDesktop: React.FC<AddFundDesktopProps> = ({
 
   const handleClose = () => {
     if (!isBlockingInteraction) {
+      setFundData(initialFormData);
+      setErrors({
+        grantId: "",
+        name: "",
+        description: "",
+        purpose: "",
+        target_audience: "",
+        budget: "",
+      });
+
       setModalIsOpen(false);
       onClose();
     }
@@ -267,31 +232,11 @@ const AddFundDesktop: React.FC<AddFundDesktopProps> = ({
         <hr></hr>
         <div className={styles.formGroup}>
           <h3>Info</h3>
-          <label className={styles.labelField}>Kies een beschikking:</label>
-          <select
-            className={`${styles.grantDropdown}`}
-            name="grantId"
-            value={selectedGrantId || ""}
-            onChange={(e) => setSelectedGrantId(String(e.target.value))}
-          >
-            <option value="">Kies een beschikking</option>
-            {userGrants.map((grant) => (
-              <option
-                className={styles.customOption}
-                key={grant.id}
-                value={grant.id}
-              >
-                {grant.name}
-              </option>
-            ))}
-          </select>
           {errors.grantId && (
             <span style={{ color: "red", display: "block", marginTop: "5px" }}>
               {errors.grantId}
             </span>
           )}
-        </div>
-        <div className={styles.formGroup}>
           <label className={styles.labelField}>Naam initiatief:</label>
           <input
             type="text"

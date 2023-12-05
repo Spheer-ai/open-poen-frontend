@@ -11,7 +11,7 @@ import styles from "../../assets/scss/Funds.module.scss";
 import AddFundDesktop from "../modals/AddFundDesktop";
 import { usePermissions } from "../../contexts/PermissionContext";
 import { useAuth } from "../../contexts/AuthContext";
-import { fetchInitiatives } from "../middleware/Api";
+import { editGrant, fetchInitiatives } from "../middleware/Api";
 import LoadingDot from "../animation/LoadingDot";
 
 interface Initiative {
@@ -167,28 +167,8 @@ export default function Funds() {
     console.log("Search query in UserDetailsPage:", query);
   };
 
-  const handleToggleAddFundModal = () => {
-    if (isModalOpen) {
-      setIsBlockingInteraction(true);
-      setTimeout(() => {
-        setIsBlockingInteraction(false);
-        setIsModalOpen(!isModalOpen);
-        navigate(`/funds`);
-      }, 300);
-    } else {
-      setIsModalOpen(true);
-      navigate(`/funds/add-fund`);
-    }
-  };
-
   const navigateToActivities = (initiativeId) => {
     navigate(`/funds/${initiativeId}/activities`);
-  };
-
-  const handleFundAdded = () => {
-    setMyInitiatives([]);
-    setAllInitiatives([]);
-    fetchAndDisplayInitiatives(user?.token, onlyMine, 0, limit);
   };
 
   const calculateBarWidth = (income, expenses) => {
@@ -213,9 +193,9 @@ export default function Funds() {
         <TopNavigationBar
           title={`Initiatieven`}
           showSettings={false}
-          showCta={true}
+          showCta={false}
           onSettingsClick={() => {}}
-          onCtaClick={handleToggleAddFundModal}
+          onCtaClick={() => {}}
           onSearch={handleSearch}
           hasPermission={hasPermission}
           showSearch={false}
@@ -351,14 +331,6 @@ export default function Funds() {
           )}
         </ul>
       </div>
-      <AddFundDesktop
-        isOpen={isModalOpen}
-        onClose={handleToggleAddFundModal}
-        isBlockingInteraction={isBlockingInteraction}
-        onFundAdded={handleFundAdded}
-        funderId={0}
-        regulationId={0}
-      />
     </div>
   );
 }

@@ -39,12 +39,14 @@ type RegulationDetailType = {
 
 interface RegulationDetailProps {
   regulationId?: string;
+  grantId?: number;
   isBlockingInteraction: boolean;
   onRegulationEdited: () => void;
   onRegulationDeleted: () => void;
 }
 
 const RegulationDetail: React.FC<RegulationDetailProps> = ({
+  grantId,
   regulationId,
   onRegulationEdited,
 }) => {
@@ -65,7 +67,7 @@ const RegulationDetail: React.FC<RegulationDetailProps> = ({
   const [isDeleteGrantModalOpen, setIsDeleteGrantModalOpen] = useState(false);
   const [isEditSponsorModalOpen, setIsEditSponsorModalOpen] = useState(false);
   const [isAddEmployeeModalOpen, setIsAddEmployeeModalOpen] = useState(false);
-  const [isAddFundModalOpen, setisAddFundModalOpen] = useState(false);
+  const [isAddFundModalOpen, setIsAddFundModalOpen] = useState(false);
   const [isDeleteRegulationModalOpen, setIsDeleteRegulationModalOpen] =
     useState(false);
   const [currentGrant, setCurrentGrant] = useState<Grant | null>(null);
@@ -210,7 +212,6 @@ const RegulationDetail: React.FC<RegulationDetailProps> = ({
       setTimeout(() => {
         setIsBlockingInteraction(false);
         setIsAddGrantModalOpen(false);
-        navigate(`/sponsors/${sponsorId}/regulations/${regulationId}`);
       }, 300);
     } else {
       setIsAddGrantModalOpen(true);
@@ -218,16 +219,16 @@ const RegulationDetail: React.FC<RegulationDetailProps> = ({
     }
   };
 
-  const handleToggleAddFundModal = () => {
+  const handleToggleAddFundModal = (grant: Grant | null = null) => {
     if (isAddFundModalOpen) {
       setIsBlockingInteraction(true);
       setTimeout(() => {
         setIsBlockingInteraction(false);
-        setisAddFundModalOpen(false);
+        setIsAddFundModalOpen(false);
         navigate(`/sponsors/${sponsorId}/regulations/${regulationId}`);
       }, 300);
     } else {
-      setisAddFundModalOpen(true);
+      setIsAddFundModalOpen(true);
       navigate(`/sponsors/${sponsorId}/regulations/${regulationId}/add-fund`);
     }
   };
@@ -297,7 +298,6 @@ const RegulationDetail: React.FC<RegulationDetailProps> = ({
   };
 
   if (!regulationDetails) return <p>Loading...</p>;
-  console.log("Current Grant:", currentGrant);
 
   const handleToggleAddOfficerModal = () => {
     if (isAddOfficerModalOpen) {
@@ -494,8 +494,9 @@ const RegulationDetail: React.FC<RegulationDetailProps> = ({
         onClose={handleToggleAddFundModal}
         isBlockingInteraction={isBlockingInteraction}
         onFundAdded={handleFundAdded}
-        funderId={0}
-        regulationId={0}
+        funderId={sponsorId ? parseInt(sponsorId) : 0}
+        regulationId={regulationId ? parseInt(regulationId) : 0}
+        grantId={selectedGrantId?.toString() || undefined}
       />
     </div>
   );
