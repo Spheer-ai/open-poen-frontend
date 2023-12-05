@@ -6,7 +6,7 @@ interface AddGrantDesktopProps {
   isOpen: boolean;
   onClose: () => void;
   isBlockingInteraction: boolean;
-  onGrantAdded: () => void;
+  onGrantAdded: (newGrantId: number) => void;
   sponsorId?: string;
   regulationId?: string;
   refreshTrigger: number;
@@ -96,7 +96,7 @@ const AddGrantDesktop: React.FC<AddGrantDesktopProps> = ({
 
       const budget = parseFloat(grantBudget);
 
-      await addGrant(
+      const newGrantId = await addGrant(
         token,
         Number(sponsorId),
         Number(regulationId),
@@ -104,8 +104,11 @@ const AddGrantDesktop: React.FC<AddGrantDesktopProps> = ({
         grantReference,
         budget,
       );
+
       handleClose();
-      onGrantAdded();
+      onGrantAdded(newGrantId);
+
+      // Trigger the opening of the AddFundDesktop modal
     } catch (error) {
       console.error("Failed to add grant:", error);
     }
