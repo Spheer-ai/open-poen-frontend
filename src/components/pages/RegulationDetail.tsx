@@ -46,7 +46,6 @@ interface RegulationDetailProps {
 }
 
 const RegulationDetail: React.FC<RegulationDetailProps> = ({
-  grantId,
   regulationId,
   onRegulationEdited,
 }) => {
