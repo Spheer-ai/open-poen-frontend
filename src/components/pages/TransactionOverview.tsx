@@ -3,6 +3,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import { fetchPayments } from "../middleware/Api";
 import styles from "../../assets/scss/TransactionOverview.module.scss";
 import TransactionSearchInput from "../elements/search/transactions/TransactionSearchInput";
+import LinkInitiativeToPayment from "../elements/dropdown-menu/initiatives/LinkInitiativeToPayment";
 
 const TransactionOverview = () => {
   const { user } = useAuth();
@@ -12,6 +13,9 @@ const TransactionOverview = () => {
   const [lowercaseQuery, setLowercaseQuery] = useState<string>("");
   const [sortCriteria, setSortCriteria] = useState<string>("");
   const [sortDirection, setSortDirection] = useState<string>("asc");
+  const [openDropdownForPayment, setOpenDropdownForPayment] = useState<
+    number | null
+  >(null);
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -155,7 +159,6 @@ const TransactionOverview = () => {
           return priceB - priceA;
         }
       } else {
-        // Handle sorting for other criteria as needed
       }
     });
 
@@ -177,6 +180,10 @@ const TransactionOverview = () => {
     };
 
     return headerStyle;
+  };
+
+  const handleInitiativeClick = (paymentId: number) => {
+    setOpenDropdownForPayment(paymentId);
   };
 
   return (
@@ -243,9 +250,17 @@ const TransactionOverview = () => {
                     )}
                   </td>
                   <td>
-                    {highlightMatch(
-                      transaction.initiative_name,
-                      lowercaseQuery,
+                    <span
+                      onClick={() => handleInitiativeClick(transaction.id)}
+                      className={styles.linkInitiativeText}
+                    >
+                      {transaction.initiative_name || "Link Initiative"}
+                    </span>
+                    {openDropdownForPayment === transaction.id && (
+                      <LinkInitiativeToPayment
+                        token={user?.token || ""}
+                        paymentId={transaction.id}
+                      />
                     )}
                   </td>
                   <td>

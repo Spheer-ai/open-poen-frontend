@@ -1207,3 +1207,135 @@ export const getUserGrants = async (userId: string, token: string) => {
     throw error;
   }
 };
+
+export const linkInitiativeToPayment = async (
+  token,
+  paymentId,
+  initiativeId,
+) => {
+  try {
+    console.log("Initiating link initiative to payment request");
+    console.log("token:", token);
+    console.log("paymentId:", paymentId);
+    console.log("initiativeId:", initiativeId);
+
+    const response = await api.patch(
+      `/payment/${paymentId}/initiative`,
+      {
+        initiative_id: initiativeId,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+
+    console.log("Link initiative to payment response:", response);
+
+    if (response.status === 200) {
+      return response.data;
+    } else if (response.status === 422) {
+      console.error("Validation Error:", response.data);
+      throw new Error("Validation Error");
+    } else {
+      console.error(
+        "Failed to link initiative to payment. Server returned status code:",
+        response.status,
+      );
+      console.error("Response data:", response.data);
+      throw new Error("Failed to link initiative to payment");
+    }
+  } catch (error) {
+    console.error("Error linking initiative to payment:", error);
+    throw error;
+  }
+};
+
+export const linkActivityToPayment = async (
+  token,
+  paymentId,
+  initiativeId,
+  activityId,
+) => {
+  try {
+    const requestBody = {
+      initiative_id: initiativeId,
+      activity_id: activityId,
+    };
+
+    const response = await api.patch(
+      `/payment/${paymentId}/activity`,
+      requestBody,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      },
+    );
+
+    if (response.status === 200) {
+      return response.data;
+    } else if (response.status === 422) {
+      console.error("Validation Error:", response.data);
+      throw new Error("Validation Error");
+    } else {
+      console.error(
+        "Failed to link activity to payment. Server returned status code:",
+        response.status,
+      );
+      console.error("Response data:", response.data);
+      throw new Error("Failed to link activity to payment");
+    }
+  } catch (error) {
+    console.error("Error linking activity to payment:", error);
+    throw error;
+  }
+};
+
+export const fetchLinkableInitiatives = async (token, paymentId) => {
+  try {
+    const response = await api.get(
+      `/auth/entity-access/linkable-initiatives?paymentId=${paymentId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+
+    if (response.status === 200) {
+      return response.data.initiatives;
+    } else {
+      throw new Error("Failed to fetch linkable initiatives");
+    }
+  } catch (error) {
+    console.error("Error fetching linkable initiatives:", error);
+    throw error;
+  }
+};
+
+export const getInitiativeActivities = async (initiativeId, token) => {
+  try {
+    const response = await api.get(`/initiative/${initiativeId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (response.status === 200) {
+      const activities = response.data.activities.map((activity) => ({
+        id: activity.id,
+        name: activity.name,
+      }));
+
+      return activities;
+    } else {
+      throw new Error("Failed to fetch activities for the initiative");
+    }
+  } catch (error) {
+    console.error("Error fetching activities for the initiative:", error);
+    throw error;
+  }
+};
