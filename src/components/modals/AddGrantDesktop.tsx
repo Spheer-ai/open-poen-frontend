@@ -107,8 +107,6 @@ const AddGrantDesktop: React.FC<AddGrantDesktopProps> = ({
 
       handleClose();
       onGrantAdded(newGrantId);
-
-      // Trigger the opening of the AddFundDesktop modal
     } catch (error) {
       console.error("Failed to add grant:", error);
     }
