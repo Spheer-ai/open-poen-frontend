@@ -172,21 +172,20 @@ export default function Funds() {
   };
 
   const calculateBarWidth = (income, expenses) => {
-    const total = income + expenses;
+    const total = Math.abs(income) + Math.abs(expenses);
     if (total === 0) {
       return {
         incomeWidth: "50%",
         expensesWidth: "50%",
       };
     }
-    const incomeWidth = `${(income / total) * 100}%`;
-    const expensesWidth = `${(expenses / total) * 100}%`;
+    const incomeWidth = `${(Math.abs(income) / total) * 100}%`;
+    const expensesWidth = `${(Math.abs(expenses) / total) * 100}%`;
     return {
       incomeWidth,
       expensesWidth,
     };
   };
-
   return (
     <div className={styles["container"]}>
       <div className={styles["side-panel"]}>
