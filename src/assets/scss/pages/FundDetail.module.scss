@@ -1,4 +1,15 @@
 .fund-detail-container {
+  display: flex;
+  flex-direction: column;
+  padding: 75px;
+  width: 100%;
   position: relative;
-  height: 100%;
+  max-width: 1200px;
+}
+
+.container {
+  display: flex;
+  width: 100%;
+  position: relative;
+  background: #ffffff;
 }

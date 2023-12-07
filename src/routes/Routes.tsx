@@ -88,9 +88,6 @@ export default function AppRoutes() {
             element={
               <InlineModalLayout navigate={navigate}>
                 {<Funds />}
-                <Routes>
-                  <Route path="/detail" element={<FundDetail />} />
-                </Routes>
               </InlineModalLayout>
             }
           />
@@ -105,6 +102,22 @@ export default function AppRoutes() {
 
           <Route
             path="/funds/:initiativeId/activities/:activityId/add-activity"
+            element={
+              <InlineModalLayout navigate={navigate}>
+                <Activities />
+              </InlineModalLayout>
+            }
+          />
+          <Route
+            path="/funds/:initiativeId/activities/edit-fund"
+            element={
+              <InlineModalLayout navigate={navigate}>
+                <Activities />
+              </InlineModalLayout>
+            }
+          />
+          <Route
+            path="/funds/:initiativeId/activities/edit-activity"
             element={
               <InlineModalLayout navigate={navigate}>
                 <Activities />

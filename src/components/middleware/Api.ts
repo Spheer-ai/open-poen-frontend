@@ -1337,3 +1337,93 @@ export const fetchLinkableActivities = async (token, initiativeId) => {
     throw error;
   }
 };
+
+export const fetchFundDetails = async (token, initiativeId) => {
+  try {
+    const response = await api.get(`/initiative/${initiativeId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (response.status === 200) {
+      return response.data;
+    } else {
+      throw new Error("Failed to fetch fund details");
+    }
+  } catch (error) {
+    console.error("Error fetching fund details:", error);
+    throw error;
+  }
+};
+
+export const fetchActivityDetails = async (token, initiativeId, activityId) => {
+  try {
+    const response = await api.get(
+      `/initiative/${initiativeId}/activity/${activityId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+
+    if (response.status === 200) {
+      return response.data;
+    } else {
+      throw new Error("Failed to fetch activity details");
+    }
+  } catch (error) {
+    console.error("Error fetching activity details:", error);
+    throw error;
+  }
+};
+
+export const editFund = async (token, initiativeId, fundData) => {
+  try {
+    const response = await api.patch(`/initiative/${initiativeId}`, fundData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (response.status === 200) {
+      return response.data;
+    } else {
+      throw new Error("Failed to edit fund");
+    }
+  } catch (error) {
+    console.error("Error editing fund:", error);
+    throw error;
+  }
+};
+
+export const editActivity = async (
+  token,
+  initiativeId,
+  activityId,
+  activityData,
+) => {
+  try {
+    const response = await api.patch(
+      `/initiative/${initiativeId}/activity/${activityId}`,
+      activityData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      },
+    );
+
+    if (response.status === 200) {
+      return response.data;
+    } else {
+      throw new Error("Failed to edit activity");
+    }
+  } catch (error) {
+    console.error("Error editing activity:", error);
+    throw error;
+  }
+};
