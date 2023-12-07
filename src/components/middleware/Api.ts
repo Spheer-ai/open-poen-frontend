@@ -1316,26 +1316,24 @@ export const fetchLinkableInitiatives = async (token, paymentId) => {
   }
 };
 
-export const getInitiativeActivities = async (initiativeId, token) => {
+export const fetchLinkableActivities = async (token, initiativeId) => {
   try {
-    const response = await api.get(`/initiative/${initiativeId}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
+    const response = await api.get(
+      `/auth/entity-access/initiative/${initiativeId}/linkable-activities`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       },
-    });
+    );
 
     if (response.status === 200) {
-      const activities = response.data.activities.map((activity) => ({
-        id: activity.id,
-        name: activity.name,
-      }));
-
-      return activities;
+      return response.data.activities;
     } else {
-      throw new Error("Failed to fetch activities for the initiative");
+      throw new Error("Failed to fetch linkable activities");
     }
   } catch (error) {
-    console.error("Error fetching activities for the initiative:", error);
+    console.error("Error fetching linkable activities:", error);
     throw error;
   }
 };

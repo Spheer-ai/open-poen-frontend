@@ -4,6 +4,7 @@ import { fetchPayments } from "../middleware/Api";
 import styles from "../../assets/scss/TransactionOverview.module.scss";
 import TransactionSearchInput from "../elements/search/transactions/TransactionSearchInput";
 import LinkInitiativeToPayment from "../elements/dropdown-menu/initiatives/LinkInitiativeToPayment";
+import LinkActivityToPayment from "../elements/dropdown-menu/activities/LinkActivityToPayment";
 
 const TransactionOverview = () => {
   const { user } = useAuth();
@@ -31,6 +32,7 @@ const TransactionOverview = () => {
         setIsLoading(true);
         try {
           const data = await fetchPayments(user.userId, user.token);
+          console.log("Fetched transactions:", data.payments);
           setTransactions(data.payments || []);
           setIsLoading(false);
           setFilteredTransactions(data.payments || []);
@@ -265,6 +267,13 @@ const TransactionOverview = () => {
                   </td>
                   <td>
                     {highlightMatch(transaction.activity_name, lowercaseQuery)}
+                    {openDropdownForPayment === transaction.id && (
+                      <LinkActivityToPayment
+                        token={user?.token || ""}
+                        paymentId={transaction.id}
+                        initiativeId={transaction.initiative_id}
+                      />
+                    )}
                   </td>
                   <td>
                     {highlightMatch(transaction.creditor_name, lowercaseQuery)}
