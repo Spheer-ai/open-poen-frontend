@@ -1427,3 +1427,52 @@ export const editActivity = async (
     throw error;
   }
 };
+
+export const deleteInitiative = async (token, initiativeId) => {
+  try {
+    const response = await api.delete(`/initiative/${initiativeId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (response.status === 200) {
+      return response.data;
+    } else if (response.status === 422) {
+      throw new Error("Validation Error");
+    } else {
+      throw new Error("Failed to delete initiative");
+    }
+  } catch (error) {
+    console.error("Error deleting initiative:", error);
+    throw error;
+  }
+};
+
+export const deleteActivity = async (token, initiativeId, activityId) => {
+  try {
+    const response = await api.delete(
+      `/initiative/${initiativeId}/activity/${activityId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      },
+    );
+
+    if (response.status === 200) {
+      // Successful deletion
+      return response.data;
+    } else if (response.status === 422) {
+      // Validation error
+      throw new Error("Validation Error: " + JSON.stringify(response.data));
+    } else {
+      throw new Error("Failed to delete activity");
+    }
+  } catch (error) {
+    console.error("Error deleting activity:", error);
+    throw error;
+  }
+};

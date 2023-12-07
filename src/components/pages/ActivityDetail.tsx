@@ -5,6 +5,7 @@ import EditIcon from "/edit-icon.svg";
 import { useAuth } from "../../contexts/AuthContext";
 import { fetchActivityDetails } from "../middleware/Api";
 import EditActivity from "../modals/EditActivity";
+import DeleteActivity from "../modals/DeleteActivity";
 
 interface ActivityDetailProps {
   initiativeId: string;
@@ -29,7 +30,6 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
   initiativeId,
   activityId,
   authToken,
-  onActivityEdited,
 }) => {
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -38,6 +38,8 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
   const [isBlockingInteraction, setIsBlockingInteraction] = useState(false);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [isEditActivityModalOpen, setIsEditActivityModalOpen] = useState(false);
+  const [isDeleteActivityModalOpen, setIsDeleteActivityModalOpen] =
+    useState(false);
 
   useEffect(() => {
     if (activityId && authToken) {
@@ -65,7 +67,25 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
     }
   };
 
+  const handleToggleDeleteActivitydModal = () => {
+    if (isEditActivityModalOpen) {
+      setIsBlockingInteraction(true);
+      setTimeout(() => {
+        setIsBlockingInteraction(false);
+        setIsDeleteActivityModalOpen(false);
+        navigate(`/funds/${initiativeId}/activities`);
+      }, 300);
+    } else {
+      setIsDeleteActivityModalOpen(true);
+      navigate(`/funds/${initiativeId}/activities/delete-activity`);
+    }
+  };
+
   const handleActivityEdited = () => {
+    setRefreshTrigger((prev) => prev + 1);
+  };
+
+  const handleActivityDeleted = () => {
     setRefreshTrigger((prev) => prev + 1);
   };
 
@@ -76,7 +96,14 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
         onClick={handleToggleEditActivitydModal}
       >
         <img src={EditIcon} alt="Edit" className={styles["icon"]} />
-        Initiatief berhen
+        Activiteit beheren
+      </button>
+      <button
+        className={styles["edit-button"]}
+        onClick={handleToggleDeleteActivitydModal}
+      >
+        <img src={EditIcon} alt="Edit" className={styles["icon"]} />
+        Activiteit beheren
       </button>
       {activityDetails ? (
         <>
@@ -138,6 +165,15 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
         onClose={handleToggleEditActivitydModal}
         isBlockingInteraction={isBlockingInteraction}
         onActivityEdited={handleActivityEdited}
+        initiativeId={initiativeId}
+        authToken={user?.token || ""}
+        activityId={activityId}
+      />
+      <DeleteActivity
+        isOpen={isDeleteActivityModalOpen}
+        onClose={handleToggleDeleteActivitydModal}
+        isBlockingInteraction={isBlockingInteraction}
+        onActivityDeleted={handleActivityDeleted}
         initiativeId={initiativeId}
         authToken={user?.token || ""}
         activityId={activityId}

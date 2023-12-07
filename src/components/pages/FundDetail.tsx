@@ -25,11 +25,7 @@ interface FundDetails {
   };
 }
 
-const FundDetail: React.FC<FundDetailProps> = ({
-  initiativeId,
-  authToken,
-  onFundEdited,
-}) => {
+const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [fundDetails, setFundDetails] = useState<FundDetails | null>(null);
@@ -75,7 +71,7 @@ const FundDetail: React.FC<FundDetailProps> = ({
           onClick={handleToggleEditFundModal}
         >
           <img src={EditIcon} alt="Edit" className={styles["icon"]} />
-          Initiatief berhen
+          Initiatief beheren
         </button>
       </>
       {fundDetails ? (
