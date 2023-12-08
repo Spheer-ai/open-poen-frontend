@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import styles from "../../assets/scss/pages/FundDetail.module.scss";
 import EditIcon from "/edit-icon.svg";
 import DeleteIcon from "/bin-icon.svg";
@@ -7,6 +7,13 @@ import { fetchFundDetails } from "../middleware/Api";
 import EditFund from "../modals/EditFund";
 import { useAuth } from "../../contexts/AuthContext";
 import DeleteFund from "../modals/DeleteFund";
+import TabbedFundNavigation from "../ui/layout/navigation/TabbedFundNavigation";
+import FundsActivities from "../elements/tables/funds/FundsActivities";
+import FundsTransactions from "../elements/tables/funds/FundsTransactions";
+import FundsMedia from "../elements/tables/funds/FundsMedia";
+import FundsDetails from "../elements/tables/funds/FundsDetails";
+import FundsSponsors from "../elements/tables/funds/FundsSponsors";
+import FundsUsers from "../elements/tables/funds/FundsUsers";
 
 interface FundDetailProps {
   initiativeId: string;
@@ -28,6 +35,8 @@ interface FundDetails {
 }
 
 const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
+  const [activeTab, setActiveTab] = useState("transactieoverzicht");
+  const location = useLocation();
   const navigate = useNavigate();
   const { user } = useAuth();
   const [fundDetails, setFundDetails] = useState<FundDetails | null>(null);
@@ -35,6 +44,35 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
   const [isBlockingInteraction, setIsBlockingInteraction] = useState(false);
   const [isEditFundModalOpen, setIsEditFundModalOpen] = useState(false);
   const [isDeleteFundModalOpen, setIsDeleteFundModalOpen] = useState(false);
+
+  useEffect(() => {
+    if (location.pathname.includes("/funds/${initiativeId}/activities")) {
+      setActiveTab("transactieoverzicht");
+    }
+  }, [location.pathname]);
+
+  const handleTabChange = (tabName) => {
+    setActiveTab(tabName);
+
+    if (tabName === "transactieoverzicht") {
+      navigate(`/funds/${initiativeId}/activities/transactieoverzicht`);
+    }
+    if (tabName === "activiteiten") {
+      navigate(`/funds/${initiativeId}/activities/activiteiten`);
+    }
+    if (tabName === "details") {
+      navigate(`/funds/${initiativeId}/activities/details`);
+    }
+    if (tabName === "sponsoren") {
+      navigate(`/funds/${initiativeId}/activities/sponsors`);
+    }
+    if (tabName === "media") {
+      navigate(`/funds/${initiativeId}/activities/media`);
+    }
+    if (tabName === "gebruikers") {
+      navigate(`/funds/${initiativeId}/activities/gebruikers`);
+    }
+  };
 
   useEffect(() => {
     if (initiativeId && authToken) {
@@ -171,6 +209,16 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
         initiativeId={initiativeId}
         authToken={user?.token || ""}
       />
+      <TabbedFundNavigation
+        onTabChange={handleTabChange}
+        initiativeId={initiativeId}
+      />
+      {activeTab === "transactieoverzicht" && <FundsTransactions />}
+      {activeTab === "activiteiten" && <FundsActivities />}
+      {activeTab === "details" && <FundsDetails />}
+      {activeTab === "sponsoren" && <FundsSponsors />}
+      {activeTab === "media" && <FundsMedia />}
+      {activeTab === "gebruikers" && <FundsUsers />}
     </div>
   );
 };

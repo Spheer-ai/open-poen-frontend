@@ -133,7 +133,47 @@ export default function AppRoutes() {
             }
           />
           <Route
-            path="/funds/:initiativeId/activities/delete-activity"
+            path="/funds/:initiativeId/activities/transactieoverzicht"
+            element={
+              <InlineModalLayout navigate={navigate}>
+                <Activities />
+              </InlineModalLayout>
+            }
+          />
+          <Route
+            path="/funds/:initiativeId/activities/activiteiten"
+            element={
+              <InlineModalLayout navigate={navigate}>
+                <Activities />
+              </InlineModalLayout>
+            }
+          />
+          <Route
+            path="/funds/:initiativeId/activities/details"
+            element={
+              <InlineModalLayout navigate={navigate}>
+                <Activities />
+              </InlineModalLayout>
+            }
+          />
+          <Route
+            path="/funds/:initiativeId/activities/sponsors"
+            element={
+              <InlineModalLayout navigate={navigate}>
+                <Activities />
+              </InlineModalLayout>
+            }
+          />
+          <Route
+            path="/funds/:initiativeId/activities/media"
+            element={
+              <InlineModalLayout navigate={navigate}>
+                <Activities />
+              </InlineModalLayout>
+            }
+          />
+          <Route
+            path="/funds/:initiativeId/activities/gebruikers"
             element={
               <InlineModalLayout navigate={navigate}>
                 <Activities />
