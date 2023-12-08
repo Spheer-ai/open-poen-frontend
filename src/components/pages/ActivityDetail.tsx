@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import styles from "../../assets/scss/pages/FundDetail.module.scss";
 import EditIcon from "/edit-icon.svg";
 import DeleteIcon from "/bin-icon.svg";
@@ -7,6 +7,12 @@ import { useAuth } from "../../contexts/AuthContext";
 import { fetchActivityDetails } from "../middleware/Api";
 import EditActivity from "../modals/EditActivity";
 import DeleteActivity from "../modals/DeleteActivity";
+import TabbedActivitiesNavigation from "../ui/layout/navigation/TabbedActivitiesNavigation";
+import ActivityTransactions from "../elements/tables/activities/ActivityTransactions";
+import ActivityDetails from "../elements/tables/activities/ActivityDetails";
+import ActivitySponsors from "../elements/tables/activities/ActivitySponsors";
+import ActivityMedia from "../elements/tables/activities/ActivityMedia";
+import ActivityUsers from "../elements/tables/activities/ActivityUsers";
 
 interface ActivityDetailProps {
   initiativeId: string;
@@ -32,6 +38,8 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
   activityId,
   authToken,
 }) => {
+  const [activeTab, setActiveTab] = useState("transactieoverzicht");
+  const location = useLocation();
   const navigate = useNavigate();
   const { user } = useAuth();
   const [activityDetails, setActivityDetails] =
@@ -41,6 +49,35 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
   const [isEditActivityModalOpen, setIsEditActivityModalOpen] = useState(false);
   const [isDeleteActivityModalOpen, setIsDeleteActivityModalOpen] =
     useState(false);
+
+  useEffect(() => {
+    if (location.pathname.includes("/funds/${initiativeId}/activities")) {
+      setActiveTab("transactieoverzicht");
+    }
+  }, [location.pathname]);
+
+  const handleTabChange = (tabName) => {
+    setActiveTab(tabName);
+
+    if (tabName === "transactieoverzicht") {
+      navigate(`/funds/${initiativeId}/activities/transactieoverzicht`);
+    }
+    if (tabName === "activiteiten") {
+      navigate(`/funds/${initiativeId}/activities/activiteiten`);
+    }
+    if (tabName === "details") {
+      navigate(`/funds/${initiativeId}/activities/details`);
+    }
+    if (tabName === "sponsoren") {
+      navigate(`/funds/${initiativeId}/activities/sponsors`);
+    }
+    if (tabName === "media") {
+      navigate(`/funds/${initiativeId}/activities/media`);
+    }
+    if (tabName === "gebruikers") {
+      navigate(`/funds/${initiativeId}/activities/gebruikers`);
+    }
+  };
 
   useEffect(() => {
     if (activityId && authToken) {
@@ -179,6 +216,17 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
         authToken={user?.token || ""}
         activityId={activityId}
       />
+
+      <TabbedActivitiesNavigation
+        onTabChange={handleTabChange}
+        initiativeId={initiativeId}
+        activityId={activityId}
+      />
+      {activeTab === "transactieoverzicht" && <ActivityTransactions />}
+      {activeTab === "details" && <ActivityDetails />}
+      {activeTab === "sponsoren" && <ActivitySponsors />}
+      {activeTab === "media" && <ActivityMedia />}
+      {activeTab === "gebruikers" && <ActivityUsers />}
     </div>
   );
 };
