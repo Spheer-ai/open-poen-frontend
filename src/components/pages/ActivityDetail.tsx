@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "../../assets/scss/pages/FundDetail.module.scss";
 import EditIcon from "/edit-icon.svg";
+import DeleteIcon from "/bin-icon.svg";
 import { useAuth } from "../../contexts/AuthContext";
 import { fetchActivityDetails } from "../middleware/Api";
 import EditActivity from "../modals/EditActivity";
@@ -102,8 +103,8 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
         className={styles["edit-button"]}
         onClick={handleToggleDeleteActivitydModal}
       >
-        <img src={EditIcon} alt="Edit" className={styles["icon"]} />
-        Activiteit beheren
+        <img src={DeleteIcon} alt="Delete" className={styles["icon"]} />
+        Activiteit verwijderen
       </button>
       {activityDetails ? (
         <>

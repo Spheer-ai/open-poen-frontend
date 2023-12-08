@@ -1,24 +1,22 @@
 import React, { useEffect, useState } from "react";
 import styles from "../../assets/scss/layout/AddFundDesktop.module.scss";
-import { deleteActivity } from "../middleware/Api";
+import { deleteInitiative } from "../middleware/Api";
 
-interface DeleteActivityProps {
+interface DeleteFundProps {
   isOpen: boolean;
   onClose: () => void;
   isBlockingInteraction: boolean;
-  onActivityDeleted: () => void;
+  onFundDeleted: () => void;
   initiativeId: string;
-  activityId: string;
   authToken: string;
 }
 
-const DeleteActivity: React.FC<DeleteActivityProps> = ({
+const DeleteFund: React.FC<DeleteFundProps> = ({
   isOpen,
   onClose,
   isBlockingInteraction,
-  onActivityDeleted,
+  onFundDeleted,
   initiativeId,
-  activityId,
   authToken,
 }) => {
   const [modalIsOpen, setModalIsOpen] = useState(isOpen);
@@ -36,16 +34,16 @@ const DeleteActivity: React.FC<DeleteActivityProps> = ({
 
   const handleDelete = async () => {
     try {
-      await deleteActivity(authToken, initiativeId, activityId);
+      await deleteInitiative(authToken, initiativeId);
       setApiError("");
       handleClose();
-      onActivityDeleted();
+      onFundDeleted();
     } catch (error) {
-      console.error("Failed to delete activity:", error);
+      console.error("Failed to delete fund:", error);
       if (error.response && error.response.status === 422) {
         setApiError("Validation Error");
       } else {
-        setApiError("Failed to delete activity");
+        setApiError("Failed to delete fund");
       }
     }
   };
@@ -68,10 +66,10 @@ const DeleteActivity: React.FC<DeleteActivityProps> = ({
         onClick={handleClose}
       ></div>
       <div className={`${styles.modal} ${modalIsOpen ? styles.open : ""}`}>
-        <h2 className={styles.title}>Delete Activity</h2>
+        <h2 className={styles.title}>Delete Fund</h2>
         <hr></hr>
         <div className={styles.confirmation}>
-          <p>Are you sure you want to delete this activity?</p>
+          <p>Are you sure you want to delete this Fund?</p>
         </div>
         {apiError && <p className={styles.error}>{apiError}</p>}
         <div className={styles.buttonContainer}>
@@ -87,4 +85,4 @@ const DeleteActivity: React.FC<DeleteActivityProps> = ({
   );
 };
 
-export default DeleteActivity;
+export default DeleteFund;

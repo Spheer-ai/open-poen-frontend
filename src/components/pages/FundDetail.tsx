@@ -2,9 +2,11 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "../../assets/scss/pages/FundDetail.module.scss";
 import EditIcon from "/edit-icon.svg";
+import DeleteIcon from "/bin-icon.svg";
 import { fetchFundDetails } from "../middleware/Api";
 import EditFund from "../modals/EditFund";
 import { useAuth } from "../../contexts/AuthContext";
+import DeleteFund from "../modals/DeleteFund";
 
 interface FundDetailProps {
   initiativeId: string;
@@ -32,6 +34,7 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [isBlockingInteraction, setIsBlockingInteraction] = useState(false);
   const [isEditFundModalOpen, setIsEditFundModalOpen] = useState(false);
+  const [isDeleteFundModalOpen, setIsDeleteFundModalOpen] = useState(false);
 
   useEffect(() => {
     if (initiativeId && authToken) {
@@ -63,6 +66,24 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
     setRefreshTrigger((prev) => prev + 1);
   };
 
+  const handleToggleDeleteFundModal = () => {
+    if (isDeleteFundModalOpen) {
+      setIsBlockingInteraction(true);
+      setTimeout(() => {
+        setIsBlockingInteraction(false);
+        setIsDeleteFundModalOpen(false);
+        navigate(`/funds/${initiativeId}/activities`);
+      }, 300);
+    } else {
+      setIsDeleteFundModalOpen(true);
+      navigate(`/funds/${initiativeId}/activities/delete-fund`);
+    }
+  };
+
+  const handleFundDeleted = () => {
+    setRefreshTrigger((prev) => prev + 1);
+  };
+
   return (
     <div className={styles["fund-detail-container"]}>
       <>
@@ -72,6 +93,13 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
         >
           <img src={EditIcon} alt="Edit" className={styles["icon"]} />
           Initiatief beheren
+        </button>
+        <button
+          className={styles["edit-button"]}
+          onClick={handleToggleDeleteFundModal}
+        >
+          <img src={DeleteIcon} alt="Delete" className={styles["icon"]} />
+          Initiatief verwijderen
         </button>
       </>
       {fundDetails ? (
@@ -132,6 +160,14 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
         onClose={handleToggleEditFundModal}
         isBlockingInteraction={isBlockingInteraction}
         onFundEdited={handleFundEdited}
+        initiativeId={initiativeId}
+        authToken={user?.token || ""}
+      />
+      <DeleteFund
+        isOpen={isDeleteFundModalOpen}
+        onClose={handleToggleDeleteFundModal}
+        isBlockingInteraction={isBlockingInteraction}
+        onFundDeleted={handleFundDeleted}
         initiativeId={initiativeId}
         authToken={user?.token || ""}
       />

@@ -1,4 +1,6 @@
 export interface UserDetails {
+  profile_picture: any;
+  is_superuser: any;
   profileImage: string;
   activities: string;
   biography: string;
