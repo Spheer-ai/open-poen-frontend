@@ -49,6 +49,8 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
   const [isEditActivityModalOpen, setIsEditActivityModalOpen] = useState(false);
   const [isDeleteActivityModalOpen, setIsDeleteActivityModalOpen] =
     useState(false);
+  const [showFullDescription, setShowFullDescription] = useState(false);
+  const [availableBudget, setAvailableBudget] = useState<number | null>(null);
 
   useEffect(() => {
     if (location.pathname.includes("/funds/${initiativeId}/activities")) {
@@ -127,76 +129,146 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
     setRefreshTrigger((prev) => prev + 1);
   };
 
+  useEffect(() => {
+    if (activityDetails) {
+      const receivedBudget = activityDetails.income || 0;
+      const spentBudget = activityDetails.expenses || 0;
+      const availableBudgetValue = receivedBudget + spentBudget;
+      setAvailableBudget(availableBudgetValue);
+    }
+  }, [activityDetails]);
+
   return (
     <div className={styles["fund-detail-container"]}>
-      <button
-        className={styles["edit-button"]}
-        onClick={handleToggleEditActivitydModal}
-      >
-        <img src={EditIcon} alt="Edit" className={styles["icon"]} />
-        Activiteit beheren
-      </button>
-      <button
-        className={styles["edit-button"]}
-        onClick={handleToggleDeleteActivitydModal}
-      >
-        <img src={DeleteIcon} alt="Delete" className={styles["icon"]} />
-        Activiteit verwijderen
-      </button>
+      <div className={styles["top-right-button-container"]}>
+        <button
+          className={styles["edit-button"]}
+          onClick={handleToggleEditActivitydModal}
+        >
+          <img src={EditIcon} alt="Edit" className={styles["icon"]} />
+          Beheer activiteit
+        </button>
+        <button
+          className={styles["edit-button"]}
+          onClick={handleToggleDeleteActivitydModal}
+        >
+          <img src={DeleteIcon} alt="Delete" className={styles["icon"]} />
+          Verwijder activiteit
+        </button>
+      </div>
       {activityDetails ? (
         <>
-          <div className={styles["activity-image"]}>
-            {activityDetails.profile_picture ? (
-              <img
-                src={
-                  activityDetails.profile_picture.attachment_thumbnail_url_512
-                }
-                alt="Activity Image"
-              />
-            ) : (
-              <p>Image not found</p>
-            )}
+          <div className={styles["content-container"]}>
+            <div className={styles["fund-info"]}>
+              <div className={styles["fund-name"]}>
+                {activityDetails.name ? (
+                  <h1>{activityDetails.name}</h1>
+                ) : (
+                  <p>Name not found</p>
+                )}
+              </div>
+              <div className={styles["fund-description"]}>
+                {activityDetails.description ? (
+                  <div>
+                    <p>
+                      Description:{" "}
+                      {showFullDescription
+                        ? activityDetails.description
+                        : `${activityDetails.description.slice(0, 150)}...`}
+                    </p>
+                    {activityDetails.description.length > 150 && (
+                      <button
+                        onClick={() =>
+                          setShowFullDescription(!showFullDescription)
+                        }
+                        className={styles["read-more-button"]}
+                      >
+                        {showFullDescription ? "Lees minder" : "Lees meer"}
+                      </button>
+                    )}
+                  </div>
+                ) : (
+                  <p>Description not found</p>
+                )}
+              </div>
+            </div>
+            <div className={styles["fund-image"]}>
+              {activityDetails.profile_picture ? (
+                <img
+                  src={
+                    activityDetails.profile_picture.attachment_thumbnail_url_512
+                  }
+                  alt="Fund Image"
+                />
+              ) : (
+                <p>Image not found</p>
+              )}
+            </div>
           </div>
-          <div className={styles["activity-info"]}>
-            <div className={styles["activity-name"]}>
-              {activityDetails.name ? (
-                <h2>{activityDetails.name}</h2>
-              ) : (
-                <p>Name not found</p>
-              )}
-            </div>
-            <div className={styles["activity-description"]}>
-              {activityDetails.description ? (
-                <p>Description: {activityDetails.description}</p>
-              ) : (
-                <p>Description not found</p>
-              )}
-            </div>
-            <div className={styles["activity-budget"]}>
+          <div className={styles["statistics-container"]}>
+            <div
+              className={styles["fund-budget"]}
+              style={{ backgroundColor: "#E9EFFB" }}
+            >
               {activityDetails.budget ? (
-                <p>Budget: {activityDetails.budget}</p>
+                <>
+                  <p>
+                    Toegekend budget: <br />
+                    <span>€ {activityDetails.budget} </span>
+                  </p>
+                </>
               ) : (
                 <p>Budget not found</p>
               )}
             </div>
-            <div className={styles["activity-income"]}>
+            <div
+              className={styles["fund-income"]}
+              style={{ backgroundColor: "#E9EFFB" }}
+            >
               {activityDetails.income ? (
-                <p>Income: {activityDetails.income}</p>
+                <>
+                  <p>
+                    Ontvangen budget: <br />
+                    <span>€ {activityDetails.income}</span>
+                  </p>
+                </>
               ) : (
                 <p>Income not found</p>
               )}
             </div>
-            <div className={styles["activity-expenses"]}>
+            <div
+              className={styles["fund-expenses"]}
+              style={{ backgroundColor: "#FEE6F0" }}
+            >
               {activityDetails.expenses ? (
-                <p>Expenses: {activityDetails.expenses}</p>
+                <>
+                  <p style={{ color: "#B82466" }}>
+                    Besteed:
+                    <br />
+                    <span style={{ color: "#B82466" }}>
+                      € {activityDetails.expenses}
+                    </span>
+                  </p>
+                </>
               ) : (
                 <p>Expenses not found</p>
               )}
             </div>
+            {availableBudget !== null && (
+              <div
+                className={styles["fund-available-budget"]}
+                style={{ backgroundColor: "#E7FDEA" }}
+              >
+                <p style={{ color: "#008000" }}>
+                  Beschikbaar budget: <br />
+                  <span style={{ color: "#008000" }}>€ {availableBudget}</span>
+                </p>
+              </div>
+            )}
           </div>
         </>
       ) : (
-        <p>Loading activity details...</p>
+        <p>Loading fund details...</p>
       )}
       <EditActivity
         isOpen={isEditActivityModalOpen}
@@ -222,7 +294,13 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
         initiativeId={initiativeId}
         activityId={activityId}
       />
-      {activeTab === "transactieoverzicht" && <ActivityTransactions />}
+      {activeTab === "transactieoverzicht" && (
+        <ActivityTransactions
+          initiativeId={initiativeId}
+          authToken={user?.token || ""}
+          activityId={activityId}
+        />
+      )}
       {activeTab === "details" && <ActivityDetails />}
       {activeTab === "sponsoren" && <ActivitySponsors />}
       {activeTab === "media" && <ActivityMedia />}

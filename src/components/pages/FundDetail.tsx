@@ -44,6 +44,8 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
   const [isBlockingInteraction, setIsBlockingInteraction] = useState(false);
   const [isEditFundModalOpen, setIsEditFundModalOpen] = useState(false);
   const [isDeleteFundModalOpen, setIsDeleteFundModalOpen] = useState(false);
+  const [showFullDescription, setShowFullDescription] = useState(false);
+  const [availableBudget, setAvailableBudget] = useState<number | null>(null);
 
   useEffect(() => {
     if (location.pathname.includes("/funds/${initiativeId}/activities")) {
@@ -122,72 +124,142 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
     setRefreshTrigger((prev) => prev + 1);
   };
 
+  useEffect(() => {
+    if (fundDetails) {
+      const receivedBudget = fundDetails.income || 0;
+      const spentBudget = fundDetails.expenses || 0;
+      const availableBudgetValue = receivedBudget + spentBudget;
+      setAvailableBudget(availableBudgetValue);
+    }
+  }, [fundDetails]);
+
   return (
     <div className={styles["fund-detail-container"]}>
       <>
-        <button
-          className={styles["edit-button"]}
-          onClick={handleToggleEditFundModal}
-        >
-          <img src={EditIcon} alt="Edit" className={styles["icon"]} />
-          Initiatief beheren
-        </button>
-        <button
-          className={styles["edit-button"]}
-          onClick={handleToggleDeleteFundModal}
-        >
-          <img src={DeleteIcon} alt="Delete" className={styles["icon"]} />
-          Initiatief verwijderen
-        </button>
+        <div className={styles["top-right-button-container"]}>
+          <button
+            className={styles["edit-button"]}
+            onClick={handleToggleEditFundModal}
+          >
+            <img src={EditIcon} alt="Edit" className={styles["icon"]} />
+            Beheer initiatief
+          </button>
+          <button
+            className={styles["edit-button"]}
+            onClick={handleToggleDeleteFundModal}
+          >
+            <img src={DeleteIcon} alt="Delete" className={styles["icon"]} />
+            Verwijder initiatief
+          </button>
+        </div>
       </>
       {fundDetails ? (
         <>
-          <div className={styles["fund-image"]}>
-            {fundDetails.profile_picture ? (
-              <img
-                src={fundDetails.profile_picture.attachment_thumbnail_url_512}
-                alt="Fund Image"
-              />
-            ) : (
-              <p>Image not found</p>
-            )}
+          <div className={styles["content-container"]}>
+            <div className={styles["fund-info"]}>
+              <div className={styles["fund-name"]}>
+                {fundDetails.name ? (
+                  <h1>{fundDetails.name}</h1>
+                ) : (
+                  <p>Name not found</p>
+                )}
+              </div>
+              <div className={styles["fund-description"]}>
+                {fundDetails.description ? (
+                  <div>
+                    <p>
+                      Description:{" "}
+                      {showFullDescription
+                        ? fundDetails.description
+                        : `${fundDetails.description.slice(0, 150)}...`}
+                    </p>
+                    {fundDetails.description.length > 150 && (
+                      <button
+                        onClick={() =>
+                          setShowFullDescription(!showFullDescription)
+                        }
+                        className={styles["read-more-button"]}
+                      >
+                        {showFullDescription ? "Lees minder" : "Lees meer"}
+                      </button>
+                    )}
+                  </div>
+                ) : (
+                  <p>Description not found</p>
+                )}
+              </div>
+            </div>
+            <div className={styles["fund-image"]}>
+              {fundDetails.profile_picture ? (
+                <img
+                  src={fundDetails.profile_picture.attachment_thumbnail_url_512}
+                  alt="Fund Image"
+                />
+              ) : (
+                <p>Image not found</p>
+              )}
+            </div>
           </div>
-          <div className={styles["fund-info"]}>
-            <div className={styles["fund-name"]}>
-              {fundDetails.name ? (
-                <h2>{fundDetails.name}</h2>
-              ) : (
-                <p>Name not found</p>
-              )}
-            </div>
-            <div className={styles["fund-description"]}>
-              {fundDetails.description ? (
-                <p>Description: {fundDetails.description}</p>
-              ) : (
-                <p>Description not found</p>
-              )}
-            </div>
-            <div className={styles["fund-budget"]}>
+          <div className={styles["statistics-container"]}>
+            <div
+              className={styles["fund-budget"]}
+              style={{ backgroundColor: "#E9EFFB" }}
+            >
               {fundDetails.budget ? (
-                <p>Budget: {fundDetails.budget}</p>
+                <>
+                  <p>
+                    Toegekend budget: <br />
+                    <span>€ {fundDetails.budget} </span>
+                  </p>
+                </>
               ) : (
                 <p>Budget not found</p>
               )}
             </div>
-            <div className={styles["fund-income"]}>
+            <div
+              className={styles["fund-income"]}
+              style={{ backgroundColor: "#E9EFFB" }}
+            >
               {fundDetails.income ? (
-                <p>Income: {fundDetails.income}</p>
+                <>
+                  <p>
+                    Ontvangen budget: <br />
+                    <span>€ {fundDetails.income}</span>
+                  </p>
+                </>
               ) : (
                 <p>Income not found</p>
               )}
             </div>
-            <div className={styles["fund-expenses"]}>
+            <div
+              className={styles["fund-expenses"]}
+              style={{ backgroundColor: "#FEE6F0" }}
+            >
               {fundDetails.expenses ? (
-                <p>Expenses: {fundDetails.expenses}</p>
+                <>
+                  <p style={{ color: "#B82466" }}>
+                    Besteed:
+                    <br />
+                    <span style={{ color: "#B82466" }}>
+                      € {fundDetails.expenses}
+                    </span>
+                  </p>
+                </>
               ) : (
                 <p>Expenses not found</p>
               )}
             </div>
+            {availableBudget !== null && (
+              <div
+                className={styles["fund-available-budget"]}
+                style={{ backgroundColor: "#E7FDEA" }}
+              >
+                <p style={{ color: "#008000" }}>
+                  Beschikbaar budget: <br />
+                  <span style={{ color: "#008000" }}>€ {availableBudget}</span>
+                </p>
+              </div>
+            )}
           </div>
         </>
       ) : (
@@ -213,7 +285,12 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
         onTabChange={handleTabChange}
         initiativeId={initiativeId}
       />
-      {activeTab === "transactieoverzicht" && <FundsTransactions />}
+      {activeTab === "transactieoverzicht" && (
+        <FundsTransactions
+          initiativeId={initiativeId}
+          authToken={user?.token || ""}
+        />
+      )}
       {activeTab === "activiteiten" && <FundsActivities />}
       {activeTab === "details" && <FundsDetails />}
       {activeTab === "sponsoren" && <FundsSponsors />}

@@ -1,7 +1,7 @@
 .fund-detail-container {
   display: flex;
   flex-direction: column;
-  padding: 75px;
+  padding: 50px;
   width: 100%;
   position: relative;
   max-width: 1200px;
@@ -12,4 +12,95 @@
   width: 100%;
   position: relative;
   background: #ffffff;
+  overflow-x: hidden;
+}
+
+.top-right-button-container {
+  position: absolute;
+  top: 20px;
+  right: 40px;
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: center;
+
+  button {
+    align-items: center;
+    display: flex;
+    padding: 10px 20px 10px 10px;
+    gap: 10px;
+    img {
+      width: 20px;
+      height: 20px;
+    }
+  }
+}
+
+.content-container {
+  display: flex;
+  width: 100%;
+  margin-bottom: 30px;
+  .fund-info {
+    flex: 1;
+    width: 50%;
+    padding-right: 30px;
+
+    h1 {
+      font-weight: 500;
+    }
+  }
+
+  .fund-image {
+    width: 50%;
+    padding-left: 30px;
+    margin-top: 30px;
+    align-items: start;
+    display: flex;
+    justify-content: right;
+
+    .fund-image {
+      width: 50%;
+      overflow: hidden;
+    }
+
+    img {
+      width: 100%;
+      max-width: 400px;
+    }
+  }
+}
+
+.statistics-container {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  margin: 20px 0px;
+
+  .fund-budget,
+  .fund-income,
+  .fund-expenses,
+  .fund-available-budget {
+    padding: 10px 20px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    border-radius: 4px;
+
+    span {
+      display: block;
+      margin-top: 5px;
+      font-weight: 700;
+      color: #343232;
+      margin-top: 5px;
+    }
+  }
+}
+
+.read-more-button {
+  background: none;
+  border: none;
+  color: blue;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0;
 }

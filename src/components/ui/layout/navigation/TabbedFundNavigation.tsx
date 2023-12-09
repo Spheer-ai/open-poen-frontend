@@ -42,7 +42,7 @@ const TabbedFundNavigation: React.FC<Props> = ({
   };
 
   return (
-    <div className={styles["tab-container"]}>
+    <div className={styles["tab-fund-container"]}>
       <button
         className={activeTab === "transactieoverzicht" ? styles["active"] : ""}
         onClick={() => handleTabChange("transactieoverzicht")}

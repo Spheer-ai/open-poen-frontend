@@ -1463,16 +1463,72 @@ export const deleteActivity = async (token, initiativeId, activityId) => {
     );
 
     if (response.status === 200) {
-      // Successful deletion
       return response.data;
     } else if (response.status === 422) {
-      // Validation error
       throw new Error("Validation Error: " + JSON.stringify(response.data));
     } else {
       throw new Error("Failed to delete activity");
     }
   } catch (error) {
     console.error("Error deleting activity:", error);
+    throw error;
+  }
+};
+
+export const getPaymentsByInitiative = async (
+  token,
+  initiativeId,
+  queryParams = {},
+) => {
+  try {
+    const response = await api.get(`/payments/initiative/${initiativeId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      params: queryParams,
+    });
+
+    if (response.status === 200) {
+      return response.data;
+    } else if (response.status === 422) {
+      throw new Error("Validation Error: " + JSON.stringify(response.data));
+    } else {
+      throw new Error("Failed to fetch payments by initiative");
+    }
+  } catch (error) {
+    console.error("Error fetching payments by initiative:", error);
+    throw error;
+  }
+};
+
+export const getPaymentsByActivity = async (
+  token,
+  initiativeId,
+  activityId,
+  queryParams = {},
+) => {
+  try {
+    const response = await api.get(
+      `/payments/initiative/${initiativeId}/activity/${activityId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        params: queryParams,
+      },
+    );
+
+    if (response.status === 200) {
+      return response.data;
+    } else if (response.status === 422) {
+      throw new Error("Validation Error: " + JSON.stringify(response.data));
+    } else {
+      throw new Error("Failed to fetch payments by initiative");
+    }
+  } catch (error) {
+    console.error("Error fetching payments by initiative:", error);
     throw error;
   }
 };
