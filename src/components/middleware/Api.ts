@@ -1532,3 +1532,66 @@ export const getPaymentsByActivity = async (
     throw error;
   }
 };
+
+export const uploadFundPicture = async (initiativeId, file, token) => {
+  try {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const response = await api.post(
+      `/initiative/${initiativeId}/profile-picture`,
+      formData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      },
+    );
+
+    if (response.status === 200) {
+      return response.data;
+    } else if (response.status === 422) {
+      throw new Error("Validation Error: " + JSON.stringify(response.data));
+    } else {
+      throw new Error("Failed to upload fund picture");
+    }
+  } catch (error) {
+    console.error("Error uploading fund picture:", error);
+    throw error;
+  }
+};
+
+export const uploadActivityPicture = async (
+  initiativeId,
+  activityId,
+  file,
+  token,
+) => {
+  try {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const response = await api.post(
+      `/initiative/${initiativeId}/activity/${activityId}/profile-picture`,
+      formData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      },
+    );
+
+    if (response.status === 200) {
+      return response.data;
+    } else if (response.status === 422) {
+      throw new Error("Validation Error: " + JSON.stringify(response.data));
+    } else {
+      throw new Error("Failed to upload activity picture");
+    }
+  } catch (error) {
+    console.error("Error uploading activity picture:", error);
+    throw error;
+  }
+};

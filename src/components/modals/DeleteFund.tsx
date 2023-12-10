@@ -10,7 +10,6 @@ interface DeleteFundProps {
   initiativeId: string;
   authToken: string;
 }
-
 const DeleteFund: React.FC<DeleteFundProps> = ({
   isOpen,
   onClose,

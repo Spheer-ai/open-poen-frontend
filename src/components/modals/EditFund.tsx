@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styles from "../../assets/scss/layout/AddFundDesktop.module.scss";
-import { editFund } from "../middleware/Api";
+import FundImageUploader from "../elements/uploadder/FundImageUploader";
+import { editFund, uploadFundPicture } from "../middleware/Api";
 
 interface FundDetails {
   id?: number;
@@ -35,6 +36,7 @@ const EditFund: React.FC<EditFundProps> = ({
   const [isHidden, setIsHidden] = useState(false);
   const [apiError, setApiError] = useState("");
   const [formData, setFormData] = useState<FundDetails | null>(null);
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
 
   useEffect(() => {
     if (isOpen) {
@@ -59,6 +61,14 @@ const EditFund: React.FC<EditFundProps> = ({
         hidden_sponsors: isHiddenSponsors,
         hidden: isHidden,
       };
+
+      if (selectedImage) {
+        const imageUploadResult = await uploadFundPicture(
+          initiativeId,
+          selectedImage,
+          authToken,
+        );
+      }
 
       await editFund(authToken, initiativeId, updatedFundData);
       setApiError("");
@@ -89,6 +99,10 @@ const EditFund: React.FC<EditFundProps> = ({
   if (!isOpen && !modalIsOpen) {
     return null;
   }
+
+  const handleImageChange = (file: File) => {
+    setSelectedImage(file);
+  };
 
   return (
     <>
@@ -151,6 +165,11 @@ const EditFund: React.FC<EditFundProps> = ({
             }
           />
         </div>
+        <FundImageUploader
+          initiativeId={initiativeId}
+          token={authToken}
+          onImageSelected={handleImageChange}
+        />
         {apiError && <p className={styles.error}>{apiError}</p>}
         <div className={styles.buttonContainer}>
           <button onClick={handleClose} className={styles.cancelButton}>

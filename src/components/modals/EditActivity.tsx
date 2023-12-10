@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styles from "../../assets/scss/layout/AddFundDesktop.module.scss";
-import { editActivity } from "../middleware/Api";
+import ActivityImageUploader from "../elements/uploadder/ActivityImageUploader";
+import { editActivity, uploadActivityPicture } from "../middleware/Api";
 
 interface ActivityDetails {
   id?: number;
@@ -38,6 +39,7 @@ const EditActivity: React.FC<EditActivityProps> = ({
     description: "",
     budget: 0,
   });
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
 
   useEffect(() => {
     if (isOpen) {
@@ -70,7 +72,14 @@ const EditActivity: React.FC<EditActivityProps> = ({
         budget: formData.budget || 0,
       };
 
-      console.log("Updated Activity Data:", updatedActivityData);
+      if (selectedImage) {
+        const imageUploadResult = await uploadActivityPicture(
+          initiativeId,
+          activityId,
+          selectedImage,
+          authToken,
+        );
+      }
 
       await editActivity(
         authToken,
@@ -106,6 +115,10 @@ const EditActivity: React.FC<EditActivityProps> = ({
   if (!isOpen && !modalIsOpen) {
     return null;
   }
+
+  const handleImageChange = (file: File) => {
+    setSelectedImage(file);
+  };
 
   return (
     <>
@@ -159,6 +172,12 @@ const EditActivity: React.FC<EditActivityProps> = ({
             }
           />
         </div>
+        <ActivityImageUploader
+          initiativeId={initiativeId}
+          token={authToken}
+          onImageSelected={handleImageChange}
+          activityId={activityId}
+        />
         {apiError && <p className={styles.error}>{apiError}</p>}
         <div className={styles.buttonContainer}>
           <button onClick={handleClose} className={styles.cancelButton}>
