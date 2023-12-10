@@ -54,7 +54,7 @@
   background-color: #ccc;
   border: none;
   border-radius: 5px;
-  padding: 10px;
+  padding: 15px;
   flex: 1;
   margin-right: 10px;
   cursor: pointer;
@@ -64,7 +64,7 @@
   background-color: #2760d5;
   border: none;
   border-radius: 5px;
-  padding: 10px;
+  padding: 15px;
   flex: 1;
   color: white;
   cursor: pointer;
@@ -100,4 +100,9 @@
   &.open {
     right: 0;
   }
+}
+
+.roleOptions {
+  display: flex;
+  flex-direction: column;
 }

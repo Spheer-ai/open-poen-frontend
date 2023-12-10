@@ -2,6 +2,13 @@ import React, { useEffect, useState } from "react";
 import styles from "../../assets/scss/layout/AddFundDesktop.module.scss";
 import { editActivity } from "../middleware/Api";
 
+interface ActivityDetails {
+  id?: number;
+  name?: string;
+  description?: string;
+  budget?: number;
+}
+
 interface EditActivityProps {
   isOpen: boolean;
   onClose: () => void;
@@ -10,6 +17,7 @@ interface EditActivityProps {
   initiativeId: string;
   activityId: string;
   authToken: string;
+  activityData: ActivityDetails | null;
 }
 
 const EditActivity: React.FC<EditActivityProps> = ({
@@ -20,15 +28,15 @@ const EditActivity: React.FC<EditActivityProps> = ({
   initiativeId,
   activityId,
   authToken,
+  activityData,
 }) => {
   const [modalIsOpen, setModalIsOpen] = useState(isOpen);
+  const [isHidden, setIsHidden] = useState(false);
   const [apiError, setApiError] = useState("");
-  const [activityData, setActivityData] = useState({
+  const [formData, setFormData] = useState<ActivityDetails>({
     name: "",
     description: "",
-    purpose: "",
-    target_audience: "",
-    owner: "",
+    budget: 0,
   });
 
   useEffect(() => {
@@ -41,9 +49,35 @@ const EditActivity: React.FC<EditActivityProps> = ({
     }
   }, [isOpen]);
 
+  useEffect(() => {
+    if (isOpen && activityData) {
+      setFormData(activityData);
+    } else {
+      setFormData({
+        name: "",
+        description: "",
+        budget: 0,
+      });
+    }
+  }, [isOpen, activityData]);
+
   const handleSave = async () => {
     try {
-      await editActivity(authToken, initiativeId, activityId, activityData);
+      const updatedActivityData = {
+        name: formData.name || "",
+        description: formData.description || "",
+        hidden: isHidden,
+        budget: formData.budget || 0,
+      };
+
+      console.log("Updated Activity Data:", updatedActivityData);
+
+      await editActivity(
+        authToken,
+        initiativeId,
+        activityId,
+        updatedActivityData,
+      );
       setApiError("");
       handleClose();
       onActivityEdited();
@@ -80,36 +114,58 @@ const EditActivity: React.FC<EditActivityProps> = ({
         onClick={handleClose}
       ></div>
       <div className={`${styles.modal} ${modalIsOpen ? styles.open : ""}`}>
-        <h2 className={styles.title}>Edit Activity</h2>
+        <h2 className={styles.title}>Beheer activiteit</h2>
         <hr></hr>
         <div className={styles.formGroup}>
-          <h3>Activity Details</h3>
+          <h4>Algemene activiteitinstelingen</h4>
+          <label className={styles.label}>Naam:</label>
           <input
             type="text"
-            placeholder="Name"
-            value={activityData.name}
+            placeholder="Naam"
+            value={formData.name}
             onKeyPress={handleEnterKeyPress}
+            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+          />
+          <label className={styles.label}>Beschrijving:</label>
+          <textarea
+            placeholder="Beschrijving"
+            value={formData?.description}
             onChange={(e) =>
-              setActivityData({ ...activityData, name: e.target.value })
+              setFormData({ ...formData, description: e.target.value })
             }
           />
+          <div className={styles.roleOptions}>
+            <label className={styles.roleLabel}>
+              <input
+                type="checkbox"
+                checked={isHidden}
+                onChange={() => setIsHidden(!isHidden)}
+              />
+              Activiteit verbergen
+            </label>
+          </div>
+          <label className={styles.labelField}>Begroting:</label>
           <input
-            type="text"
-            placeholder="Description"
-            value={activityData.description}
-            onKeyPress={handleEnterKeyPress}
+            type="number"
+            placeholder="Vul het begrootte bedrag in"
+            name="budget"
+            onKeyDown={handleEnterKeyPress}
+            value={formData?.budget || ""}
             onChange={(e) =>
-              setActivityData({ ...activityData, description: e.target.value })
+              setFormData({
+                ...formData,
+                budget: parseFloat(e.target.value) || 0,
+              })
             }
           />
         </div>
         {apiError && <p className={styles.error}>{apiError}</p>}
         <div className={styles.buttonContainer}>
           <button onClick={handleClose} className={styles.cancelButton}>
-            Cancel
+            Annuleren
           </button>
           <button onClick={handleSave} className={styles.saveButton}>
-            Update
+            Opslaan
           </button>
         </div>
       </div>

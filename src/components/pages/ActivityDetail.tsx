@@ -13,6 +13,7 @@ import ActivityDetails from "../elements/tables/activities/ActivityDetails";
 import ActivitySponsors from "../elements/tables/activities/ActivitySponsors";
 import ActivityMedia from "../elements/tables/activities/ActivityMedia";
 import ActivityUsers from "../elements/tables/activities/ActivityUsers";
+import LoadingDot from "../animation/LoadingDot";
 
 interface ActivityDetailProps {
   initiativeId: string;
@@ -51,6 +52,8 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
     useState(false);
   const [showFullDescription, setShowFullDescription] = useState(false);
   const [availableBudget, setAvailableBudget] = useState<number | null>(null);
+  const [currentActivityData, setCurrentActivityData] =
+    useState<ActivityDetails | null>(null);
 
   useEffect(() => {
     if (location.pathname.includes("/funds/${initiativeId}/activities")) {
@@ -86,6 +89,7 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
       fetchActivityDetails(authToken, initiativeId, activityId)
         .then((data) => {
           setActivityDetails(data);
+          setCurrentActivityData(data);
         })
         .catch((error) => {
           console.error("Error fetching activity details:", error);
@@ -171,7 +175,6 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
                 {activityDetails.description ? (
                   <div>
                     <p>
-                      Description:{" "}
                       {showFullDescription
                         ? activityDetails.description
                         : `${activityDetails.description.slice(0, 150)}...`}
@@ -268,7 +271,22 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
           </div>
         </>
       ) : (
-        <p>Loading fund details...</p>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            height: "200px",
+            marginTop: "120px",
+          }}
+        >
+          <div className={styles["loading-container"]}>
+            <LoadingDot delay={0} />
+            <LoadingDot delay={0.1} />
+            <LoadingDot delay={0.1} />
+            <LoadingDot delay={0.2} />
+            <LoadingDot delay={0.2} />
+          </div>
+        </div>
       )}
       <EditActivity
         isOpen={isEditActivityModalOpen}
@@ -278,6 +296,7 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
         initiativeId={initiativeId}
         authToken={user?.token || ""}
         activityId={activityId}
+        activityData={currentActivityData}
       />
       <DeleteActivity
         isOpen={isDeleteActivityModalOpen}

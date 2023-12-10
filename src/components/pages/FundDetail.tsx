@@ -14,6 +14,7 @@ import FundsMedia from "../elements/tables/funds/FundsMedia";
 import FundsDetails from "../elements/tables/funds/FundsDetails";
 import FundsSponsors from "../elements/tables/funds/FundsSponsors";
 import FundsUsers from "../elements/tables/funds/FundsUsers";
+import LoadingDot from "../animation/LoadingDot";
 
 interface FundDetailProps {
   initiativeId: string;
@@ -46,6 +47,9 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
   const [isDeleteFundModalOpen, setIsDeleteFundModalOpen] = useState(false);
   const [showFullDescription, setShowFullDescription] = useState(false);
   const [availableBudget, setAvailableBudget] = useState<number | null>(null);
+  const [currentFundData, setCurrentFundData] = useState<FundDetails | null>(
+    null,
+  );
 
   useEffect(() => {
     if (location.pathname.includes("/funds/${initiativeId}/activities")) {
@@ -81,6 +85,7 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
       fetchFundDetails(authToken, initiativeId)
         .then((data) => {
           setFundDetails(data);
+          setCurrentFundData(data);
         })
         .catch((error) => {
           console.error("Error fetching fund details:", error);
@@ -131,7 +136,7 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
       const availableBudgetValue = receivedBudget + spentBudget;
       setAvailableBudget(availableBudgetValue);
     }
-  }, [fundDetails]);
+  }, [fundDetails, refreshTrigger]);
 
   return (
     <div className={styles["fund-detail-container"]}>
@@ -161,14 +166,13 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
                 {fundDetails.name ? (
                   <h1>{fundDetails.name}</h1>
                 ) : (
-                  <p>Name not found</p>
+                  <p>Geen naam gevonden</p>
                 )}
               </div>
               <div className={styles["fund-description"]}>
                 {fundDetails.description ? (
                   <div>
                     <p>
-                      Description:{" "}
                       {showFullDescription
                         ? fundDetails.description
                         : `${fundDetails.description.slice(0, 150)}...`}
@@ -185,7 +189,7 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
                     )}
                   </div>
                 ) : (
-                  <p>Description not found</p>
+                  <p>Geen beschrijving gevonden</p>
                 )}
               </div>
             </div>
@@ -196,7 +200,7 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
                   alt="Fund Image"
                 />
               ) : (
-                <p>Image not found</p>
+                <p>Geen afbeelding gevonden</p>
               )}
             </div>
           </div>
@@ -213,7 +217,7 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
                   </p>
                 </>
               ) : (
-                <p>Budget not found</p>
+                <p>Geen toegekend budget gevonden</p>
               )}
             </div>
             <div
@@ -228,7 +232,7 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
                   </p>
                 </>
               ) : (
-                <p>Income not found</p>
+                <p>Geen inkomsten gevonden</p>
               )}
             </div>
             <div
@@ -246,7 +250,7 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
                   </p>
                 </>
               ) : (
-                <p>Expenses not found</p>
+                <p>Geen besteed budget gevonden</p>
               )}
             </div>
             {availableBudget !== null && (
@@ -263,7 +267,22 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
           </div>
         </>
       ) : (
-        <p>Loading fund details...</p>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            height: "200px",
+            marginTop: "120px",
+          }}
+        >
+          <div className={styles["loading-container"]}>
+            <LoadingDot delay={0} />
+            <LoadingDot delay={0.1} />
+            <LoadingDot delay={0.1} />
+            <LoadingDot delay={0.2} />
+            <LoadingDot delay={0.2} />
+          </div>
+        </div>
       )}
       <EditFund
         isOpen={isEditFundModalOpen}
@@ -272,6 +291,7 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
         onFundEdited={handleFundEdited}
         initiativeId={initiativeId}
         authToken={user?.token || ""}
+        fundData={currentFundData}
       />
       <DeleteFund
         isOpen={isDeleteFundModalOpen}

@@ -2,6 +2,15 @@ import React, { useEffect, useState } from "react";
 import styles from "../../assets/scss/layout/AddFundDesktop.module.scss";
 import { editFund } from "../middleware/Api";
 
+interface FundDetails {
+  id?: number;
+  name?: string;
+  description?: string;
+  budget?: number;
+  income?: number;
+  expenses?: number;
+}
+
 interface EditFundProps {
   isOpen: boolean;
   onClose: () => void;
@@ -9,6 +18,7 @@ interface EditFundProps {
   onFundEdited: () => void;
   initiativeId: string;
   authToken: string;
+  fundData: FundDetails | null;
 }
 
 const EditFund: React.FC<EditFundProps> = ({
@@ -18,16 +28,13 @@ const EditFund: React.FC<EditFundProps> = ({
   onFundEdited,
   initiativeId,
   authToken,
+  fundData,
 }) => {
   const [modalIsOpen, setModalIsOpen] = useState(isOpen);
+  const [isHiddenSponsors, setIsHiddenSponsors] = useState(false);
+  const [isHidden, setIsHidden] = useState(false);
   const [apiError, setApiError] = useState("");
-  const [fundData, setFundData] = useState({
-    name: "",
-    description: "",
-    purpose: "",
-    target_audience: "",
-    owner: "",
-  });
+  const [formData, setFormData] = useState<FundDetails | null>(null);
 
   useEffect(() => {
     if (isOpen) {
@@ -39,9 +46,21 @@ const EditFund: React.FC<EditFundProps> = ({
     }
   }, [isOpen]);
 
+  useEffect(() => {
+    if (isOpen && fundData) {
+      setFormData(fundData);
+    }
+  }, [isOpen, fundData]);
+
   const handleSave = async () => {
     try {
-      await editFund(authToken, initiativeId, fundData);
+      const updatedFundData = {
+        ...formData,
+        hidden_sponsors: isHiddenSponsors,
+        hidden: isHidden,
+      };
+
+      await editFund(authToken, initiativeId, updatedFundData);
       setApiError("");
       handleClose();
       onFundEdited();
@@ -78,34 +97,67 @@ const EditFund: React.FC<EditFundProps> = ({
         onClick={handleClose}
       ></div>
       <div className={`${styles.modal} ${modalIsOpen ? styles.open : ""}`}>
-        <h2 className={styles.title}>Edit Fund</h2>
+        <h2 className={styles.title}>Beheer initiatief</h2>
         <hr></hr>
         <div className={styles.formGroup}>
-          <h3>Fund Details</h3>
+          <h4>Algemene initiatiefinstellingen</h4>
+          <label className={styles.label}>Naam:</label>
           <input
             type="text"
-            placeholder="Name"
-            value={fundData.name}
+            placeholder="Naam"
+            value={formData?.name || ""}
             onKeyPress={handleEnterKeyPress}
-            onChange={(e) => setFundData({ ...fundData, name: e.target.value })}
+            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
           />
-          <input
-            type="text"
-            placeholder="Description"
-            value={fundData.description}
-            onKeyPress={handleEnterKeyPress}
+          <label className={styles.label}>Beschrijving:</label>
+          <textarea
+            placeholder="Beschrijving"
+            value={formData?.description || ""}
             onChange={(e) =>
-              setFundData({ ...fundData, description: e.target.value })
+              setFormData({ ...formData, description: e.target.value })
+            }
+          />
+
+          <div className={styles.roleOptions}>
+            <label className={styles.roleLabel}>
+              <input
+                type="checkbox"
+                checked={isHidden}
+                onChange={() => setIsHidden(!isHidden)}
+              />
+              Initiatief verbergen
+            </label>
+            <label className={styles.roleLabel}>
+              <input
+                type="checkbox"
+                checked={isHiddenSponsors}
+                onChange={() => setIsHiddenSponsors(!isHiddenSponsors)}
+              />
+              Sponsors verbergen
+            </label>
+          </div>
+          <label className={styles.labelField}>Begroting:</label>
+          <input
+            type="number"
+            placeholder="Vul het begrootte bedrag in"
+            name="budget"
+            onKeyDown={handleEnterKeyPress}
+            value={formData?.budget || ""}
+            onChange={(e) =>
+              setFormData({
+                ...formData,
+                budget: parseFloat(e.target.value) || 0,
+              })
             }
           />
         </div>
         {apiError && <p className={styles.error}>{apiError}</p>}
         <div className={styles.buttonContainer}>
           <button onClick={handleClose} className={styles.cancelButton}>
-            Cancel
+            Annuleren
           </button>
           <button onClick={handleSave} className={styles.saveButton}>
-            Update
+            Opslaan
           </button>
         </div>
       </div>
