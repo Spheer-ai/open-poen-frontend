@@ -141,13 +141,22 @@ export default function ActivitiesPage() {
           showSearch={false}
         />
         {Array.isArray(activities) && activities.length === 0 ? (
-          <p>Activiteiten worden geladen...</p>
+          <div className={styles["loading-container"]}>
+            <LoadingDot delay={0} />
+            <LoadingDot delay={0.1} />
+            <LoadingDot delay={0.1} />
+            <LoadingDot delay={0.2} />
+            <LoadingDot delay={0.2} />
+          </div>
         ) : (
           <ul className={styles["shared-unordered-list"]}>
-            {activities.map((activity) => (
+            {activities.map((activity, index) => (
               <div
-                className={styles["shared-styling"]}
-                key={activity.id}
+                className={`${styles["shared-styling"]} ${styles["initiative-fade-in"]}`}
+                key={`${activity?.id}-${index}`}
+                style={{
+                  animationDelay: `${index * 0.2}s`,
+                }}
                 onClick={() => handleActivityClick(activity.id)}
               >
                 <li className={styles["shared-name"]}>

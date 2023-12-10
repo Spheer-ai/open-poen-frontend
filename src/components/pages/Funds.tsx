@@ -8,7 +8,6 @@ import React, {
 import { useNavigate } from "react-router-dom";
 import TopNavigationBar from "../ui/top-navigation-bar/TopNavigationBar";
 import styles from "../../assets/scss/Funds.module.scss";
-import AddFundDesktop from "../modals/AddFundDesktop";
 import { usePermissions } from "../../contexts/PermissionContext";
 import { useAuth } from "../../contexts/AuthContext";
 import { editGrant, fetchInitiatives } from "../middleware/Api";
