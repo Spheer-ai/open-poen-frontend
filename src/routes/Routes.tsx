@@ -133,6 +133,14 @@ export default function AppRoutes() {
             }
           />
           <Route
+            path="/funds/:initiativeId/activities/delete-activity"
+            element={
+              <InlineModalLayout navigate={navigate}>
+                <Activities />
+              </InlineModalLayout>
+            }
+          />
+          <Route
             path="/funds/:initiativeId/activities/transactieoverzicht"
             element={
               <InlineModalLayout navigate={navigate}>

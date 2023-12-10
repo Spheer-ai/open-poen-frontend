@@ -66,18 +66,18 @@ const DeleteFund: React.FC<DeleteFundProps> = ({
         onClick={handleClose}
       ></div>
       <div className={`${styles.modal} ${modalIsOpen ? styles.open : ""}`}>
-        <h2 className={styles.title}>Delete Fund</h2>
+        <h2 className={styles.title}>Initiatief verwijderen</h2>
         <hr></hr>
         <div className={styles.confirmation}>
-          <p>Are you sure you want to delete this Fund?</p>
+          <p>Weet je zeker dat je het initatief wil verwijderen?</p>
         </div>
         {apiError && <p className={styles.error}>{apiError}</p>}
         <div className={styles.buttonContainer}>
           <button onClick={handleClose} className={styles.cancelButton}>
-            Cancel
+            Annuleren
           </button>
           <button onClick={handleDelete} className={styles.deleteButton}>
-            Delete
+            Verwijderen
           </button>
         </div>
       </div>

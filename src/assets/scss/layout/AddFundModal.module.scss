@@ -89,6 +89,16 @@
   cursor: pointer;
 }
 
+.deleteButton {
+  background-color: #dc3545;
+  border: none;
+  border-radius: 5px;
+  padding: 15px;
+  flex: 1;
+  color: white;
+  cursor: pointer;
+}
+
 .officers-list {
   padding-left: 0;
   font-size: 16px;

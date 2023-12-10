@@ -68,18 +68,18 @@ const DeleteActivity: React.FC<DeleteActivityProps> = ({
         onClick={handleClose}
       ></div>
       <div className={`${styles.modal} ${modalIsOpen ? styles.open : ""}`}>
-        <h2 className={styles.title}>Delete Activity</h2>
+        <h2 className={styles.title}>Activiteit verwijderen</h2>
         <hr></hr>
         <div className={styles.confirmation}>
-          <p>Are you sure you want to delete this activity?</p>
+          <p>Weet je zeker dat je de activiteit wil verwijderen?</p>
         </div>
         {apiError && <p className={styles.error}>{apiError}</p>}
         <div className={styles.buttonContainer}>
           <button onClick={handleClose} className={styles.cancelButton}>
-            Cancel
+            Annuleren
           </button>
           <button onClick={handleDelete} className={styles.deleteButton}>
-            Delete
+            Verwijderen
           </button>
         </div>
       </div>
