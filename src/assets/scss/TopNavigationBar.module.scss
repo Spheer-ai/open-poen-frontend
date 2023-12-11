@@ -24,9 +24,7 @@
   padding: 20px 20px;
   padding-bottom: 20px;
   position: sticky;
-  min-width: inherit;
   top: 0;
-  width: inherit;
   background: #ffffff;
   margin: 10px;
   margin-left: 0;
@@ -110,8 +108,8 @@ h2 {
   background-color: #fff;
   border-right: 1px solid #dee2e6;
   height: 100vh;
-  max-width: 460px;
-  min-width: 460px;
+  min-width: 30%;
+  max-width: 400px;
   z-index: 1;
   overflow: scroll;
   overflow-x: hidden;
