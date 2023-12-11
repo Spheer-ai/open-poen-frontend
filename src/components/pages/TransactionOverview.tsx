@@ -254,25 +254,39 @@ const TransactionOverview = () => {
                   <td>
                     <span
                       onClick={() => handleInitiativeClick(transaction.id)}
-                      className={styles.linkInitiativeText}
+                      className={`${styles["initiativeText"]} ${
+                        openDropdownForPayment === transaction.id
+                          ? styles["hidden"]
+                          : ""
+                      }`}
                     >
-                      {transaction.initiative_name || "Verbind initatief"}
+                      {openDropdownForPayment !== transaction.id
+                        ? transaction.initiative_name || "Verbind initatief"
+                        : null}
                     </span>
                     {openDropdownForPayment === transaction.id && (
                       <LinkInitiativeToPayment
                         token={user?.token || ""}
                         paymentId={transaction.id}
+                        initiativeName={transaction.initiative_name || ""}
                       />
                     )}
                   </td>
                   <td>
-                    {highlightMatch(transaction.activity_name, lowercaseQuery)}
-                    {openDropdownForPayment === transaction.id && (
+                    {transaction.initiative_id ? (
                       <LinkActivityToPayment
                         token={user?.token || ""}
                         paymentId={transaction.id}
                         initiativeId={transaction.initiative_id}
+                        activityName={transaction.activity_name || ""}
                       />
+                    ) : (
+                      <span
+                        className={styles["greyed-out-text"]}
+                        style={{ color: "grey" }}
+                      >
+                        Kies een activiteit
+                      </span>
                     )}
                   </td>
                   <td>

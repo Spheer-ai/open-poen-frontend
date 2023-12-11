@@ -1,4 +1,7 @@
 import React, { useState, useEffect } from "react";
+import Select from "react-dropdown-select";
+import styles from "../../../../assets/scss/TransactionOverview.module.scss";
+import LoadingDot from "../../../animation/LoadingDot";
 import {
   fetchLinkableInitiatives,
   linkInitiativeToPayment,
@@ -12,11 +15,13 @@ interface Initiative {
 interface LinkInitiativeToPaymentProps {
   token: string;
   paymentId: number;
+  initiativeName: string;
 }
 
 const LinkInitiativeToPayment: React.FC<LinkInitiativeToPaymentProps> = ({
   token,
   paymentId,
+  initiativeName,
 }) => {
   const [linkableInitiatives, setLinkableInitiatives] = useState<Initiative[]>(
     [],
@@ -61,23 +66,45 @@ const LinkInitiativeToPayment: React.FC<LinkInitiativeToPaymentProps> = ({
     }
   };
 
+  const mappedInitiatives = linkableInitiatives.map((initiative) => ({
+    value: initiative.id,
+    label: initiative.name,
+  }));
+
   return (
-    <div>
+    <div className={styles["customDropdown"]}>
       {isLoading ? (
-        <p>Loading...</p>
+        <div className={styles["loading-container"]}>
+          <LoadingDot delay={0} />
+          <LoadingDot delay={0.1} />
+          <LoadingDot delay={0.1} />
+          <LoadingDot delay={0.2} />
+        </div>
       ) : (
-        <div>
-          <select
-            value={selectedInitiative}
-            onChange={(e) => setSelectedInitiative(Number(e.target.value))}
-          >
-            <option value="">Verbind initatief</option>
-            {linkableInitiatives.map((initiative) => (
-              <option key={initiative.id} value={initiative.id}>
-                {initiative.name}
-              </option>
-            ))}
-          </select>
+        <div className={styles["customContainer"]}>
+          <div className="custom-dropdown-container">
+            <Select
+              values={
+                selectedInitiative === ""
+                  ? []
+                  : mappedInitiatives.filter(
+                      (option) => option.value === selectedInitiative,
+                    )
+              }
+              options={mappedInitiatives}
+              onChange={(values) =>
+                setSelectedInitiative(values[0] ? values[0].value : "")
+              }
+              labelField="label"
+              valueField="value"
+              placeholder={
+                selectedInitiative === ""
+                  ? initiativeName || "Verbind initiatief"
+                  : ""
+              }
+              className={styles["custom-option"]}
+            />
+          </div>
         </div>
       )}
     </div>

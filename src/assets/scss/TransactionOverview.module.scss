@@ -35,6 +35,7 @@
       position: sticky;
       top: 0;
       background: #ffffff;
+      z-index: 10;
 
       tr {
         height: 60px;
@@ -60,10 +61,6 @@
 
         &:nth-child(even) {
           background-color: #ffffff;
-        }
-
-        &:hover {
-          background-color: #f0f0f0;
         }
 
         td {
@@ -191,10 +188,6 @@
           background-color: #ffffff;
         }
 
-        &:hover {
-          background-color: #f0f0f0;
-        }
-
         td {
           padding: 15px 10px;
           font-size: 14px;
@@ -209,6 +202,93 @@
       }
     }
   }
+}
+
+.customDropdown {
+  background: #ffff;
+  display: block;
+  position: relative;
+  border-radius: 0px;
+  border: none;
+
+  .loading-container {
+    display: flex;
+    justify-content: center;
+  }
+
+  input {
+    margin-top: 0;
+    background-color: none;
+    border-radius: 0px;
+    color: #000000;
+  }
+
+  .customContainer {
+    border-radius: 10px;
+    display: block;
+  }
+}
+
+.customDropdown div:nth-child(5) {
+  padding: 10px !important;
+}
+
+.custom-option ::placeholder {
+  color: #000000 !important;
+}
+
+.custom-option {
+  .react-dropdown-select-item {
+    padding: 20px !important;
+  }
+}
+
+.initiativeText {
+  color: #b9b9b9;
+  display: block;
+  border: solid 1px #ccc;
+  padding: 10px 15px;
+  color: #000000;
+  font-weight: 400;
+  border-radius: 4px;
+  font-size: 14px;
+  width: fit-content;
+}
+
+.hidden {
+  display: none;
+}
+
+.greyed-out-text {
+  color: #b9b9b9;
+  display: block;
+
+  padding: 5px 15px;
+  color: #000000;
+  font-weight: 400;
+  border-radius: 4px;
+  font-size: 14px;
+  width: fit-content;
+}
+
+.custom-option {
+  color: #b9b9b9;
+  display: block;
+  border: solid 1px #d2d2d2;
+  padding: 5px 5px !important;
+  color: #000000;
+  font-weight: 400;
+  border-radius: 4px !important;
+  font-size: 14px;
+  width: fit-content;
+}
+
+.custom-dropdown-container {
+  padding: 20px;
+}
+
+.css-17chbjx-DropDown {
+  padding: 20px !important;
 }
 
 @media screen and (max-width: 768px) {

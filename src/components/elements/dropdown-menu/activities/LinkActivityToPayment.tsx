@@ -1,4 +1,7 @@
 import React, { useState, useEffect } from "react";
+import LoadingDot from "../../../animation/LoadingDot";
+import Select from "react-dropdown-select";
+import styles from "../../../../assets/scss/TransactionOverview.module.scss";
 import {
   fetchLinkableActivities,
   linkActivityToPayment,
@@ -13,94 +16,109 @@ interface LinkActivityToPaymentProps {
   token: string;
   paymentId: number;
   initiativeId: number;
+  activityName: string;
 }
 
 const LinkActivityToPayment: React.FC<LinkActivityToPaymentProps> = ({
   token,
   paymentId,
   initiativeId,
+  activityName,
 }) => {
   const [linkableActivities, setLinkableActivities] = useState<Activity[]>([]);
   const [selectedActivity, setSelectedActivity] = useState<number | "">("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
 
   useEffect(() => {
-    if (isDropdownOpen) {
-      const getLinkableActivitiesForPayment = async () => {
-        try {
-          setIsLoading(true);
-          console.log("Fetching activities with token:", token);
-          console.log("Payment ID:", paymentId);
-          console.log("Initiative ID:", initiativeId);
+    const getLinkableActivitiesForPayment = async () => {
+      try {
+        setIsLoading(true);
+        console.log("Fetching activities with token:", token);
+        console.log("Payment ID:", paymentId);
+        console.log("Initiative ID:", initiativeId);
 
-          const activities: Activity[] = await fetchLinkableActivities(
-            token,
-            initiativeId,
-          );
+        const activities: Activity[] = await fetchLinkableActivities(
+          token,
+          initiativeId,
+        );
 
-          console.log("Activities:", activities);
-          setLinkableActivities(activities);
-          setIsLoading(false);
-        } catch (error) {
-          console.error("Error fetching linkable activities:", error);
-          setIsLoading(false);
-        }
-      };
+        console.log("Activities:", activities);
+        setLinkableActivities(activities);
+        setIsLoading(false);
+      } catch (error) {
+        console.error("Error fetching linkable activities:", error);
+        setIsLoading(false);
+      }
+    };
 
-      getLinkableActivitiesForPayment();
-    }
-  }, [token, paymentId, initiativeId, isDropdownOpen]);
+    getLinkableActivitiesForPayment();
+  }, [token, paymentId, initiativeId]);
 
-  const handleLinkActivityClick = () => {
-    setIsDropdownOpen(true);
-  };
+  useEffect(() => {
+    handleLinkActivity();
+  }, []);
 
   const handleLinkActivity = async () => {
     try {
       setIsLoading(true);
-      await linkActivityToPayment(
-        token,
-        paymentId,
-        initiativeId,
-        selectedActivity,
-      );
-      setIsLoading(false);
+
+      if (initiativeId !== null) {
+        await linkActivityToPayment(
+          token,
+          paymentId,
+          initiativeId,
+          selectedActivity,
+        );
+        setIsLoading(false);
+      } else {
+        console.error("Initiative ID is not set. Cannot link activity.");
+        setIsLoading(false);
+      }
     } catch (error) {
       console.error("Error linking activity to payment:", error);
       setIsLoading(false);
     }
   };
 
+  const mappedActivities = linkableActivities.map((activity) => ({
+    value: activity.id,
+    label: activity.name,
+  }));
+
   return (
-    <div>
+    <div className={styles["customDropdown"]}>
       {isLoading ? (
-        <p>Loading...</p>
+        <div className={styles["loading-container"]}>
+          <LoadingDot delay={0} />
+          <LoadingDot delay={0.1} />
+          <LoadingDot delay={0.1} />
+          <LoadingDot delay={0.2} />
+        </div>
       ) : (
-        <div>
-          <span onClick={handleLinkActivityClick} style={{ cursor: "pointer" }}>
-            {linkableActivities.length > 0
-              ? isDropdownOpen
-                ? "Close Dropdown"
-                : "Link Activity"
-              : "No Activities Available"}
-          </span>
-          {isDropdownOpen && (
-            <div>
-              <select
-                value={selectedActivity}
-                onChange={(e) => setSelectedActivity(Number(e.target.value))}
-              >
-                <option value="">Select an activity</option>
-                {linkableActivities.map((activity) => (
-                  <option key={activity.id} value={activity.id}>
-                    {activity.name}
-                  </option>
-                ))}
-              </select>
-              <button onClick={handleLinkActivity}>Link Activity</button>
-            </div>
-          )}
+        <div className={styles["customContainer"]}>
+          <div className="custom-dropdown-container">
+            <Select
+              values={
+                selectedActivity === ""
+                  ? []
+                  : mappedActivities.filter(
+                      (option) => option.value === selectedActivity,
+                    )
+              }
+              options={mappedActivities}
+              onChange={(values) =>
+                setSelectedActivity(values[0] ? values[0].value : "")
+              }
+              labelField="label"
+              valueField="value"
+              placeholder={
+                selectedActivity === ""
+                  ? activityName || "Verbind activiteit"
+                  : ""
+              }
+              className={styles["custom-option"]}
+            />
+          </div>
         </div>
       )}
     </div>
