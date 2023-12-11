@@ -256,7 +256,7 @@ const TransactionOverview = () => {
                       onClick={() => handleInitiativeClick(transaction.id)}
                       className={styles.linkInitiativeText}
                     >
-                      {transaction.initiative_name || "Link Initiative"}
+                      {transaction.initiative_name || "Verbind initatief"}
                     </span>
                     {openDropdownForPayment === transaction.id && (
                       <LinkInitiativeToPayment

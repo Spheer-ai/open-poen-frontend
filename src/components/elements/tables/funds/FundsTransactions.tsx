@@ -12,6 +12,15 @@ interface Transaction {
   transaction_amount: number;
 }
 
+const formatDate = (dateString: string) => {
+  const options: Intl.DateTimeFormatOptions = {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  };
+  return new Date(dateString).toLocaleDateString("nl-NL", options);
+};
+
 const FundsTransactions: React.FC<{
   authToken: string;
   initiativeId: string;
@@ -24,7 +33,14 @@ const FundsTransactions: React.FC<{
         const response = await getPaymentsByInitiative(authToken, initiativeId);
 
         if (response && response.payments) {
-          setTransactions(response.payments);
+          const formattedTransactions = response.payments.map(
+            (transaction) => ({
+              ...transaction,
+              booking_date: formatDate(transaction.booking_date),
+            }),
+          );
+
+          setTransactions(formattedTransactions);
         }
       } catch (error) {
         console.error("Error fetching transactions:", error);
@@ -35,8 +51,8 @@ const FundsTransactions: React.FC<{
   }, [authToken, initiativeId]);
 
   return (
-    <div className={styles.transactionOverview}>
-      <table className={styles.transactionTable}>
+    <div className={styles.fundTransactionOverview}>
+      <table className={styles.fundTransactionTable}>
         <thead>
           <tr>
             <th>Datum</th>
