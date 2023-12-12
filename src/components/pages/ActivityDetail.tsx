@@ -16,6 +16,7 @@ import ActivityUsers from "../elements/tables/activities/ActivityUsers";
 import LoadingDot from "../animation/LoadingDot";
 import { ActivityOwner } from "../../types/ActivityOwners";
 import { usePermissions } from "../../contexts/PermissionContext";
+import { useFieldPermissions } from "../../contexts/FieldPermissionContext";
 
 interface ActivityDetailProps {
   initiativeId: string;
@@ -48,6 +49,8 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
   const navigate = useNavigate();
   const { user } = useAuth();
   const { fetchPermissions } = usePermissions();
+  const { fetchFieldPermissions } = useFieldPermissions();
+  const [entityPermissions, setEntityPermissions] = useState<string[]>([]);
   const [activityDetails, setActivityDetails] =
     useState<ActivityDetails | null>(null);
   const [isBlockingInteraction, setIsBlockingInteraction] = useState(false);
@@ -96,11 +99,13 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
   useEffect(() => {
     async function fetchUserPermissions() {
       try {
+        let userToken = authToken;
         if (user && user.token && activityId) {
+          userToken = user.token;
           const userPermissions: string[] | undefined = await fetchPermissions(
-            "User",
+            "Activity",
             parseInt(activityId),
-            user.token,
+            userToken,
           );
 
           if (userPermissions && userPermissions.includes("edit")) {
@@ -126,6 +131,29 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
 
     fetchUserPermissions();
   }, [user, activityId]);
+
+  useEffect(() => {
+    async function fetchFieldPermissionsOnMount() {
+      try {
+        if (user && user.token && initiativeId) {
+          const fieldPermissions: string[] | undefined =
+            await fetchFieldPermissions(
+              "Initiative",
+              parseInt(initiativeId),
+              user.token,
+            );
+
+          if (fieldPermissions) {
+            setEntityPermissions(fieldPermissions);
+          }
+        }
+      } catch (error) {
+        console.error("Failed to fetch field permissions:", error);
+      }
+    }
+
+    fetchFieldPermissionsOnMount();
+  }, [user, initiativeId, fetchFieldPermissions]);
 
   useEffect(() => {
     if (activityId && authToken) {
@@ -345,6 +373,8 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
         activityId={activityId}
         activityData={currentActivityData}
         activityOwners={activityDetails?.activity_owners || []}
+        fieldPermissions={entityPermissions}
+        fields={[]}
       />
       <DeleteActivity
         isOpen={isDeleteActivityModalOpen}

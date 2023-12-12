@@ -31,6 +31,8 @@ interface EditActivityProps {
   authToken: string;
   activityData: ActivityDetails | null;
   activityOwners: ActivityOwner[];
+  fieldPermissions;
+  fields: string[];
 }
 
 const EditActivity: React.FC<EditActivityProps> = ({
@@ -43,7 +45,9 @@ const EditActivity: React.FC<EditActivityProps> = ({
   authToken,
   activityData,
   activityOwners,
+  fieldPermissions,
 }) => {
+  console.log("fieldPermissions:", fieldPermissions);
   const [modalIsOpen, setModalIsOpen] = useState(isOpen);
   const [isHidden, setIsHidden] = useState(false);
   const [apiError, setApiError] = useState("");
@@ -191,46 +195,62 @@ const EditActivity: React.FC<EditActivityProps> = ({
         <hr></hr>
         <div className={styles.formGroup}>
           <h4>Algemene activiteitinstellingen</h4>
-          <label className={styles.label}>Naam:</label>
-          <input
-            type="text"
-            placeholder="Naam"
-            value={formData.name}
-            onKeyPress={handleEnterKeyPress}
-            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-          />
-          <label className={styles.label}>Beschrijving:</label>
-          <textarea
-            placeholder="Beschrijving"
-            value={formData?.description}
-            onChange={(e) =>
-              setFormData({ ...formData, description: e.target.value })
-            }
-          />
-          <div className={styles.roleOptions}>
-            <label className={styles.roleLabel}>
+          {fieldPermissions.fields.includes("name") && (
+            <>
+              <label className={styles.label}>Naam:</label>
               <input
-                type="checkbox"
-                checked={isHidden}
-                onChange={() => setIsHidden(!isHidden)}
+                type="text"
+                placeholder="Naam"
+                value={formData.name}
+                onKeyPress={handleEnterKeyPress}
+                onChange={(e) =>
+                  setFormData({ ...formData, name: e.target.value })
+                }
               />
-              Activiteit verbergen
-            </label>
-          </div>
-          <label className={styles.labelField}>Begroting:</label>
-          <input
-            type="number"
-            placeholder="Vul het begrootte bedrag in"
-            name="budget"
-            onKeyDown={handleEnterKeyPress}
-            value={formData?.budget || ""}
-            onChange={(e) =>
-              setFormData({
-                ...formData,
-                budget: parseFloat(e.target.value) || 0,
-              })
-            }
-          />
+            </>
+          )}
+          {fieldPermissions.fields.includes("description") && (
+            <>
+              <label className={styles.label}>Beschrijving:</label>
+              <textarea
+                placeholder="Beschrijving"
+                value={formData?.description}
+                onChange={(e) =>
+                  setFormData({ ...formData, description: e.target.value })
+                }
+              />
+            </>
+          )}
+          {fieldPermissions.fields.includes("hidden") && (
+            <div className={styles.roleOptions}>
+              <label className={styles.roleLabel}>
+                <input
+                  type="checkbox"
+                  checked={isHidden}
+                  onChange={() => setIsHidden(!isHidden)}
+                />
+                Activiteit verbergen
+              </label>
+            </div>
+          )}
+          {fieldPermissions.fields.includes("budget") && (
+            <>
+              <label className={styles.labelField}>Begroting:</label>
+              <input
+                type="number"
+                placeholder="Vul het begrootte bedrag in"
+                name="budget"
+                onKeyDown={handleEnterKeyPress}
+                value={formData?.budget || ""}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    budget: parseFloat(e.target.value) || 0,
+                  })
+                }
+              />
+            </>
+          )}
         </div>
         <SearchFundUsers
           authToken={authToken}

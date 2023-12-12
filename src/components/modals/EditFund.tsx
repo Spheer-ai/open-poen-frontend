@@ -32,6 +32,8 @@ interface EditFundProps {
   authToken: string;
   fundData: FundDetails | null;
   initiativeOwners: InitiativeOwner[];
+  fieldPermissions;
+  fields: string[];
 }
 
 const EditFund: React.FC<EditFundProps> = ({
@@ -43,7 +45,9 @@ const EditFund: React.FC<EditFundProps> = ({
   authToken,
   fundData,
   initiativeOwners,
+  fieldPermissions,
 }) => {
+  console.log("fieldPermissions:", fieldPermissions);
   const [modalIsOpen, setModalIsOpen] = useState(isOpen);
   const [isHiddenSponsors, setIsHiddenSponsors] = useState(false);
   const [isHidden, setIsHidden] = useState(false);
@@ -165,55 +169,76 @@ const EditFund: React.FC<EditFundProps> = ({
         <hr></hr>
         <div className={styles.formGroup}>
           <h4>Algemene initiatiefinstellingen</h4>
-          <label className={styles.label}>Naam:</label>
-          <input
-            type="text"
-            placeholder="Naam"
-            value={formData?.name || ""}
-            onKeyPress={handleEnterKeyPress}
-            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-          />
-          <label className={styles.label}>Beschrijving:</label>
-          <textarea
-            placeholder="Beschrijving"
-            value={formData?.description || ""}
-            onChange={(e) =>
-              setFormData({ ...formData, description: e.target.value })
-            }
-          />
-
+          {fieldPermissions.fields.includes("name") && (
+            <>
+              <label className={styles.label}>Naam:</label>
+              <input
+                type="text"
+                placeholder="Naam"
+                value={formData?.name || ""}
+                onKeyPress={handleEnterKeyPress}
+                onChange={(e) =>
+                  setFormData({ ...formData, name: e.target.value })
+                }
+              />
+            </>
+          )}
+          {fieldPermissions.fields.includes("description") && (
+            <>
+              <label className={styles.label}>Beschrijving:</label>
+              <textarea
+                placeholder="Beschrijving"
+                value={formData?.description || ""}
+                onChange={(e) =>
+                  setFormData({ ...formData, description: e.target.value })
+                }
+              />
+            </>
+          )}
           <div className={styles.roleOptions}>
-            <label className={styles.roleLabel}>
-              <input
-                type="checkbox"
-                checked={isHidden}
-                onChange={() => setIsHidden(!isHidden)}
-              />
-              Initiatief verbergen
-            </label>
-            <label className={styles.roleLabel}>
-              <input
-                type="checkbox"
-                checked={isHiddenSponsors}
-                onChange={() => setIsHiddenSponsors(!isHiddenSponsors)}
-              />
-              Sponsors verbergen
-            </label>
+            {fieldPermissions.fields.includes("hidden") && (
+              <>
+                <label className={styles.roleLabel}>
+                  <input
+                    type="checkbox"
+                    checked={isHidden}
+                    onChange={() => setIsHidden(!isHidden)}
+                  />
+                  Initiatief verbergen
+                </label>
+              </>
+            )}
+            {fieldPermissions.fields.includes("hidden_sponsors") && (
+              <>
+                <label className={styles.roleLabel}>
+                  <input
+                    type="checkbox"
+                    checked={isHiddenSponsors}
+                    onChange={() => setIsHiddenSponsors(!isHiddenSponsors)}
+                  />
+                  Sponsors verbergen
+                </label>
+              </>
+            )}
           </div>
-          <label className={styles.labelField}>Begroting:</label>
-          <input
-            type="number"
-            placeholder="Vul het begrootte bedrag in"
-            name="budget"
-            onKeyDown={handleEnterKeyPress}
-            value={formData?.budget || ""}
-            onChange={(e) =>
-              setFormData({
-                ...formData,
-                budget: parseFloat(e.target.value) || 0,
-              })
-            }
-          />
+          {fieldPermissions.fields.includes("budget") && (
+            <>
+              <label className={styles.labelField}>Begroting:</label>
+              <input
+                type="number"
+                placeholder="Vul het begrootte bedrag in"
+                name="budget"
+                onKeyDown={handleEnterKeyPress}
+                value={formData?.budget || ""}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    budget: parseFloat(e.target.value) || 0,
+                  })
+                }
+              />
+            </>
+          )}
         </div>
         <SearchFundUsers
           authToken={authToken}

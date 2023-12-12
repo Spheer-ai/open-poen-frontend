@@ -17,6 +17,7 @@ import FundsUsers from "../elements/tables/funds/FundsUsers";
 import LoadingDot from "../animation/LoadingDot";
 import { InitiativeOwner } from "../../types/InitiativeOwners";
 import { usePermissions } from "../../contexts/PermissionContext";
+import { useFieldPermissions } from "../../contexts/FieldPermissionContext";
 
 interface FundDetailProps {
   initiativeId: string;
@@ -47,6 +48,8 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
   const { fetchPermissions } = usePermissions();
   const [hasEditPermission, setHasEditPermission] = useState(false);
   const [hasDeletePermission, setHasDeletePermission] = useState(false);
+  const { fetchFieldPermissions } = useFieldPermissions();
+  const [entityPermissions, setEntityPermissions] = useState<string[]>([]);
   const [fundDetails, setFundDetails] = useState<FundDetails | null>(null);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [isBlockingInteraction, setIsBlockingInteraction] = useState(false);
@@ -92,11 +95,14 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
   useEffect(() => {
     async function fetchUserPermissions() {
       try {
+        let userToken = authToken;
+
         if (user && user.token && initiativeId) {
+          userToken = user.token;
           const userPermissions: string[] | undefined = await fetchPermissions(
-            "User",
+            "Initiative",
             parseInt(initiativeId),
-            user.token,
+            userToken,
           );
 
           if (userPermissions && userPermissions.includes("edit")) {
@@ -122,6 +128,29 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
 
     fetchUserPermissions();
   }, [user, initiativeId]);
+
+  useEffect(() => {
+    async function fetchFieldPermissionsOnMount() {
+      try {
+        if (user && user.token && initiativeId) {
+          const fieldPermissions: string[] | undefined =
+            await fetchFieldPermissions(
+              "Initiative",
+              parseInt(initiativeId),
+              user.token,
+            );
+
+          if (fieldPermissions) {
+            setEntityPermissions(fieldPermissions);
+          }
+        }
+      } catch (error) {
+        console.error("Failed to fetch field permissions:", error);
+      }
+    }
+
+    fetchFieldPermissionsOnMount();
+  }, [user, initiativeId, fetchFieldPermissions]);
 
   useEffect(() => {
     if (initiativeId && authToken) {
@@ -340,6 +369,8 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
         authToken={user?.token || ""}
         fundData={currentFundData}
         initiativeOwners={fundDetails?.initiative_owners || []}
+        fieldPermissions={entityPermissions}
+        fields={[]}
       />
       <DeleteFund
         isOpen={isDeleteFundModalOpen}
