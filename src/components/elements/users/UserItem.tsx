@@ -22,7 +22,7 @@ const UserItem = ({
     <li
       key={userItemId}
       onClick={() => handleUserClick(userItemId)}
-      className={`${styles["user-list"]} ${
+      className={`${styles["user-fade-in"]} ${styles["user-list"]} ${
         isActive ? styles["active-user"] : ""
       }`}
       style={{

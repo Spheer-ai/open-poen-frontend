@@ -1316,7 +1316,29 @@ export const fetchLinkableInitiatives = async (token, paymentId) => {
   }
 };
 
-export const getInitiativeActivities = async (initiativeId, token) => {
+export const fetchLinkableActivities = async (token, initiativeId) => {
+  try {
+    const response = await api.get(
+      `/auth/entity-access/initiative/${initiativeId}/linkable-activities`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+
+    if (response.status === 200) {
+      return response.data.activities;
+    } else {
+      throw new Error("Failed to fetch linkable activities");
+    }
+  } catch (error) {
+    console.error("Error fetching linkable activities:", error);
+    throw error;
+  }
+};
+
+export const fetchFundDetails = async (token, initiativeId) => {
   try {
     const response = await api.get(`/initiative/${initiativeId}`, {
       headers: {
@@ -1325,17 +1347,316 @@ export const getInitiativeActivities = async (initiativeId, token) => {
     });
 
     if (response.status === 200) {
-      const activities = response.data.activities.map((activity) => ({
-        id: activity.id,
-        name: activity.name,
-      }));
-
-      return activities;
+      return response.data;
     } else {
-      throw new Error("Failed to fetch activities for the initiative");
+      throw new Error("Failed to fetch fund details");
     }
   } catch (error) {
-    console.error("Error fetching activities for the initiative:", error);
+    console.error("Error fetching fund details:", error);
+    throw error;
+  }
+};
+
+export const fetchActivityDetails = async (token, initiativeId, activityId) => {
+  try {
+    const response = await api.get(
+      `/initiative/${initiativeId}/activity/${activityId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+
+    if (response.status === 200) {
+      return response.data;
+    } else {
+      throw new Error("Failed to fetch activity details");
+    }
+  } catch (error) {
+    console.error("Error fetching activity details:", error);
+    throw error;
+  }
+};
+
+export const editFund = async (token, initiativeId, fundData) => {
+  try {
+    const response = await api.patch(`/initiative/${initiativeId}`, fundData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (response.status === 200) {
+      return response.data;
+    } else {
+      throw new Error("Failed to edit fund");
+    }
+  } catch (error) {
+    console.error("Error editing fund:", error);
+    throw error;
+  }
+};
+
+export const editActivity = async (
+  token,
+  initiativeId,
+  activityId,
+  activityData,
+) => {
+  try {
+    const response = await api.patch(
+      `/initiative/${initiativeId}/activity/${activityId}`,
+      activityData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      },
+    );
+
+    if (response.status === 200) {
+      return response.data;
+    } else {
+      throw new Error("Failed to edit activity");
+    }
+  } catch (error) {
+    console.error("Error editing activity:", error);
+    throw error;
+  }
+};
+
+export const deleteInitiative = async (token, initiativeId) => {
+  try {
+    const response = await api.delete(`/initiative/${initiativeId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (response.status === 200) {
+      return response.data;
+    } else if (response.status === 422) {
+      throw new Error("Validation Error");
+    } else {
+      throw new Error("Failed to delete initiative");
+    }
+  } catch (error) {
+    console.error("Error deleting initiative:", error);
+    throw error;
+  }
+};
+
+export const deleteActivity = async (token, initiativeId, activityId) => {
+  try {
+    const response = await api.delete(
+      `/initiative/${initiativeId}/activity/${activityId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      },
+    );
+
+    if (response.status === 200) {
+      return response.data;
+    } else if (response.status === 422) {
+      throw new Error("Validation Error: " + JSON.stringify(response.data));
+    } else {
+      throw new Error("Failed to delete activity");
+    }
+  } catch (error) {
+    console.error("Error deleting activity:", error);
+    throw error;
+  }
+};
+
+export const getPaymentsByInitiative = async (
+  token,
+  initiativeId,
+  queryParams = {},
+) => {
+  try {
+    const response = await api.get(`/payments/initiative/${initiativeId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      params: queryParams,
+    });
+
+    if (response.status === 200) {
+      return response.data;
+    } else if (response.status === 422) {
+      throw new Error("Validation Error: " + JSON.stringify(response.data));
+    } else {
+      throw new Error("Failed to fetch payments by initiative");
+    }
+  } catch (error) {
+    console.error("Error fetching payments by initiative:", error);
+    throw error;
+  }
+};
+
+export const getPaymentsByActivity = async (
+  token,
+  initiativeId,
+  activityId,
+  queryParams = {},
+) => {
+  try {
+    const response = await api.get(
+      `/payments/initiative/${initiativeId}/activity/${activityId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        params: queryParams,
+      },
+    );
+
+    if (response.status === 200) {
+      return response.data;
+    } else if (response.status === 422) {
+      throw new Error("Validation Error: " + JSON.stringify(response.data));
+    } else {
+      throw new Error("Failed to fetch payments by initiative");
+    }
+  } catch (error) {
+    console.error("Error fetching payments by initiative:", error);
+    throw error;
+  }
+};
+
+export const uploadFundPicture = async (initiativeId, file, token) => {
+  try {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const response = await api.post(
+      `/initiative/${initiativeId}/profile-picture`,
+      formData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      },
+    );
+
+    if (response.status === 200) {
+      return response.data;
+    } else if (response.status === 422) {
+      throw new Error("Validation Error: " + JSON.stringify(response.data));
+    } else {
+      throw new Error("Failed to upload fund picture");
+    }
+  } catch (error) {
+    console.error("Error uploading fund picture:", error);
+    throw error;
+  }
+};
+
+export const uploadActivityPicture = async (
+  initiativeId,
+  activityId,
+  file,
+  token,
+) => {
+  try {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const response = await api.post(
+      `/initiative/${initiativeId}/activity/${activityId}/profile-picture`,
+      formData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      },
+    );
+
+    if (response.status === 200) {
+      return response.data;
+    } else if (response.status === 422) {
+      throw new Error("Validation Error: " + JSON.stringify(response.data));
+    } else {
+      throw new Error("Failed to upload activity picture");
+    }
+  } catch (error) {
+    console.error("Error uploading activity picture:", error);
+    throw error;
+  }
+};
+
+export const updateInitiativeOwners = async (initiativeId, user_ids, token) => {
+  try {
+    const requestBody = {
+      user_ids: user_ids,
+    };
+
+    const response = await api.patch(
+      `/initiative/${initiativeId}/owners`,
+      requestBody,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      },
+    );
+
+    if (response.status === 200) {
+      return response.data;
+    } else if (response.status === 422) {
+      throw new Error("Validation Error: " + JSON.stringify(response.data));
+    } else {
+      throw new Error("Failed to update initiative owners");
+    }
+  } catch (error) {
+    console.error("Error updating initiative owners:", error);
+    throw error;
+  }
+};
+
+export const updateActivityOwners = async (
+  initiativeId,
+  activityId,
+  user_ids,
+  token,
+) => {
+  try {
+    const requestBody = {
+      user_ids: user_ids,
+    };
+
+    const response = await api.patch(
+      `/initiative/${initiativeId}/activity/${activityId}/owners`,
+      requestBody,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      },
+    );
+
+    if (response.status === 200) {
+      return response.data;
+    } else if (response.status === 422) {
+      throw new Error("Validation Error: " + JSON.stringify(response.data));
+    } else {
+      throw new Error("Failed to update activity owners");
+    }
+  } catch (error) {
+    console.error("Error updating activity owners:", error);
     throw error;
   }
 };

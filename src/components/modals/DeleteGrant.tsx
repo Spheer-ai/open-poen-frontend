@@ -121,7 +121,7 @@ const DeleteGrant: React.FC<DeleteGrantProps> = ({
           <button onClick={handleClose} className={styles.cancelButton}>
             Annuleren
           </button>
-          <button onClick={handleDelete} className={styles.saveButton}>
+          <button onClick={handleDelete} className={styles.deleteButton}>
             Verwijderen
           </button>
         </div>

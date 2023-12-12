@@ -216,7 +216,7 @@ export default function Contacts() {
           onUserAdded={handleUserAdded}
         />
       </div>
-      <UserDetailsPage onUserDeleted={handleUserDeleted} />
+      {isLoggedIn && <UserDetailsPage onUserDeleted={handleUserDeleted} />}
     </div>
   );
 }

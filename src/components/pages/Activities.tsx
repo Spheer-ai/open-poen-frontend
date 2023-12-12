@@ -7,6 +7,8 @@ import { useAuth } from "../../contexts/AuthContext";
 import { fetchActivities } from "../middleware/Api";
 import AddActivity from "../modals/AddActivity";
 import LoadingDot from "../animation/LoadingDot";
+import FundDetail from "./FundDetail";
+import ActivityDetail from "./ActivityDetail";
 
 interface Activities {
   id: number;
@@ -29,6 +31,7 @@ export default function ActivitiesPage() {
   const hasPermission = entityPermissions.includes("create_activity");
   const [activities, setActivities] = useState<Activities[]>([]);
   const initiativeId = useParams()?.initiativeId || "";
+  const [selectedActivity, setSelectedActivity] = useState<string | null>(null);
 
   useEffect(() => {
     console.log("action:", action);
@@ -76,15 +79,15 @@ export default function ActivitiesPage() {
   }, [initiativeId, user, refreshTrigger]);
 
   const calculateBarWidth = (income, expenses) => {
-    const total = income + expenses;
+    const total = Math.abs(income) + Math.abs(expenses);
     if (total === 0) {
       return {
         incomeWidth: "50%",
         expensesWidth: "50%",
       };
     }
-    const incomeWidth = `${(income / total) * 100}%`;
-    const expensesWidth = `${(expenses / total) * 100}%`;
+    const incomeWidth = `${(Math.abs(income) / total) * 100}%`;
+    const expensesWidth = `${(Math.abs(expenses) / total) * 100}%`;
     return {
       incomeWidth,
       expensesWidth,
@@ -119,6 +122,10 @@ export default function ActivitiesPage() {
 
   console.log("initiativeId:", initiativeId);
 
+  const handleActivityClick = (activityId) => {
+    console.log("Clicked activity ID:", activityId);
+    setSelectedActivity(activityId);
+  };
   return (
     <div className={styles["container"]}>
       <div className={styles["side-panel"]}>
@@ -134,11 +141,24 @@ export default function ActivitiesPage() {
           showSearch={false}
         />
         {Array.isArray(activities) && activities.length === 0 ? (
-          <p>Activiteiten worden geladen...</p>
+          <div className={styles["loading-container"]}>
+            <LoadingDot delay={0} />
+            <LoadingDot delay={0.1} />
+            <LoadingDot delay={0.1} />
+            <LoadingDot delay={0.2} />
+            <LoadingDot delay={0.2} />
+          </div>
         ) : (
           <ul className={styles["shared-unordered-list"]}>
-            {activities.map((activity) => (
-              <div className={styles["shared-styling"]} key={activity.id}>
+            {activities.map((activity, index) => (
+              <div
+                className={`${styles["shared-styling"]} ${styles["initiative-fade-in"]}`}
+                key={`${activity?.id}-${index}`}
+                style={{
+                  animationDelay: `${index * 0.2}s`,
+                }}
+                onClick={() => handleActivityClick(activity.id)}
+              >
                 <li className={styles["shared-name"]}>
                   <strong>{activity.name}</strong>
                 </li>
@@ -207,6 +227,24 @@ export default function ActivitiesPage() {
         refreshTrigger={refreshTrigger}
         initiativeId={Number(initiativeId)}
       />
+      <div className={styles["detail-panel"]}>
+        {selectedActivity !== null ? (
+          <ActivityDetail
+            activityId={selectedActivity}
+            authToken={user?.token || ""}
+            initiativeId={initiativeId}
+            onActivityEdited={() => {}}
+          />
+        ) : initiativeId !== null ? (
+          <FundDetail
+            initiativeId={initiativeId}
+            authToken={user?.token || ""}
+            onFundEdited={() => {}}
+          />
+        ) : (
+          <p>Select a fund or activity to view details.</p>
+        )}
+      </div>
     </div>
   );
 }

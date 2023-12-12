@@ -7,6 +7,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import RegulationDetail from "../pages/RegulationDetail";
 import AddRegulationDesktop from "../modals/AddRegulationDesktop";
 import { usePermissions } from "../../contexts/PermissionContext";
+import LoadingDot from "../animation/LoadingDot";
 
 type Regulation = {
   id: string;
@@ -138,8 +139,8 @@ const RegulationList = () => {
             {regulations.map((regulation) => (
               <li
                 key={regulation.id}
-                className={styles["regulation-list-item"]}
-                onClick={() => handleRegulationClick(regulation.id)}
+                className={`${styles["regulation-fade-in"]} ${styles["regulation-list-item"]}
+                onClick={() => handleRegulationClick(regulation.id)}`}
               >
                 <div className={styles["regulation-info"]}>
                   {regulation.name}
@@ -148,7 +149,13 @@ const RegulationList = () => {
             ))}
           </ul>
         ) : (
-          <p>Geen gegevens gevonden</p>
+          <div className={styles["loading-container"]}>
+            <LoadingDot delay={0} />
+            <LoadingDot delay={0.1} />
+            <LoadingDot delay={0.1} />
+            <LoadingDot delay={0.2} />
+            <LoadingDot delay={0.2} />
+          </div>
         )}
       </div>
       <AddRegulationDesktop

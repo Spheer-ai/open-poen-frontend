@@ -4,10 +4,13 @@ import { fetchPayments } from "../middleware/Api";
 import styles from "../../assets/scss/TransactionOverview.module.scss";
 import TransactionSearchInput from "../elements/search/transactions/TransactionSearchInput";
 import LinkInitiativeToPayment from "../elements/dropdown-menu/initiatives/LinkInitiativeToPayment";
+import LinkActivityToPayment from "../elements/dropdown-menu/activities/LinkActivityToPayment";
+import LoadingDot from "../animation/LoadingDot";
 
 const TransactionOverview = () => {
   const { user } = useAuth();
   const [transactions, setTransactions] = useState<any[]>([]);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [filteredTransactions, setFilteredTransactions] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [lowercaseQuery, setLowercaseQuery] = useState<string>("");
@@ -16,6 +19,10 @@ const TransactionOverview = () => {
   const [openDropdownForPayment, setOpenDropdownForPayment] = useState<
     number | null
   >(null);
+  const [activePaymentId, setActivePaymentId] = useState<number | null>(null);
+  const [activeTransactionId, setActiveTransactionId] = useState<number | null>(
+    null,
+  );
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -31,6 +38,7 @@ const TransactionOverview = () => {
         setIsLoading(true);
         try {
           const data = await fetchPayments(user.userId, user.token);
+          console.log("Fetched transactions:", data.payments);
           setTransactions(data.payments || []);
           setIsLoading(false);
           setFilteredTransactions(data.payments || []);
@@ -42,7 +50,7 @@ const TransactionOverview = () => {
     };
 
     fetchTransactions();
-  }, [user]);
+  }, [user, refreshTrigger]);
 
   const highlightMatch = (text: string | null, query: string) => {
     if (query === "") {
@@ -186,11 +194,25 @@ const TransactionOverview = () => {
     setOpenDropdownForPayment(paymentId);
   };
 
+  const handleInitiativeLinked = () => {
+    setRefreshTrigger((prev) => prev + 1);
+  };
+
+  const handleActivityLinked = () => {
+    setRefreshTrigger((prev) => prev + 1);
+  };
+
   return (
     <div className={styles.transactionOverview}>
       <TransactionSearchInput onSearch={handleSearch} />
       {isLoading ? (
-        <p>Loading...</p>
+        <div className={styles["loading-container"]}>
+          <LoadingDot delay={0} />
+          <LoadingDot delay={0.1} />
+          <LoadingDot delay={0.1} />
+          <LoadingDot delay={0.2} />
+          <LoadingDot delay={0.2} />
+        </div>
       ) : (
         <div className={styles["transaction-table-container"]}>
           <table className={styles.transactionTable}>
@@ -252,20 +274,63 @@ const TransactionOverview = () => {
                   <td>
                     <span
                       onClick={() => handleInitiativeClick(transaction.id)}
-                      className={styles.linkInitiativeText}
+                      className={`${styles["initiativeText"]} ${
+                        openDropdownForPayment === transaction.id
+                          ? styles["hidden"]
+                          : ""
+                      }`}
                     >
-                      {transaction.initiative_name || "Link Initiative"}
+                      {openDropdownForPayment !== transaction.id
+                        ? transaction.initiative_name || "Verbind initiatief"
+                        : null}
                     </span>
                     {openDropdownForPayment === transaction.id && (
                       <LinkInitiativeToPayment
                         token={user?.token || ""}
                         paymentId={transaction.id}
+                        initiativeName={transaction.initiative_name || ""}
+                        onInitiativeLinked={handleInitiativeLinked}
                       />
                     )}
                   </td>
                   <td>
-                    {highlightMatch(transaction.activity_name, lowercaseQuery)}
+                    {transaction.initiative_id ? (
+                      <span
+                        onClick={() => setActiveTransactionId(transaction.id)}
+                        className={`${styles["initiativeText"]} ${
+                          activeTransactionId === transaction.id
+                            ? styles["hidden"]
+                            : ""
+                        }`}
+                      >
+                        {activeTransactionId !== transaction.id
+                          ? transaction.activity_name ||
+                            "Verbind een activiteit"
+                          : null}
+                      </span>
+                    ) : (
+                      <span
+                        className={`${styles["initiativeText"]} ${
+                          activeTransactionId === transaction.id
+                            ? styles["hidden"]
+                            : ""
+                        }`}
+                        style={{ color: "grey" }}
+                      >
+                        Verbind een activiteit
+                      </span>
+                    )}
+                    {activeTransactionId === transaction.id && (
+                      <LinkActivityToPayment
+                        token={user?.token || ""}
+                        paymentId={transaction.id}
+                        initiativeId={transaction.initiative_id}
+                        activityName={transaction.activity_name || ""}
+                        onActivityLinked={handleActivityLinked}
+                      />
+                    )}
                   </td>
+
                   <td>
                     {highlightMatch(transaction.creditor_name, lowercaseQuery)}
                   </td>

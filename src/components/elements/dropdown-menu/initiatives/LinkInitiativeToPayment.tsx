@@ -1,5 +1,7 @@
-// LinkInitiativeToPayment.tsx
 import React, { useState, useEffect } from "react";
+import Select from "react-dropdown-select";
+import styles from "../../../../assets/scss/TransactionOverview.module.scss";
+import LoadingDot from "../../../animation/LoadingDot";
 import {
   fetchLinkableInitiatives,
   linkInitiativeToPayment,
@@ -13,49 +15,65 @@ interface Initiative {
 interface LinkInitiativeToPaymentProps {
   token: string;
   paymentId: number;
+  initiativeName: string;
+  onInitiativeLinked: () => void;
 }
 
 const LinkInitiativeToPayment: React.FC<LinkInitiativeToPaymentProps> = ({
   token,
   paymentId,
+  initiativeName,
+  onInitiativeLinked,
 }) => {
   const [linkableInitiatives, setLinkableInitiatives] = useState<Initiative[]>(
     [],
   );
   const [selectedInitiative, setSelectedInitiative] = useState<number | "">("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
 
   useEffect(() => {
-    if (isDropdownOpen) {
-      const getLinkableInitiativesForPayment = async () => {
-        try {
-          setIsLoading(true);
-          const initiatives: Initiative[] = await fetchLinkableInitiatives(
-            token,
-            paymentId,
-          );
-          console.log("Initiatives:", initiatives);
-          setLinkableInitiatives(initiatives);
-          setIsLoading(false);
-        } catch (error) {
-          console.error("Error fetching linkable initiatives:", error);
-          setIsLoading(false);
-        }
-      };
+    const getLinkableInitiativesForPayment = async () => {
+      try {
+        setIsLoading(true);
+        const initiatives: Initiative[] = await fetchLinkableInitiatives(
+          token,
+          paymentId,
+        );
+        console.log("Initiatives:", initiatives);
+        setLinkableInitiatives(initiatives);
+        setIsLoading(false);
+      } catch (error) {
+        console.error("Error fetching linkable initiatives:", error);
+        setIsLoading(false);
+      }
+    };
 
-      getLinkableInitiativesForPayment();
+    getLinkableInitiativesForPayment();
+  }, [token, paymentId]);
+
+  useEffect(() => {
+    if (selectedInitiative !== "") {
+      handleLinkInitiative();
     }
-  }, [token, paymentId, isDropdownOpen]);
-
-  const handleLinkInitiativeClick = () => {
-    setIsDropdownOpen(true);
-  };
+  }, [selectedInitiative]);
 
   const handleLinkInitiative = async () => {
     try {
       setIsLoading(true);
-      await linkInitiativeToPayment(token, paymentId, selectedInitiative);
+      if (selectedInitiative !== undefined) {
+        const user_ids = selectedInitiative === "" ? [] : [selectedInitiative];
+
+        console.log("Link Initiative to Payment Request Data:");
+        console.log("Token:", token);
+        console.log("Payment ID:", paymentId);
+        console.log("User IDs:", user_ids);
+
+        await linkInitiativeToPayment(token, paymentId, selectedInitiative);
+
+        onInitiativeLinked();
+
+        console.log("Link Initiative to Payment successful!");
+      }
       setIsLoading(false);
     } catch (error) {
       console.error("Error linking initiative to payment:", error);
@@ -63,38 +81,45 @@ const LinkInitiativeToPayment: React.FC<LinkInitiativeToPaymentProps> = ({
     }
   };
 
+  const mappedInitiatives = linkableInitiatives.map((initiative) => ({
+    value: initiative.id,
+    label: initiative.name,
+  }));
+
   return (
-    <div>
+    <div className={styles["customDropdown"]}>
       {isLoading ? (
-        <p>Loading...</p>
+        <div className={styles["loading-container"]}>
+          <LoadingDot delay={0} />
+          <LoadingDot delay={0.1} />
+          <LoadingDot delay={0.1} />
+          <LoadingDot delay={0.2} />
+        </div>
       ) : (
-        <div>
-          <span
-            onClick={handleLinkInitiativeClick}
-            style={{ cursor: "pointer" }}
-          >
-            {linkableInitiatives.length > 0
-              ? isDropdownOpen
-                ? "Close Dropdown"
-                : "Link Initiative"
-              : "No Initiatives Available"}
-          </span>
-          {isDropdownOpen && (
-            <div>
-              <select
-                value={selectedInitiative}
-                onChange={(e) => setSelectedInitiative(Number(e.target.value))}
-              >
-                <option value="">Select an initiative</option>
-                {linkableInitiatives.map((initiative) => (
-                  <option key={initiative.id} value={initiative.id}>
-                    {initiative.name}
-                  </option>
-                ))}
-              </select>
-              <button onClick={handleLinkInitiative}>Link Initiative</button>
-            </div>
-          )}
+        <div className={styles["customContainer"]}>
+          <div className="custom-dropdown-container">
+            <Select
+              values={
+                selectedInitiative === ""
+                  ? []
+                  : mappedInitiatives.filter(
+                      (option) => option.value === selectedInitiative,
+                    )
+              }
+              options={mappedInitiatives}
+              onChange={(values) =>
+                setSelectedInitiative(values[0] ? values[0].value : "")
+              }
+              labelField="label"
+              valueField="value"
+              placeholder={
+                selectedInitiative === ""
+                  ? initiativeName || "Verbind initiatief"
+                  : ""
+              }
+              className={styles["custom-option"]}
+            />
+          </div>
         </div>
       )}
     </div>

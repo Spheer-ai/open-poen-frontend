@@ -2,8 +2,8 @@
   background-color: #fff;
   border-right: 1px solid #dee2e6;
   height: 100vh;
-  max-width: 460px;
-  min-width: 460px;
+  min-width: 30%;
+  max-width: 400px;
   z-index: 1;
   overflow: scroll;
   overflow-x: hidden;
@@ -75,4 +75,22 @@
 
 .sponsor-list-item:hover {
   background-color: #f0f0f0;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.sponsor-fade-in {
+  animation: fadeIn 0.5s ease-in-out;
+  opacity: 0;
+  transform: translateY(20px);
+  animation-fill-mode: forwards;
 }

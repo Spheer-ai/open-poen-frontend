@@ -1,17 +1,15 @@
-export default interface UserDetails {
-  activities: any;
+export interface UserDetails {
+  profile_picture: any;
+  is_superuser: any;
+  profileImage: string;
+  activities: string;
   biography: string;
-  role: any;
+  x: string;
   first_name: string;
   last_name: string;
   email: string;
+  role: string;
   image: string | null;
-  userId: string;
-  token: string | null;
-  is_superuser?: boolean;
-  profile_picture: {
-    attachment_url: string;
-    attachment_thumbnail_url_128?: string;
-    attachment_thumbnail_url_256?: string;
-  } | null;
 }
+
+export default UserDetails;
