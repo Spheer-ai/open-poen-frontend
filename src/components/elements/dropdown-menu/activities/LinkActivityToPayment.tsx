@@ -55,14 +55,16 @@ const LinkActivityToPayment: React.FC<LinkActivityToPaymentProps> = ({
   }, [token, paymentId, initiativeId]);
 
   useEffect(() => {
-    handleLinkActivity();
-  }, []);
+    if (selectedActivity !== "") {
+      handleLinkActivity();
+    }
+  }, [selectedActivity]);
 
   const handleLinkActivity = async () => {
     try {
       setIsLoading(true);
 
-      if (initiativeId !== null) {
+      if (initiativeId !== null && selectedActivity !== "") {
         await linkActivityToPayment(
           token,
           paymentId,
@@ -71,7 +73,9 @@ const LinkActivityToPayment: React.FC<LinkActivityToPaymentProps> = ({
         );
         setIsLoading(false);
       } else {
-        console.error("Initiative ID is not set. Cannot link activity.");
+        console.error(
+          "Initiative ID is not set or no activity selected. Cannot link activity.",
+        );
         setIsLoading(false);
       }
     } catch (error) {

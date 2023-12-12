@@ -5,6 +5,7 @@ import styles from "../../assets/scss/TransactionOverview.module.scss";
 import TransactionSearchInput from "../elements/search/transactions/TransactionSearchInput";
 import LinkInitiativeToPayment from "../elements/dropdown-menu/initiatives/LinkInitiativeToPayment";
 import LinkActivityToPayment from "../elements/dropdown-menu/activities/LinkActivityToPayment";
+import LoadingDot from "../animation/LoadingDot";
 
 const TransactionOverview = () => {
   const { user } = useAuth();
@@ -17,6 +18,10 @@ const TransactionOverview = () => {
   const [openDropdownForPayment, setOpenDropdownForPayment] = useState<
     number | null
   >(null);
+  const [activePaymentId, setActivePaymentId] = useState<number | null>(null);
+  const [activeTransactionId, setActiveTransactionId] = useState<number | null>(
+    null,
+  );
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -192,7 +197,13 @@ const TransactionOverview = () => {
     <div className={styles.transactionOverview}>
       <TransactionSearchInput onSearch={handleSearch} />
       {isLoading ? (
-        <p>Loading...</p>
+        <div className={styles["loading-container"]}>
+          <LoadingDot delay={0} />
+          <LoadingDot delay={0.1} />
+          <LoadingDot delay={0.1} />
+          <LoadingDot delay={0.2} />
+          <LoadingDot delay={0.2} />
+        </div>
       ) : (
         <div className={styles["transaction-table-container"]}>
           <table className={styles.transactionTable}>
@@ -274,25 +285,41 @@ const TransactionOverview = () => {
                   </td>
                   <td>
                     {transaction.initiative_id ? (
+                      <span
+                        onClick={() => setActiveTransactionId(transaction.id)}
+                        className={`${styles["initiativeText"]} ${
+                          activeTransactionId === transaction.id
+                            ? styles["hidden"]
+                            : ""
+                        }`}
+                      >
+                        {activeTransactionId !== transaction.id
+                          ? transaction.activity_name ||
+                            "Verbind een activiteit"
+                          : null}
+                      </span>
+                    ) : (
+                      <span
+                        className={`${styles["initiativeText"]} ${
+                          activeTransactionId === transaction.id
+                            ? styles["hidden"]
+                            : ""
+                        }`}
+                        style={{ color: "grey" }}
+                      >
+                        Verbind een activiteit
+                      </span>
+                    )}
+                    {activeTransactionId === transaction.id && (
                       <LinkActivityToPayment
                         token={user?.token || ""}
                         paymentId={transaction.id}
                         initiativeId={transaction.initiative_id}
                         activityName={transaction.activity_name || ""}
                       />
-                    ) : (
-                      <span
-                        className={`${styles["initiativeText"]} ${
-                          openDropdownForPayment === transaction.id
-                            ? styles["hidden"]
-                            : ""
-                        }`}
-                        style={{ color: "grey" }}
-                      >
-                        Kies een activiteit
-                      </span>
                     )}
                   </td>
+
                   <td>
                     {highlightMatch(transaction.creditor_name, lowercaseQuery)}
                   </td>
