@@ -60,6 +60,9 @@ const EditFund: React.FC<EditFundProps> = ({
   }>({});
   const [selectedOwners, setSelectedOwners] = useState<InitiativeOwner[]>([]);
   const [selectedUsers, setSelectedUsers] = useState<InitiativeOwner[]>([]);
+  const [charCount, setCharCount] = useState(0);
+  const [nameError, setNameError] = useState("");
+  const [isSaveClicked, setIsSaveClicked] = useState(false);
 
   useEffect(() => {
     setSelectedOwners(initiativeOwners);
@@ -82,6 +85,17 @@ const EditFund: React.FC<EditFundProps> = ({
   }, [isOpen, fundData]);
 
   const handleSave = async () => {
+    setIsSaveClicked(true);
+    if (charCount > 64) {
+      setNameError("Naam mag maximaal 64 tekens bevatten");
+      return;
+    }
+
+    if (!formData?.name || formData?.name.trim() === "") {
+      setNameError("Naam mag niet leeg zijn");
+      return;
+    }
+
     try {
       const updatedFundData = {
         ...formData,
@@ -89,8 +103,10 @@ const EditFund: React.FC<EditFundProps> = ({
         hidden: isHidden,
       };
 
+      let imageUploadResult;
+
       if (selectedImage) {
-        const imageUploadResult = await uploadFundPicture(
+        imageUploadResult = await uploadFundPicture(
           initiativeId,
           selectedImage,
           authToken,
@@ -177,10 +193,33 @@ const EditFund: React.FC<EditFundProps> = ({
                 placeholder="Naam"
                 value={formData?.name || ""}
                 onKeyPress={handleEnterKeyPress}
-                onChange={(e) =>
-                  setFormData({ ...formData, name: e.target.value })
-                }
+                onChange={(e) => {
+                  const newName = e.target.value;
+
+                  if (isSaveClicked) {
+                    if (!newName.trim()) {
+                      setNameError("Naam mag niet leeg zijn");
+                    } else {
+                      setNameError("");
+                    }
+                  }
+
+                  if (newName.length <= 64) {
+                    setFormData({ ...formData, name: newName });
+                  }
+                  setCharCount(newName.length);
+                }}
               />
+              {isSaveClicked && nameError && (
+                <p style={{ color: "red", display: "block", marginTop: "5px" }}>
+                  {nameError}
+                </p>
+              )}
+              {charCount > 64 && (
+                <p className={styles.error}>
+                  Naam mag maximaal 64 tekens bevatten
+                </p>
+              )}
             </>
           )}
           {fieldPermissions.fields.includes("description") && (
@@ -240,34 +279,35 @@ const EditFund: React.FC<EditFundProps> = ({
             </>
           )}
         </div>
-        <SearchFundUsers
-          authToken={authToken}
-          onUserClick={handleSearchResult}
-        />
-        <div className={styles.selectedUsers}>
-          <h4>Initiatiefnemers</h4>
-          <ul>
-            {selectedUsers.map((user) => (
-              <li key={user.id}>
-                {user.email}
-                <button onClick={() => handleDeleteOwner(user.id)}>
-                  <img
-                    src={deleteIcon}
-                    alt="Delete"
-                    className={styles.deleteIcon}
-                  />
-                </button>
-              </li>
-            ))}
-          </ul>
-        </div>
+        <div className={styles.formGroup}>
+          <SearchFundUsers
+            authToken={authToken}
+            onUserClick={handleSearchResult}
+          />
+          <div className={styles.selectedUsers}>
+            <h4>Initiatiefnemers</h4>
+            <ul>
+              {selectedUsers.map((user) => (
+                <li key={user.id}>
+                  {user.email}
+                  <button onClick={() => handleDeleteOwner(user.id)}>
+                    <img
+                      src={deleteIcon}
+                      alt="Delete"
+                      className={styles.deleteIcon}
+                    />
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
 
-        <FundImageUploader
-          initiativeId={initiativeId}
-          token={authToken}
-          onImageSelected={handleImageChange}
-        />
-        {apiError && <p className={styles.error}>{apiError}</p>}
+          <FundImageUploader
+            initiativeId={initiativeId}
+            token={authToken}
+            onImageSelected={handleImageChange}
+          />
+        </div>
         <div className={styles.buttonContainer}>
           <button onClick={handleClose} className={styles.cancelButton}>
             Annuleren

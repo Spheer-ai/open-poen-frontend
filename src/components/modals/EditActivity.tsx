@@ -63,6 +63,9 @@ const EditActivity: React.FC<EditActivityProps> = ({
   }>({});
   const [selectedOwners, setSelectedOwners] = useState<ActivityOwner[]>([]);
   const [selectedUsers, setSelectedUsers] = useState<ActivityOwner[]>([]);
+  const [charCount, setCharCount] = useState(0);
+  const [nameError, setNameError] = useState("");
+  const [isSaveClicked, setIsSaveClicked] = useState(false);
 
   useEffect(() => {
     setSelectedOwners(activityOwners);
@@ -91,6 +94,17 @@ const EditActivity: React.FC<EditActivityProps> = ({
   }, [isOpen, activityData]);
 
   const handleSave = async () => {
+    setIsSaveClicked(true);
+    if (charCount > 64) {
+      setNameError("Naam mag maximaal 64 tekens bevatten");
+      return;
+    }
+
+    if (!formData?.name || formData?.name.trim() === "") {
+      setNameError("Naam mag niet leeg zijn");
+      return;
+    }
+
     try {
       const updatedActivityData = {
         name: formData.name || "",
@@ -99,8 +113,10 @@ const EditActivity: React.FC<EditActivityProps> = ({
         budget: formData.budget || 0,
       };
 
+      let imageUploadResult;
+
       if (selectedImage) {
-        const imageUploadResult = await uploadActivityPicture(
+        imageUploadResult = await uploadActivityPicture(
           initiativeId,
           activityId,
           selectedImage,
@@ -201,12 +217,35 @@ const EditActivity: React.FC<EditActivityProps> = ({
               <input
                 type="text"
                 placeholder="Naam"
-                value={formData.name}
+                value={formData?.name || ""}
                 onKeyPress={handleEnterKeyPress}
-                onChange={(e) =>
-                  setFormData({ ...formData, name: e.target.value })
-                }
+                onChange={(e) => {
+                  const newName = e.target.value;
+
+                  if (isSaveClicked) {
+                    if (!newName.trim()) {
+                      setNameError("Naam mag niet leeg zijn");
+                    } else {
+                      setNameError("");
+                    }
+                  }
+
+                  if (newName.length <= 64) {
+                    setFormData({ ...formData, name: newName });
+                  }
+                  setCharCount(newName.length);
+                }}
               />
+              {isSaveClicked && nameError && (
+                <p style={{ color: "red", display: "block", marginTop: "5px" }}>
+                  {nameError}
+                </p>
+              )}
+              {charCount > 64 && (
+                <p className={styles.error}>
+                  Naam mag maximaal 64 tekens bevatten
+                </p>
+              )}
             </>
           )}
           {fieldPermissions.fields.includes("description") && (
@@ -252,35 +291,36 @@ const EditActivity: React.FC<EditActivityProps> = ({
             </>
           )}
         </div>
-        <SearchFundUsers
-          authToken={authToken}
-          onUserClick={handleSearchResult}
-        />
-        <div className={styles.selectedUsers}>
-          <h4>Activitieitnemers</h4>
-          <ul>
-            {selectedUsers.map((user) => (
-              <li key={user.id}>
-                {user.email}
-                <button onClick={() => handleDeleteOwner(user.id)}>
-                  <img
-                    src={deleteIcon}
-                    alt="Delete"
-                    className={styles.deleteIcon}
-                  />
-                </button>
-              </li>
-            ))}
-          </ul>
-        </div>
+        <div className={styles.formGroup}>
+          <SearchFundUsers
+            authToken={authToken}
+            onUserClick={handleSearchResult}
+          />
+          <div className={styles.selectedUsers}>
+            <h4>Activitieitnemers</h4>
+            <ul>
+              {selectedUsers.map((user) => (
+                <li key={user.id}>
+                  {user.email}
+                  <button onClick={() => handleDeleteOwner(user.id)}>
+                    <img
+                      src={deleteIcon}
+                      alt="Delete"
+                      className={styles.deleteIcon}
+                    />
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
 
-        <ActivityImageUploader
-          initiativeId={initiativeId}
-          token={authToken}
-          onImageSelected={handleImageChange}
-          activityId={activityId}
-        />
-        {apiError && <p className={styles.error}>{apiError}</p>}
+          <ActivityImageUploader
+            initiativeId={initiativeId}
+            token={authToken}
+            onImageSelected={handleImageChange}
+            activityId={activityId}
+          />
+        </div>
         <div className={styles.buttonContainer}>
           <button onClick={handleClose} className={styles.cancelButton}>
             Annuleren

@@ -220,9 +220,9 @@ const SponsorList = () => {
               return (
                 <li
                   key={sponsor.id}
-                  className={`${styles["sponsor-list-item"]} ${
-                    isActive ? styles["active-sponsor"] : ""
-                  }`}
+                  className={`${styles["sponsor-fade-in"]} ${
+                    styles["sponsor-list-item"]
+                  } ${isActive ? styles["active-sponsor"] : ""}`}
                 >
                   <div
                     className={styles["sponsor-info"]}
