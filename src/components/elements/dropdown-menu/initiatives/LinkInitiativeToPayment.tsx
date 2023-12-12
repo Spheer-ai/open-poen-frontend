@@ -60,7 +60,15 @@ const LinkInitiativeToPayment: React.FC<LinkInitiativeToPaymentProps> = ({
       setIsLoading(true);
       if (selectedInitiative !== undefined) {
         const user_ids = selectedInitiative === "" ? [] : [selectedInitiative];
-        await linkInitiativeToPayment(token, paymentId, user_ids);
+
+        console.log("Link Initiative to Payment Request Data:");
+        console.log("Token:", token);
+        console.log("Payment ID:", paymentId);
+        console.log("User IDs:", user_ids);
+
+        await linkInitiativeToPayment(token, paymentId, selectedInitiative);
+
+        console.log("Link Initiative to Payment successful!");
       }
       setIsLoading(false);
     } catch (error) {
