@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import deleteIcon from "/delete-icon.svg";
 import styles from "../../assets/scss/layout/AddFundDesktop.module.scss";
 import SearchFundUsers from "../elements/search/funds/SearchFundsUser";
 import FundImageUploader from "../elements/uploadder/FundImageUploader";
@@ -50,6 +51,15 @@ const EditFund: React.FC<EditFundProps> = ({
   const [formData, setFormData] = useState<FundDetails | null>(null);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [selectedUserIds, setSelectedUserIds] = useState<number[]>([]);
+  const [userEmailMapping, setUserEmailMapping] = useState<{
+    [key: number]: string;
+  }>({});
+  const [selectedOwners, setSelectedOwners] = useState<InitiativeOwner[]>([]);
+  const [selectedUsers, setSelectedUsers] = useState<InitiativeOwner[]>([]);
+
+  useEffect(() => {
+    setSelectedOwners(initiativeOwners);
+  }, [initiativeOwners]);
 
   useEffect(() => {
     if (isOpen) {
@@ -120,8 +130,16 @@ const EditFund: React.FC<EditFundProps> = ({
     setSelectedImage(file);
   };
 
-  const handleSearchResult = (users) => {
-    setSelectedUserIds(users.map((user) => user.id));
+  const handleSearchResult = (user) => {
+    if (!selectedUsers.some((selectedUser) => selectedUser.id === user.id)) {
+      setSelectedUsers((prevSelectedUsers) => [...prevSelectedUsers, user]);
+    }
+  };
+
+  const handleDeleteOwner = (ownerId: number) => {
+    setSelectedUsers((prevSelectedUsers) =>
+      prevSelectedUsers.filter((user) => user.id !== ownerId),
+    );
   };
 
   const linkOwnersToInitiative = async (
@@ -199,21 +217,22 @@ const EditFund: React.FC<EditFundProps> = ({
         </div>
         <SearchFundUsers
           authToken={authToken}
-          onSearchResult={handleSearchResult}
+          onUserClick={handleSearchResult}
         />
         <div className={styles.selectedUsers}>
-          <p>Selected User IDs:</p>
+          <h4>Initiatiefnemers</h4>
           <ul>
-            {selectedUserIds.map((userId) => (
-              <li key={userId}>User ID: {userId}</li>
-            ))}
-          </ul>
-        </div>
-        <div className={styles.initiativeOwners}>
-          <h4>Initiative Owners:</h4>
-          <ul>
-            {initiativeOwners.map((owner) => (
-              <li key={owner.id}>{owner.email}</li>
+            {selectedUsers.map((user) => (
+              <li key={user.id}>
+                {user.email}
+                <button onClick={() => handleDeleteOwner(user.id)}>
+                  <img
+                    src={deleteIcon}
+                    alt="Delete"
+                    className={styles.deleteIcon}
+                  />
+                </button>
+              </li>
             ))}
           </ul>
         </div>

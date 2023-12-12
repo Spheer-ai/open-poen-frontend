@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import deleteIcon from "/delete-icon.svg";
 import styles from "../../assets/scss/layout/AddFundDesktop.module.scss";
 import SearchFundUsers from "../elements/search/funds/SearchFundsUser";
 import ActivityImageUploader from "../elements/uploadder/ActivityImageUploader";
@@ -149,15 +150,10 @@ const EditActivity: React.FC<EditActivityProps> = ({
     setSelectedImage(file);
   };
 
-  const handleSearchResult = (users) => {
-    const newUsers = users.filter((user) => {
-      return !selectedUsers.some((selectedUser) => selectedUser.id === user.id);
-    });
-
-    setSelectedUsers((prevSelectedUsers) => [
-      ...prevSelectedUsers,
-      ...newUsers,
-    ]);
+  const handleSearchResult = (user) => {
+    if (!selectedUsers.some((selectedUser) => selectedUser.id === user.id)) {
+      setSelectedUsers((prevSelectedUsers) => [...prevSelectedUsers, user]);
+    }
   };
 
   const handleDeleteOwner = (ownerId: number) => {
@@ -238,16 +234,20 @@ const EditActivity: React.FC<EditActivityProps> = ({
         </div>
         <SearchFundUsers
           authToken={authToken}
-          onSearchResult={handleSearchResult}
+          onUserClick={handleSearchResult}
         />
         <div className={styles.selectedUsers}>
-          <h4>Selected Users:</h4>
+          <h4>Activitieitnemers</h4>
           <ul>
             {selectedUsers.map((user) => (
               <li key={user.id}>
                 {user.email}
                 <button onClick={() => handleDeleteOwner(user.id)}>
-                  Delete
+                  <img
+                    src={deleteIcon}
+                    alt="Delete"
+                    className={styles.deleteIcon}
+                  />
                 </button>
               </li>
             ))}
