@@ -282,11 +282,11 @@ const TransactionOverview = () => {
                       />
                     ) : (
                       <span
-                      className={`${styles["initiativeText"]} ${
-                        openDropdownForPayment === transaction.id
-                          ? styles["hidden"]
-                          : ""
-                      }`}
+                        className={`${styles["initiativeText"]} ${
+                          openDropdownForPayment === transaction.id
+                            ? styles["hidden"]
+                            : ""
+                        }`}
                         style={{ color: "grey" }}
                       >
                         Kies een activiteit

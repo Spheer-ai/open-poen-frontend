@@ -15,6 +15,7 @@ import FundsDetails from "../elements/tables/funds/FundsDetails";
 import FundsSponsors from "../elements/tables/funds/FundsSponsors";
 import FundsUsers from "../elements/tables/funds/FundsUsers";
 import LoadingDot from "../animation/LoadingDot";
+import { InitiativeOwner } from "../../types/InitiativeOwners";
 
 interface FundDetailProps {
   initiativeId: string;
@@ -33,6 +34,7 @@ interface FundDetails {
   profile_picture: {
     attachment_thumbnail_url_512: string;
   };
+  initiative_owners: InitiativeOwner[];
 }
 
 const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
@@ -50,6 +52,8 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
   const [currentFundData, setCurrentFundData] = useState<FundDetails | null>(
     null,
   );
+  const initiativeOwners: InitiativeOwner[] =
+    fundDetails?.initiative_owners || [];
 
   useEffect(() => {
     if (location.pathname.includes("/funds/${initiativeId}/activities")) {
@@ -292,6 +296,7 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
         initiativeId={initiativeId}
         authToken={user?.token || ""}
         fundData={currentFundData}
+        initiativeOwners={fundDetails?.initiative_owners || []}
       />
       <DeleteFund
         isOpen={isDeleteFundModalOpen}

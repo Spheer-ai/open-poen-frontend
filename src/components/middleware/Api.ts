@@ -1595,3 +1595,68 @@ export const uploadActivityPicture = async (
     throw error;
   }
 };
+
+export const updateInitiativeOwners = async (initiativeId, user_ids, token) => {
+  try {
+    const requestBody = {
+      user_ids: user_ids,
+    };
+
+    const response = await api.patch(
+      `/initiative/${initiativeId}/owners`,
+      requestBody,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      },
+    );
+
+    if (response.status === 200) {
+      return response.data;
+    } else if (response.status === 422) {
+      throw new Error("Validation Error: " + JSON.stringify(response.data));
+    } else {
+      throw new Error("Failed to update initiative owners");
+    }
+  } catch (error) {
+    console.error("Error updating initiative owners:", error);
+    throw error;
+  }
+};
+
+export const updateActivityOwners = async (
+  initiativeId,
+  activityId,
+  user_ids,
+  token,
+) => {
+  try {
+    const requestBody = {
+      user_ids: user_ids,
+    };
+
+    const response = await api.patch(
+      `/initiative/${initiativeId}/activity/${activityId}/owners`,
+      requestBody,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      },
+    );
+
+    if (response.status === 200) {
+      return response.data;
+    } else if (response.status === 422) {
+      throw new Error("Validation Error: " + JSON.stringify(response.data));
+    } else {
+      throw new Error("Failed to update activity owners");
+    }
+  } catch (error) {
+    console.error("Error updating activity owners:", error);
+    throw error;
+  }
+};

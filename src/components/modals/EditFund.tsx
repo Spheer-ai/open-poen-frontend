@@ -1,7 +1,17 @@
 import React, { useEffect, useState } from "react";
 import styles from "../../assets/scss/layout/AddFundDesktop.module.scss";
+import SearchFundUsers from "../elements/search/funds/SearchFundsUser";
 import FundImageUploader from "../elements/uploadder/FundImageUploader";
-import { editFund, uploadFundPicture } from "../middleware/Api";
+import {
+  editFund,
+  updateInitiativeOwners,
+  uploadFundPicture,
+} from "../middleware/Api";
+
+interface InitiativeOwner {
+  id: number;
+  email: string;
+}
 
 interface FundDetails {
   id?: number;
@@ -20,6 +30,7 @@ interface EditFundProps {
   initiativeId: string;
   authToken: string;
   fundData: FundDetails | null;
+  initiativeOwners: InitiativeOwner[];
 }
 
 const EditFund: React.FC<EditFundProps> = ({
@@ -30,6 +41,7 @@ const EditFund: React.FC<EditFundProps> = ({
   initiativeId,
   authToken,
   fundData,
+  initiativeOwners,
 }) => {
   const [modalIsOpen, setModalIsOpen] = useState(isOpen);
   const [isHiddenSponsors, setIsHiddenSponsors] = useState(false);
@@ -37,6 +49,7 @@ const EditFund: React.FC<EditFundProps> = ({
   const [apiError, setApiError] = useState("");
   const [formData, setFormData] = useState<FundDetails | null>(null);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [selectedUserIds, setSelectedUserIds] = useState<number[]>([]);
 
   useEffect(() => {
     if (isOpen) {
@@ -71,6 +84,9 @@ const EditFund: React.FC<EditFundProps> = ({
       }
 
       await editFund(authToken, initiativeId, updatedFundData);
+
+      await linkOwnersToInitiative(initiativeId, selectedUserIds, authToken);
+
       setApiError("");
       handleClose();
       onFundEdited();
@@ -102,6 +118,22 @@ const EditFund: React.FC<EditFundProps> = ({
 
   const handleImageChange = (file: File) => {
     setSelectedImage(file);
+  };
+
+  const handleSearchResult = (users) => {
+    setSelectedUserIds(users.map((user) => user.id));
+  };
+
+  const linkOwnersToInitiative = async (
+    initiativeId,
+    selectedUserIds,
+    authToken,
+  ) => {
+    try {
+      await updateInitiativeOwners(initiativeId, selectedUserIds, authToken);
+    } catch (error) {
+      console.error("Error linking owners to initiative:", error);
+    }
   };
 
   return (
@@ -165,6 +197,27 @@ const EditFund: React.FC<EditFundProps> = ({
             }
           />
         </div>
+        <SearchFundUsers
+          authToken={authToken}
+          onSearchResult={handleSearchResult}
+        />
+        <div className={styles.selectedUsers}>
+          <p>Selected User IDs:</p>
+          <ul>
+            {selectedUserIds.map((userId) => (
+              <li key={userId}>User ID: {userId}</li>
+            ))}
+          </ul>
+        </div>
+        <div className={styles.initiativeOwners}>
+          <h4>Initiative Owners:</h4>
+          <ul>
+            {initiativeOwners.map((owner) => (
+              <li key={owner.id}>{owner.email}</li>
+            ))}
+          </ul>
+        </div>
+
         <FundImageUploader
           initiativeId={initiativeId}
           token={authToken}

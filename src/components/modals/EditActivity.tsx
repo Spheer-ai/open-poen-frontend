@@ -1,7 +1,17 @@
 import React, { useEffect, useState } from "react";
 import styles from "../../assets/scss/layout/AddFundDesktop.module.scss";
+import SearchFundUsers from "../elements/search/funds/SearchFundsUser";
 import ActivityImageUploader from "../elements/uploadder/ActivityImageUploader";
-import { editActivity, uploadActivityPicture } from "../middleware/Api";
+import {
+  editActivity,
+  updateActivityOwners,
+  uploadActivityPicture,
+} from "../middleware/Api";
+
+interface ActivityOwner {
+  id: number;
+  email: string;
+}
 
 interface ActivityDetails {
   id?: number;
@@ -19,6 +29,7 @@ interface EditActivityProps {
   activityId: string;
   authToken: string;
   activityData: ActivityDetails | null;
+  activityOwners: ActivityOwner[];
 }
 
 const EditActivity: React.FC<EditActivityProps> = ({
@@ -30,6 +41,7 @@ const EditActivity: React.FC<EditActivityProps> = ({
   activityId,
   authToken,
   activityData,
+  activityOwners,
 }) => {
   const [modalIsOpen, setModalIsOpen] = useState(isOpen);
   const [isHidden, setIsHidden] = useState(false);
@@ -40,6 +52,7 @@ const EditActivity: React.FC<EditActivityProps> = ({
     budget: 0,
   });
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [selectedUserIds, setSelectedUserIds] = useState<number[]>([]);
 
   useEffect(() => {
     if (isOpen) {
@@ -87,11 +100,18 @@ const EditActivity: React.FC<EditActivityProps> = ({
         activityId,
         updatedActivityData,
       );
+
+      await linkOwnersToActivity(
+        initiativeId,
+        activityId,
+        selectedUserIds,
+        authToken,
+      );
       setApiError("");
       handleClose();
       onActivityEdited();
     } catch (error) {
-      console.error("Failed to edit fund:", error);
+      console.error("Failed to edit activity:", error);
       if (error.response && error.response.status === 409) {
         setApiError("Name is already in use");
       }
@@ -118,6 +138,28 @@ const EditActivity: React.FC<EditActivityProps> = ({
 
   const handleImageChange = (file: File) => {
     setSelectedImage(file);
+  };
+
+  const handleSearchResult = (users) => {
+    setSelectedUserIds(users.map((user) => user.id));
+  };
+
+  const linkOwnersToActivity = async (
+    initiativeId,
+    activityId,
+    selectedUserIds,
+    authToken,
+  ) => {
+    try {
+      await updateActivityOwners(
+        initiativeId,
+        activityId,
+        selectedUserIds,
+        authToken,
+      );
+    } catch (error) {
+      console.error("Error linking owners to activity:", error);
+    }
   };
 
   return (
@@ -172,6 +214,28 @@ const EditActivity: React.FC<EditActivityProps> = ({
             }
           />
         </div>
+        <SearchFundUsers
+          authToken={authToken}
+          onSearchResult={handleSearchResult}
+        />
+        <div className={styles.selectedUsers}>
+          <p>Selected User IDs:</p>
+          <ul>
+            {selectedUserIds.map((userId) => (
+              <li key={userId}>User ID: {userId}</li>
+            ))}
+          </ul>
+        </div>
+
+        <div className={styles.activityOwners}>
+          <h4>Activity Owners:</h4>
+          <ul>
+            {activityOwners.map((owner) => (
+              <li key={owner.id}>{owner.email}</li>
+            ))}
+          </ul>
+        </div>
+
         <ActivityImageUploader
           initiativeId={initiativeId}
           token={authToken}

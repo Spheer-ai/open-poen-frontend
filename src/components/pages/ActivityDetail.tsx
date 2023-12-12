@@ -14,6 +14,7 @@ import ActivitySponsors from "../elements/tables/activities/ActivitySponsors";
 import ActivityMedia from "../elements/tables/activities/ActivityMedia";
 import ActivityUsers from "../elements/tables/activities/ActivityUsers";
 import LoadingDot from "../animation/LoadingDot";
+import { ActivityOwner } from "../../types/ActivityOwners";
 
 interface ActivityDetailProps {
   initiativeId: string;
@@ -32,6 +33,7 @@ interface ActivityDetails {
   profile_picture: {
     attachment_thumbnail_url_512: string;
   };
+  activity_owners: ActivityOwner[];
 }
 
 const ActivityDetail: React.FC<ActivityDetailProps> = ({
@@ -54,6 +56,8 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
   const [availableBudget, setAvailableBudget] = useState<number | null>(null);
   const [currentActivityData, setCurrentActivityData] =
     useState<ActivityDetails | null>(null);
+  const activityOwners: ActivityOwner[] =
+    activityDetails?.activity_owners || [];
 
   useEffect(() => {
     if (location.pathname.includes("/funds/${initiativeId}/activities")) {
@@ -297,6 +301,7 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
         authToken={user?.token || ""}
         activityId={activityId}
         activityData={currentActivityData}
+        activityOwners={activityDetails?.activity_owners || []}
       />
       <DeleteActivity
         isOpen={isDeleteActivityModalOpen}
