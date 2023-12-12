@@ -15,6 +15,7 @@ import ActivityMedia from "../elements/tables/activities/ActivityMedia";
 import ActivityUsers from "../elements/tables/activities/ActivityUsers";
 import LoadingDot from "../animation/LoadingDot";
 import { ActivityOwner } from "../../types/ActivityOwners";
+import { usePermissions } from "../../contexts/PermissionContext";
 
 interface ActivityDetailProps {
   initiativeId: string;
@@ -34,6 +35,7 @@ interface ActivityDetails {
     attachment_thumbnail_url_512: string;
   };
   activity_owners: ActivityOwner[];
+  entityPermissions: string[];
 }
 
 const ActivityDetail: React.FC<ActivityDetailProps> = ({
@@ -45,6 +47,7 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
   const location = useLocation();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { fetchPermissions } = usePermissions();
   const [activityDetails, setActivityDetails] =
     useState<ActivityDetails | null>(null);
   const [isBlockingInteraction, setIsBlockingInteraction] = useState(false);
@@ -52,6 +55,8 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
   const [isEditActivityModalOpen, setIsEditActivityModalOpen] = useState(false);
   const [isDeleteActivityModalOpen, setIsDeleteActivityModalOpen] =
     useState(false);
+  const [hasEditPermission, setHasEditPermission] = useState(false);
+  const [hasDeletePermission, setHasDeletePermission] = useState(false);
   const [showFullDescription, setShowFullDescription] = useState(false);
   const [availableBudget, setAvailableBudget] = useState<number | null>(null);
   const [currentActivityData, setCurrentActivityData] =
@@ -87,6 +92,40 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
       navigate(`/funds/${initiativeId}/activities/gebruikers`);
     }
   };
+
+  useEffect(() => {
+    async function fetchUserPermissions() {
+      try {
+        if (user && user.token && activityId) {
+          const userPermissions: string[] | undefined = await fetchPermissions(
+            "User",
+            parseInt(activityId),
+            user.token,
+          );
+
+          if (userPermissions && userPermissions.includes("edit")) {
+            console.log("User has edit permission");
+            setHasEditPermission(true);
+          } else {
+            console.log("User does not have edit permission");
+            setHasEditPermission(false);
+          }
+
+          if (userPermissions && userPermissions.includes("delete")) {
+            console.log("User has delete permission");
+            setHasDeletePermission(true);
+          } else {
+            console.log("User does not have delete permission");
+            setHasDeletePermission(false);
+          }
+        }
+      } catch (error) {
+        console.error("Failed to fetch user permissions:", error);
+      }
+    }
+
+    fetchUserPermissions();
+  }, [user, activityId]);
 
   useEffect(() => {
     if (activityId && authToken) {
@@ -149,20 +188,24 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
   return (
     <div className={styles["fund-detail-container"]}>
       <div className={styles["top-right-button-container"]}>
-        <button
-          className={styles["edit-button"]}
-          onClick={handleToggleEditActivitydModal}
-        >
-          <img src={EditIcon} alt="Edit" className={styles["icon"]} />
-          Beheer activiteit
-        </button>
-        <button
-          className={styles["edit-button"]}
-          onClick={handleToggleDeleteActivitydModal}
-        >
-          <img src={DeleteIcon} alt="Delete" className={styles["icon"]} />
-          Verwijder activiteit
-        </button>
+        {hasEditPermission && (
+          <button
+            className={styles["edit-button"]}
+            onClick={handleToggleEditActivitydModal}
+          >
+            <img src={EditIcon} alt="Edit" className={styles["icon"]} />
+            Beheer activiteit
+          </button>
+        )}
+        {hasDeletePermission && (
+          <button
+            className={styles["edit-button"]}
+            onClick={handleToggleDeleteActivitydModal}
+          >
+            <img src={DeleteIcon} alt="Delete" className={styles["icon"]} />
+            Verwijder activiteit
+          </button>
+        )}
       </div>
       {activityDetails ? (
         <>

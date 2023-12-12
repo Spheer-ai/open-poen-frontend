@@ -16,6 +16,7 @@ import FundsSponsors from "../elements/tables/funds/FundsSponsors";
 import FundsUsers from "../elements/tables/funds/FundsUsers";
 import LoadingDot from "../animation/LoadingDot";
 import { InitiativeOwner } from "../../types/InitiativeOwners";
+import { usePermissions } from "../../contexts/PermissionContext";
 
 interface FundDetailProps {
   initiativeId: string;
@@ -35,6 +36,7 @@ interface FundDetails {
     attachment_thumbnail_url_512: string;
   };
   initiative_owners: InitiativeOwner[];
+  entityPermissions: string[];
 }
 
 const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
@@ -42,6 +44,9 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { fetchPermissions } = usePermissions();
+  const [hasEditPermission, setHasEditPermission] = useState(false);
+  const [hasDeletePermission, setHasDeletePermission] = useState(false);
   const [fundDetails, setFundDetails] = useState<FundDetails | null>(null);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [isBlockingInteraction, setIsBlockingInteraction] = useState(false);
@@ -83,6 +88,40 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
       navigate(`/funds/${initiativeId}/activities/gebruikers`);
     }
   };
+
+  useEffect(() => {
+    async function fetchUserPermissions() {
+      try {
+        if (user && user.token && initiativeId) {
+          const userPermissions: string[] | undefined = await fetchPermissions(
+            "User",
+            parseInt(initiativeId),
+            user.token,
+          );
+
+          if (userPermissions && userPermissions.includes("edit")) {
+            console.log("User has edit permission");
+            setHasEditPermission(true);
+          } else {
+            console.log("User does not have edit permission");
+            setHasEditPermission(false);
+          }
+
+          if (userPermissions && userPermissions.includes("delete")) {
+            console.log("User has delete permission");
+            setHasDeletePermission(true);
+          } else {
+            console.log("User does not have delete permission");
+            setHasDeletePermission(false);
+          }
+        }
+      } catch (error) {
+        console.error("Failed to fetch user permissions:", error);
+      }
+    }
+
+    fetchUserPermissions();
+  }, [user, initiativeId]);
 
   useEffect(() => {
     if (initiativeId && authToken) {
@@ -146,20 +185,24 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
     <div className={styles["fund-detail-container"]}>
       <>
         <div className={styles["top-right-button-container"]}>
-          <button
-            className={styles["edit-button"]}
-            onClick={handleToggleEditFundModal}
-          >
-            <img src={EditIcon} alt="Edit" className={styles["icon"]} />
-            Beheer initiatief
-          </button>
-          <button
-            className={styles["edit-button"]}
-            onClick={handleToggleDeleteFundModal}
-          >
-            <img src={DeleteIcon} alt="Delete" className={styles["icon"]} />
-            Verwijder initiatief
-          </button>
+          {hasEditPermission && (
+            <button
+              className={styles["edit-button"]}
+              onClick={handleToggleEditFundModal}
+            >
+              <img src={EditIcon} alt="Edit" className={styles["icon"]} />
+              Beheer initiatief
+            </button>
+          )}
+          {hasDeletePermission && (
+            <button
+              className={styles["edit-button"]}
+              onClick={handleToggleDeleteFundModal}
+            >
+              <img src={DeleteIcon} alt="Delete" className={styles["icon"]} />
+              Verwijder initiatief
+            </button>
+          )}
         </div>
       </>
       {fundDetails ? (

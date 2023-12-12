@@ -281,7 +281,7 @@ const TransactionOverview = () => {
                       }`}
                     >
                       {openDropdownForPayment !== transaction.id
-                        ? transaction.initiative_name || "Verbind initatief"
+                        ? transaction.initiative_name || "Verbind initiatief"
                         : null}
                     </span>
                     {openDropdownForPayment === transaction.id && (
