@@ -17,6 +17,7 @@ interface LinkActivityToPaymentProps {
   paymentId: number;
   initiativeId: number;
   activityName: string;
+  onActivityLinked: () => void;
 }
 
 const LinkActivityToPayment: React.FC<LinkActivityToPaymentProps> = ({
@@ -24,6 +25,7 @@ const LinkActivityToPayment: React.FC<LinkActivityToPaymentProps> = ({
   paymentId,
   initiativeId,
   activityName,
+  onActivityLinked,
 }) => {
   const [linkableActivities, setLinkableActivities] = useState<Activity[]>([]);
   const [selectedActivity, setSelectedActivity] = useState<number | "">("");
@@ -71,6 +73,7 @@ const LinkActivityToPayment: React.FC<LinkActivityToPaymentProps> = ({
           initiativeId,
           selectedActivity,
         );
+        onActivityLinked();
         setIsLoading(false);
       } else {
         console.error(

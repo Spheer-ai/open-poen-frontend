@@ -10,6 +10,7 @@ import LoadingDot from "../animation/LoadingDot";
 const TransactionOverview = () => {
   const { user } = useAuth();
   const [transactions, setTransactions] = useState<any[]>([]);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [filteredTransactions, setFilteredTransactions] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [lowercaseQuery, setLowercaseQuery] = useState<string>("");
@@ -49,7 +50,7 @@ const TransactionOverview = () => {
     };
 
     fetchTransactions();
-  }, [user]);
+  }, [user, refreshTrigger]);
 
   const highlightMatch = (text: string | null, query: string) => {
     if (query === "") {
@@ -193,6 +194,14 @@ const TransactionOverview = () => {
     setOpenDropdownForPayment(paymentId);
   };
 
+  const handleInitiativeLinked = () => {
+    setRefreshTrigger((prev) => prev + 1);
+  };
+
+  const handleActivityLinked = () => {
+    setRefreshTrigger((prev) => prev + 1);
+  };
+
   return (
     <div className={styles.transactionOverview}>
       <TransactionSearchInput onSearch={handleSearch} />
@@ -280,6 +289,7 @@ const TransactionOverview = () => {
                         token={user?.token || ""}
                         paymentId={transaction.id}
                         initiativeName={transaction.initiative_name || ""}
+                        onInitiativeLinked={handleInitiativeLinked}
                       />
                     )}
                   </td>
@@ -316,6 +326,7 @@ const TransactionOverview = () => {
                         paymentId={transaction.id}
                         initiativeId={transaction.initiative_id}
                         activityName={transaction.activity_name || ""}
+                        onActivityLinked={handleActivityLinked}
                       />
                     )}
                   </td>

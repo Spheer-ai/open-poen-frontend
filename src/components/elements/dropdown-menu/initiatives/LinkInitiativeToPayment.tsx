@@ -16,12 +16,14 @@ interface LinkInitiativeToPaymentProps {
   token: string;
   paymentId: number;
   initiativeName: string;
+  onInitiativeLinked: () => void;
 }
 
 const LinkInitiativeToPayment: React.FC<LinkInitiativeToPaymentProps> = ({
   token,
   paymentId,
   initiativeName,
+  onInitiativeLinked,
 }) => {
   const [linkableInitiatives, setLinkableInitiatives] = useState<Initiative[]>(
     [],
@@ -67,6 +69,8 @@ const LinkInitiativeToPayment: React.FC<LinkInitiativeToPaymentProps> = ({
         console.log("User IDs:", user_ids);
 
         await linkInitiativeToPayment(token, paymentId, selectedInitiative);
+
+        onInitiativeLinked();
 
         console.log("Link Initiative to Payment successful!");
       }
