@@ -53,6 +53,15 @@ const EditActivity: React.FC<EditActivityProps> = ({
   });
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [selectedUserIds, setSelectedUserIds] = useState<number[]>([]);
+  const [userEmailMapping, setUserEmailMapping] = useState<{
+    [key: number]: string;
+  }>({});
+  const [selectedOwners, setSelectedOwners] = useState<ActivityOwner[]>([]);
+  const [selectedUsers, setSelectedUsers] = useState<ActivityOwner[]>([]);
+
+  useEffect(() => {
+    setSelectedOwners(activityOwners);
+  }, [activityOwners]);
 
   useEffect(() => {
     if (isOpen) {
@@ -141,7 +150,20 @@ const EditActivity: React.FC<EditActivityProps> = ({
   };
 
   const handleSearchResult = (users) => {
-    setSelectedUserIds(users.map((user) => user.id));
+    const newUsers = users.filter((user) => {
+      return !selectedUsers.some((selectedUser) => selectedUser.id === user.id);
+    });
+
+    setSelectedUsers((prevSelectedUsers) => [
+      ...prevSelectedUsers,
+      ...newUsers,
+    ]);
+  };
+
+  const handleDeleteOwner = (ownerId: number) => {
+    setSelectedUsers((prevSelectedUsers) =>
+      prevSelectedUsers.filter((user) => user.id !== ownerId),
+    );
   };
 
   const linkOwnersToActivity = async (
@@ -172,7 +194,7 @@ const EditActivity: React.FC<EditActivityProps> = ({
         <h2 className={styles.title}>Beheer activiteit</h2>
         <hr></hr>
         <div className={styles.formGroup}>
-          <h4>Algemene activiteitinstelingen</h4>
+          <h4>Algemene activiteitinstellingen</h4>
           <label className={styles.label}>Naam:</label>
           <input
             type="text"
@@ -219,19 +241,15 @@ const EditActivity: React.FC<EditActivityProps> = ({
           onSearchResult={handleSearchResult}
         />
         <div className={styles.selectedUsers}>
-          <p>Selected User IDs:</p>
+          <h4>Selected Users:</h4>
           <ul>
-            {selectedUserIds.map((userId) => (
-              <li key={userId}>User ID: {userId}</li>
-            ))}
-          </ul>
-        </div>
-
-        <div className={styles.activityOwners}>
-          <h4>Activity Owners:</h4>
-          <ul>
-            {activityOwners.map((owner) => (
-              <li key={owner.id}>{owner.email}</li>
+            {selectedUsers.map((user) => (
+              <li key={user.id}>
+                {user.email}
+                <button onClick={() => handleDeleteOwner(user.id)}>
+                  Delete
+                </button>
+              </li>
             ))}
           </ul>
         </div>

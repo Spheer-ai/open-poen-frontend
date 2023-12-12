@@ -14,20 +14,36 @@ const SearchFundUsers: React.FC<SearchFundUsersProps> = ({
   const [searchResults, setSearchResults] = useState<
     Array<{ id: number; email: string }>
   >([]);
-
-  const handleSearch = async () => {
-    try {
-      const users = await searchUsersByEmail(authToken, email);
-      setSearchResults(users);
-      onSearchResult(users);
-    } catch (error) {
-      console.error("Error searching for users by email:", error);
-    }
-  };
+  let timer: NodeJS.Timeout | null = null; // Initialize timer with null
 
   useEffect(() => {
-    setSearchResults([]);
-  }, [email]);
+    const handleSearch = async () => {
+      try {
+        const users = await searchUsersByEmail(authToken, email);
+        setSearchResults(users);
+        onSearchResult(users);
+      } catch (error) {
+        console.error("Error searching for users by email:", error);
+      }
+    };
+
+    // Use a timer to delay the search after the user stops typing for 500 milliseconds
+    if (email) {
+      if (timer) {
+        clearTimeout(timer);
+      }
+      timer = setTimeout(handleSearch, 500);
+    } else {
+      // Clear search results if the input field is empty
+      setSearchResults([]);
+    }
+
+    return () => {
+      if (timer) {
+        clearTimeout(timer);
+      }
+    };
+  }, [email, authToken, onSearchResult]);
 
   return (
     <div>
@@ -38,7 +54,6 @@ const SearchFundUsers: React.FC<SearchFundUsersProps> = ({
         value={email}
         onChange={(e) => setEmail(e.target.value)}
       />
-      <button onClick={handleSearch}>Search</button>
 
       <div>
         <h3>Search Results:</h3>
