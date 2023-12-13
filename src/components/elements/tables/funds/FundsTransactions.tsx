@@ -2,7 +2,10 @@ import React, { useEffect, useState } from "react";
 import { getPaymentsByInitiative } from "../../../middleware/Api";
 import styles from "../../../../assets/scss/TransactionOverview.module.scss";
 import PaymentDetails from "../../../modals/PaymentDetails";
+import EditIcon from "/edit-icon.svg";
+import ViewIcon from "/eye.svg";
 import { useNavigate } from "react-router-dom";
+import EditPayment from "../../../modals/EditPayment";
 
 interface Transaction {
   id: number;
@@ -33,10 +36,11 @@ const FundsTransactions: React.FC<{
   const [selectedTransactionId, setSelectedTransactionId] = useState<
     number | null
   >(null);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [isBlockingInteraction, setIsBlockingInteraction] = useState(false);
   const [isFetchPaymentDetailsModalOpen, setIsFetchPaymentDetailsModalOpen] =
     useState(false);
-
+  const [isEditPaymentModalOpen, setIsEditPaymentModalOpen] = useState(false);
   useEffect(() => {
     const fetchTransactions = async () => {
       try {
@@ -58,14 +62,22 @@ const FundsTransactions: React.FC<{
     };
 
     fetchTransactions();
-  }, [authToken, initiativeId]);
+  }, [authToken, initiativeId, refreshTrigger]);
 
-  const handleTransactionClick = (transactionId: number) => {
+  const handleTransactionDetailsClick = (transactionId: number) => {
     setSelectedTransactionId(transactionId);
 
     console.log(`Selected Transaction ID: ${transactionId}`);
 
     setIsFetchPaymentDetailsModalOpen(true);
+  };
+
+  const handleTransactionEditClick = (transactionId: number) => {
+    setSelectedTransactionId(transactionId);
+
+    console.log(`Selected Transaction ID: ${transactionId}`);
+
+    setIsEditPaymentModalOpen(true);
   };
 
   const handleToggleFetchPaymentDetailsModal = () => {
@@ -80,6 +92,26 @@ const FundsTransactions: React.FC<{
       setIsFetchPaymentDetailsModalOpen(true);
       navigate(`/funds/${initiativeId}/activities/${initiativeId}/details`);
     }
+  };
+
+  const handleToggleEditPaymentModal = () => {
+    if (isEditPaymentModalOpen) {
+      setIsBlockingInteraction(true);
+      setTimeout(() => {
+        setIsBlockingInteraction(false);
+        setIsEditPaymentModalOpen(false);
+        navigate(`/funds/${initiativeId}/activities`);
+      }, 300);
+    } else {
+      setIsEditPaymentModalOpen(true);
+      navigate(
+        `/funds/${initiativeId}/activities/${selectedTransactionId}/details`,
+      );
+    }
+  };
+
+  const handlePaymentEdited = () => {
+    setRefreshTrigger((prev) => prev + 1);
   };
 
   return (
@@ -97,10 +129,7 @@ const FundsTransactions: React.FC<{
         </thead>
         <tbody>
           {transactions.map((transaction, index) => (
-            <tr
-              key={index}
-              onClick={() => handleTransactionClick(transaction.id)}
-            >
+            <tr key={index}>
               <td>{transaction.booking_date}</td>
               <td>{transaction.activity_name}</td>
               <td>{transaction.creditor_name}</td>
@@ -108,6 +137,22 @@ const FundsTransactions: React.FC<{
               <td>{transaction.n_attachments}</td>
               <td>{transaction.transaction_amount}</td>
               <td>{transaction.transaction_id}</td>
+              <td>
+                <img
+                  src={ViewIcon}
+                  alt="View Icon"
+                  onClick={() => handleTransactionDetailsClick(transaction.id)}
+                  style={{ cursor: "pointer", width: "24px", height: "24px" }}
+                />
+              </td>
+              <td>
+                <img
+                  src={EditIcon}
+                  alt="View Icon"
+                  onClick={() => handleTransactionEditClick(transaction.id)}
+                  style={{ cursor: "pointer" }}
+                />
+              </td>
             </tr>
           ))}
         </tbody>
@@ -117,6 +162,14 @@ const FundsTransactions: React.FC<{
         onClose={handleToggleFetchPaymentDetailsModal}
         isBlockingInteraction={isBlockingInteraction}
         paymentId={selectedTransactionId}
+      />
+      <EditPayment
+        isOpen={isEditPaymentModalOpen}
+        onClose={handleToggleEditPaymentModal}
+        isBlockingInteraction={isBlockingInteraction}
+        paymentId={selectedTransactionId}
+        onPaymentEdited={handlePaymentEdited}
+        paymentData={""}
       />
     </div>
   );

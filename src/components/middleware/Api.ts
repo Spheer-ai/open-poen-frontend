@@ -1704,3 +1704,25 @@ export const fetchPaymentDetails = async (paymentId, token) => {
     throw error;
   }
 };
+
+export const editPayment = async (paymentId, paymentData, token) => {
+  try {
+    const response = await api.patch(`/payment/${paymentId}`, paymentData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (response.status === 200) {
+      return response.data;
+    } else if (response.status === 422) {
+      throw new Error("Validation Error: " + JSON.stringify(response.data));
+    } else {
+      throw new Error("Failed to edit payment");
+    }
+  } catch (error) {
+    console.error("Error editing payment:", error);
+    throw error;
+  }
+};
