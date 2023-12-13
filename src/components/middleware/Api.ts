@@ -1682,3 +1682,25 @@ export const createPayment = async (paymentData, token) => {
     throw error;
   }
 };
+
+export const fetchPaymentDetails = async (paymentId, token) => {
+  try {
+    const response = await api.get(`/payment/${paymentId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (response.status === 200) {
+      return response.data;
+    } else if (response.status === 422) {
+      throw new Error("Validation Error: " + JSON.stringify(response.data));
+    } else {
+      throw new Error("Failed to fetch payment");
+    }
+  } catch (error) {
+    console.error("Error fetching payment:", error);
+    throw error;
+  }
+};
