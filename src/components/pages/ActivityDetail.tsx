@@ -412,10 +412,9 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
         activityId={activityId}
       />
       <button
-        className={styles["add-button"]}
+        className={styles["saveButton"]}
         onClick={handleToggleAddPaymentModal}
       >
-        <img src={DeleteIcon} alt="Delete" className={styles["icon"]} />
         Transactie toevoegen
       </button>
       <AddPayment
