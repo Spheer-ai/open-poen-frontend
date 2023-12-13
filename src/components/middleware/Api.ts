@@ -1660,3 +1660,25 @@ export const updateActivityOwners = async (
     throw error;
   }
 };
+
+export const createPayment = async (paymentData, token) => {
+  try {
+    const response = await api.post("/payment", paymentData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (response.status === 200) {
+      return response.data;
+    } else if (response.status === 422) {
+      throw new Error("Validation Error: " + JSON.stringify(response.data));
+    } else {
+      throw new Error("Failed to create payment");
+    }
+  } catch (error) {
+    console.error("Error creating payment:", error);
+    throw error;
+  }
+};
