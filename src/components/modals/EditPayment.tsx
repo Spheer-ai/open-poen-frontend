@@ -188,7 +188,6 @@ const EditPayment: React.FC<EditPaymentProps> = ({
               {!selectedFile && (
                 <>
                   <label className={styles.labelField}>Media:</label>
-
                   <label htmlFor="fileInput" className={styles.customFileInput}>
                     <div>
                       {" "}

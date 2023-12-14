@@ -22,7 +22,7 @@ interface Transaction {
 
 const formatDate = (dateString: string) => {
   if (!dateString) {
-    return ""; 
+    return "";
   }
   const date = new Date(dateString);
   if (!isNaN(date.getTime())) {

@@ -1758,3 +1758,59 @@ export const uploadPaymentAttachment = async (paymentId, file, token) => {
     throw error;
   }
 };
+
+export const fetchInitiativeMedia = async (
+  initiativeId,
+  offset = 0,
+  limit = 20,
+) => {
+  try {
+    const response = await api.get(`/initiative/${initiativeId}/media`, {
+      params: {
+        offset,
+        limit,
+      },
+    });
+
+    if (response.status === 200) {
+      return response.data;
+    } else if (response.status === 422) {
+      throw new Error("Validation Error: " + JSON.stringify(response.data));
+    } else {
+      throw new Error("Failed to fetch initiative media");
+    }
+  } catch (error) {
+    console.error("Error fetching initiative media:", error);
+    throw error;
+  }
+};
+
+export const fetchActivityMedia = async (
+  initiativeId,
+  actitivyId,
+  offset = 0,
+  limit = 20,
+) => {
+  try {
+    const response = await api.get(
+      `/initiative/${initiativeId}/activity/${actitivyId}/media`,
+      {
+        params: {
+          offset,
+          limit,
+        },
+      },
+    );
+
+    if (response.status === 200) {
+      return response.data;
+    } else if (response.status === 422) {
+      throw new Error("Validation Error: " + JSON.stringify(response.data));
+    } else {
+      throw new Error("Failed to fetch initiative media");
+    }
+  } catch (error) {
+    console.error("Error fetching initiative media:", error);
+    throw error;
+  }
+};
