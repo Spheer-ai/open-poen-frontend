@@ -20,7 +20,14 @@ const EditPayment: React.FC<EditPaymentProps> = ({
   paymentData,
 }) => {
   const [modalIsOpen, setModalIsOpen] = useState(isOpen);
-  const [transactionData, setTransactionData] = useState(paymentData);
+  const [transactionData, setTransactionData] = useState(
+    paymentData || {
+      transaction_amount: 0,
+      booking_date: "",
+      creditor_name: "",
+      debtor_name: "",
+    },
+  );
 
   useEffect(() => {
     if (isOpen) {
@@ -31,6 +38,17 @@ const EditPayment: React.FC<EditPaymentProps> = ({
       }, 300);
     }
   }, [isOpen]);
+
+  useEffect(() => {
+    if (paymentData) {
+      setTransactionData({
+        transaction_amount: paymentData.transaction_amount,
+        booking_date: paymentData.booking_date,
+        creditor_name: paymentData.creditor_name,
+        debtor_name: paymentData.debtor_name,
+      });
+    }
+  }, [paymentData]);
 
   const handleSave = async () => {
     try {

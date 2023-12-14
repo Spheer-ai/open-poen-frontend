@@ -45,6 +45,8 @@ const ActivityTransactions: React.FC<{
     useState(false);
   const [isAddPaymentModalOpen, setIsAddPaymentModalOpen] = useState(false);
   const [isEditPaymentModalOpen, setIsEditPaymentModalOpen] = useState(false);
+  const [selectedTransaction, setSelectedTransaction] =
+    useState<Transaction | null>(null);
 
   useEffect(() => {
     const fetchTransactions = async () => {
@@ -82,11 +84,14 @@ const ActivityTransactions: React.FC<{
   };
 
   const handleTransactionEditClick = (transactionId: number) => {
-    setSelectedTransactionId(transactionId);
+    const selectedTransaction = transactions.find(
+      (transaction) => transaction.id === transactionId,
+    );
 
-    console.log(`Selected Transaction ID: ${transactionId}`);
-
-    setIsEditPaymentModalOpen(true);
+    if (selectedTransaction) {
+      setSelectedTransaction(selectedTransaction);
+      setIsEditPaymentModalOpen(true);
+    }
   };
 
   const handleToggleFetchPaymentDetailsModal = () => {
@@ -213,7 +218,7 @@ const ActivityTransactions: React.FC<{
           isBlockingInteraction={isBlockingInteraction}
           paymentId={selectedTransactionId}
           onPaymentEdited={handlePaymentEdited}
-          paymentData={""}
+          paymentData={selectedTransaction}
         />
       </div>
     </>
