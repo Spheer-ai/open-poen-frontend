@@ -18,7 +18,6 @@ import LoadingDot from "../animation/LoadingDot";
 import { InitiativeOwner } from "../../types/InitiativeOwners";
 import { usePermissions } from "../../contexts/PermissionContext";
 import { useFieldPermissions } from "../../contexts/FieldPermissionContext";
-import AddPayment from "../modals/AddPayment";
 
 interface FundDetailProps {
   initiativeId: string;
@@ -56,7 +55,6 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
   const [isBlockingInteraction, setIsBlockingInteraction] = useState(false);
   const [isEditFundModalOpen, setIsEditFundModalOpen] = useState(false);
   const [isDeleteFundModalOpen, setIsDeleteFundModalOpen] = useState(false);
-  const [isAddPaymentModalOpen, setIsAddPaymentModalOpen] = useState(false);
   const [showFullDescription, setShowFullDescription] = useState(false);
   const [availableBudget, setAvailableBudget] = useState<number | null>(null);
   const [currentFundData, setCurrentFundData] = useState<FundDetails | null>(
@@ -200,24 +198,6 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
   };
 
   const handleFundDeleted = () => {
-    setRefreshTrigger((prev) => prev + 1);
-  };
-
-  const handleToggleAddPaymentModal = () => {
-    if (isAddPaymentModalOpen) {
-      setIsBlockingInteraction(true);
-      setTimeout(() => {
-        setIsBlockingInteraction(false);
-        setIsAddPaymentModalOpen(false);
-        navigate(`/funds/${initiativeId}/activities`);
-      }, 300);
-    } else {
-      setIsAddPaymentModalOpen(true);
-      navigate(`/funds/${initiativeId}/activities/add-payment`);
-    }
-  };
-
-  const handlePaymentAdded = () => {
     setRefreshTrigger((prev) => prev + 1);
   };
 
@@ -403,20 +383,6 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
       <TabbedFundNavigation
         onTabChange={handleTabChange}
         initiativeId={initiativeId}
-      />
-      <button
-        className={styles["saveButton"]}
-        onClick={handleToggleAddPaymentModal}
-      >
-        Transactie toevoegen
-      </button>
-      <AddPayment
-        isOpen={isAddPaymentModalOpen}
-        onClose={handleToggleAddPaymentModal}
-        isBlockingInteraction={isBlockingInteraction}
-        onPaymentAdded={handlePaymentAdded}
-        initiativeId={initiativeId}
-        activityId={null}
       />
       {activeTab === "transactieoverzicht" && (
         <FundsTransactions

@@ -6,6 +6,7 @@ import EditIcon from "/edit-icon.svg";
 import ViewIcon from "/eye.svg";
 import { useNavigate } from "react-router-dom";
 import EditPayment from "../../../modals/EditPayment";
+import AddPayment from "../../../modals/AddPayment";
 
 interface Transaction {
   id: number;
@@ -40,6 +41,7 @@ const FundsTransactions: React.FC<{
   const [isBlockingInteraction, setIsBlockingInteraction] = useState(false);
   const [isFetchPaymentDetailsModalOpen, setIsFetchPaymentDetailsModalOpen] =
     useState(false);
+  const [isAddPaymentModalOpen, setIsAddPaymentModalOpen] = useState(false);
   const [isEditPaymentModalOpen, setIsEditPaymentModalOpen] = useState(false);
   useEffect(() => {
     const fetchTransactions = async () => {
@@ -114,64 +116,101 @@ const FundsTransactions: React.FC<{
     setRefreshTrigger((prev) => prev + 1);
   };
 
+  const handleToggleAddPaymentModal = () => {
+    if (isAddPaymentModalOpen) {
+      setIsBlockingInteraction(true);
+      setTimeout(() => {
+        setIsBlockingInteraction(false);
+        setIsAddPaymentModalOpen(false);
+        navigate(`/funds/${initiativeId}/activities`);
+      }, 300);
+    } else {
+      setIsAddPaymentModalOpen(true);
+      navigate(`/funds/${initiativeId}/activities/add-payment`);
+    }
+  };
+
+  const handlePaymentAdded = () => {
+    setRefreshTrigger((prev) => prev + 1);
+  };
+
   return (
-    <div className={styles.fundTransactionOverview}>
-      <table className={styles.fundTransactionTable}>
-        <thead>
-          <tr>
-            <th>Datum</th>
-            <th>Activiteit</th>
-            <th>Verzender</th>
-            <th>Ontvanger</th>
-            <th>Media</th>
-            <th>Hoeveelheid</th>
-          </tr>
-        </thead>
-        <tbody>
-          {transactions.map((transaction, index) => (
-            <tr key={index}>
-              <td>{transaction.booking_date}</td>
-              <td>{transaction.activity_name}</td>
-              <td>{transaction.creditor_name}</td>
-              <td>{transaction.debtor_name}</td>
-              <td>{transaction.n_attachments}</td>
-              <td>{transaction.transaction_amount}</td>
-              <td>{transaction.transaction_id}</td>
-              <td>
-                <img
-                  src={ViewIcon}
-                  alt="View Icon"
-                  onClick={() => handleTransactionDetailsClick(transaction.id)}
-                  style={{ cursor: "pointer", width: "24px", height: "24px" }}
-                />
-              </td>
-              <td>
-                <img
-                  src={EditIcon}
-                  alt="View Icon"
-                  onClick={() => handleTransactionEditClick(transaction.id)}
-                  style={{ cursor: "pointer" }}
-                />
-              </td>
+    <>
+      {" "}
+      <AddPayment
+        isOpen={isAddPaymentModalOpen}
+        onClose={handleToggleAddPaymentModal}
+        isBlockingInteraction={isBlockingInteraction}
+        onPaymentAdded={handlePaymentAdded}
+        initiativeId={initiativeId}
+        activityId={null}
+      />
+      <button
+        className={styles["saveButton"]}
+        onClick={handleToggleAddPaymentModal}
+      >
+        Transactie toevoegen
+      </button>
+      <div className={styles.fundTransactionOverview}>
+        <table className={styles.fundTransactionTable}>
+          <thead>
+            <tr>
+              <th>Datum</th>
+              <th>Activiteit</th>
+              <th>Verzender</th>
+              <th>Ontvanger</th>
+              <th>Media</th>
+              <th>Hoeveelheid</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
-      <PaymentDetails
-        isOpen={isFetchPaymentDetailsModalOpen}
-        onClose={handleToggleFetchPaymentDetailsModal}
-        isBlockingInteraction={isBlockingInteraction}
-        paymentId={selectedTransactionId}
-      />
-      <EditPayment
-        isOpen={isEditPaymentModalOpen}
-        onClose={handleToggleEditPaymentModal}
-        isBlockingInteraction={isBlockingInteraction}
-        paymentId={selectedTransactionId}
-        onPaymentEdited={handlePaymentEdited}
-        paymentData={""}
-      />
-    </div>
+          </thead>
+          <tbody>
+            {transactions.map((transaction, index) => (
+              <tr key={index}>
+                <td>{transaction.booking_date}</td>
+                <td>{transaction.activity_name}</td>
+                <td>{transaction.creditor_name}</td>
+                <td>{transaction.debtor_name}</td>
+                <td>{transaction.n_attachments}</td>
+                <td>{transaction.transaction_amount}</td>
+                <td>{transaction.transaction_id}</td>
+                <td>
+                  <img
+                    src={ViewIcon}
+                    alt="View Icon"
+                    onClick={() =>
+                      handleTransactionDetailsClick(transaction.id)
+                    }
+                    style={{ cursor: "pointer", width: "24px", height: "24px" }}
+                  />
+                </td>
+                <td>
+                  <img
+                    src={EditIcon}
+                    alt="View Icon"
+                    onClick={() => handleTransactionEditClick(transaction.id)}
+                    style={{ cursor: "pointer" }}
+                  />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <PaymentDetails
+          isOpen={isFetchPaymentDetailsModalOpen}
+          onClose={handleToggleFetchPaymentDetailsModal}
+          isBlockingInteraction={isBlockingInteraction}
+          paymentId={selectedTransactionId}
+        />
+        <EditPayment
+          isOpen={isEditPaymentModalOpen}
+          onClose={handleToggleEditPaymentModal}
+          isBlockingInteraction={isBlockingInteraction}
+          paymentId={selectedTransactionId}
+          onPaymentEdited={handlePaymentEdited}
+          paymentData={""}
+        />
+      </div>
+    </>
   );
 };
 

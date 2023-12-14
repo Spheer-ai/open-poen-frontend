@@ -17,7 +17,6 @@ import LoadingDot from "../animation/LoadingDot";
 import { ActivityOwner } from "../../types/ActivityOwners";
 import { usePermissions } from "../../contexts/PermissionContext";
 import { useFieldPermissions } from "../../contexts/FieldPermissionContext";
-import AddPayment from "../modals/AddPayment";
 
 interface ActivityDetailProps {
   initiativeId: string;
@@ -206,24 +205,6 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
     setRefreshTrigger((prev) => prev + 1);
   };
 
-  const handleToggleAddPaymentModal = () => {
-    if (isAddPaymentModalOpen) {
-      setIsBlockingInteraction(true);
-      setTimeout(() => {
-        setIsBlockingInteraction(false);
-        setIsAddPaymentModalOpen(false);
-        navigate(`/funds/${initiativeId}/activities`);
-      }, 300);
-    } else {
-      setIsAddPaymentModalOpen(true);
-      navigate(`/funds/${initiativeId}/activities/add-payment`);
-    }
-  };
-
-  const handlePaymentAdded = () => {
-    setRefreshTrigger((prev) => prev + 1);
-  };
-
   useEffect(() => {
     if (activityDetails) {
       const receivedBudget = activityDetails.income || 0;
@@ -408,20 +389,6 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
 
       <TabbedActivitiesNavigation
         onTabChange={handleTabChange}
-        initiativeId={initiativeId}
-        activityId={activityId}
-      />
-      <button
-        className={styles["saveButton"]}
-        onClick={handleToggleAddPaymentModal}
-      >
-        Transactie toevoegen
-      </button>
-      <AddPayment
-        isOpen={isAddPaymentModalOpen}
-        onClose={handleToggleAddPaymentModal}
-        isBlockingInteraction={isBlockingInteraction}
-        onPaymentAdded={handlePaymentAdded}
         initiativeId={initiativeId}
         activityId={activityId}
       />
