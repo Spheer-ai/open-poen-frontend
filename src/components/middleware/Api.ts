@@ -1726,3 +1726,35 @@ export const editPayment = async (paymentId, paymentData, token) => {
     throw error;
   }
 };
+
+export const uploadPaymentAttachment = async (paymentId, file, token) => {
+  try {
+    const formData = new FormData();
+
+    formData.append("files", file);
+
+    const response = await api.post(
+      `/payment/${paymentId}/attachments`,
+      formData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      },
+    );
+
+    console.log("Response Data:", response.data);
+
+    if (response.status === 200) {
+      return response.data;
+    } else if (response.status === 422) {
+      throw new Error("Validation Error: " + JSON.stringify(response.data));
+    } else {
+      throw new Error("Failed to upload payment attachment");
+    }
+  } catch (error) {
+    console.error("Error uploading payment attachment:", error);
+    throw error;
+  }
+};

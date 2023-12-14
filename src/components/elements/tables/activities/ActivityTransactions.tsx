@@ -22,11 +22,11 @@ interface Transaction {
 
 const formatDate = (dateString: string) => {
   if (!dateString) {
-    return ""; // Return an empty string for empty date strings
+    return ""; 
   }
   const date = new Date(dateString);
   if (!isNaN(date.getTime())) {
-    return date.toISOString(); // Convert to ISO 8601 format
+    return date.toISOString();
   } else {
     return "";
   }
@@ -242,6 +242,7 @@ const ActivityTransactions: React.FC<{
           paymentId={selectedTransactionId}
           onPaymentEdited={handlePaymentEdited}
           paymentData={selectedTransaction}
+          token={authToken}
         />
       </div>
     </>

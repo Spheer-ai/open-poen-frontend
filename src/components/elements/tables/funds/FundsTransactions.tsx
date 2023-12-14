@@ -238,6 +238,7 @@ const FundsTransactions: React.FC<{
           paymentId={selectedTransactionId}
           onPaymentEdited={handlePaymentEdited}
           paymentData={selectedTransaction}
+          token={authToken}
         />
       </div>
     </>

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styles from "../../assets/scss/layout/AddFundDesktop.module.scss";
-import { editPayment } from "../middleware/Api";
+import LoadingDot from "../animation/LoadingDot";
+import { editPayment, uploadPaymentAttachment } from "../middleware/Api";
 
 interface EditPaymentProps {
   isOpen: boolean;
@@ -9,6 +10,7 @@ interface EditPaymentProps {
   onPaymentEdited: () => void;
   paymentId: number | null;
   paymentData: any;
+  token: string | null;
 }
 
 const EditPayment: React.FC<EditPaymentProps> = ({
@@ -18,10 +20,14 @@ const EditPayment: React.FC<EditPaymentProps> = ({
   onPaymentEdited,
   paymentId,
   paymentData,
+  token,
 }) => {
+  console.log("Token prop received in EditPayment:", token);
   const [modalIsOpen, setModalIsOpen] = useState(isOpen);
   const [displayDate, setDisplayDate] = useState("");
   const [apiDate, setApiDate] = useState("");
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const [transactionData, setTransactionData] = useState({
     transaction_amount: 0,
@@ -66,14 +72,17 @@ const EditPayment: React.FC<EditPaymentProps> = ({
     });
   };
 
+  const handleResetState = () => {
+    setSelectedFile(null);
+  };
+
   const handleSave = async () => {
     try {
-      const token = localStorage.getItem("token");
+      setIsLoading(true);
       if (!token) {
-        console.error("Token is not available in localStorage");
+        console.error("Token is not available.");
         return;
       }
-
       console.log("Received paymentId:", paymentId);
       const displayDateObject = new Date(displayDate);
 
@@ -92,10 +101,15 @@ const EditPayment: React.FC<EditPaymentProps> = ({
 
       console.log("Data to be sent to API:", requestData);
 
+      if (selectedFile) {
+        await uploadPaymentAttachment(paymentId, selectedFile, token);
+      }
+
       await editPayment(paymentId, requestData, token);
 
       onPaymentEdited();
-
+      handleResetState();
+      setIsLoading(false);
       handleClose();
     } catch (error) {
       console.error("Error editing payment:", error);
@@ -104,6 +118,7 @@ const EditPayment: React.FC<EditPaymentProps> = ({
 
   const handleClose = () => {
     if (!isBlockingInteraction) {
+      handleResetState();
       setModalIsOpen(false);
       onClose();
     }
@@ -122,9 +137,13 @@ const EditPayment: React.FC<EditPaymentProps> = ({
     return `${year}-${month}-${day}`;
   };
 
-  if (!isOpen && !modalIsOpen) {
-    return null;
-  }
+  const handleFileChange = (e) => {
+    setSelectedFile(e.target.files[0]);
+  };
+
+  const handleCancelImage = () => {
+    setSelectedFile(null);
+  };
 
   return (
     <>
@@ -132,61 +151,117 @@ const EditPayment: React.FC<EditPaymentProps> = ({
         className={`${styles.backdrop} ${modalIsOpen ? styles.open : ""}`}
         onClick={handleClose}
       ></div>
+
       <div className={`${styles.modal} ${modalIsOpen ? styles.open : ""}`}>
-        <h2 className={styles.title}>Transacties aanmaken</h2>
+        <h2 className={styles.title}>Transacties bewerken</h2>
         <hr></hr>
-        <div className={styles.formGroup}>
-          <h3>Info</h3>
-          <label className={styles.labelField}>Bedrag:</label>
-          <input
-            type="number"
-            value={transactionData.transaction_amount}
-            onChange={(e) =>
-              setTransactionData({
-                ...transactionData,
-                transaction_amount: parseFloat(e.target.value),
-              })
-            }
-            onKeyDown={handleEnterKeyPress}
-          />
-        </div>
-        <div className={styles.formGroup}>
-          <label className={styles.labelField}>Datum:</label>
-          <input
-            type="date"
-            value={displayDate}
-            onChange={handleDateChange}
-            onKeyDown={handleEnterKeyPress}
-          />
-        </div>
-        <div className={styles.formGroup}>
-          <label className={styles.labelField}>Naam betaler:</label>
-          <input
-            type="text"
-            value={transactionData.creditor_name}
-            onChange={(e) =>
-              setTransactionData({
-                ...transactionData,
-                creditor_name: e.target.value,
-              })
-            }
-            onKeyDown={handleEnterKeyPress}
-          />
-        </div>
-        <div className={styles.formGroup}>
-          <label className={styles.labelField}>Naam ontvanger:</label>
-          <input
-            type="text"
-            value={transactionData.debtor_name}
-            onChange={(e) =>
-              setTransactionData({
-                ...transactionData,
-                debtor_name: e.target.value,
-              })
-            }
-            onKeyDown={handleEnterKeyPress}
-          />
-        </div>
+        {isLoading && (
+          <div className={styles["loading-container"]}>
+            <LoadingDot delay={0} />
+            <LoadingDot delay={0.1} />
+            <LoadingDot delay={0.1} />
+            <LoadingDot delay={0.2} />
+            <LoadingDot delay={0.2} />
+          </div>
+        )}
+        {!isLoading ? (
+          <>
+            <div className={`${styles.formGroup}`}>
+              {selectedFile && (
+                <div className={styles.imagePreview}>
+                  <div className={styles.imageContainer}>
+                    <img
+                      src={URL.createObjectURL(selectedFile)}
+                      alt="Image Preview"
+                      className={styles.previewImage}
+                      style={{ maxHeight: "150px", borderRadius: "8px" }}
+                    />
+                    <button
+                      className={styles.closeButton}
+                      onClick={handleCancelImage}
+                    >
+                      <img src="/close-preview.svg" alt="Close" />
+                    </button>
+                  </div>
+                </div>
+              )}
+              {!selectedFile && (
+                <>
+                  <label className={styles.labelField}>Media:</label>
+
+                  <label htmlFor="fileInput" className={styles.customFileInput}>
+                    <div>
+                      {" "}
+                      <img src="/upload-image.svg" alt="Upload Image" />
+                    </div>
+                    <span>
+                      Sleep en zet neer of blader om een bestand te uploaden
+                    </span>
+                    <input
+                      type="file"
+                      id="fileInput"
+                      accept=".pdf, .jpg, .png"
+                      onChange={handleFileChange}
+                      className={styles.hiddenFileInput}
+                    />
+                  </label>
+                </>
+              )}
+            </div>
+            <div className={styles.formGroup}>
+              <h3>Info</h3>
+              <label className={styles.labelField}>Bedrag:</label>
+              <input
+                type="number"
+                value={transactionData.transaction_amount}
+                onChange={(e) =>
+                  setTransactionData({
+                    ...transactionData,
+                    transaction_amount: parseFloat(e.target.value),
+                  })
+                }
+                onKeyDown={handleEnterKeyPress}
+              />
+            </div>
+            <div className={styles.formGroup}>
+              <label className={styles.labelField}>Datum:</label>
+              <input
+                type="date"
+                value={displayDate}
+                onChange={handleDateChange}
+                onKeyDown={handleEnterKeyPress}
+              />
+            </div>
+            <div className={styles.formGroup}>
+              <label className={styles.labelField}>Naam betaler:</label>
+              <input
+                type="text"
+                value={transactionData.creditor_name}
+                onChange={(e) =>
+                  setTransactionData({
+                    ...transactionData,
+                    creditor_name: e.target.value,
+                  })
+                }
+                onKeyDown={handleEnterKeyPress}
+              />
+            </div>
+            <div className={styles.formGroup}>
+              <label className={styles.labelField}>Naam ontvanger:</label>
+              <input
+                type="text"
+                value={transactionData.debtor_name}
+                onChange={(e) =>
+                  setTransactionData({
+                    ...transactionData,
+                    debtor_name: e.target.value,
+                  })
+                }
+                onKeyDown={handleEnterKeyPress}
+              />
+            </div>
+          </>
+        ) : null}
         <div className={styles.buttonContainer}>
           <button onClick={handleClose} className={styles.cancelButton}>
             Annuleren
