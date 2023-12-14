@@ -21,14 +21,16 @@ interface Transaction {
 }
 
 const formatDate = (dateString: string) => {
-  const options: Intl.DateTimeFormatOptions = {
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  };
-  return new Date(dateString).toLocaleDateString("nl-NL", options);
+  if (!dateString) {
+    return ""; // Return an empty string for empty date strings
+  }
+  const date = new Date(dateString);
+  if (!isNaN(date.getTime())) {
+    return date.toISOString(); // Convert to ISO 8601 format
+  } else {
+    return "";
+  }
 };
-
 const ActivityTransactions: React.FC<{
   authToken: string;
   initiativeId: string;
@@ -84,13 +86,29 @@ const ActivityTransactions: React.FC<{
   };
 
   const handleTransactionEditClick = (transactionId: number) => {
+    setSelectedTransactionId(transactionId);
     const selectedTransaction = transactions.find(
       (transaction) => transaction.id === transactionId,
     );
 
-    if (selectedTransaction) {
-      setSelectedTransaction(selectedTransaction);
-      setIsEditPaymentModalOpen(true);
+    if (selectedTransaction && selectedTransaction.booking_date) {
+      const newDate = new Date(selectedTransaction.booking_date);
+      if (!isNaN(newDate.getTime())) {
+        const isoDate = newDate.toISOString();
+
+        console.log("Selected Transaction ID:", transactionId);
+
+        setSelectedTransaction({
+          ...selectedTransaction,
+          booking_date: isoDate,
+        });
+        setIsEditPaymentModalOpen(true);
+      } else {
+        console.error(
+          "Invalid booking_date format:",
+          selectedTransaction.booking_date,
+        );
+      }
     }
   };
 
@@ -178,7 +196,12 @@ const ActivityTransactions: React.FC<{
           <tbody>
             {transactions.map((transaction, index) => (
               <tr key={index}>
-                <td>{transaction.booking_date}</td>
+                <td>
+                  {new Date(transaction.booking_date).toLocaleDateString(
+                    "nl-NL",
+                    { year: "numeric", month: "numeric", day: "numeric" },
+                  )}
+                </td>
                 <td>{`${transaction.activity_name} ${transaction.short_user_description}`}</td>
                 <td>{transaction.creditor_name}</td>
                 <td>{transaction.debtor_name}</td>

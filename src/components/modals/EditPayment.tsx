@@ -20,14 +20,15 @@ const EditPayment: React.FC<EditPaymentProps> = ({
   paymentData,
 }) => {
   const [modalIsOpen, setModalIsOpen] = useState(isOpen);
-  const [transactionData, setTransactionData] = useState(
-    paymentData || {
-      transaction_amount: 0,
-      booking_date: "",
-      creditor_name: "",
-      debtor_name: "",
-    },
-  );
+  const [displayDate, setDisplayDate] = useState("");
+  const [apiDate, setApiDate] = useState("");
+
+  const [transactionData, setTransactionData] = useState({
+    transaction_amount: 0,
+    booking_date: "",
+    creditor_name: "",
+    debtor_name: "",
+  });
 
   useEffect(() => {
     if (isOpen) {
@@ -42,13 +43,28 @@ const EditPayment: React.FC<EditPaymentProps> = ({
   useEffect(() => {
     if (paymentData) {
       setTransactionData({
-        transaction_amount: paymentData.transaction_amount,
+        transaction_amount: parseFloat(paymentData.transaction_amount),
         booking_date: paymentData.booking_date,
         creditor_name: paymentData.creditor_name,
         debtor_name: paymentData.debtor_name,
       });
+
+      setDisplayDate(formatDateForInput(new Date(paymentData.booking_date)));
+      setApiDate(paymentData.booking_date);
     }
   }, [paymentData]);
+
+  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newDate = e.target.value;
+    console.log("New Date Value:", newDate);
+
+    setDisplayDate(newDate);
+
+    setTransactionData({
+      ...transactionData,
+      booking_date: newDate,
+    });
+  };
 
   const handleSave = async () => {
     try {
@@ -58,13 +74,31 @@ const EditPayment: React.FC<EditPaymentProps> = ({
         return;
       }
 
-      await editPayment(paymentId, transactionData, token);
+      console.log("Received paymentId:", paymentId);
+      const displayDateObject = new Date(displayDate);
+
+      if (isNaN(displayDateObject.getTime())) {
+        console.error("Invalid date format");
+        return;
+      }
+
+      const apiDate = displayDateObject.toISOString();
+
+      const requestData = {
+        ...transactionData,
+        booking_date: apiDate,
+        transaction_id: paymentId,
+      };
+
+      console.log("Data to be sent to API:", requestData);
+
+      await editPayment(paymentId, requestData, token);
 
       onPaymentEdited();
 
       handleClose();
     } catch (error) {
-      console.error("Error creating payment:", error);
+      console.error("Error editing payment:", error);
     }
   };
 
@@ -81,19 +115,16 @@ const EditPayment: React.FC<EditPaymentProps> = ({
     }
   };
 
+  const formatDateForInput = (date: Date) => {
+    const year = date.getFullYear();
+    const month = `${date.getMonth() + 1}`.padStart(2, "0");
+    const day = `${date.getDate()}`.padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  };
+
   if (!isOpen && !modalIsOpen) {
     return null;
   }
-  const formatDateForInput = (date: Date) => {
-    if (date instanceof Date && !isNaN(date.getTime())) {
-      const year = date.getFullYear();
-      const month = `${date.getMonth() + 1}`.padStart(2, "0");
-      const day = `${date.getDate()}`.padStart(2, "0");
-      return `${year}-${month}-${day}`;
-    } else {
-      return "";
-    }
-  };
 
   return (
     <>
@@ -113,7 +144,7 @@ const EditPayment: React.FC<EditPaymentProps> = ({
             onChange={(e) =>
               setTransactionData({
                 ...transactionData,
-                transaction_amount: e.target.value,
+                transaction_amount: parseFloat(e.target.value),
               })
             }
             onKeyDown={handleEnterKeyPress}
@@ -123,13 +154,8 @@ const EditPayment: React.FC<EditPaymentProps> = ({
           <label className={styles.labelField}>Datum:</label>
           <input
             type="date"
-            value={formatDateForInput(paymentData.booking_date)}
-            onChange={(e) =>
-              setTransactionData({
-                ...paymentData,
-                booking_date: new Date(e.target.value),
-              })
-            }
+            value={displayDate}
+            onChange={handleDateChange}
             onKeyDown={handleEnterKeyPress}
           />
         </div>
