@@ -8,7 +8,7 @@ interface AddPaymentProps {
   isBlockingInteraction: boolean;
   onPaymentAdded: () => void;
   initiativeId: string;
-  activityId: string;
+  activityId: string | null;
 }
 
 const AddPayment: React.FC<AddPaymentProps> = ({
@@ -33,7 +33,7 @@ const AddPayment: React.FC<AddPaymentProps> = ({
     hidden: false,
     type: "handmatig",
     initiative_id: Number(initiativeId),
-    activity_id: Number(activityId),
+    activity_id: activityId ? Number(activityId) : null,
   });
 
   useEffect(() => {

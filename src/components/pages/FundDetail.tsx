@@ -416,7 +416,7 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
         isBlockingInteraction={isBlockingInteraction}
         onPaymentAdded={handlePaymentAdded}
         initiativeId={initiativeId}
-        activityId={"6"}
+        activityId={null}
       />
       {activeTab === "transactieoverzicht" && (
         <FundsTransactions
