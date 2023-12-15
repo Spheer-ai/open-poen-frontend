@@ -193,6 +193,7 @@ export default function Contacts() {
               <ul>
                 {userData.map((user, index) => (
                   <li
+                    key={user.id}
                     className={`${styles["user-fade-in"]}`}
                     style={{
                       animationDelay: `${index * 0.1}s`,

@@ -19,8 +19,7 @@ const UserItem = ({
   const isUserInactive = user.is_active === false;
 
   return (
-    <li
-      key={userItemId}
+    <div
       onClick={() => handleUserClick(userItemId)}
       className={`${styles["user-list"]} ${
         isActive ? styles["active-user"] : ""
@@ -125,7 +124,7 @@ const UserItem = ({
           )}
         </div>
       )}
-    </li>
+    </div>
   );
 };
 

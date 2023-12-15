@@ -6,4 +6,15 @@ export interface UserDetails {
   userId: string;
   token: string | null;
   is_superuser?: boolean;
+  id: number;
+  email: string;
+  activities: {
+    id: string;
+    name: string;
+  }[];
+
+  initiatives: {
+    id: number;
+    name: string;
+  }[];
 }
