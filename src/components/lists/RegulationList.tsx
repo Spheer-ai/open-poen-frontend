@@ -139,8 +139,8 @@ const RegulationList = () => {
             {regulations.map((regulation) => (
               <li
                 key={regulation.id}
-                className={`${styles["regulation-fade-in"]} ${styles["regulation-list-item"]}
-                onClick={() => handleRegulationClick(regulation.id)}`}
+                className={`${styles["regulation-fade-in"]} ${styles["regulation-list-item"]}`}
+                onClick={() => handleRegulationClick(regulation.id)}
               >
                 <div className={styles["regulation-info"]}>
                   {regulation.name}
