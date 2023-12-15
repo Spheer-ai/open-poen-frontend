@@ -1660,3 +1660,157 @@ export const updateActivityOwners = async (
     throw error;
   }
 };
+
+export const createPayment = async (paymentData, token) => {
+  try {
+    const response = await api.post("/payment", paymentData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (response.status === 200) {
+      return response.data;
+    } else if (response.status === 422) {
+      throw new Error("Validation Error: " + JSON.stringify(response.data));
+    } else {
+      throw new Error("Failed to create payment");
+    }
+  } catch (error) {
+    console.error("Error creating payment:", error);
+    throw error;
+  }
+};
+
+export const fetchPaymentDetails = async (paymentId, token) => {
+  try {
+    const response = await api.get(`/payment/${paymentId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (response.status === 200) {
+      return response.data;
+    } else if (response.status === 422) {
+      throw new Error("Validation Error: " + JSON.stringify(response.data));
+    } else {
+      throw new Error("Failed to fetch payment");
+    }
+  } catch (error) {
+    console.error("Error fetching payment:", error);
+    throw error;
+  }
+};
+
+export const editPayment = async (paymentId, paymentData, token) => {
+  try {
+    const response = await api.patch(`/payment/${paymentId}`, paymentData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (response.status === 200) {
+      return response.data;
+    } else if (response.status === 422) {
+      throw new Error("Validation Error: " + JSON.stringify(response.data));
+    } else {
+      throw new Error("Failed to edit payment");
+    }
+  } catch (error) {
+    console.error("Error editing payment:", error);
+    throw error;
+  }
+};
+
+export const uploadPaymentAttachment = async (paymentId, file, token) => {
+  try {
+    const formData = new FormData();
+
+    formData.append("files", file);
+
+    const response = await api.post(
+      `/payment/${paymentId}/attachments`,
+      formData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      },
+    );
+
+    console.log("Response Data:", response.data);
+
+    if (response.status === 200) {
+      return response.data;
+    } else if (response.status === 422) {
+      throw new Error("Validation Error: " + JSON.stringify(response.data));
+    } else {
+      throw new Error("Failed to upload payment attachment");
+    }
+  } catch (error) {
+    console.error("Error uploading payment attachment:", error);
+    throw error;
+  }
+};
+
+export const fetchInitiativeMedia = async (
+  initiativeId,
+  offset = 0,
+  limit = 20,
+) => {
+  try {
+    const response = await api.get(`/initiative/${initiativeId}/media`, {
+      params: {
+        offset,
+        limit,
+      },
+    });
+
+    if (response.status === 200) {
+      return response.data;
+    } else if (response.status === 422) {
+      throw new Error("Validation Error: " + JSON.stringify(response.data));
+    } else {
+      throw new Error("Failed to fetch initiative media");
+    }
+  } catch (error) {
+    console.error("Error fetching initiative media:", error);
+    throw error;
+  }
+};
+
+export const fetchActivityMedia = async (
+  initiativeId,
+  actitivyId,
+  offset = 0,
+  limit = 20,
+) => {
+  try {
+    const response = await api.get(
+      `/initiative/${initiativeId}/activity/${actitivyId}/media`,
+      {
+        params: {
+          offset,
+          limit,
+        },
+      },
+    );
+
+    if (response.status === 200) {
+      return response.data;
+    } else if (response.status === 422) {
+      throw new Error("Validation Error: " + JSON.stringify(response.data));
+    } else {
+      throw new Error("Failed to fetch initiative media");
+    }
+  } catch (error) {
+    console.error("Error fetching initiative media:", error);
+    throw error;
+  }
+};

@@ -125,6 +125,7 @@ export default function ActivitiesPage() {
   const handleActivityClick = (activityId) => {
     console.log("Clicked activity ID:", activityId);
     setSelectedActivity(activityId);
+    navigate(`/funds/${initiativeId}/activities/${activityId}`);
   };
   return (
     <div className={styles["container"]}>

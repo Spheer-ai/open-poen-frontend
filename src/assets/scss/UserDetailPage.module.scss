@@ -103,7 +103,7 @@
 .section-title {
   color: #585858;
   font-family: Inter, sans-serif;
-  font-size: 12px;
+  font-size: 14px;
   font-style: normal;
   font-weight: 500;
   line-height: 20px;
@@ -166,4 +166,19 @@
   height: 20px;
   fill: #fff;
   margin-right: 5px;
+}
+
+.initiative-list {
+  margin-top: 0;
+  padding: 0;
+  width: fit-content;
+
+  .initiative-list-item {
+    padding: 5px;
+    display: list-item;
+    list-style: disc;
+    list-style-position: inside;
+    color: #265ed4;
+    font-weight: 300;
+  }
 }

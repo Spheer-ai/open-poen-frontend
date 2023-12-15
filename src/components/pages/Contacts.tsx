@@ -191,18 +191,27 @@ export default function Contacts() {
               </div>
             ) : (
               <ul>
-                {userData.map((user) => (
-                  <UserItem
+                {userData.map((user, index) => (
+                  <li
                     key={user.id}
-                    user={user}
-                    isActive={activeUserId === user.id}
-                    loggedInId={loggedInUserId}
-                    isLoggedActiveUser={
-                      activeUserId === user.id && loggedInUserId === user.id
-                    }
-                    handleUserClick={handleUserClick}
-                    isLoggedIn={isLoggedIn}
-                  />
+                    className={`${styles["user-fade-in"]}`}
+                    style={{
+                      animationDelay: `${index * 0.1}s`,
+                      padding: "0",
+                    }}
+                  >
+                    <UserItem
+                      key={`${user.id}-${index}`}
+                      user={user}
+                      isActive={activeUserId === user.id}
+                      loggedInId={loggedInUserId}
+                      isLoggedActiveUser={
+                        activeUserId === user.id && loggedInUserId === user.id
+                      }
+                      handleUserClick={handleUserClick}
+                      isLoggedIn={isLoggedIn}
+                    />
+                  </li>
                 ))}
               </ul>
             )}

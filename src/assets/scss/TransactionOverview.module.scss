@@ -127,6 +127,7 @@
 .fundTransactionOverview {
   background: #fff;
   overflow: hidden;
+  margin-top: 15px;
 
   .transaction-table-container {
     display: block;
@@ -342,4 +343,15 @@
   background-color: rgba(215, 176, 104, 0.5);
   padding: 0 1px;
   border-radius: 2px;
+}
+
+.saveButton {
+  background-color: #2760d5;
+  border: none;
+  border-radius: 5px;
+  padding: 15px;
+  flex: 1;
+  color: white;
+  cursor: pointer;
+  width: fit-content;
 }

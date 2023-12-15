@@ -19,10 +19,9 @@ const UserItem = ({
   const isUserInactive = user.is_active === false;
 
   return (
-    <li
-      key={userItemId}
+    <div
       onClick={() => handleUserClick(userItemId)}
-      className={`${styles["user-fade-in"]} ${styles["user-list"]} ${
+      className={`${styles["user-list"]} ${
         isActive ? styles["active-user"] : ""
       }`}
       style={{
@@ -125,7 +124,7 @@ const UserItem = ({
           )}
         </div>
       )}
-    </li>
+    </div>
   );
 };
 

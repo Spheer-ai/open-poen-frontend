@@ -13,7 +13,7 @@ import EditIcon from "/edit-icon.svg";
 import DeleteIcon from "/bin-icon.svg";
 import SettingsIcon from "/setting-icon.svg";
 import ChangePasswordIcon from "/change-password-icon.svg";
-import { fetchUserDetails, fetchInitiatives } from "../middleware/Api";
+import { fetchUserDetails } from "../middleware/Api";
 import { usePermissions } from "../../contexts/PermissionContext";
 import { useFieldPermissions } from "../../contexts/FieldPermissionContext";
 import EditUserForm from "../forms/EditUserForm";
@@ -49,7 +49,6 @@ export default function UserDetailsPage({
   }
   const [userDetails, setUserDetails] = useState<UserDetails | null>(null);
   const navigate = useNavigate();
-  const [initiatives, setInitiatives] = useState([]);
   const [isBlockingInteraction, setIsBlockingInteraction] = useState(false);
   const [isDeleteUserModalOpen, setIsDeleteUserModalOpen] = useState(false);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
@@ -59,6 +58,7 @@ export default function UserDetailsPage({
   const [entityPermissions, setEntityPermissions] = useState<string[]>([]);
   const [hasEditPermission, setHasEditPermission] = useState(false);
   const [hasDeletePermission, setHasDeletePermission] = useState(false);
+  const [selectedInitiativeId, setSelectedInitiativeId] = useState(null);
 
   useEffect(() => {
     async function fetchUserPermissions() {
@@ -171,6 +171,8 @@ export default function UserDetailsPage({
 
   console.log("hasEditPermission:", hasEditPermission);
   console.log("API Response for permissions:", entityPermissions);
+
+  console.log("User Details:", userDetails);
 
   return (
     <>
@@ -288,16 +290,30 @@ export default function UserDetailsPage({
 
               <div className={styles["user-initiatives"]}>
                 <h3 className={styles["section-title"]}>Initiatieven</h3>
+                <ul className={styles["initiative-list"]}>
+                  {userDetails?.initiatives.map((initiative) => (
+                    <li
+                      className={styles["initiative-list-item"]}
+                      key={initiative.id}
+                    >
+                      {initiative.name}
+                    </li>
+                  ))}
+                </ul>
               </div>
               <div className={styles["user-activities"]}>
                 <h3 className={styles["section-title"]}>Activiteiten</h3>
-                {userDetails.activities.length > 0 ? (
-                  <></>
-                ) : (
-                  <p className={styles["section-content"]}>
-                    Geen activiteiten beschikbaar.
-                  </p>
-                )}
+                <ul className={styles["initiative-list"]}>
+                  {Array.isArray(userDetails?.activities) &&
+                    userDetails.activities.map((activity) => (
+                      <li
+                        className={styles["initiative-list-item"]}
+                        key={activity.id}
+                      >
+                        {activity.name}
+                      </li>
+                    ))}
+                </ul>
               </div>
             </div>
           ) : (

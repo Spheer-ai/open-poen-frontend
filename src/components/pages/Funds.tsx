@@ -251,7 +251,7 @@ export default function Funds() {
                 className={`${styles["shared-styling"]} ${styles["initiative-fade-in"]}`}
                 key={`${initiative?.id}-${index}`}
                 style={{
-                  animationDelay: `${index * 0.2}s`,
+                  animationDelay: `${index * 0.1}s`,
                 }}
                 onClick={() => navigateToActivities(initiative?.id)}
               >

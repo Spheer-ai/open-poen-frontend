@@ -1,7 +1,7 @@
 .fund-detail-container {
   display: flex;
   flex-direction: column;
-  padding: 50px;
+  padding: 10px 50px;
   position: relative;
 }
 
@@ -14,11 +14,7 @@
 }
 
 .top-right-button-container {
-  position: absolute;
-  top: 20px;
-  right: 40px;
   display: flex;
-  flex-direction: row-reverse;
   align-items: center;
 
   button {
@@ -101,4 +97,23 @@
   cursor: pointer;
   text-decoration: underline;
   padding: 0;
+}
+
+.saveButton {
+  background-color: #2760d5;
+  border: none;
+  border-radius: 5px;
+  padding: 15px;
+  flex: 1;
+  color: white;
+  cursor: pointer;
+  width: fit-content;
+}
+
+.topContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0px 50px;
+  margin-top: 20px;
 }
