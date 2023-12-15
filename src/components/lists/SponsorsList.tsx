@@ -208,7 +208,7 @@ const SponsorList = () => {
         />
         <div>
           <ul className={styles["sponsor-list"]}>
-            {sponsors.map((sponsor) => {
+            {sponsors.map((sponsor, index) => {
               const isActive = activeSponsorId === sponsor.id.toString();
               const permissions =
                 fetchedSponsorPermissions[sponsor.id.toString()];
@@ -219,7 +219,10 @@ const SponsorList = () => {
 
               return (
                 <li
-                  key={sponsor.id}
+                  key={`${sponsor.id}-${index}`}
+                  style={{
+                    animationDelay: `${index * 0.1}s`,
+                  }}
                   className={`${styles["sponsor-fade-in"]} ${
                     styles["sponsor-list-item"]
                   } ${isActive ? styles["active-sponsor"] : ""}`}

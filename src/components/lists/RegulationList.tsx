@@ -136,9 +136,12 @@ const RegulationList = () => {
 
         {regulations.length > 0 ? (
           <ul className={styles["regulation-list"]}>
-            {regulations.map((regulation) => (
+            {regulations.map((regulation, index) => (
               <li
-                key={regulation.id}
+                key={`${regulation.id}-${index}`}
+                style={{
+                  animationDelay: `${index * 0.1}s`,
+                }}
                 className={`${styles["regulation-fade-in"]} ${styles["regulation-list-item"]}`}
                 onClick={() => handleRegulationClick(regulation.id)}
               >
