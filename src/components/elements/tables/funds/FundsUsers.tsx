@@ -41,6 +41,7 @@ const FundsUsers: React.FC<{
         onFundOwnerLinked={handleFundOwnerLinked}
         initiativeId={initiativeId}
         token={token}
+        initiativeOwners={initiativeOwners}
       />
       <button
         className={styles["saveButton"]}

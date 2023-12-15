@@ -1,6 +1,11 @@
 import React, { useEffect, useState } from "react";
 import styles from "../../assets/scss/layout/AddFundDesktop.module.scss";
-import { updateInitiativeOwners } from "../middleware/Api";
+import { updateInitiativeOwners, searchUsersByEmail } from "../middleware/Api";
+
+interface User {
+  id: string;
+  email: string;
+}
 
 interface LinkFundOwnerProps {
   isOpen: boolean;
@@ -9,6 +14,7 @@ interface LinkFundOwnerProps {
   onFundOwnerLinked: () => void;
   initiativeId: string;
   token: string;
+  initiativeOwners: any[];
 }
 
 const LinkFundOwner: React.FC<LinkFundOwnerProps> = ({
@@ -18,9 +24,17 @@ const LinkFundOwner: React.FC<LinkFundOwnerProps> = ({
   onFundOwnerLinked,
   initiativeId,
   token,
+  initiativeOwners: initialInitiativeOwners,
 }) => {
   const [modalIsOpen, setModalIsOpen] = useState(isOpen);
-  const [userIds, setUserIds] = useState([]);
+  const [selectedUserEmails, setSelectedUserEmails] = useState<Set<string>>(
+    new Set(),
+  );
+  const [searchedUsers, setSearchedUsers] = useState<User[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [initiativeOwners, setInitiativeOwners] = useState<User[]>(
+    initialInitiativeOwners,
+  );
 
   useEffect(() => {
     if (isOpen) {
@@ -32,15 +46,75 @@ const LinkFundOwner: React.FC<LinkFundOwnerProps> = ({
     }
   }, [isOpen]);
 
+  const handleUserSelect = (user: User) => {
+    setSelectedUserEmails((prevEmails) => new Set(prevEmails.add(user.email)));
+    setSearchedUsers([]);
+  };
+
+  const handleRemoveUser = (userEmail: string) => {
+    setSelectedUserEmails((prevEmails) => {
+      const newEmails = new Set(prevEmails);
+      newEmails.delete(userEmail);
+      return newEmails;
+    });
+
+    setInitiativeOwners((prevOwners) =>
+      prevOwners.filter((owner) => owner.email !== userEmail),
+    );
+  };
+
+  const handleSearch = async () => {
+    try {
+      console.log("Searching for users with searchTerm:", searchTerm);
+
+      const trimmedSearchTerm = searchTerm.trim();
+
+      if (trimmedSearchTerm.length < 3) {
+        setSearchedUsers([]);
+        return;
+      }
+
+      const usersWithEmails = await searchUsersByEmail(
+        token,
+        trimmedSearchTerm,
+      );
+      console.log("Users with emails:", usersWithEmails);
+
+      setSearchedUsers(usersWithEmails);
+    } catch (error) {
+      console.error("Error searching for users:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (searchTerm.length >= 3) {
+      handleSearch();
+    }
+  }, [searchTerm]);
+
   const handleSave = async () => {
     try {
-      await updateInitiativeOwners(initiativeId, userIds, token);
+      const existingOwnerIds = initiativeOwners.map((owner) => owner.id);
+      const selectedUserIds = Array.from(selectedUserEmails)
+        .map((email) => {
+          const owner = searchedUsers.find((user) => user.email === email);
+          return owner ? owner.id : null;
+        })
+        .filter((id) => id !== null);
 
+      const updatedOwners = [...existingOwnerIds, ...selectedUserIds];
+
+      console.log("Data being sent to API:", {
+        initiativeId,
+        updatedOwners,
+        token,
+      });
+
+      await updateInitiativeOwners(initiativeId, updatedOwners, token);
       onFundOwnerLinked();
-
       handleClose();
     } catch (error) {
-      console.error("Error creating payment:", error);
+      console.error("Error updating initiative owners:", error);
     }
   };
 
@@ -72,16 +146,50 @@ const LinkFundOwner: React.FC<LinkFundOwnerProps> = ({
         <hr></hr>
         <div className={styles.formGroup}>
           <h3>Info</h3>
-          <label className={styles.labelField}>Bedrag:</label>
+
+          <input
+            type="text"
+            placeholder="Search users by email"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            onBlur={handleSearch}
+          />
+          {searchedUsers.length > 0 && (
+            <div className={styles.dropdown}>
+              {searchedUsers.map((user) => (
+                <div key={user.id} onClick={() => handleUserSelect(user)}>
+                  {user.email}
+                </div>
+              ))}
+            </div>
+          )}
         </div>
         <div className={styles.formGroup}>
-          <label className={styles.labelField}>Datum:</label>
-        </div>
-        <div className={styles.formGroup}>
-          <label className={styles.labelField}>Naam betaler:</label>
-        </div>
-        <div className={styles.formGroup}>
-          <label className={styles.labelField}>Naam ontvanger:</label>
+          <h3>Initiative Owners:</h3>
+          <ul>
+            {initiativeOwners.map((owner) => (
+              <li key={owner.id}>
+                {owner.email}
+                <button
+                  onClick={() => handleRemoveUser(owner.email)}
+                  className={styles.removeButton}
+                >
+                  Remove
+                </button>
+              </li>
+            ))}
+            {Array.from(selectedUserEmails).map((userEmail) => (
+              <li key={userEmail}>
+                {userEmail}
+                <button
+                  onClick={() => handleRemoveUser(userEmail)}
+                  className={styles.removeButton}
+                >
+                  Remove
+                </button>
+              </li>
+            ))}
+          </ul>
         </div>
         <div className={styles.buttonContainer}>
           <button onClick={handleClose} className={styles.cancelButton}>
