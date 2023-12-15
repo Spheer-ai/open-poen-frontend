@@ -404,7 +404,9 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
       {activeTab === "media" && (
         <ActivityMedia initiativeId={initiativeId} activityId={activityId} />
       )}
-      {activeTab === "gebruikers" && <ActivityUsers />}
+      {activeTab === "gebruikers" && (
+        <ActivityUsers activityOwners={activityOwners} />
+      )}
     </div>
   );
 };

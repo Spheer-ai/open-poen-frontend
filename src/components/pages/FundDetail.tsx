@@ -394,7 +394,9 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
       {activeTab === "details" && <FundsDetails />}
       {activeTab === "sponsoren" && <FundsSponsors />}
       {activeTab === "media" && <FundsMedia initiativeId={initiativeId} />}
-      {activeTab === "gebruikers" && <FundsUsers />}
+      {activeTab === "gebruikers" && (
+        <FundsUsers initiativeOwners={initiativeOwners} />
+      )}
     </div>
   );
 };
