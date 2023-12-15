@@ -1,7 +1,7 @@
 .fund-detail-container {
   display: flex;
   flex-direction: column;
-  padding: 50px;
+  padding: 10px 50px;
   position: relative;
 }
 
@@ -14,11 +14,7 @@
 }
 
 .top-right-button-container {
-  position: absolute;
-  top: 20px;
-  right: 40px;
   display: flex;
-  flex-direction: row-reverse;
   align-items: center;
 
   button {
@@ -112,4 +108,12 @@
   color: white;
   cursor: pointer;
   width: fit-content;
+}
+
+.topContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0px 50px;
+  margin-top: 20px;
 }

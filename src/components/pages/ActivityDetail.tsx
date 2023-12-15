@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import styles from "../../assets/scss/pages/FundDetail.module.scss";
 import EditIcon from "/edit-icon.svg";
 import DeleteIcon from "/bin-icon.svg";
@@ -17,6 +17,7 @@ import LoadingDot from "../animation/LoadingDot";
 import { ActivityOwner } from "../../types/ActivityOwners";
 import { usePermissions } from "../../contexts/PermissionContext";
 import { useFieldPermissions } from "../../contexts/FieldPermissionContext";
+import Breadcrumb from "../ui/layout/BreadCrumbs";
 
 interface ActivityDetailProps {
   initiativeId: string;
@@ -211,204 +212,226 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
   }, [activityDetails]);
 
   return (
-    <div className={styles["fund-detail-container"]}>
-      <div className={styles["top-right-button-container"]}>
-        {hasEditPermission && (
-          <button
-            className={styles["edit-button"]}
-            onClick={handleToggleEditActivitydModal}
-          >
-            <img src={EditIcon} alt="Edit" className={styles["icon"]} />
-            Beheer activiteit
-          </button>
-        )}
-        {hasDeletePermission && (
-          <button
-            className={styles["edit-button"]}
-            onClick={handleToggleDeleteActivitydModal}
-          >
-            <img src={DeleteIcon} alt="Delete" className={styles["icon"]} />
-            Verwijder activiteit
-          </button>
-        )}
+    <>
+      <div className={styles["topContainer"]}>
+        <div className={styles["breadCrumb"]}>
+          <Breadcrumb
+            customBreadcrumbs={[
+              <Link key="funds" to={`/funds/${initiativeId}/activities`}>
+                Activiteiten
+              </Link>,
+              <Link
+                key="activities"
+                to={`/funds/${initiativeId}/activities/${activityId}`}
+              >
+                {activityDetails?.name}
+              </Link>,
+            ]}
+          />
+        </div>
+        <div className={styles["top-right-button-container"]}>
+          {hasEditPermission && (
+            <button
+              className={styles["edit-button"]}
+              onClick={handleToggleEditActivitydModal}
+            >
+              <img src={EditIcon} alt="Edit" className={styles["icon"]} />
+              Beheer activiteit
+            </button>
+          )}
+          {hasDeletePermission && (
+            <button
+              className={styles["edit-button"]}
+              onClick={handleToggleDeleteActivitydModal}
+            >
+              <img src={DeleteIcon} alt="Delete" className={styles["icon"]} />
+              Verwijder activiteit
+            </button>
+          )}
+        </div>
       </div>
-      {activityDetails ? (
-        <>
-          <div className={styles["content-container"]}>
-            <div className={styles["fund-info"]}>
-              <div className={styles["fund-name"]}>
-                {activityDetails.name ? (
-                  <h1>{activityDetails.name}</h1>
+      <div className={styles["fund-detail-container"]}>
+        {activityDetails ? (
+          <>
+            <div className={styles["content-container"]}>
+              <div className={styles["fund-info"]}>
+                <div className={styles["fund-name"]}>
+                  {activityDetails.name ? (
+                    <h1>{activityDetails.name}</h1>
+                  ) : (
+                    <p>Name not found</p>
+                  )}
+                </div>
+                <div className={styles["fund-description"]}>
+                  {activityDetails.description ? (
+                    <div>
+                      <p>
+                        {showFullDescription
+                          ? activityDetails.description
+                          : `${activityDetails.description.slice(0, 150)}...`}
+                      </p>
+                      {activityDetails.description.length > 150 && (
+                        <button
+                          onClick={() =>
+                            setShowFullDescription(!showFullDescription)
+                          }
+                          className={styles["read-more-button"]}
+                        >
+                          {showFullDescription ? "Lees minder" : "Lees meer"}
+                        </button>
+                      )}
+                    </div>
+                  ) : (
+                    <p>Description not found</p>
+                  )}
+                </div>
+              </div>
+              <div className={styles["fund-image"]}>
+                {activityDetails.profile_picture ? (
+                  <img
+                    src={
+                      activityDetails.profile_picture
+                        .attachment_thumbnail_url_512
+                    }
+                    alt="Fund Image"
+                  />
                 ) : (
-                  <p>Name not found</p>
+                  <p>Image not found</p>
                 )}
               </div>
-              <div className={styles["fund-description"]}>
-                {activityDetails.description ? (
-                  <div>
+            </div>
+            <div className={styles["statistics-container"]}>
+              <div
+                className={styles["fund-budget"]}
+                style={{ backgroundColor: "#E9EFFB" }}
+              >
+                {activityDetails.budget ? (
+                  <>
                     <p>
-                      {showFullDescription
-                        ? activityDetails.description
-                        : `${activityDetails.description.slice(0, 150)}...`}
+                      Toegekend budget: <br />
+                      <span>€ {activityDetails.budget} </span>
                     </p>
-                    {activityDetails.description.length > 150 && (
-                      <button
-                        onClick={() =>
-                          setShowFullDescription(!showFullDescription)
-                        }
-                        className={styles["read-more-button"]}
-                      >
-                        {showFullDescription ? "Lees minder" : "Lees meer"}
-                      </button>
-                    )}
-                  </div>
+                  </>
                 ) : (
-                  <p>Description not found</p>
+                  <p>Budget not found</p>
                 )}
               </div>
-            </div>
-            <div className={styles["fund-image"]}>
-              {activityDetails.profile_picture ? (
-                <img
-                  src={
-                    activityDetails.profile_picture.attachment_thumbnail_url_512
-                  }
-                  alt="Fund Image"
-                />
-              ) : (
-                <p>Image not found</p>
-              )}
-            </div>
-          </div>
-          <div className={styles["statistics-container"]}>
-            <div
-              className={styles["fund-budget"]}
-              style={{ backgroundColor: "#E9EFFB" }}
-            >
-              {activityDetails.budget ? (
-                <>
-                  <p>
-                    Toegekend budget: <br />
-                    <span>€ {activityDetails.budget} </span>
-                  </p>
-                </>
-              ) : (
-                <p>Budget not found</p>
-              )}
-            </div>
-            <div
-              className={styles["fund-income"]}
-              style={{ backgroundColor: "#E9EFFB" }}
-            >
-              {activityDetails.income ? (
-                <>
-                  <p>
-                    Ontvangen budget: <br />
-                    <span>€ {activityDetails.income}</span>
-                  </p>
-                </>
-              ) : (
-                <p>Income not found</p>
-              )}
-            </div>
-            <div
-              className={styles["fund-expenses"]}
-              style={{ backgroundColor: "#FEE6F0" }}
-            >
-              {activityDetails.expenses ? (
-                <>
-                  <p style={{ color: "#B82466" }}>
-                    Besteed:
-                    <br />
-                    <span style={{ color: "#B82466" }}>
-                      € {activityDetails.expenses}
+              <div
+                className={styles["fund-income"]}
+                style={{ backgroundColor: "#E9EFFB" }}
+              >
+                {activityDetails.income ? (
+                  <>
+                    <p>
+                      Ontvangen budget: <br />
+                      <span>€ {activityDetails.income}</span>
+                    </p>
+                  </>
+                ) : (
+                  <p>Income not found</p>
+                )}
+              </div>
+              <div
+                className={styles["fund-expenses"]}
+                style={{ backgroundColor: "#FEE6F0" }}
+              >
+                {activityDetails.expenses ? (
+                  <>
+                    <p style={{ color: "#B82466" }}>
+                      Besteed:
+                      <br />
+                      <span style={{ color: "#B82466" }}>
+                        € {activityDetails.expenses}
+                      </span>
+                    </p>
+                  </>
+                ) : (
+                  <p>Expenses not found</p>
+                )}
+              </div>
+              {availableBudget !== null && (
+                <div
+                  className={styles["fund-available-budget"]}
+                  style={{ backgroundColor: "#E7FDEA" }}
+                >
+                  <p style={{ color: "#008000" }}>
+                    Beschikbaar budget: <br />
+                    <span style={{ color: "#008000" }}>
+                      € {availableBudget}
                     </span>
                   </p>
-                </>
-              ) : (
-                <p>Expenses not found</p>
+                </div>
               )}
             </div>
-            {availableBudget !== null && (
-              <div
-                className={styles["fund-available-budget"]}
-                style={{ backgroundColor: "#E7FDEA" }}
-              >
-                <p style={{ color: "#008000" }}>
-                  Beschikbaar budget: <br />
-                  <span style={{ color: "#008000" }}>€ {availableBudget}</span>
-                </p>
-              </div>
-            )}
+          </>
+        ) : (
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              height: "200px",
+              marginTop: "120px",
+            }}
+          >
+            <div className={styles["loading-container"]}>
+              <LoadingDot delay={0} />
+              <LoadingDot delay={0.1} />
+              <LoadingDot delay={0.1} />
+              <LoadingDot delay={0.2} />
+              <LoadingDot delay={0.2} />
+            </div>
           </div>
-        </>
-      ) : (
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            height: "200px",
-            marginTop: "120px",
-          }}
-        >
-          <div className={styles["loading-container"]}>
-            <LoadingDot delay={0} />
-            <LoadingDot delay={0.1} />
-            <LoadingDot delay={0.1} />
-            <LoadingDot delay={0.2} />
-            <LoadingDot delay={0.2} />
-          </div>
-        </div>
-      )}
-      <EditActivity
-        isOpen={isEditActivityModalOpen}
-        onClose={handleToggleEditActivitydModal}
-        isBlockingInteraction={isBlockingInteraction}
-        onActivityEdited={handleActivityEdited}
-        initiativeId={initiativeId}
-        authToken={user?.token || ""}
-        activityId={activityId}
-        activityData={currentActivityData}
-        activityOwners={activityDetails?.activity_owners || []}
-        fieldPermissions={entityPermissions}
-        fields={[]}
-      />
-      <DeleteActivity
-        isOpen={isDeleteActivityModalOpen}
-        onClose={handleToggleDeleteActivitydModal}
-        isBlockingInteraction={isBlockingInteraction}
-        onActivityDeleted={handleActivityDeleted}
-        initiativeId={initiativeId}
-        authToken={user?.token || ""}
-        activityId={activityId}
-      />
-
-      <TabbedActivitiesNavigation
-        onTabChange={handleTabChange}
-        initiativeId={initiativeId}
-        activityId={activityId}
-      />
-      {activeTab === "transactieoverzicht" && (
-        <ActivityTransactions
+        )}
+        <EditActivity
+          isOpen={isEditActivityModalOpen}
+          onClose={handleToggleEditActivitydModal}
+          isBlockingInteraction={isBlockingInteraction}
+          onActivityEdited={handleActivityEdited}
+          initiativeId={initiativeId}
+          authToken={user?.token || ""}
+          activityId={activityId}
+          activityData={currentActivityData}
+          activityOwners={activityDetails?.activity_owners || []}
+          fieldPermissions={entityPermissions}
+          fields={[]}
+        />
+        <DeleteActivity
+          isOpen={isDeleteActivityModalOpen}
+          onClose={handleToggleDeleteActivitydModal}
+          isBlockingInteraction={isBlockingInteraction}
+          onActivityDeleted={handleActivityDeleted}
           initiativeId={initiativeId}
           authToken={user?.token || ""}
           activityId={activityId}
         />
-      )}
-      {activeTab === "details" && <ActivityDetails />}
-      {activeTab === "sponsoren" && <ActivitySponsors />}
-      {activeTab === "media" && (
-        <ActivityMedia initiativeId={initiativeId} activityId={activityId} />
-      )}
-      {activeTab === "gebruikers" && (
-        <ActivityUsers
-          activityOwners={activityOwners}
+
+        <TabbedActivitiesNavigation
+          onTabChange={handleTabChange}
           initiativeId={initiativeId}
           activityId={activityId}
-          token={user?.token || ""}
         />
-      )}
-    </div>
+        {activeTab === "transactieoverzicht" && (
+          <ActivityTransactions
+            initiativeId={initiativeId}
+            authToken={user?.token || ""}
+            activityId={activityId}
+          />
+        )}
+        {activeTab === "details" && <ActivityDetails />}
+        {activeTab === "sponsoren" && <ActivitySponsors />}
+        {activeTab === "media" && (
+          <ActivityMedia initiativeId={initiativeId} activityId={activityId} />
+        )}
+        {activeTab === "gebruikers" && (
+          <ActivityUsers
+            activityOwners={activityOwners}
+            initiativeId={initiativeId}
+            activityId={activityId}
+            token={user?.token || ""}
+          />
+        )}
+      </div>
+    </>
   );
 };
 
