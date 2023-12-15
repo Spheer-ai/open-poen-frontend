@@ -1,14 +1,61 @@
-import React from "react";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import styles from "../../../../assets/scss/FundsUsers.module.scss";
+import LinkFundOwners from "../../../modals/LinkFundOwners";
 
-const FundsUsers: React.FC<{ initiativeOwners: any[] }> = ({
-  initiativeOwners,
-}) => {
+const FundsUsers: React.FC<{
+  initiativeOwners: any[];
+  initiativeId: string;
+  token: string;
+}> = ({ initiativeOwners, initiativeId, token }) => {
+  const navigate = useNavigate();
+  const [isBlockingInteraction, setIsBlockingInteraction] = useState(false);
+  const [isLinkFundOwnerModalOpen, setIsLinkFundOwnerModalOpen] =
+    useState(false);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+
+  const handleToggleLinkFundOwnerModal = () => {
+    if (isLinkFundOwnerModalOpen) {
+      setIsBlockingInteraction(true);
+      setTimeout(() => {
+        setIsBlockingInteraction(false);
+        setIsLinkFundOwnerModalOpen(false);
+        navigate(`/funds/${initiativeId}/activities/gebruikers`);
+      }, 300);
+    } else {
+      setIsLinkFundOwnerModalOpen(true);
+      navigate(`/funds/${initiativeId}/activities/gebruikers/link-owners`);
+    }
+  };
+
+  const handleFundOwnerLinked = () => {
+    setRefreshTrigger((prev) => prev + 1);
+  };
+
   return (
     <div>
+      <LinkFundOwners
+        isOpen={isLinkFundOwnerModalOpen}
+        onClose={handleToggleLinkFundOwnerModal}
+        isBlockingInteraction={isBlockingInteraction}
+        onFundOwnerLinked={handleFundOwnerLinked}
+        initiativeId={initiativeId}
+        token={token}
+      />
+      <button
+        className={styles["saveButton"]}
+        onClick={handleToggleLinkFundOwnerModal}
+      >
+        <img
+          src="../../../link-owner.svg"
+          alt="Link owner"
+          className={styles["link-owner"]}
+        />
+        Initatiefnemer toevoegen
+      </button>
       <div className={styles["user-list-container"]}>
         {initiativeOwners.map((owner, index) => (
-          <div className={styles["user-container"]}>
+          <div className={styles["user-container"]} key={owner.id}>
             <div className={styles["user-image"]}>
               {owner.profile_picture ? (
                 <img

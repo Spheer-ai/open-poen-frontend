@@ -64,7 +64,11 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
     fundDetails?.initiative_owners || [];
 
   useEffect(() => {
-    if (location.pathname.includes("/funds/${initiativeId}/activities")) {
+    if (
+      location.pathname.includes(
+        "/funds/${initiativeId}/activities/:activityId",
+      )
+    ) {
       setActiveTab("transactieoverzicht");
     }
   }, [location.pathname]);
@@ -395,7 +399,11 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
       {activeTab === "sponsoren" && <FundsSponsors />}
       {activeTab === "media" && <FundsMedia initiativeId={initiativeId} />}
       {activeTab === "gebruikers" && (
-        <FundsUsers initiativeOwners={initiativeOwners} />
+        <FundsUsers
+          initiativeOwners={initiativeOwners}
+          initiativeId={initiativeId}
+          token={user?.token || ""}
+        />
       )}
     </div>
   );

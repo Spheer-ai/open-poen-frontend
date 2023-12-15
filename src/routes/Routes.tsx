@@ -165,7 +165,7 @@ export default function AppRoutes() {
             }
           />
           <Route
-            path="/funds/:initiativeId/activities/transactieoverzicht"
+            path="/funds/:initiativeId/activities/:activityId/transactieoverzicht"
             element={
               <InlineModalLayout navigate={navigate}>
                 <Activities />
@@ -173,7 +173,7 @@ export default function AppRoutes() {
             }
           />
           <Route
-            path="/funds/:initiativeId/activities/activiteiten"
+            path="/funds/:initiativeId/activities/:activityId/activiteiten"
             element={
               <InlineModalLayout navigate={navigate}>
                 <Activities />
@@ -181,7 +181,7 @@ export default function AppRoutes() {
             }
           />
           <Route
-            path="/funds/:initiativeId/activities/details"
+            path="/funds/:initiativeId/activities/:activityId/details"
             element={
               <InlineModalLayout navigate={navigate}>
                 <Activities />
@@ -189,7 +189,7 @@ export default function AppRoutes() {
             }
           />
           <Route
-            path="/funds/:initiativeId/activities/sponsors"
+            path="/funds/:initiativeId/activities/:activityId/sponsors"
             element={
               <InlineModalLayout navigate={navigate}>
                 <Activities />
@@ -197,7 +197,7 @@ export default function AppRoutes() {
             }
           />
           <Route
-            path="/funds/:initiativeId/activities/media"
+            path="/funds/:initiativeId/activities/:activityId/media"
             element={
               <InlineModalLayout navigate={navigate}>
                 <Activities />
@@ -205,7 +205,23 @@ export default function AppRoutes() {
             }
           />
           <Route
-            path="/funds/:initiativeId/activities/gebruikers"
+            path="/funds/:initiativeId/activities/:activityId/gebruikers"
+            element={
+              <InlineModalLayout navigate={navigate}>
+                <Activities />
+              </InlineModalLayout>
+            }
+          />
+          <Route
+            path="/funds/:initiativeId/activities/:activityId/gebruikers/link-owners"
+            element={
+              <InlineModalLayout navigate={navigate}>
+                <Activities />
+              </InlineModalLayout>
+            }
+          />
+          <Route
+            path="/funds/:initiativeId/activities/gebruikers/link-owners"
             element={
               <InlineModalLayout navigate={navigate}>
                 <Activities />

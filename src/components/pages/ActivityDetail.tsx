@@ -68,32 +68,28 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
   const activityOwners: ActivityOwner[] =
     activityDetails?.activity_owners || [];
 
-  useEffect(() => {
-    if (location.pathname.includes("/funds/${initiativeId}/activities")) {
-      setActiveTab("transactieoverzicht");
-    }
-  }, [location.pathname]);
-
   const handleTabChange = (tabName) => {
     setActiveTab(tabName);
 
     if (tabName === "transactieoverzicht") {
-      navigate(`/funds/${initiativeId}/activities/transactieoverzicht`);
+      navigate(
+        `/funds/${initiativeId}/activities/${activityId}/transactieoverzicht`,
+      );
     }
     if (tabName === "activiteiten") {
-      navigate(`/funds/${initiativeId}/activities/activiteiten`);
+      navigate(`/funds/${initiativeId}/activities/${activityId}/activiteiten`);
     }
     if (tabName === "details") {
-      navigate(`/funds/${initiativeId}/activities/details`);
+      navigate(`/funds/${initiativeId}/activities/${activityId}/details`);
     }
     if (tabName === "sponsoren") {
-      navigate(`/funds/${initiativeId}/activities/sponsors`);
+      navigate(`/funds/${initiativeId}/activities/${activityId}/sponsors`);
     }
     if (tabName === "media") {
-      navigate(`/funds/${initiativeId}/activities/media`);
+      navigate(`/funds/${initiativeId}/activities/${activityId}/media`);
     }
     if (tabName === "gebruikers") {
-      navigate(`/funds/${initiativeId}/activities/gebruikers`);
+      navigate(`/funds/${initiativeId}/activities/${activityId}/gebruikers`);
     }
   };
 
@@ -405,7 +401,12 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
         <ActivityMedia initiativeId={initiativeId} activityId={activityId} />
       )}
       {activeTab === "gebruikers" && (
-        <ActivityUsers activityOwners={activityOwners} />
+        <ActivityUsers
+          activityOwners={activityOwners}
+          initiativeId={initiativeId}
+          activityId={activityId}
+          token={user?.token || ""}
+        />
       )}
     </div>
   );

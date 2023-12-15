@@ -30,8 +30,6 @@ const TabbedActivityNavigation: React.FC<Props> = ({
       setActiveTab("media");
     } else if (tabFromPath === "gebruikers") {
       setActiveTab("gebruikers");
-    } else {
-      setActiveTab("transactieoverzicht");
     }
   }, [location.pathname]);
 
