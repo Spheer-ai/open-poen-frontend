@@ -421,12 +421,14 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
           />
         )}
         {activeTab === "activiteiten" && <FundsActivities />}
-        <FundsDetails
-          name={fundDetails?.name}
-          description={fundDetails?.description}
-          purpose={fundDetails?.purpose}
-          target_audience={fundDetails?.target_audience}
-        />
+        {activeTab === "details" && (
+          <FundsDetails
+            name={fundDetails?.name}
+            description={fundDetails?.description}
+            purpose={fundDetails?.purpose}
+            target_audience={fundDetails?.target_audience}
+          />
+        )}
         {activeTab === "sponsoren" && <FundsSponsors />}
         {activeTab === "media" && <FundsMedia initiativeId={initiativeId} />}
         {activeTab === "gebruikers" && (
