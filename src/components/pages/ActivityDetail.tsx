@@ -30,6 +30,8 @@ interface ActivityDetails {
   id: number;
   name: string;
   description: string;
+  purpose: string;
+  target_audience: string;
   budget: number;
   income: number;
   expenses: number;
@@ -417,7 +419,14 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
             activityId={activityId}
           />
         )}
-        {activeTab === "details" && <ActivityDetails />}
+        {activeTab === "details" && (
+          <ActivityDetails
+            name={activityDetails?.name}
+            description={activityDetails?.description}
+            purpose={activityDetails?.purpose}
+            target_audience={activityDetails?.target_audience}
+          />
+        )}
         {activeTab === "sponsoren" && <ActivitySponsors />}
         {activeTab === "media" && (
           <ActivityMedia initiativeId={initiativeId} activityId={activityId} />

@@ -30,6 +30,8 @@ interface FundDetails {
   id: number;
   name: string;
   description: string;
+  purpose: string;
+  target_audience: string;
   budget: number;
   income: number;
   expenses: number;
@@ -61,8 +63,12 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
   const [currentFundData, setCurrentFundData] = useState<FundDetails | null>(
     null,
   );
-  const initiativeOwners: InitiativeOwner[] =
-    fundDetails?.initiative_owners || [];
+  const [initiativeOwners, setInitiativeOwners] = useState(
+    fundDetails?.initiative_owners || [],
+  );
+  const updateInitiativeOwners = (newOwners) => {
+    setInitiativeOwners(newOwners);
+  };
 
   useEffect(() => {
     if (
@@ -415,7 +421,12 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
           />
         )}
         {activeTab === "activiteiten" && <FundsActivities />}
-        {activeTab === "details" && <FundsDetails />}
+        <FundsDetails
+          name={fundDetails?.name}
+          description={fundDetails?.description}
+          purpose={fundDetails?.purpose}
+          target_audience={fundDetails?.target_audience}
+        />
         {activeTab === "sponsoren" && <FundsSponsors />}
         {activeTab === "media" && <FundsMedia initiativeId={initiativeId} />}
         {activeTab === "gebruikers" && (
