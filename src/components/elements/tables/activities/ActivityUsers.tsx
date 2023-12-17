@@ -45,6 +45,7 @@ const ActivityUsers: React.FC<{
         initiativeId={initiativeId}
         activityId={activityId}
         token={token}
+        activityOwners={activityOwners}
       />
       <button
         className={styles["saveButton"]}
