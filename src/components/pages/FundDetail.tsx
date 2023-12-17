@@ -69,12 +69,8 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
   const [currentFundData, setCurrentFundData] = useState<FundDetails | null>(
     null,
   );
-  const [initiativeOwners, setInitiativeOwners] = useState(
-    fundDetails?.initiative_owners || [],
-  );
-  const updateInitiativeOwners = (newOwners) => {
-    setInitiativeOwners(newOwners);
-  };
+  const initiativeOwners: InitiativeOwner[] =
+    fundDetails?.initiative_owners || [];
 
   useEffect(() => {
     if (
@@ -226,6 +222,8 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
       setAvailableBudget(availableBudgetValue);
     }
   }, [fundDetails, refreshTrigger]);
+
+  console.log("initiativeOwners:", initiativeOwners);
 
   return (
     <>
@@ -453,7 +451,7 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
           <FundsUsers
             initiativeOwners={initiativeOwners}
             initiativeId={initiativeId}
-            token={""}
+            token={user?.token || ""}
           />
         )}
       </div>

@@ -31,7 +31,7 @@ const FundsUsers: React.FC<{
   const handleFundOwnerLinked = () => {
     setRefreshTrigger((prev) => prev + 1);
   };
-
+  console.log("initiativeOwners:", initiativeOwners);
   return (
     <div>
       <LinkFundOwners

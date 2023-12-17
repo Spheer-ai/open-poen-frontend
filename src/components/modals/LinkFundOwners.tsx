@@ -157,8 +157,8 @@ const LinkFundOwner: React.FC<LinkFundOwnerProps> = ({
           />
           {searchedUsers.length > 0 && (
             <div className={styles.dropdown}>
-              {searchedUsers.map((user) => (
-                <ul className={styles.formList}>
+              <ul className={styles.formList}>
+                {searchedUsers.map((user) => (
                   <li
                     key={user.id}
                     onClick={() => handleUserSelect(user)}
@@ -166,8 +166,8 @@ const LinkFundOwner: React.FC<LinkFundOwnerProps> = ({
                   >
                     {user.email}
                   </li>
-                </ul>
-              ))}
+                ))}
+              </ul>
             </div>
           )}
         </div>
