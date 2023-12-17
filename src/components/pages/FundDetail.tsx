@@ -41,6 +41,12 @@ interface FundDetails {
   };
   initiative_owners: InitiativeOwner[];
   entityPermissions: string[];
+  grant: {
+    id: number;
+    name: string;
+    reference: string;
+    budget: number;
+  };
 }
 
 const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
@@ -420,7 +426,12 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
             authToken={user?.token || ""}
           />
         )}
-        {activeTab === "activiteiten" && <FundsActivities />}
+        {activeTab === "activiteiten" && (
+          <FundsActivities
+            initiativeId={initiativeId}
+            authToken={user?.token || ""}
+          />
+        )}
         {activeTab === "details" && (
           <FundsDetails
             name={fundDetails?.name}
@@ -429,13 +440,20 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
             target_audience={fundDetails?.target_audience}
           />
         )}
-        {activeTab === "sponsoren" && <FundsSponsors />}
+        {activeTab === "sponsoren" && (
+          <FundsSponsors
+            grantId={fundDetails?.grant?.id}
+            grantName={fundDetails?.grant?.name}
+            grantReference={fundDetails?.grant?.reference}
+            grantBudget={fundDetails?.grant?.budget}
+          />
+        )}
         {activeTab === "media" && <FundsMedia initiativeId={initiativeId} />}
         {activeTab === "gebruikers" && (
           <FundsUsers
             initiativeOwners={initiativeOwners}
             initiativeId={initiativeId}
-            token={user?.token || ""}
+            token={""}
           />
         )}
       </div>

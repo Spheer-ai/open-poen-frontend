@@ -1,11 +1,25 @@
 import React from "react";
 
-const ActivitySponsors: React.FC = () => {
+interface FundsSponsorsProps {
+  grantId?: number;
+  grantName?: string;
+  grantReference?: string;
+  grantBudget?: number;
+}
+
+const FundsSponsors: React.FC<FundsSponsorsProps> = ({
+  grantId,
+  grantName,
+  grantReference,
+  grantBudget,
+}) => {
   return (
     <div>
-      <h1>Sponsors</h1>
+      {grantName && <p>{grantName}</p>}
+      {grantReference && <p>Beslissingsnummer/referentie {grantReference}</p>}
+      {grantBudget && <p>Begroting: {grantBudget}</p>}
     </div>
   );
 };
 
-export default ActivitySponsors;
+export default FundsSponsors;
