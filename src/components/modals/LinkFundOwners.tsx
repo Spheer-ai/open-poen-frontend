@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styles from "../../assets/scss/layout/AddFundDesktop.module.scss";
 import { updateInitiativeOwners, searchUsersByEmail } from "../middleware/Api";
+import deleteIcon from "/delete-icon.svg";
 
 interface User {
   id: string;
@@ -145,7 +146,7 @@ const LinkFundOwner: React.FC<LinkFundOwnerProps> = ({
         <h2 className={styles.title}>Initiatiefnemer toevoegen</h2>
         <hr></hr>
         <div className={styles.formGroup}>
-          <h3>Info</h3>
+          <h3>Zoeken</h3>
 
           <input
             type="text"
@@ -156,36 +157,42 @@ const LinkFundOwner: React.FC<LinkFundOwnerProps> = ({
           />
           {searchedUsers.length > 0 && (
             <div className={styles.dropdown}>
-              {searchedUsers.map((user) => (
-                <div key={user.id} onClick={() => handleUserSelect(user)}>
-                  {user.email}
-                </div>
-              ))}
+              <ul className={styles.formList}>
+                {searchedUsers.map((user) => (
+                  <li
+                    key={user.id}
+                    onClick={() => handleUserSelect(user)}
+                    className={styles.formListItem}
+                  >
+                    {user.email}
+                  </li>
+                ))}
+              </ul>
             </div>
           )}
         </div>
         <div className={styles.formGroup}>
-          <h3>Initiative Owners:</h3>
-          <ul>
+          <h3>Initiatiefnemers:</h3>
+          <ul className={styles.formList}>
             {initiativeOwners.map((owner) => (
-              <li key={owner.id}>
+              <li key={owner.id} className={styles.formListItem}>
                 {owner.email}
                 <button
                   onClick={() => handleRemoveUser(owner.email)}
                   className={styles.removeButton}
                 >
-                  Remove
+                  <img src={deleteIcon} alt="Delete" />
                 </button>
               </li>
             ))}
             {Array.from(selectedUserEmails).map((userEmail) => (
-              <li key={userEmail}>
+              <li key={userEmail} className={styles.formListItem}>
                 {userEmail}
                 <button
                   onClick={() => handleRemoveUser(userEmail)}
                   className={styles.removeButton}
                 >
-                  Remove
+                  <img src={deleteIcon} alt="Delete" />
                 </button>
               </li>
             ))}

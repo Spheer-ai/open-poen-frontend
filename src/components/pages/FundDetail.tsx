@@ -30,6 +30,8 @@ interface FundDetails {
   id: number;
   name: string;
   description: string;
+  purpose: string;
+  target_audience: string;
   budget: number;
   income: number;
   expenses: number;
@@ -39,6 +41,12 @@ interface FundDetails {
   };
   initiative_owners: InitiativeOwner[];
   entityPermissions: string[];
+  grant: {
+    id: number;
+    name: string;
+    reference: string;
+    budget: number;
+  };
 }
 
 const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
@@ -214,6 +222,8 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
       setAvailableBudget(availableBudgetValue);
     }
   }, [fundDetails, refreshTrigger]);
+
+  console.log("initiativeOwners:", initiativeOwners);
 
   return (
     <>
@@ -414,9 +424,28 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
             authToken={user?.token || ""}
           />
         )}
-        {activeTab === "activiteiten" && <FundsActivities />}
-        {activeTab === "details" && <FundsDetails />}
-        {activeTab === "sponsoren" && <FundsSponsors />}
+        {activeTab === "activiteiten" && (
+          <FundsActivities
+            initiativeId={initiativeId}
+            authToken={user?.token || ""}
+          />
+        )}
+        {activeTab === "details" && (
+          <FundsDetails
+            name={fundDetails?.name}
+            description={fundDetails?.description}
+            purpose={fundDetails?.purpose}
+            target_audience={fundDetails?.target_audience}
+          />
+        )}
+        {activeTab === "sponsoren" && (
+          <FundsSponsors
+            grantId={fundDetails?.grant?.id}
+            grantName={fundDetails?.grant?.name}
+            grantReference={fundDetails?.grant?.reference}
+            grantBudget={fundDetails?.grant?.budget}
+          />
+        )}
         {activeTab === "media" && <FundsMedia initiativeId={initiativeId} />}
         {activeTab === "gebruikers" && (
           <FundsUsers

@@ -4,7 +4,7 @@ import styles from "../../assets/scss/pages/FundDetail.module.scss";
 import EditIcon from "/edit-icon.svg";
 import DeleteIcon from "/bin-icon.svg";
 import { useAuth } from "../../contexts/AuthContext";
-import { fetchActivityDetails } from "../middleware/Api";
+import { fetchActivityDetails, fetchFundDetails } from "../middleware/Api";
 import EditActivity from "../modals/EditActivity";
 import DeleteActivity from "../modals/DeleteActivity";
 import TabbedActivitiesNavigation from "../ui/layout/navigation/TabbedActivitiesNavigation";
@@ -30,6 +30,8 @@ interface ActivityDetails {
   id: number;
   name: string;
   description: string;
+  purpose: string;
+  target_audience: string;
   budget: number;
   income: number;
   expenses: number;
@@ -38,6 +40,22 @@ interface ActivityDetails {
   };
   activity_owners: ActivityOwner[];
   entityPermissions: string[];
+  grant: {
+    id: number;
+    name: string;
+    reference: string;
+    budget: number;
+  };
+}
+
+interface FundDetails {
+  grant: {
+    id: number;
+    name: string;
+    reference: string;
+    budget: number;
+  };
+  // other properties if present in the data
 }
 
 const ActivityDetail: React.FC<ActivityDetailProps> = ({
@@ -60,6 +78,7 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
   const [isDeleteActivityModalOpen, setIsDeleteActivityModalOpen] =
     useState(false);
   const [isAddPaymentModalOpen, setIsAddPaymentModalOpen] = useState(false);
+  const [fundDetails, setFundDetails] = useState<FundDetails | null>(null);
   const [hasEditPermission, setHasEditPermission] = useState(false);
   const [hasDeletePermission, setHasDeletePermission] = useState(false);
   const [showFullDescription, setShowFullDescription] = useState(false);
@@ -210,6 +229,18 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
       setAvailableBudget(availableBudgetValue);
     }
   }, [activityDetails]);
+
+  useEffect(() => {
+    if (initiativeId && authToken) {
+      fetchFundDetails(authToken, initiativeId)
+        .then((data) => {
+          setFundDetails(data);
+        })
+        .catch((error) => {
+          console.error("Error fetching fund details:", error);
+        });
+    }
+  }, [initiativeId, authToken, refreshTrigger]);
 
   return (
     <>
@@ -417,8 +448,22 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
             activityId={activityId}
           />
         )}
-        {activeTab === "details" && <ActivityDetails />}
-        {activeTab === "sponsoren" && <ActivitySponsors />}
+        {activeTab === "details" && (
+          <ActivityDetails
+            name={activityDetails?.name}
+            description={activityDetails?.description}
+            purpose={activityDetails?.purpose}
+            target_audience={activityDetails?.target_audience}
+          />
+        )}
+        {activeTab === "sponsoren" && (
+          <ActivitySponsors
+            grantId={fundDetails?.grant?.id}
+            grantName={fundDetails?.grant?.name}
+            grantReference={fundDetails?.grant?.reference}
+            grantBudget={fundDetails?.grant?.budget}
+          />
+        )}
         {activeTab === "media" && (
           <ActivityMedia initiativeId={initiativeId} activityId={activityId} />
         )}
