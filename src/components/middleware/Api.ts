@@ -214,7 +214,7 @@ export const getUserById = async (userId: string, token: string) => {
 export const getUsersOrdered = async (
   token: string,
   offset: number = 0,
-  limit: number = 3,
+  limit: number = 20,
 ) => {
   try {
     const response = await api.get("/users", {
@@ -236,7 +236,7 @@ export const fetchInitiatives = async (
   token: string,
   onlyMine: boolean,
   offset: number = 0,
-  limit: number = 3,
+  limit: number = 20,
 ) => {
   try {
     const response = await api.get(`/initiatives`, {
@@ -251,7 +251,6 @@ export const fetchInitiatives = async (
       },
     });
 
-    // Modify the response data to include only the desired fields
     const filteredInitiatives = response.data.initiatives.map((initiative) => ({
       id: initiative.id,
       name: initiative.name,

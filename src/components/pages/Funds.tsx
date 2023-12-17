@@ -41,7 +41,7 @@ export default function Funds() {
   const [displayedInitiativesCount, setDisplayedInitiativesCount] = useState(0);
   const [initialFetchDone, setInitialFetchDone] = useState(false);
   const [offset, setOffset] = useState(0);
-  const [limit, setLimit] = useState(3);
+  const [limit, setLimit] = useState(20);
   const [totalInitiatives, setTotalInitiatives] = useState(0);
 
   const [allFetchedInitiatives, setAllFetchedInitiatives] = useState<
@@ -206,12 +206,12 @@ export default function Funds() {
             onClick={() => {
               setOnlyMine(false);
               setOffset(0);
-              setLimit(3);
+              setLimit(20);
               setIsFetchingInitiatives(true);
               setInitiatives([]);
               setAllInitiatives([]);
               setMyInitiatives([]);
-              fetchAndDisplayInitiatives(user?.token, false, 0, 3);
+              fetchAndDisplayInitiatives(user?.token, false, 0, 20);
             }}
           >
             Alle Initiatieven
@@ -229,7 +229,7 @@ export default function Funds() {
               setInitiatives([]);
               setAllInitiatives([]);
               setMyInitiatives([]);
-              fetchAndDisplayInitiatives(user?.token, true, 0, 3);
+              fetchAndDisplayInitiatives(user?.token, true, 0, 20);
             }}
           >
             Mijn Initiatieven
