@@ -48,17 +48,6 @@ const DeleteBankAccountModal: React.FC<DeleteBankAccountModalProps> = ({
     setCurrentStep(2);
   };
 
-  const handleDeleteBankAccount = async () => {
-    if (userId && token && bankAccountId) {
-      try {
-        await deleteBankAccount(userId, token, bankAccountId);
-        redirectToStep2();
-      } catch (error) {
-        console.error("Error deleting bank account:", error);
-      }
-    }
-  };
-
   const modalClasses = `${styles.modal} ${isVisible ? styles.open : ""}`;
 
   return (

@@ -1008,15 +1008,12 @@ export const searchUsersByEmail = async (
 
 export const revokeBankConnection = async (userId, token, bankAccountId) => {
   try {
-    const response = await api.patch(
-      `/user/${userId}/bank-account/${bankAccountId}`,
-      {},
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      },
-    );
+    const requestURL = `/user/${userId}/bank-account/${bankAccountId}`;
+    const headers = {
+      Authorization: `Bearer ${token}`,
+    };
+
+    const response = await api.patch(requestURL, null, { headers });
 
     if (response.status === 200) {
       return response.data;
@@ -1034,7 +1031,7 @@ export const revokeBankConnection = async (userId, token, bankAccountId) => {
 
 export const deleteBankAccount = async (userId, token, bankAccountId) => {
   try {
-    const response = await api.delete(
+    const response = await api.patch(
       `/user/${userId}/bank-account/${bankAccountId}`,
       {
         headers: {

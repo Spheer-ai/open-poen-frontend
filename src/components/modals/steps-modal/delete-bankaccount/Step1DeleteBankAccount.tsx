@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { deleteBankAccount } from "../../../middleware/Api";
+import { revokeBankConnection } from "../../../middleware/Api";
 import styles from "../../../../assets/scss/layout/Step1BankList.module.scss";
 
 interface Step1DeleteBankAccountProps {
@@ -21,13 +21,22 @@ const Step1DeleteBankAccount: React.FC<Step1DeleteBankAccountProps> = ({
     if (userId && token && bankAccountId) {
       setIsLoading(true);
 
+      console.log(
+        "Data sent to API - User ID:",
+        userId,
+        "Token:",
+        token,
+        "Bank Account ID:",
+        bankAccountId,
+      );
+
       try {
-        await deleteBankAccount(userId, token, bankAccountId);
+        await revokeBankConnection(userId, token, bankAccountId);
         console.log("Bank account deleted successfully");
         setIsLoading(false);
         onDelete();
       } catch (error) {
-        console.error("Error deleting bank account:", error);
+        console.error("Error revoking bank account:", error);
         setIsLoading(false);
       }
     }
