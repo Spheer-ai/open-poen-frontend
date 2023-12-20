@@ -239,7 +239,6 @@ const TransactionOverview = () => {
   };
 
   const handleActivityLinked = () => {
-
     setRefreshTrigger((prev) => prev + 1);
   };
 
@@ -323,7 +322,9 @@ const TransactionOverview = () => {
                         }`}
                         style={{ color: "grey" }}
                       >
-                        Verbind initiatief
+                        {openDropdownForPayment !== transaction.id
+                          ? transaction.initiative_name || "Verbind initiatief"
+                          : null}
                       </span>
                     ) : (
                       <span

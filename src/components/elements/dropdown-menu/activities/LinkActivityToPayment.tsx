@@ -17,7 +17,7 @@ interface LinkActivityToPaymentProps {
   paymentId: number;
   initiativeId: number;
   activityName: string;
-  onActivityLinked: ( ) => void;
+  onActivityLinked: () => void;
 }
 
 const LinkActivityToPayment: React.FC<LinkActivityToPaymentProps> = ({
@@ -28,7 +28,9 @@ const LinkActivityToPayment: React.FC<LinkActivityToPaymentProps> = ({
   onActivityLinked,
 }) => {
   const [linkableActivities, setLinkableActivities] = useState<Activity[]>([]);
-  const [selectedActivity, setSelectedActivity] = useState<number | string | null>(null);
+  const [selectedActivity, setSelectedActivity] = useState<
+    number | string | null
+  >(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   useEffect(() => {
@@ -44,7 +46,10 @@ const LinkActivityToPayment: React.FC<LinkActivityToPaymentProps> = ({
           initiativeId,
         );
 
-        const geenOption: Activity = { id: "Geen", name: "Geen" };
+        const geenOption: Activity = {
+          id: "Geen",
+          name: "Verbreek verbinding",
+        };
 
         const activitiesWithGeen: Activity[] = [geenOption, ...activities];
 
@@ -89,9 +94,7 @@ const LinkActivityToPayment: React.FC<LinkActivityToPaymentProps> = ({
 
         setIsLoading(false);
       } else {
-        console.error(
-          "Initiative ID is not set. Cannot link activity.",
-        );
+        console.error("Initiative ID is not set. Cannot link activity.");
         setIsLoading(false);
       }
     } catch (error) {
@@ -118,29 +121,29 @@ const LinkActivityToPayment: React.FC<LinkActivityToPaymentProps> = ({
         </div>
       ) : (
         <div className={styles["customContainer"]}>
-        <div className="custom-dropdown-container">
-          <Select
-            values={
-              selectedActivity === ""
-                ? []
-                : mappedActivities.filter(
-                    (option) => option.value === selectedActivity,
-                  )
-            }
-            options={mappedActivities}
-            onChange={(values) =>
-              setSelectedActivity(values[0] ? values[0].value : "")
-            }
-            labelField="label"
-            valueField="value"
-            placeholder={
-              selectedActivity === ""
-                ? activityName || "Verbind activiteit"
-                : ""
-            }
-            className={styles["custom-option"]}
-          />
-        </div>
+          <div className="custom-dropdown-container">
+            <Select
+              values={
+                selectedActivity === ""
+                  ? []
+                  : mappedActivities.filter(
+                      (option) => option.value === selectedActivity,
+                    )
+              }
+              options={mappedActivities}
+              onChange={(values) =>
+                setSelectedActivity(values[0] ? values[0].value : "")
+              }
+              labelField="label"
+              valueField="value"
+              placeholder={
+                selectedActivity === ""
+                  ? activityName || "Verbind activiteit"
+                  : ""
+              }
+              className={styles["custom-option"]}
+            />
+          </div>
         </div>
       )}
     </div>
