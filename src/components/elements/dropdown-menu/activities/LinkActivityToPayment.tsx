@@ -95,11 +95,13 @@ const LinkActivityToPayment: React.FC<LinkActivityToPaymentProps> = ({
   return (
     <div className={styles["customDropdown"]}>
       {isLoading ? (
-        <div className={styles["loading-container"]}>
-          <LoadingDot delay={0} />
-          <LoadingDot delay={0.1} />
-          <LoadingDot delay={0.1} />
-          <LoadingDot delay={0.2} />
+        <div className={styles["loading-column"]}>
+          <div className={styles["loading-container"]}>
+            <LoadingDot delay={0} />
+            <LoadingDot delay={0.1} />
+            <LoadingDot delay={0.1} />
+            <LoadingDot delay={0.2} />
+          </div>
         </div>
       ) : (
         <div className={styles["customContainer"]}>

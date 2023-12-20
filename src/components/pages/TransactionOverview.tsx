@@ -19,10 +19,19 @@ const TransactionOverview = () => {
   const [openDropdownForPayment, setOpenDropdownForPayment] = useState<
     number | null
   >(null);
+  const [openDropdownForActivity, setOpenDropdownForActivity] = useState<
+    number | null
+  >(null);
+
   const [activePaymentId, setActivePaymentId] = useState<number | null>(null);
   const [activeTransactionId, setActiveTransactionId] = useState<number | null>(
     null,
   );
+  const [transactionsWithInitiatives, setTransactionsWithInitiatives] =
+    useState<any[]>([]);
+  const [initiativeLinkingStatus, setInitiativeLinkingStatus] = useState<
+    Record<number, boolean>
+  >({});
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -39,9 +48,9 @@ const TransactionOverview = () => {
         try {
           const data = await fetchPayments(user.userId, user.token);
           console.log("Fetched transactions:", data.payments);
-          setTransactions(data.payments || []);
-          setIsLoading(false);
+          setTransactionsWithInitiatives(data.payments || []);
           setFilteredTransactions(data.payments || []);
+          setIsLoading(false);
         } catch (error) {
           console.error("Error fetching payments:", error);
           setIsLoading(false);
@@ -50,7 +59,7 @@ const TransactionOverview = () => {
     };
 
     fetchTransactions();
-  }, [user, refreshTrigger]);
+  }, [user]);
 
   const highlightMatch = (text: string | null, query: string) => {
     if (query === "") {
@@ -194,7 +203,31 @@ const TransactionOverview = () => {
     setOpenDropdownForPayment(paymentId);
   };
 
-  const handleInitiativeLinked = () => {
+  const handleInitiativeLinked = (
+    transactionId: number,
+    initiativeId: number,
+  ) => {
+    setActivePaymentId(transactionId);
+    setActiveTransactionId(initiativeId);
+    const updatedTransactions = transactionsWithInitiatives.map(
+      (transaction) => {
+        if (transaction.id === transactionId) {
+          return {
+            ...transaction,
+            initiative_id: initiativeId,
+          };
+        }
+        return transaction;
+      },
+    );
+
+    setTransactionsWithInitiatives(updatedTransactions);
+
+    setInitiativeLinkingStatus((prevStatus) => ({
+      ...prevStatus,
+      [transactionId]: true,
+    }));
+
     setRefreshTrigger((prev) => prev + 1);
   };
 
@@ -288,13 +321,17 @@ const TransactionOverview = () => {
                       <LinkInitiativeToPayment
                         token={user?.token || ""}
                         paymentId={transaction.id}
-                        initiativeName={transaction.initiative_name || ""}
-                        onInitiativeLinked={handleInitiativeLinked}
+                        initiativeId={transaction.initiative_id || 0}
+                        onInitiativeLinked={(initiativeId) =>
+                          handleInitiativeLinked(transaction.id, initiativeId)
+                        }
+                        initiativeName={""}
                       />
                     )}
                   </td>
                   <td>
-                    {transaction.initiative_id ? (
+                    {transaction.initiative_id ||
+                    initiativeLinkingStatus[transaction.id] ? (
                       <span
                         onClick={() => setActiveTransactionId(transaction.id)}
                         className={`${styles["initiativeText"]} ${
@@ -324,7 +361,7 @@ const TransactionOverview = () => {
                       <LinkActivityToPayment
                         token={user?.token || ""}
                         paymentId={transaction.id}
-                        initiativeId={transaction.initiative_id}
+                        initiativeId={transaction.initiative_id || null}
                         activityName={transaction.activity_name || ""}
                         onActivityLinked={handleActivityLinked}
                       />

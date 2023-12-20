@@ -205,6 +205,12 @@
   }
 }
 
+.loading-column {
+  .loading-container {
+    height: fit-content;
+  }
+}
+
 .loading-container {
   display: flex;
   justify-content: center;

@@ -16,7 +16,8 @@ interface LinkInitiativeToPaymentProps {
   token: string;
   paymentId: number;
   initiativeName: string;
-  onInitiativeLinked: () => void;
+  initiativeId: number;
+  onInitiativeLinked: (initiativeId: number) => void;
 }
 
 const LinkInitiativeToPayment: React.FC<LinkInitiativeToPaymentProps> = ({
@@ -70,7 +71,8 @@ const LinkInitiativeToPayment: React.FC<LinkInitiativeToPaymentProps> = ({
 
         await linkInitiativeToPayment(token, paymentId, selectedInitiative);
 
-        onInitiativeLinked();
+        // Use type assertion to ensure selectedInitiative is treated as a number
+        onInitiativeLinked(selectedInitiative as number);
 
         console.log("Link Initiative to Payment successful!");
       }
@@ -89,11 +91,13 @@ const LinkInitiativeToPayment: React.FC<LinkInitiativeToPaymentProps> = ({
   return (
     <div className={styles["customDropdown"]}>
       {isLoading ? (
-        <div className={styles["loading-container"]}>
-          <LoadingDot delay={0} />
-          <LoadingDot delay={0.1} />
-          <LoadingDot delay={0.1} />
-          <LoadingDot delay={0.2} />
+        <div className={styles["loading-column"]}>
+          <div className={styles["loading-container"]}>
+            <LoadingDot delay={0} />
+            <LoadingDot delay={0.1} />
+            <LoadingDot delay={0.1} />
+            <LoadingDot delay={0.2} />
+          </div>
         </div>
       ) : (
         <div className={styles["customContainer"]}>
