@@ -8,7 +8,7 @@ import {
 } from "../../../middleware/Api";
 
 interface Activity {
-  id: number;
+  id: number | string;
   name: string;
 }
 
@@ -17,7 +17,7 @@ interface LinkActivityToPaymentProps {
   paymentId: number;
   initiativeId: number;
   activityName: string;
-  onActivityLinked: () => void;
+  onActivityLinked: ( ) => void;
 }
 
 const LinkActivityToPayment: React.FC<LinkActivityToPaymentProps> = ({
@@ -28,7 +28,7 @@ const LinkActivityToPayment: React.FC<LinkActivityToPaymentProps> = ({
   onActivityLinked,
 }) => {
   const [linkableActivities, setLinkableActivities] = useState<Activity[]>([]);
-  const [selectedActivity, setSelectedActivity] = useState<number | "">("");
+  const [selectedActivity, setSelectedActivity] = useState<number | string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   useEffect(() => {
@@ -44,8 +44,12 @@ const LinkActivityToPayment: React.FC<LinkActivityToPaymentProps> = ({
           initiativeId,
         );
 
-        console.log("Activities:", activities);
-        setLinkableActivities(activities);
+        const geenOption: Activity = { id: "Geen", name: "Geen" };
+
+        const activitiesWithGeen: Activity[] = [geenOption, ...activities];
+
+        console.log("Activities:", activitiesWithGeen);
+        setLinkableActivities(activitiesWithGeen);
         setIsLoading(false);
       } catch (error) {
         console.error("Error fetching linkable activities:", error);
@@ -66,18 +70,27 @@ const LinkActivityToPayment: React.FC<LinkActivityToPaymentProps> = ({
     try {
       setIsLoading(true);
 
-      if (initiativeId !== null && selectedActivity !== "") {
+      if (initiativeId !== null) {
+        let selectedValue = selectedActivity;
+
+        // If "Geen" is selected, set selectedValue to null
+        if (selectedActivity === "Geen") {
+          selectedValue = null;
+        }
+
         await linkActivityToPayment(
           token,
           paymentId,
           initiativeId,
-          selectedActivity,
+          selectedValue,
         );
+
         onActivityLinked();
+
         setIsLoading(false);
       } else {
         console.error(
-          "Initiative ID is not set or no activity selected. Cannot link activity.",
+          "Initiative ID is not set. Cannot link activity.",
         );
         setIsLoading(false);
       }
@@ -105,29 +118,29 @@ const LinkActivityToPayment: React.FC<LinkActivityToPaymentProps> = ({
         </div>
       ) : (
         <div className={styles["customContainer"]}>
-          <div className="custom-dropdown-container">
-            <Select
-              values={
-                selectedActivity === ""
-                  ? []
-                  : mappedActivities.filter(
-                      (option) => option.value === selectedActivity,
-                    )
-              }
-              options={mappedActivities}
-              onChange={(values) =>
-                setSelectedActivity(values[0] ? values[0].value : "")
-              }
-              labelField="label"
-              valueField="value"
-              placeholder={
-                selectedActivity === ""
-                  ? activityName || "Verbind activiteit"
-                  : ""
-              }
-              className={styles["custom-option"]}
-            />
-          </div>
+        <div className="custom-dropdown-container">
+          <Select
+            values={
+              selectedActivity === ""
+                ? []
+                : mappedActivities.filter(
+                    (option) => option.value === selectedActivity,
+                  )
+            }
+            options={mappedActivities}
+            onChange={(values) =>
+              setSelectedActivity(values[0] ? values[0].value : "")
+            }
+            labelField="label"
+            valueField="value"
+            placeholder={
+              selectedActivity === ""
+                ? activityName || "Verbind activiteit"
+                : ""
+            }
+            className={styles["custom-option"]}
+          />
+        </div>
         </div>
       )}
     </div>

@@ -29,7 +29,13 @@ const TransactionOverview = () => {
   );
   const [transactionsWithInitiatives, setTransactionsWithInitiatives] =
     useState<any[]>([]);
+  const [transactionsWithActivities, setTransactionsWithActivities] = useState<
+    any[]
+  >([]);
   const [initiativeLinkingStatus, setInitiativeLinkingStatus] = useState<
+    Record<number, boolean>
+  >({});
+  const [activityLinkingStatus, setActivityLinkingStatus] = useState<
     Record<number, boolean>
   >({});
 
@@ -49,6 +55,7 @@ const TransactionOverview = () => {
           const data = await fetchPayments(user.userId, user.token);
           console.log("Fetched transactions:", data.payments);
           setTransactionsWithInitiatives(data.payments || []);
+          setTransactionsWithActivities(data.payments || []);
           setFilteredTransactions(data.payments || []);
           setIsLoading(false);
         } catch (error) {
@@ -232,6 +239,7 @@ const TransactionOverview = () => {
   };
 
   const handleActivityLinked = () => {
+
     setRefreshTrigger((prev) => prev + 1);
   };
 
@@ -305,18 +313,32 @@ const TransactionOverview = () => {
                     )}
                   </td>
                   <td>
-                    <span
-                      onClick={() => handleInitiativeClick(transaction.id)}
-                      className={`${styles["initiativeText"]} ${
-                        openDropdownForPayment === transaction.id
-                          ? styles["hidden"]
-                          : ""
-                      }`}
-                    >
-                      {openDropdownForPayment !== transaction.id
-                        ? transaction.initiative_name || "Verbind initiatief"
-                        : null}
-                    </span>
+                    {transaction.activity_id ||
+                    activityLinkingStatus[transaction.id] ? (
+                      <span
+                        className={`${styles["initiativeText"]} ${
+                          openDropdownForPayment === transaction.id
+                            ? styles["hidden"]
+                            : ""
+                        }`}
+                        style={{ color: "grey" }}
+                      >
+                        Verbind initiatief
+                      </span>
+                    ) : (
+                      <span
+                        onClick={() => handleInitiativeClick(transaction.id)}
+                        className={`${styles["initiativeText"]} ${
+                          openDropdownForPayment === transaction.id
+                            ? styles["hidden"]
+                            : ""
+                        }`}
+                      >
+                        {openDropdownForPayment !== transaction.id
+                          ? transaction.initiative_name || "Verbind initiatief"
+                          : null}
+                      </span>
+                    )}
                     {openDropdownForPayment === transaction.id && (
                       <LinkInitiativeToPayment
                         token={user?.token || ""}
