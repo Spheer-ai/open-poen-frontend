@@ -16,8 +16,8 @@ interface LinkInitiativeToPaymentProps {
   token: string;
   paymentId: number;
   initiativeName: string;
-  initiativeId: number | null; // Change the type to allow null
-  onInitiativeLinked: (initiativeId: number | null) => void; // Change the parameter type
+  initiativeId: number | null;
+  onInitiativeLinked: (initiativeId: number | null) => void;
   isActivityLinked: boolean;
 }
 
@@ -27,19 +27,23 @@ const LinkInitiativeToPayment: React.FC<LinkInitiativeToPaymentProps> = ({
   initiativeName,
   onInitiativeLinked,
   isActivityLinked,
-  initiativeId, // Receive the initiativeId prop
+  initiativeId,
 }) => {
   const [linkableInitiatives, setLinkableInitiatives] = useState<Initiative[]>(
     [],
   );
   const [selectedInitiative, setSelectedInitiative] = useState<number | "">("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [isSelectClicked, setIsSelectClicked] = useState<boolean>(false); // Track if select is clicked
+  const [isSelectClicked, setIsSelectClicked] = useState<boolean>(false);
 
-  // Create a constant for the "Verbreek verbinding" option
   const verbreekVerbindingOption: Initiative = {
-    id: -1, // Assign a unique identifier, it can be any value that won't conflict with real IDs
+    id: -1,
     name: "Verbreek verbinding",
+  };
+
+  const handleSelectClick = () => {
+    console.log("Dropdown clicked");
+    setIsSelectClicked(true);
   };
 
   useEffect(() => {
@@ -52,7 +56,8 @@ const LinkInitiativeToPayment: React.FC<LinkInitiativeToPaymentProps> = ({
             paymentId,
           );
 
-          // Add "Verbreek verbinding" option to the list of linkable initiatives
+          console.log("Linkable initiatives:", initiatives);
+
           setLinkableInitiatives([verbreekVerbindingOption, ...initiatives]);
 
           setIsLoading(false);
@@ -76,13 +81,12 @@ const LinkInitiativeToPayment: React.FC<LinkInitiativeToPaymentProps> = ({
     try {
       setIsLoading(true);
       if (selectedInitiative !== undefined) {
-        // Handle "Verbreek verbinding" option
         if (selectedInitiative === verbreekVerbindingOption.id) {
           await linkInitiativeToPayment(token, paymentId, null);
           onInitiativeLinked(null);
         } else {
           await linkInitiativeToPayment(token, paymentId, selectedInitiative);
-          onInitiativeLinked(selectedInitiative as number | null); // Change the argument type
+          onInitiativeLinked(selectedInitiative as number | null);
         }
 
         console.log("Link Initiative to Payment successful!");
@@ -99,24 +103,11 @@ const LinkInitiativeToPayment: React.FC<LinkInitiativeToPaymentProps> = ({
     label: initiative.name,
   }));
 
-  const handleSelectClick = () => {
-    setIsSelectClicked(true); // Set select as clicked when the user interacts with it
-  };
-
   return (
     <div className={styles["customDropdown"]}>
       {isActivityLinked ? (
         <div className={styles["disabled-dropdown"]}>
           <span className={styles["initiativeText"]}>Verbind initiatief</span>
-        </div>
-      ) : isLoading ? (
-        <div className={styles["loading-column"]}>
-          <div className={styles["loading-container"]}>
-            <LoadingDot delay={0} />
-            <LoadingDot delay={0.1} />
-            <LoadingDot delay={0.1} />
-            <LoadingDot delay={0.2} />
-          </div>
         </div>
       ) : (
         <div className={styles["customContainer"]}>

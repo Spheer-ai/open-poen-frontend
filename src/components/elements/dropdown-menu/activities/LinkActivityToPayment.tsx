@@ -19,6 +19,7 @@ interface LinkActivityToPaymentProps {
   activityName: string;
   onActivityLinked: (transactionId: number, activityId: number | null) => void;
   linkedActivityId: number | null;
+  isInitiativeLinked: boolean;
 }
 
 const LinkActivityToPayment: React.FC<LinkActivityToPaymentProps> = ({
@@ -28,6 +29,7 @@ const LinkActivityToPayment: React.FC<LinkActivityToPaymentProps> = ({
   activityName,
   onActivityLinked,
   linkedActivityId,
+  isInitiativeLinked,
 }) => {
   const [linkableActivities, setLinkableActivities] = useState<Activity[]>([]);
   const [selectedActivity, setSelectedActivity] = useState<
@@ -36,25 +38,35 @@ const LinkActivityToPayment: React.FC<LinkActivityToPaymentProps> = ({
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isSelectClicked, setIsSelectClicked] = useState<boolean>(false);
 
+  const verbreekVerbindingOption: Activity = {
+    id: -1,
+    name: "Verbreek verbinding",
+  };
+
+  const handleSelectClick = () => {
+    console.log("Dropdown clicked");
+    setIsSelectClicked(true);
+  };
+
   useEffect(() => {
+    console.log("InitiativeId:", initiativeId);
+    console.log("isSelectClicked:", isSelectClicked);
+
     if (isSelectClicked && initiativeId !== null) {
+      console.log("Fetching linkable activities...");
+
       const getLinkableActivitiesForPayment = async () => {
         try {
           setIsLoading(true);
-
           const activities: Activity[] = await fetchLinkableActivities(
             token,
             initiativeId,
           );
 
-          const geenOption: Activity = {
-            id: "Geen",
-            name: "Verbreek verbinding",
-          };
+          console.log("Fetched linkable activities:", activities);
 
-          const activitiesWithGeen: Activity[] = [geenOption, ...activities];
+          setLinkableActivities([verbreekVerbindingOption, ...activities]);
 
-          setLinkableActivities(activitiesWithGeen);
           setIsLoading(false);
         } catch (error) {
           console.error("Error fetching linkable activities:", error);
@@ -67,6 +79,7 @@ const LinkActivityToPayment: React.FC<LinkActivityToPaymentProps> = ({
   }, [token, paymentId, initiativeId, isSelectClicked]);
 
   useEffect(() => {
+    console.log("Selected Activity:", selectedActivity);
     if (selectedActivity !== "") {
       handleLinkActivity();
     }
@@ -75,6 +88,8 @@ const LinkActivityToPayment: React.FC<LinkActivityToPaymentProps> = ({
   const handleLinkActivity = async () => {
     try {
       setIsLoading(true);
+
+      console.log("initiativeId before linking activity:", initiativeId);
 
       let valueToPass: number | null = null;
 
@@ -104,13 +119,9 @@ const LinkActivityToPayment: React.FC<LinkActivityToPaymentProps> = ({
     label: activity.name,
   }));
 
-  const handleSelectClick = () => {
-    setIsSelectClicked(true);
-  };
-
   return (
     <div className={styles["customDropdown"]}>
-      {initiativeId === 0 ? (
+      {!isInitiativeLinked ? (
         <div className={styles["disabled-dropdown"]}>
           <span className={styles["initiativeText"]}>Verbind activiteit</span>
         </div>
