@@ -44,6 +44,12 @@ const TransactionOverview = () => {
   const [linkedActivities, setLinkedActivities] = useState<
     Record<number, number | null>
   >({});
+  const [selectedActivities, setSelectedActivities] = useState<
+    Record<number, string | null>
+  >({});
+  const [linkedActivityNames, setLinkedActivityNames] = useState<
+    Record<number, string | null>
+  >({});
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -217,7 +223,7 @@ const TransactionOverview = () => {
 
   const handleInitiativeLinked = (
     transactionId: number,
-    initiativeId: number,
+    initiativeId: number | null, // Update the type to number | null
   ) => {
     const updatedTransactions = transactionsWithInitiatives.map(
       (transaction) => {
@@ -245,11 +251,21 @@ const TransactionOverview = () => {
     );
   };
 
-  const handleActivityLinked = (transactionId: number, activityId: number) => {
-    setLinkedActivities((prevLinkedActivities) => ({
-      ...prevLinkedActivities,
-      [transactionId]: activityId,
+  const handleActivityLinked = (
+    transactionId: number,
+    activityId: number | null,
+  ) => {
+    setSelectedActivities((prevSelectedActivities) => ({
+      ...prevSelectedActivities,
+      [transactionId]: activityId !== null ? activityId.toString() : null,
     }));
+
+    setActivityLinkingStatus((prevActivityLinkingStatus) => ({
+      ...prevActivityLinkingStatus,
+      [transactionId]: activityId !== null,
+    }));
+
+    setOpenDropdownForActivity(null);
   };
 
   return (
@@ -322,88 +338,35 @@ const TransactionOverview = () => {
                     )}
                   </td>
                   <td>
-                    {transaction.activity_id ||
-                    activityLinkingStatus[transaction.id] ? (
-                      <span
-                        className={`${styles["initiativeText"]} ${
-                          openDropdownForPayment === transaction.id
-                            ? styles["hidden"]
-                            : ""
-                        }`}
-                        style={{ color: "grey" }}
-                      >
-                        {openDropdownForPayment !== transaction.id
-                          ? transaction.initiative_name || "Verbind initiatief"
-                          : null}
-                      </span>
-                    ) : (
-                      <span
-                        onClick={() => handleInitiativeClick(transaction.id)}
-                        className={`${styles["initiativeText"]} ${
-                          openDropdownForPayment === transaction.id
-                            ? styles["hidden"]
-                            : ""
-                        }`}
-                      >
-                        {openDropdownForPayment !== transaction.id
-                          ? transaction.initiative_name || "Verbind initiatief"
-                          : null}
-                      </span>
-                    )}
-                    {openDropdownForPayment === transaction.id && (
-                      <LinkInitiativeToPayment
-                        token={user?.token || ""}
-                        paymentId={transaction.id}
-                        initiativeId={transaction.initiative_id || 0}
-                        onInitiativeLinked={(initiativeId) =>
-                          handleInitiativeLinked(transaction.id, initiativeId)
-                        }
-                        initiativeName={""}
-                      />
-                    )}
+                    <LinkInitiativeToPayment
+                      token={user?.token || ""}
+                      paymentId={transaction.id}
+                      initiativeId={transaction.initiative_id || 0}
+                      onInitiativeLinked={(initiativeId) =>
+                        handleInitiativeLinked(transaction.id, initiativeId)
+                      }
+                      initiativeName={transaction.initiative_name || ""}
+                      isActivityLinked={
+                        activityLinkingStatus[transaction.id] || false
+                      }
+                    />
                   </td>
                   <td>
-                    {transaction.initiative_id ||
-                    initiativeLinkingStatus[transaction.id] ? (
-                      <span
-                        onClick={() => setActiveTransactionId(transaction.id)}
-                        className={`${styles["activityText"]} ${
-                          activeTransactionId === transaction.id
-                            ? styles["hidden"]
-                            : ""
-                        }`}
-                      >
-                        {activeTransactionId !== transaction.id
-                          ? transaction.activity_name ||
-                            "Verbind een activiteit"
-                          : null}
-                      </span>
-                    ) : (
-                      <span
-                        className={`${styles["activityText"]} ${
-                          activeTransactionId === transaction.id
-                            ? styles["hidden"]
-                            : ""
-                        }`}
-                        style={{ color: "grey" }}
-                      >
-                        Verbind een activiteit
-                      </span>
-                    )}
-                    {activeTransactionId === transaction.id && (
-                      <LinkActivityToPayment
-                        token={user?.token || ""}
-                        paymentId={transaction.id}
-                        initiativeId={transaction.initiative_id || 0}
-                        activityName={transaction.activity_name || ""}
-                        onActivityLinked={(transactionId, activityId) =>
-                          handleActivityLinked(transactionId, activityId)
-                        }
-                        linkedActivityId={
-                          linkedActivities[transaction.id] || null
-                        }
-                      />
-                    )}
+                    <LinkActivityToPayment
+                      token={user?.token || ""}
+                      paymentId={transaction.id}
+                      initiativeId={transaction.initiative_id || 0}
+                      activityName={transaction.activity_name || ""}
+                      onActivityLinked={(transactionId, activityId) =>
+                        handleActivityLinked(
+                          transactionId,
+                          activityId as number | null,
+                        )
+                      }
+                      linkedActivityId={
+                        linkedActivities[transaction.id] || null
+                      }
+                    />
                   </td>
 
                   <td>

@@ -373,3 +373,10 @@
   cursor: pointer;
   width: fit-content;
 }
+
+.disabled-dropdown {
+  .initiativeText {
+    color: grey;
+    border: solid 1px #ccc;
+  }
+}

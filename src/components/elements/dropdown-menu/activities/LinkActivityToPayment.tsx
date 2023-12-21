@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import LoadingDot from "../../../animation/LoadingDot";
 import Select from "react-dropdown-select";
 import styles from "../../../../assets/scss/TransactionOverview.module.scss";
@@ -15,9 +15,9 @@ interface Activity {
 interface LinkActivityToPaymentProps {
   token: string;
   paymentId: number;
-  initiativeId: number;
+  initiativeId: number | null;
   activityName: string;
-  onActivityLinked: (transactionId: number, activityId: number) => void;
+  onActivityLinked: (transactionId: number, activityId: number | null) => void;
   linkedActivityId: number | null;
 }
 
@@ -34,38 +34,37 @@ const LinkActivityToPayment: React.FC<LinkActivityToPaymentProps> = ({
     number | string | null
   >(linkedActivityId !== null ? linkedActivityId : "");
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isSelectClicked, setIsSelectClicked] = useState<boolean>(false);
 
   useEffect(() => {
-    const getLinkableActivitiesForPayment = async () => {
-      try {
-        setIsLoading(true);
-        console.log("Fetching activities with token:", token);
-        console.log("Payment ID:", paymentId);
-        console.log("Initiative ID:", initiativeId);
+    if (isSelectClicked && initiativeId !== null) {
+      const getLinkableActivitiesForPayment = async () => {
+        try {
+          setIsLoading(true);
 
-        const activities: Activity[] = await fetchLinkableActivities(
-          token,
-          initiativeId,
-        );
+          const activities: Activity[] = await fetchLinkableActivities(
+            token,
+            initiativeId,
+          );
 
-        const geenOption: Activity = {
-          id: "Geen",
-          name: "Verbreek verbinding",
-        };
+          const geenOption: Activity = {
+            id: "Geen",
+            name: "Verbreek verbinding",
+          };
 
-        const activitiesWithGeen: Activity[] = [geenOption, ...activities];
+          const activitiesWithGeen: Activity[] = [geenOption, ...activities];
 
-        console.log("Activities:", activitiesWithGeen);
-        setLinkableActivities(activitiesWithGeen);
-        setIsLoading(false);
-      } catch (error) {
-        console.error("Error fetching linkable activities:", error);
-        setIsLoading(false);
-      }
-    };
+          setLinkableActivities(activitiesWithGeen);
+          setIsLoading(false);
+        } catch (error) {
+          console.error("Error fetching linkable activities:", error);
+          setIsLoading(false);
+        }
+      };
 
-    getLinkableActivitiesForPayment();
-  }, [token, paymentId, initiativeId]);
+      getLinkableActivitiesForPayment();
+    }
+  }, [token, paymentId, initiativeId, isSelectClicked]);
 
   useEffect(() => {
     if (selectedActivity !== "") {
@@ -73,35 +72,26 @@ const LinkActivityToPayment: React.FC<LinkActivityToPaymentProps> = ({
     }
   }, [selectedActivity]);
 
-  let selectedValue = selectedActivity;
-  if (initiativeId === null) {
-    selectedValue = "Geen";
-  }
-
   const handleLinkActivity = async () => {
     try {
       setIsLoading(true);
 
       let valueToPass: number | null = null;
 
-      if (selectedActivity === "Geen" && initiativeId === null) {
-        valueToPass = null;
-      } else if (typeof selectedValue === "number") {
-        valueToPass = selectedValue;
+      if (selectedActivity !== "Geen") {
+        if (typeof selectedActivity === "number") {
+          valueToPass = selectedActivity;
+        }
       }
 
-      if (valueToPass !== null) {
-        await linkActivityToPayment(
-          token,
-          paymentId,
-          initiativeId === null ? null : initiativeId,
-          valueToPass,
-        );
+      await linkActivityToPayment(
+        token,
+        paymentId,
+        initiativeId === null ? null : initiativeId,
+        valueToPass,
+      );
 
-        onActivityLinked(paymentId, valueToPass);
-      } else {
-      }
-
+      onActivityLinked(paymentId, valueToPass);
       setIsLoading(false);
     } catch (error) {
       console.error("Error linking activity to payment:", error);
@@ -114,9 +104,17 @@ const LinkActivityToPayment: React.FC<LinkActivityToPaymentProps> = ({
     label: activity.name,
   }));
 
+  const handleSelectClick = () => {
+    setIsSelectClicked(true);
+  };
+
   return (
     <div className={styles["customDropdown"]}>
-      {isLoading ? (
+      {initiativeId === 0 ? (
+        <div className={styles["disabled-dropdown"]}>
+          <span className={styles["initiativeText"]}>Verbind activiteit</span>
+        </div>
+      ) : isLoading ? (
         <div className={styles["loading-column"]}>
           <div className={styles["loading-container"]}>
             <LoadingDot delay={0} />
@@ -127,7 +125,10 @@ const LinkActivityToPayment: React.FC<LinkActivityToPaymentProps> = ({
         </div>
       ) : (
         <div className={styles["customContainer"]}>
-          <div className="custom-dropdown-container">
+          <div
+            onClick={handleSelectClick}
+            className="custom-dropdown-container"
+          >
             <Select
               values={
                 selectedActivity === ""
