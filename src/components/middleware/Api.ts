@@ -1810,3 +1810,30 @@ export const fetchActivityMedia = async (
     throw error;
   }
 };
+
+export const fetchGrantDetails = async (
+  token,
+  funderId,
+  regulationId,
+  grantId,
+) => {
+  try {
+    const response = await api.get(
+      `/funder/${funderId}/regulation/${regulationId}/grant/${grantId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+
+    if (response.status === 200) {
+      return response.data;
+    } else {
+      throw new Error("Failed to fetch grant details");
+    }
+  } catch (error) {
+    console.error("Error fetching grant details:", error);
+    throw error;
+  }
+};

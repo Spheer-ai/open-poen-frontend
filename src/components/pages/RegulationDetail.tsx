@@ -84,6 +84,7 @@ const RegulationDetail: React.FC<RegulationDetailProps> = ({
   const [grantPermissions, setGrantPermissions] = useState<
     Record<number, string[]>
   >({});
+  const [selectedGrant, setSelectedGrant] = useState<Grant | null>(null);
 
   useParams();
 
