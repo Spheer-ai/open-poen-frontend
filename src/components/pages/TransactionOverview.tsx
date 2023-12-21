@@ -29,14 +29,20 @@ const TransactionOverview = () => {
   );
   const [transactionsWithInitiatives, setTransactionsWithInitiatives] =
     useState<any[]>([]);
-  const [transactionsWithActivities, setTransactionsWithActivities] = useState<
-    any[]
-  >([]);
   const [initiativeLinkingStatus, setInitiativeLinkingStatus] = useState<
     Record<number, boolean>
   >({});
   const [activityLinkingStatus, setActivityLinkingStatus] = useState<
     Record<number, boolean>
+  >({});
+  const [activeInitiativeId, setActiveInitiativeId] = useState<number | null>(
+    null,
+  );
+  const [linkedActivityIds, setLinkedActivityIds] = useState<
+    Record<number, number | null>
+  >({});
+  const [linkedActivities, setLinkedActivities] = useState<
+    Record<number, number | null>
   >({});
 
   const formatDate = (dateString: string) => {
@@ -55,7 +61,6 @@ const TransactionOverview = () => {
           const data = await fetchPayments(user.userId, user.token);
           console.log("Fetched transactions:", data.payments);
           setTransactionsWithInitiatives(data.payments || []);
-          setTransactionsWithActivities(data.payments || []);
           setFilteredTransactions(data.payments || []);
           setIsLoading(false);
         } catch (error) {
@@ -214,8 +219,6 @@ const TransactionOverview = () => {
     transactionId: number,
     initiativeId: number,
   ) => {
-    setActivePaymentId(transactionId);
-    setActiveTransactionId(initiativeId);
     const updatedTransactions = transactionsWithInitiatives.map(
       (transaction) => {
         if (transaction.id === transactionId) {
@@ -235,11 +238,18 @@ const TransactionOverview = () => {
       [transactionId]: true,
     }));
 
-    setRefreshTrigger((prev) => prev + 1);
+    setActiveInitiativeId(initiativeId);
+
+    console.log(
+      `Initiative linked for transaction ID ${transactionId}. Initiative ID: ${initiativeId}`,
+    );
   };
 
-  const handleActivityLinked = () => {
-    setRefreshTrigger((prev) => prev + 1);
+  const handleActivityLinked = (transactionId: number, activityId: number) => {
+    setLinkedActivities((prevLinkedActivities) => ({
+      ...prevLinkedActivities,
+      [transactionId]: activityId,
+    }));
   };
 
   return (
@@ -357,7 +367,7 @@ const TransactionOverview = () => {
                     initiativeLinkingStatus[transaction.id] ? (
                       <span
                         onClick={() => setActiveTransactionId(transaction.id)}
-                        className={`${styles["initiativeText"]} ${
+                        className={`${styles["activityText"]} ${
                           activeTransactionId === transaction.id
                             ? styles["hidden"]
                             : ""
@@ -370,7 +380,7 @@ const TransactionOverview = () => {
                       </span>
                     ) : (
                       <span
-                        className={`${styles["initiativeText"]} ${
+                        className={`${styles["activityText"]} ${
                           activeTransactionId === transaction.id
                             ? styles["hidden"]
                             : ""
@@ -384,9 +394,14 @@ const TransactionOverview = () => {
                       <LinkActivityToPayment
                         token={user?.token || ""}
                         paymentId={transaction.id}
-                        initiativeId={transaction.initiative_id || null}
+                        initiativeId={transaction.initiative_id || 0}
                         activityName={transaction.activity_name || ""}
-                        onActivityLinked={handleActivityLinked}
+                        onActivityLinked={(transactionId, activityId) =>
+                          handleActivityLinked(transactionId, activityId)
+                        }
+                        linkedActivityId={
+                          linkedActivities[transaction.id] || null
+                        }
                       />
                     )}
                   </td>

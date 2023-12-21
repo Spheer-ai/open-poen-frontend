@@ -17,7 +17,8 @@ interface LinkActivityToPaymentProps {
   paymentId: number;
   initiativeId: number;
   activityName: string;
-  onActivityLinked: () => void;
+  onActivityLinked: (transactionId: number, activityId: number) => void;
+  linkedActivityId: number | null;
 }
 
 const LinkActivityToPayment: React.FC<LinkActivityToPaymentProps> = ({
@@ -26,11 +27,12 @@ const LinkActivityToPayment: React.FC<LinkActivityToPaymentProps> = ({
   initiativeId,
   activityName,
   onActivityLinked,
+  linkedActivityId,
 }) => {
   const [linkableActivities, setLinkableActivities] = useState<Activity[]>([]);
   const [selectedActivity, setSelectedActivity] = useState<
     number | string | null
-  >(null);
+  >(linkedActivityId !== null ? linkedActivityId : "");
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   useEffect(() => {
@@ -71,32 +73,36 @@ const LinkActivityToPayment: React.FC<LinkActivityToPaymentProps> = ({
     }
   }, [selectedActivity]);
 
+  let selectedValue = selectedActivity;
+  if (initiativeId === null) {
+    selectedValue = "Geen";
+  }
+
   const handleLinkActivity = async () => {
     try {
       setIsLoading(true);
 
-      if (initiativeId !== null) {
-        let selectedValue = selectedActivity;
+      let valueToPass: number | null = null;
 
-        // If "Geen" is selected, set selectedValue to null
-        if (selectedActivity === "Geen") {
-          selectedValue = null;
-        }
+      if (selectedActivity === "Geen" && initiativeId === null) {
+        valueToPass = null;
+      } else if (typeof selectedValue === "number") {
+        valueToPass = selectedValue;
+      }
 
+      if (valueToPass !== null) {
         await linkActivityToPayment(
           token,
           paymentId,
-          initiativeId,
-          selectedValue,
+          initiativeId === null ? null : initiativeId,
+          valueToPass,
         );
 
-        onActivityLinked();
-
-        setIsLoading(false);
+        onActivityLinked(paymentId, valueToPass);
       } else {
-        console.error("Initiative ID is not set. Cannot link activity.");
-        setIsLoading(false);
       }
+
+      setIsLoading(false);
     } catch (error) {
       console.error("Error linking activity to payment:", error);
       setIsLoading(false);

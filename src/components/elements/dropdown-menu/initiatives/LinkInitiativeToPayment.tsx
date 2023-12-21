@@ -71,7 +71,6 @@ const LinkInitiativeToPayment: React.FC<LinkInitiativeToPaymentProps> = ({
 
         await linkInitiativeToPayment(token, paymentId, selectedInitiative);
 
-        // Use type assertion to ensure selectedInitiative is treated as a number
         onInitiativeLinked(selectedInitiative as number);
 
         console.log("Link Initiative to Payment successful!");
