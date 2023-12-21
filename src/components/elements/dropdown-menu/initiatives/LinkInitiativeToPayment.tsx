@@ -19,6 +19,7 @@ interface LinkInitiativeToPaymentProps {
   initiativeId: number | null;
   onInitiativeLinked: (initiativeId: number | null) => void;
   isActivityLinked: boolean;
+  
 }
 
 const LinkInitiativeToPayment: React.FC<LinkInitiativeToPaymentProps> = ({
@@ -41,11 +42,6 @@ const LinkInitiativeToPayment: React.FC<LinkInitiativeToPaymentProps> = ({
     name: "Verbreek verbinding",
   };
 
-  const handleSelectClick = () => {
-    console.log("Dropdown clicked");
-    setIsSelectClicked(true);
-  };
-
   useEffect(() => {
     if (isSelectClicked) {
       const getLinkableInitiativesForPayment = async () => {
@@ -55,8 +51,6 @@ const LinkInitiativeToPayment: React.FC<LinkInitiativeToPaymentProps> = ({
             token,
             paymentId,
           );
-
-          console.log("Linkable initiatives:", initiatives);
 
           setLinkableInitiatives([verbreekVerbindingOption, ...initiatives]);
 
@@ -103,11 +97,24 @@ const LinkInitiativeToPayment: React.FC<LinkInitiativeToPaymentProps> = ({
     label: initiative.name,
   }));
 
+  const handleSelectClick = () => {
+    setIsSelectClicked(true);
+  };
+
   return (
     <div className={styles["customDropdown"]}>
       {isActivityLinked ? (
         <div className={styles["disabled-dropdown"]}>
           <span className={styles["initiativeText"]}>Verbind initiatief</span>
+        </div>
+      ) : isLoading ? (
+        <div className={styles["loading-column"]}>
+          <div className={styles["loading-container"]}>
+            <LoadingDot delay={0} />
+            <LoadingDot delay={0.1} />
+            <LoadingDot delay={0.1} />
+            <LoadingDot delay={0.2} />
+          </div>
         </div>
       ) : (
         <div className={styles["customContainer"]}>
