@@ -69,8 +69,23 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
   const [currentFundData, setCurrentFundData] = useState<FundDetails | null>(
     null,
   );
-  const initiativeOwners: InitiativeOwner[] =
-    fundDetails?.initiative_owners || [];
+  const [initiativeOwners, setInitiativeOwners] = useState<InitiativeOwner[]>(
+    [],
+  );
+
+  useEffect(() => {
+    if (initiativeId && authToken) {
+      fetchFundDetails(authToken, initiativeId)
+        .then((data) => {
+          setFundDetails(data);
+          setCurrentFundData(data);
+          setInitiativeOwners(data.initiative_owners); // Set initiativeOwners here
+        })
+        .catch((error) => {
+          console.error("Error fetching fund details:", error);
+        });
+    }
+  }, [initiativeId, authToken, refreshTrigger]);
 
   useEffect(() => {
     if (
@@ -448,11 +463,7 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
         )}
         {activeTab === "media" && <FundsMedia initiativeId={initiativeId} />}
         {activeTab === "gebruikers" && (
-          <FundsUsers
-            initiativeOwners={initiativeOwners}
-            initiativeId={initiativeId}
-            token={user?.token || ""}
-          />
+          <FundsUsers initiativeId={initiativeId} token={user?.token || ""} />
         )}
       </div>
     </>

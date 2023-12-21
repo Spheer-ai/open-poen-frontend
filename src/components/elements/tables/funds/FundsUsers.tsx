@@ -1,18 +1,20 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "../../../../assets/scss/FundsUsers.module.scss";
+import { fetchFundDetails } from "../../../middleware/Api";
+
 import LinkFundOwners from "../../../modals/LinkFundOwners";
 
 const FundsUsers: React.FC<{
-  initiativeOwners: any[];
   initiativeId: string;
   token: string;
-}> = ({ initiativeOwners, initiativeId, token }) => {
+}> = ({ initiativeId, token }) => {
   const navigate = useNavigate();
   const [isBlockingInteraction, setIsBlockingInteraction] = useState(false);
   const [isLinkFundOwnerModalOpen, setIsLinkFundOwnerModalOpen] =
     useState(false);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const [initiativeOwners, setInitiativeOwners] = useState<any[]>([]);
 
   const handleToggleLinkFundOwnerModal = () => {
     if (isLinkFundOwnerModalOpen) {
@@ -28,9 +30,23 @@ const FundsUsers: React.FC<{
     }
   };
 
+  useEffect(() => {
+    if (initiativeId && token) {
+      fetchFundDetails(token, initiativeId)
+        .then((data) => {
+          setInitiativeOwners(data.initiative_owners); // Set initiativeOwners here
+        })
+        .catch((error) => {
+          console.error("Error fetching fund details:", error);
+        });
+    }
+  }, [initiativeId, token, refreshTrigger]);
+
   const handleFundOwnerLinked = () => {
+    // Increase the refreshTrigger to trigger a re-fetch of initiative owners
     setRefreshTrigger((prev) => prev + 1);
   };
+
   console.log("initiativeOwners:", initiativeOwners);
   return (
     <div>
