@@ -12,11 +12,12 @@ interface LinkActivityOwnerProps {
   isOpen: boolean;
   onClose: () => void;
   isBlockingInteraction: boolean;
-  onActivityOwnerLinked: () => void;
+  onActivityOwnerLinked: (newOwners: any[]) => void;
   initiativeId: string;
   activityId: string;
   token: string;
   activityOwners: any[];
+  onUpdateActivityOwners: (newOwners: any[]) => void;
 }
 
 const LinkActivityOwner: React.FC<LinkActivityOwnerProps> = ({
@@ -27,17 +28,25 @@ const LinkActivityOwner: React.FC<LinkActivityOwnerProps> = ({
   initiativeId,
   activityId,
   token,
-  activityOwners: initialActivityOwners,
+  activityOwners,
+  onUpdateActivityOwners,
 }) => {
   const [modalIsOpen, setModalIsOpen] = useState(isOpen);
+  const [searchedUsers, setSearchedUsers] = useState<User[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
   const [selectedUserEmails, setSelectedUserEmails] = useState<Set<string>>(
     new Set(),
   );
-  const [searchedUsers, setSearchedUsers] = useState<User[]>([]);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [activityOwners, setActivityOwners] = useState<User[]>(
-    initialActivityOwners,
+  const [selectedUserIds, setSelectedUserIds] = useState<Set<string>>(
+    new Set(),
   );
+
+  const resetModalState = () => {
+    setSelectedUserEmails(new Set());
+    setSelectedUserIds(new Set());
+    setSearchedUsers([]);
+    setSearchTerm("");
+  };
 
   useEffect(() => {
     if (isOpen) {
@@ -50,20 +59,51 @@ const LinkActivityOwner: React.FC<LinkActivityOwnerProps> = ({
   }, [isOpen]);
 
   const handleUserSelect = (user: User) => {
-    setSelectedUserEmails((prevEmails) => new Set(prevEmails.add(user.email)));
-    setSearchedUsers([]);
-  };
+    const isUserAlreadyAdded = activityOwners.some(
+      (owner) => owner.email === user.email,
+    );
 
-  const handleRemoveUser = (userEmail: string) => {
     setSelectedUserEmails((prevEmails) => {
       const newEmails = new Set(prevEmails);
-      newEmails.delete(userEmail);
+      newEmails.add(user.email);
       return newEmails;
     });
 
-    setActivityOwners((prevOwners) =>
-      prevOwners.filter((owner) => owner.email !== userEmail),
+    setSelectedUserIds((prevUserIds) => {
+      const newUserIds = new Set(prevUserIds);
+      newUserIds.add(user.id);
+      return newUserIds;
+    });
+  };
+
+  const handleRemoveUser = (userId: string) => {
+    console.log("Removing user with ID:", userId);
+    console.log("Current initiativeOwners:", activityOwners);
+    setSelectedUserEmails((prevEmails) => {
+      const newEmails = new Set(prevEmails);
+      const userToRemove = activityOwners.find((owner) => owner.id === userId);
+
+      if (userToRemove) {
+        newEmails.delete(userToRemove.email);
+      }
+
+      console.log("Updated selectedUserEmails:", Array.from(newEmails));
+
+      return newEmails;
+    });
+
+    setSelectedUserIds((prevUserIds) => {
+      const newUserIds = new Set(prevUserIds);
+      newUserIds.delete(userId);
+
+      console.log("Updated selectedUserIds:", Array.from(newUserIds));
+
+      return newUserIds;
+    });
+    const updatedInitiativeOwners = activityOwners.filter(
+      (owner) => owner.id !== userId,
     );
+    onUpdateActivityOwners(updatedInitiativeOwners);
   };
 
   const handleSearch = async () => {
@@ -97,18 +137,17 @@ const LinkActivityOwner: React.FC<LinkActivityOwnerProps> = ({
 
   const handleSave = async () => {
     try {
-      const existingOwnerIds = activityOwners.map((owner) => owner.id);
-      const selectedUserIds = Array.from(selectedUserEmails)
-        .map((email) => {
-          const owner = searchedUsers.find((user) => user.email === email);
-          return owner ? owner.id : null;
-        })
-        .filter((id) => id !== null);
+      const filteredActivityOwners = activityOwners.filter(
+        (owner) => !selectedUserIds.has(owner.id),
+      );
 
-      const updatedOwners = [...existingOwnerIds, ...selectedUserIds];
+      const updatedOwners = [
+        ...Array.from(selectedUserIds),
+        ...filteredActivityOwners.map((owner) => owner.id),
+      ];
 
-      console.log("Data being sent to API:", {
-        initiativeId,
+      console.log("Data before filtering:", {
+        activityId,
         updatedOwners,
         token,
       });
@@ -119,8 +158,11 @@ const LinkActivityOwner: React.FC<LinkActivityOwnerProps> = ({
         updatedOwners,
         token,
       );
-      onActivityOwnerLinked();
+
+      onActivityOwnerLinked(filteredActivityOwners);
+
       handleClose();
+      resetModalState();
     } catch (error) {
       console.error("Error updating initiative owners:", error);
     }
@@ -130,6 +172,7 @@ const LinkActivityOwner: React.FC<LinkActivityOwnerProps> = ({
     if (!isBlockingInteraction) {
       setModalIsOpen(false);
       onClose();
+      resetModalState();
     }
   };
 
@@ -181,17 +224,22 @@ const LinkActivityOwner: React.FC<LinkActivityOwnerProps> = ({
         <div className={styles.formGroup}>
           <h3>Activiteitnemers:</h3>
           <ul className={styles.formList}>
-            {activityOwners.map((owner) => (
-              <li key={owner.id} className={styles.formListItem}>
-                {owner.email}
-                <button
-                  onClick={() => handleRemoveUser(owner.email)}
-                  className={styles.removeButton}
-                >
-                  <img src={deleteIcon} alt="Delete" />
-                </button>
-              </li>
-            ))}
+            {activityOwners.map((owner) => {
+              if (!selectedUserIds.has(owner.id)) {
+                return (
+                  <li key={owner.id} className={styles.formListItem}>
+                    {owner.email}
+                    <button
+                      onClick={() => handleRemoveUser(owner.id)}
+                      className={styles.removeButton}
+                    >
+                      <img src={deleteIcon} alt="Delete" />
+                    </button>
+                  </li>
+                );
+              }
+              return null;
+            })}
             {Array.from(selectedUserEmails).map((userEmail) => (
               <li key={userEmail} className={styles.formListItem}>
                 {userEmail}
