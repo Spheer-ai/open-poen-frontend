@@ -836,7 +836,7 @@ export const fetchPayments = async (
   userId: number,
   token: string,
   offset: number = 0,
-  limit: number = 20,
+  limit: number = 3,
   initiativeName: string = "",
   activityName: string = "",
 ) => {
@@ -1008,15 +1008,12 @@ export const searchUsersByEmail = async (
 
 export const revokeBankConnection = async (userId, token, bankAccountId) => {
   try {
-    const response = await api.patch(
-      `/user/${userId}/bank-account/${bankAccountId}`,
-      {},
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      },
-    );
+    const requestURL = `/user/${userId}/bank-account/${bankAccountId}`;
+    const headers = {
+      Authorization: `Bearer ${token}`,
+    };
+
+    const response = await api.patch(requestURL, null, { headers });
 
     if (response.status === 200) {
       return response.data;
@@ -1034,7 +1031,7 @@ export const revokeBankConnection = async (userId, token, bankAccountId) => {
 
 export const deleteBankAccount = async (userId, token, bankAccountId) => {
   try {
-    const response = await api.delete(
+    const response = await api.patch(
       `/user/${userId}/bank-account/${bankAccountId}`,
       {
         headers: {
@@ -1810,6 +1807,33 @@ export const fetchActivityMedia = async (
     }
   } catch (error) {
     console.error("Error fetching initiative media:", error);
+    throw error;
+  }
+};
+
+export const fetchGrantDetails = async (
+  token,
+  funderId,
+  regulationId,
+  grantId,
+) => {
+  try {
+    const response = await api.get(
+      `/funder/${funderId}/regulation/${regulationId}/grant/${grantId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+
+    if (response.status === 200) {
+      return response.data;
+    } else {
+      throw new Error("Failed to fetch grant details");
+    }
+  } catch (error) {
+    console.error("Error fetching grant details:", error);
     throw error;
   }
 };

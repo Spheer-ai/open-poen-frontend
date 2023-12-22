@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styles from "../../assets/scss/layout/AddFundDesktop.module.scss";
-import { addFund } from "../middleware/Api";
+import LoadingDot from "../animation/LoadingDot";
+import { addFund, fetchGrantDetails } from "../middleware/Api";
 
 const initialFormData = {
   name: "",
@@ -37,7 +38,9 @@ const AddFundDesktop: React.FC<AddFundDesktopProps> = ({
   grantId,
 }) => {
   const [modalIsOpen, setModalIsOpen] = useState(isOpen);
+  const [grantDetails, setGrantDetails] = useState(null);
   const [fundData, setFundData] = useState(initialFormData);
+  const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState({
     grantId: "",
     name: "",
@@ -48,14 +51,50 @@ const AddFundDesktop: React.FC<AddFundDesktopProps> = ({
   });
 
   useEffect(() => {
+    const fetchDetails = async () => {
+      try {
+        setIsLoading(true);
+
+        const token = localStorage.getItem("token");
+        if (!token) {
+          console.error("Token is not available in localStorage");
+          return;
+        }
+
+        if (funderId && regulationId && grantId) {
+          const grantDetailsData = await fetchGrantDetails(
+            token,
+            funderId,
+            regulationId,
+            grantId,
+          );
+
+          console.log("Grant Details Data:", grantDetailsData);
+
+          setGrantDetails(grantDetailsData);
+
+          setFundData({
+            ...fundData,
+            name: grantDetailsData.name,
+            budget: grantDetailsData.budget.toString(),
+          });
+        }
+      } catch (error) {
+        console.error("Error fetching grant details:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
     if (isOpen) {
+      fetchDetails();
       setModalIsOpen(true);
     } else {
       setTimeout(() => {
         setModalIsOpen(false);
       }, 300);
     }
-  }, [isOpen]);
+  }, [isOpen, funderId, regulationId, grantId]);
 
   const validateFields = () => {
     let isValid = true;
@@ -228,119 +267,143 @@ const AddFundDesktop: React.FC<AddFundDesktopProps> = ({
         onClick={handleClose}
       ></div>
       <div className={`${styles.modal} ${modalIsOpen ? styles.open : ""}`}>
-        <h2 className={styles.title}>Initiatief toevoegen</h2>
-        <hr></hr>
-        <div className={styles.formGroup}>
-          <h3>Info</h3>
-          {errors.grantId && (
-            <span style={{ color: "red", display: "block", marginTop: "5px" }}>
-              {errors.grantId}
-            </span>
-          )}
-          <label className={styles.labelField}>Naam initiatief:</label>
-          <input
-            type="text"
-            placeholder="Vul de naam van het initiatief in"
-            name="name"
-            value={fundData.name}
-            onChange={handleInputChange}
-            onKeyDown={handleEnterKeyPress}
-          />
-          {errors.name && (
-            <span style={{ color: "red", display: "block", marginTop: "5px" }}>
-              {errors.name}
-            </span>
-          )}
-        </div>
-        <div className={styles.formGroup}>
-          <label className={styles.labelField}>Beschrijving:</label>
-          <textarea
-            className={styles.description}
-            placeholder="Vul de omschrijving van het initiatief in"
-            name="description"
-            value={fundData.description}
-            onChange={handleInputChange}
-          ></textarea>
-          {errors.description && (
-            <span style={{ color: "red", display: "block", marginTop: "5px" }}>
-              {errors.description}
-            </span>
-          )}
-        </div>
-        <div className={styles.formGroup}>
-          <label className={styles.labelField}>Doel:</label>
-          <input
-            type="text"
-            placeholder="Vul de doelstelling van het initiatief in"
-            name="purpose"
-            value={fundData.purpose}
-            onChange={handleInputChange}
-            onKeyDown={handleEnterKeyPress}
-          />
-          {errors.purpose && (
-            <span style={{ color: "red", display: "block", marginTop: "5px" }}>
-              {errors.purpose}
-            </span>
-          )}
-        </div>
-        <div className={styles.formGroup}>
-          <label className={styles.labelField}>Doelgroep:</label>
-          <input
-            type="text"
-            placeholder="Vul de doelgroep van het initiatief in"
-            name="target_audience"
-            value={fundData.target_audience}
-            onChange={handleInputChange}
-            onKeyDown={handleEnterKeyPress}
-          />
-          {errors.target_audience && (
-            <span style={{ color: "red", display: "block", marginTop: "5px" }}>
-              {errors.target_audience}
-            </span>
-          )}
-        </div>
-        <div className={styles.formGroup}>
-          <label className={styles.labelField}>Begroting:</label>
-          <input
-            type="number"
-            placeholder="Vul het begrootte bedrag in"
-            name="budget"
-            value={fundData.budget}
-            onChange={handleInputChange}
-            onKeyDown={handleEnterKeyPress}
-          />
-          {errors.budget && (
-            <span style={{ color: "red", display: "block", marginTop: "5px" }}>
-              {errors.budget}
-            </span>
-          )}
-        </div>
-        <div className={styles.formGroup}>
-          <div className={styles.roleOptions}>
-            <label className={styles.labelField}>
-              <input
-                type="checkbox"
-                name="hidden"
-                checked={fundData.hidden}
-                onChange={(e) =>
-                  setFundData({
-                    ...fundData,
-                    hidden: e.target.checked,
-                  })
-                }
-              />
-              Verberg initiatief
-            </label>
+        {isLoading ? (
+          <div className={styles["loading-container"]}>
+            <LoadingDot delay={0} />
+            <LoadingDot delay={0.1} />
+            <LoadingDot delay={0.1} />
+            <LoadingDot delay={0.2} />
+            <LoadingDot delay={0.2} />
           </div>
-        </div>
-        <div className={styles.buttonContainer}>
-          <button onClick={handleClose} className={styles.cancelButton}>
-            Annuleren
-          </button>
-          <button onClick={handleSave} className={styles.saveButton}>
-            Opslaan
-          </button>
-        </div>
+        ) : (
+          <>
+            <h2 className={styles.title}>Initiatief toevoegen</h2>
+            <hr></hr>
+            <div className={styles.formGroup}>
+              <h3>Info</h3>
+              {errors.grantId && (
+                <span
+                  style={{ color: "red", display: "block", marginTop: "5px" }}
+                >
+                  {errors.grantId}
+                </span>
+              )}
+              <label className={styles.labelField}>Naam initiatief:</label>
+              <input
+                type="text"
+                placeholder="Vul de naam van het initiatief in"
+                name="name"
+                value={fundData.name}
+                onChange={handleInputChange}
+                onKeyDown={handleEnterKeyPress}
+              />
+              {errors.name && (
+                <span
+                  style={{ color: "red", display: "block", marginTop: "5px" }}
+                >
+                  {errors.name}
+                </span>
+              )}
+            </div>
+            <div className={styles.formGroup}>
+              <label className={styles.labelField}>Beschrijving:</label>
+              <textarea
+                className={styles.description}
+                placeholder="Vul de omschrijving van het initiatief in"
+                name="description"
+                value={fundData.description}
+                onChange={handleInputChange}
+              ></textarea>
+              {errors.description && (
+                <span
+                  style={{ color: "red", display: "block", marginTop: "5px" }}
+                >
+                  {errors.description}
+                </span>
+              )}
+            </div>
+            <div className={styles.formGroup}>
+              <label className={styles.labelField}>Doel:</label>
+              <input
+                type="text"
+                placeholder="Vul de doelstelling van het initiatief in"
+                name="purpose"
+                value={fundData.purpose}
+                onChange={handleInputChange}
+                onKeyDown={handleEnterKeyPress}
+              />
+              {errors.purpose && (
+                <span
+                  style={{ color: "red", display: "block", marginTop: "5px" }}
+                >
+                  {errors.purpose}
+                </span>
+              )}
+            </div>
+            <div className={styles.formGroup}>
+              <label className={styles.labelField}>Doelgroep:</label>
+              <input
+                type="text"
+                placeholder="Vul de doelgroep van het initiatief in"
+                name="target_audience"
+                value={fundData.target_audience}
+                onChange={handleInputChange}
+                onKeyDown={handleEnterKeyPress}
+              />
+              {errors.target_audience && (
+                <span
+                  style={{ color: "red", display: "block", marginTop: "5px" }}
+                >
+                  {errors.target_audience}
+                </span>
+              )}
+            </div>
+            <div className={styles.formGroup}>
+              <label className={styles.labelField}>Begroting:</label>
+              <input
+                type="number"
+                placeholder="Vul het begrootte bedrag in"
+                name="budget"
+                value={fundData.budget}
+                onChange={handleInputChange}
+                onKeyDown={handleEnterKeyPress}
+              />
+              {errors.budget && (
+                <span
+                  style={{ color: "red", display: "block", marginTop: "5px" }}
+                >
+                  {errors.budget}
+                </span>
+              )}
+            </div>
+            <div className={styles.formGroup}>
+              <div className={styles.roleOptions}>
+                <label className={styles.labelField}>
+                  <input
+                    type="checkbox"
+                    name="hidden"
+                    checked={fundData.hidden}
+                    onChange={(e) =>
+                      setFundData({
+                        ...fundData,
+                        hidden: e.target.checked,
+                      })
+                    }
+                  />
+                  Verberg initiatief
+                </label>
+              </div>
+            </div>
+            <div className={styles.buttonContainer}>
+              <button onClick={handleClose} className={styles.cancelButton}>
+                Annuleren
+              </button>
+              <button onClick={handleSave} className={styles.saveButton}>
+                Opslaan
+              </button>
+            </div>
+          </>
+        )}
       </div>
     </>
   );

@@ -205,11 +205,17 @@
   }
 }
 
+.loading-column {
+  .loading-container {
+    height: fit-content;
+  }
+}
+
 .loading-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 500px;
+  padding: 30px;
 }
 
 .customDropdown {
@@ -252,6 +258,18 @@
 }
 
 .initiativeText {
+  color: #b9b9b9;
+  display: block;
+  border: solid 1px #ccc;
+  padding: 11px 10px !important;
+  color: #000000;
+  font-weight: 400;
+  border-radius: 4px;
+  font-size: 14px;
+  width: fit-content;
+}
+
+.activityText {
   color: #b9b9b9;
   display: block;
   border: solid 1px #ccc;
@@ -354,4 +372,11 @@
   color: white;
   cursor: pointer;
   width: fit-content;
+}
+
+.disabled-dropdown {
+  .initiativeText {
+    color: grey;
+    border: solid 1px #ccc;
+  }
 }

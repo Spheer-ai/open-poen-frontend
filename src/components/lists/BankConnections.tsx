@@ -55,9 +55,23 @@ const BankConnections = () => {
           const data = await fetchBankConnections(user.userId, user.token);
           const ownedAccounts = data.ownedBankAccounts || [];
           const usedAccounts = data.usedBankAccounts || [];
-          setOwnedBankConnections(ownedAccounts);
-          setUsedBankConnections(usedAccounts);
-          console.log("Fetched bank connections:", ownedAccounts, usedAccounts);
+
+          const filteredOwnedAccounts = ownedAccounts.filter(
+            (account) => !account.is_revoked,
+          );
+
+          const filteredUsedAccounts = usedAccounts.filter(
+            (account) => !account.is_revoked,
+          );
+
+          setOwnedBankConnections(filteredOwnedAccounts);
+          setUsedBankConnections(filteredUsedAccounts);
+
+          console.log(
+            "Fetched bank connections:",
+            filteredOwnedAccounts,
+            filteredUsedAccounts,
+          );
           setIsLoading(false);
         } catch (error) {
           console.error("Error fetching bank connections:", error);
@@ -67,7 +81,6 @@ const BankConnections = () => {
 
     fetchData();
   }, [user]);
-
   useEffect(() => {
     if (location.pathname === "/transactions/bankconnections/add-bank") {
       setIsAddBankConnectionModalOpen(true);
@@ -302,7 +315,7 @@ const BankConnections = () => {
               isOpen={isRevokeBankModalOpen}
               onClose={() => setIsRevokeBankModalOpen(false)}
               isBlockingInteraction={isBlockingInteraction}
-              userId={userId ? userId.toString() : ""}
+              userId={userId as any}
               token={token ? token.toString() : ""}
               bankAccountId={selectedBankId}
             />
