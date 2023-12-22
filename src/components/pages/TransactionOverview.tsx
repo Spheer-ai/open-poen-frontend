@@ -70,13 +70,12 @@ const TransactionOverview = () => {
   };
 
   useEffect(() => {
-    // Update the transactions state with the first `limit` transactions
     setTransactions(allTransactions.slice(0, limit));
   }, [allTransactions, limit]);
 
   const handleLoadMore = async () => {
     const newOffset = offset + limit;
-    setIsLoadingMore(true); // Set isLoadingMore to true when loading more data
+    setIsLoadingMore(true);
     await fetchTransactions(newOffset);
   };
 
@@ -92,21 +91,19 @@ const TransactionOverview = () => {
         );
         console.log("Fetched transactions:", data.payments);
 
-        // Update the totalTransactionsCount here
         setTotalTransactionsCount(data.totalCount || 0);
 
-        // Append newly fetched transactions to the allTransactions array
         setAllTransactions((prevAllTransactions) => [
           ...prevAllTransactions,
           ...data.payments,
         ]);
         setIsLoading(false);
-        setIsLoadingMore(false); // Set isLoadingMore to false when new data is loaded
+        setIsLoadingMore(false);
         setOffset(newOffset);
       } catch (error) {
         console.error("Error fetching payments:", error);
         setIsLoading(false);
-        setIsLoadingMore(false); // Set isLoadingMore to false in case of an error
+        setIsLoadingMore(false);
       }
     }
   };
@@ -415,7 +412,7 @@ const TransactionOverview = () => {
             <LoadingDot delay={0.2} />
           </div>
         ) : (
-          <button onClick={handleLoadMore}>Load More</button>
+          <button onClick={handleLoadMore}>Meer transacties laden</button>
         )}
       </div>
     </div>
