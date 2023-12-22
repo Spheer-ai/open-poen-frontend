@@ -836,7 +836,7 @@ export const fetchPayments = async (
   userId: number,
   token: string,
   offset: number = 0,
-  limit: number = 20,
+  limit: number = 3,
   initiativeName: string = "",
   activityName: string = "",
 ) => {

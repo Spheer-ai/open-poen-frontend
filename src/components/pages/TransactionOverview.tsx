@@ -54,6 +54,12 @@ const TransactionOverview = () => {
     useState<boolean>(
       true, // Set the initial state based on your requirements
     );
+  const [offset, setOffset] = useState(0);
+  const [limit, setLimit] = useState(3);
+  const [totalTransactionsCount, setTotalTransactionsCount] = useState(0);
+  const [isLoadingMore, setIsLoadingMore] = useState<boolean>(false);
+
+  const [allTransactions, setAllTransactions] = useState<any[]>([]);
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -64,24 +70,46 @@ const TransactionOverview = () => {
   };
 
   useEffect(() => {
-    const fetchTransactions = async () => {
-      if (user && user.userId && user.token) {
-        setIsLoading(true);
-        try {
-          const data = await fetchPayments(user.userId, user.token);
-          console.log("Fetched transactions:", data.payments);
-          setTransactionsWithInitiatives(data.payments || []);
-          setFilteredTransactions(data.payments || []);
-          setIsLoading(false);
-        } catch (error) {
-          console.error("Error fetching payments:", error);
-          setIsLoading(false);
-        }
-      }
-    };
+    // Update the transactions state with the first `limit` transactions
+    setTransactions(allTransactions.slice(0, limit));
+  }, [allTransactions, limit]);
 
-    fetchTransactions();
-  }, [user]);
+  const handleLoadMore = async () => {
+    const newOffset = offset + limit;
+    setIsLoadingMore(true); // Set isLoadingMore to true when loading more data
+    await fetchTransactions(newOffset);
+  };
+
+  const fetchTransactions = async (newOffset: number) => {
+    if (user && user.userId && user.token) {
+      setIsLoading(true);
+      try {
+        const data = await fetchPayments(
+          user.userId,
+          user.token,
+          newOffset,
+          limit,
+        );
+        console.log("Fetched transactions:", data.payments);
+
+        // Update the totalTransactionsCount here
+        setTotalTransactionsCount(data.totalCount || 0);
+
+        // Append newly fetched transactions to the allTransactions array
+        setAllTransactions((prevAllTransactions) => [
+          ...prevAllTransactions,
+          ...data.payments,
+        ]);
+        setIsLoading(false);
+        setIsLoadingMore(false); // Set isLoadingMore to false when new data is loaded
+        setOffset(newOffset);
+      } catch (error) {
+        console.error("Error fetching payments:", error);
+        setIsLoading(false);
+        setIsLoadingMore(false); // Set isLoadingMore to false in case of an error
+      }
+    }
+  };
 
   const highlightMatch = (text: string | null, query: string) => {
     if (query === "") {
@@ -134,30 +162,7 @@ const TransactionOverview = () => {
       });
   };
 
-  const handleSearch = (query: string) => {
-    const lowercaseQuery = query.toLowerCase();
-    setLowercaseQuery(lowercaseQuery);
-    const filtered = transactions.filter((transaction) =>
-      Object.entries(transaction).some(([key, value]) => {
-        if (typeof value === "string") {
-          const valueLower = value.toLowerCase();
-          return valueLower.includes(lowercaseQuery);
-        } else if (typeof value === "number") {
-          const valueString = value.toLocaleString("nl-NL", {
-            minimumFractionDigits: 2,
-          });
-          const valueLower = valueString.toLowerCase();
-          return valueLower.includes(lowercaseQuery);
-        } else if (value instanceof Date) {
-          const formattedDate = formatDate(value.toISOString());
-          const formattedDateLower = formattedDate.toLowerCase();
-          return formattedDateLower.includes(lowercaseQuery);
-        }
-        return false;
-      }),
-    );
-    setFilteredTransactions(filtered);
-  };
+  const handleSearch = (query: string) => {};
 
   const handleSort = (criteria: string) => {
     if (criteria === sortCriteria) {
@@ -229,10 +234,6 @@ const TransactionOverview = () => {
     transactionId: number,
     initiativeId: number | null,
   ) => {
-    console.log(
-      `Initiative linked for transaction ID ${transactionId}. Initiative ID: ${initiativeId}`,
-    );
-
     const updatedTransactions = transactionsWithInitiatives.map(
       (transaction) => {
         if (transaction.id === transactionId) {
@@ -252,10 +253,6 @@ const TransactionOverview = () => {
     }));
     setActiveInitiativeId(initiativeId);
     setIsActivityLinkingEnabled(initiativeId === null);
-
-    console.log(
-      `Initiative linked for transaction ID ${transactionId}. Initiative ID: ${initiativeId}`,
-    );
   };
 
   const handleActivityLinked = (
@@ -278,66 +275,58 @@ const TransactionOverview = () => {
   return (
     <div className={styles.transactionOverview}>
       <TransactionSearchInput onSearch={handleSearch} />
-      {isLoading ? (
-        <div className={styles["loading-container"]}>
-          <LoadingDot delay={0} />
-          <LoadingDot delay={0.1} />
-          <LoadingDot delay={0.1} />
-          <LoadingDot delay={0.2} />
-          <LoadingDot delay={0.2} />
-        </div>
-      ) : (
-        <div className={styles["transaction-table-container"]}>
-          <table className={styles.transactionTable}>
-            <thead>
-              <tr>
-                <th
-                  onClick={() => handleSort("booking_date")}
-                  style={getHeaderStyle("booking_date")}
-                >
-                  Datum {getSortIndicator("booking_date")}
-                </th>
-                <th
-                  onClick={() => handleSort("initiative_name")}
-                  style={getHeaderStyle("initiative_name")}
-                >
-                  Initiatief {getSortIndicator("initiative_name")}
-                </th>
-                <th
-                  onClick={() => handleSort("activity_name")}
-                  style={getHeaderStyle("activity_name")}
-                >
-                  Activiteit {getSortIndicator("activity_name")}
-                </th>
-                <th
-                  onClick={() => handleSort("creditor_name")}
-                  style={getHeaderStyle("creditor_name")}
-                >
-                  Ontvanger {getSortIndicator("creditor_name")}
-                </th>
-                <th
-                  onClick={() => handleSort("short_user_description")}
-                  style={getHeaderStyle("short_user_description")}
-                >
-                  Beschrijving {getSortIndicator("short_user_description")}
-                </th>
-                <th
-                  onClick={() => handleSort("iban")}
-                  style={getHeaderStyle("iban")}
-                >
-                  IBAN {getSortIndicator("iban")}
-                </th>
-                <th
-                  onClick={() => handleSort("transaction_amount")}
-                  style={getHeaderStyle("transaction_amount")}
-                >
-                  Bedrag {getSortIndicator("transaction_amount")}
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredTransactions.map((transaction) => (
-                <tr key={transaction.id}>
+      <div className={styles["transaction-table-container"]}>
+        <table className={styles.transactionTable}>
+          <thead>
+            <tr>
+              <th
+                onClick={() => handleSort("booking_date")}
+                style={getHeaderStyle("booking_date")}
+              >
+                Datum {getSortIndicator("booking_date")}
+              </th>
+              <th
+                onClick={() => handleSort("initiative_name")}
+                style={getHeaderStyle("initiative_name")}
+              >
+                Initiatief {getSortIndicator("initiative_name")}
+              </th>
+              <th
+                onClick={() => handleSort("activity_name")}
+                style={getHeaderStyle("activity_name")}
+              >
+                Activiteit {getSortIndicator("activity_name")}
+              </th>
+              <th
+                onClick={() => handleSort("creditor_name")}
+                style={getHeaderStyle("creditor_name")}
+              >
+                Ontvanger {getSortIndicator("creditor_name")}
+              </th>
+              <th
+                onClick={() => handleSort("short_user_description")}
+                style={getHeaderStyle("short_user_description")}
+              >
+                Beschrijving {getSortIndicator("short_user_description")}
+              </th>
+              <th
+                onClick={() => handleSort("iban")}
+                style={getHeaderStyle("iban")}
+              >
+                IBAN {getSortIndicator("iban")}
+              </th>
+              <th
+                onClick={() => handleSort("transaction_amount")}
+                style={getHeaderStyle("transaction_amount")}
+              >
+                Bedrag {getSortIndicator("transaction_amount")}
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {allTransactions.length ? (
+              allTransactions.map((transaction, index) => (
+                <tr key={`${transaction.id}-${index}`}>
                   <td>
                     {highlightMatch(
                       formatDate(transaction.booking_date),
@@ -409,11 +398,26 @@ const TransactionOverview = () => {
                     )}
                   </td>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+              ))
+            ) : (
+              <tr>
+                <td colSpan={7}>Geen transactie gevonden</td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+        {isLoadingMore ? (
+          <div className={styles["loading-container"]}>
+            <LoadingDot delay={0} />
+            <LoadingDot delay={0.1} />
+            <LoadingDot delay={0.1} />
+            <LoadingDot delay={0.2} />
+            <LoadingDot delay={0.2} />
+          </div>
+        ) : (
+          <button onClick={handleLoadMore}>Load More</button>
+        )}
+      </div>
     </div>
   );
 };

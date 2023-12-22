@@ -49,9 +49,6 @@ const LinkActivityToPayment: React.FC<LinkActivityToPaymentProps> = ({
   };
 
   useEffect(() => {
-    console.log("InitiativeId:", initiativeId);
-    console.log("isSelectClicked:", isSelectClicked);
-
     if (isSelectClicked && initiativeId !== null) {
       console.log("Fetching linkable activities...");
 
