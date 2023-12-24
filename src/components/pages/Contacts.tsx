@@ -168,6 +168,10 @@ export default function Contacts() {
     setRefreshTrigger((prev) => prev + 1);
   };
 
+  const handleUserProfileEdited = () => {
+    setRefreshTrigger((prev) => prev + 1);
+  };
+
   return (
     <div className={styles["container"]}>
       <div className={styles["side-panel"]}>
@@ -233,6 +237,7 @@ export default function Contacts() {
         <UserDetailsPage
           onUserDeleted={handleUserDeleted}
           onUserEdited={handleUserEdited}
+          onUserProfileEdited={handleUserProfileEdited}
         />
       )}
     </div>

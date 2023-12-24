@@ -33,11 +33,12 @@ interface DecodedToken {
 interface UserDetailsPageProps {
   onUserDeleted: () => void;
   onUserEdited: () => void;
-}
+  onUserProfileEdited: () => void;}
 
 export default function UserDetailsPage({
   onUserDeleted,
   onUserEdited,
+  onUserProfileEdited
 }: UserDetailsPageProps) {
   const { user: authUser } = useAuth();
   const { user } = useAuth();
@@ -54,6 +55,7 @@ export default function UserDetailsPage({
   const [isBlockingInteraction, setIsBlockingInteraction] = useState(false);
   const [isDeleteUserModalOpen, setIsDeleteUserModalOpen] = useState(false);
   const [isEditUserModalOpen, setIsEditUserModalOpen] = useState(false);
+  const [isEditUserProfileModalOpen, setIsEditUserProfileModalOpen] = useState(false);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [activeAction, setActiveAction] = useState<string | null>(null);
   const { fetchFieldPermissions } = useFieldPermissions();
@@ -133,10 +135,6 @@ export default function UserDetailsPage({
     }
   }, [userId, token, refreshTrigger]);
 
-  const handleEditClick = () => {
-    setActiveAction("edit");
-  };
-
   const handleChangePasswordClick = () => {
     setActiveAction("changePassword");
   };
@@ -145,11 +143,7 @@ export default function UserDetailsPage({
     setActiveAction(null);
   };
 
-  const handleEditUserClick = () => {
-    setActiveAction("editUser");
-  };
-
-  const handleToggleDeleteUsertModal = () => {
+  const handleToggleDeleteUserModal = () => {
     if (isDeleteUserModalOpen) {
       setIsBlockingInteraction(true);
       setTimeout(() => {
@@ -179,7 +173,7 @@ export default function UserDetailsPage({
     }
   };
 
-  const handleToggleEditUsertModal = () => {
+  const handleToggleEditUserModal = () => {
     if (isEditUserModalOpen) {
       setIsBlockingInteraction(true);
       setTimeout(() => {
@@ -191,6 +185,28 @@ export default function UserDetailsPage({
       }, 300);
     } else {
       setIsEditUserModalOpen(true);
+    }
+  };
+
+  const handleUserProfileEdited = () => {
+    setRefreshTrigger((prev) => prev + 1);
+    if (onUserProfileEdited) {
+      onUserProfileEdited();
+    }
+  };
+
+  const handleToggleEditUserProfileModal = () => {
+    if (isEditUserProfileModalOpen) {
+      setIsBlockingInteraction(true);
+      setTimeout(() => {
+        setIsBlockingInteraction(false);
+        setIsEditUserProfileModalOpen(false);
+        if (onUserProfileEdited) {
+          onUserProfileEdited();
+        }
+      }, 300);
+    } else {
+      setIsEditUserProfileModalOpen(true);
     }
   };
 
@@ -253,7 +269,7 @@ export default function UserDetailsPage({
                   {hasEditPermission && (
                     <div
                       className={styles["top-right-button"]}
-                      onClick={handleEditClick}
+                      onClick={handleToggleEditUserProfileModal}
                     >
                       <img
                         src={EditIcon}
@@ -266,7 +282,7 @@ export default function UserDetailsPage({
                   {hasEditPermission && (
                     <div
                       className={styles["top-right-button"]}
-                      onClick={handleToggleEditUsertModal}
+                      onClick={handleToggleEditUserModal}
                     >
                       <img
                         src={SettingsIcon}
@@ -293,7 +309,7 @@ export default function UserDetailsPage({
                   {hasDeletePermission && (
                     <div
                       className={styles["top-right-button"]}
-                      onClick={handleToggleDeleteUsertModal}
+                      onClick={handleToggleDeleteUserModal}
                     >
                       <img
                         alt="Delete User"
@@ -352,21 +368,6 @@ export default function UserDetailsPage({
           )}
         </div>
       </div>
-      {activeAction === "edit" && (
-        <AddItemModal isOpen={true} onClose={handleCloseModal}>
-          <EditUserProfileForm
-            userId={userId || null}
-            onCancel={handleCloseModal}
-            onContinue={handleCloseModal}
-            first_name={""}
-            last_name={""}
-            biography={""}
-            hidden={true}
-            fieldPermissions={entityPermissions}
-            fields={[]}
-          />
-        </AddItemModal>
-      )}
 
       {activeAction === "changePassword" && (
         <AddItemModal isOpen={true} onClose={handleCloseModal}>
@@ -374,18 +375,32 @@ export default function UserDetailsPage({
         </AddItemModal>
       )}
 
+<EditUserProfileForm
+            userId={userId || null}
+            first_name={""}
+            last_name={""}
+            biography={""}
+            hidden={true}
+            fieldPermissions={entityPermissions}
+            fields={[]}
+            isOpen={isEditUserProfileModalOpen}
+            onClose={handleToggleEditUserProfileModal}
+            isBlockingInteraction={isBlockingInteraction}
+            onUserProfileEdited={handleUserProfileEdited}
+          />
+
       <EditUserForm
         userId={userId || ""}
         fieldPermissions={entityPermissions}
         fields={[]}
         isOpen={isEditUserModalOpen}
-        onClose={handleToggleEditUsertModal}
+        onClose={handleToggleEditUserModal}
         isBlockingInteraction={isBlockingInteraction}
         onUserEdited={handleUserEdited}
       />
       <DeleteUser
         isOpen={isDeleteUserModalOpen}
-        onClose={handleToggleDeleteUsertModal}
+        onClose={handleToggleDeleteUserModal}
         onUserDeleted={handleUserDeleted}
         userId={userId}
         isBlockingInteraction={isBlockingInteraction}
