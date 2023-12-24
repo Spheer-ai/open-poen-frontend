@@ -164,6 +164,10 @@ export default function Contacts() {
     setRefreshTrigger((prev) => prev + 1);
   };
 
+  const handleUserEdited = () => {
+    setRefreshTrigger((prev) => prev + 1);
+  };
+
   return (
     <div className={styles["container"]}>
       <div className={styles["side-panel"]}>
@@ -225,7 +229,12 @@ export default function Contacts() {
           onUserAdded={handleUserAdded}
         />
       </div>
-      {isLoggedIn && <UserDetailsPage onUserDeleted={handleUserDeleted} />}
+      {isLoggedIn && (
+        <UserDetailsPage
+          onUserDeleted={handleUserDeleted}
+          onUserEdited={handleUserEdited}
+        />
+      )}
     </div>
   );
 }

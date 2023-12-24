@@ -16,7 +16,7 @@ import ChangePasswordIcon from "/change-password-icon.svg";
 import { fetchUserDetails } from "../middleware/Api";
 import { usePermissions } from "../../contexts/PermissionContext";
 import { useFieldPermissions } from "../../contexts/FieldPermissionContext";
-import EditUserForm from "../forms/EditUserForm";
+import EditUserForm from "../modals/EditUser";
 import DeleteUser from "../modals/DeleteUser";
 
 const roleLabels = {
@@ -32,10 +32,12 @@ interface DecodedToken {
 
 interface UserDetailsPageProps {
   onUserDeleted: () => void;
+  onUserEdited: () => void;
 }
 
 export default function UserDetailsPage({
   onUserDeleted,
+  onUserEdited,
 }: UserDetailsPageProps) {
   const { user: authUser } = useAuth();
   const { user } = useAuth();
@@ -51,6 +53,7 @@ export default function UserDetailsPage({
   const navigate = useNavigate();
   const [isBlockingInteraction, setIsBlockingInteraction] = useState(false);
   const [isDeleteUserModalOpen, setIsDeleteUserModalOpen] = useState(false);
+  const [isEditUserModalOpen, setIsEditUserModalOpen] = useState(false);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [activeAction, setActiveAction] = useState<string | null>(null);
   const { fetchFieldPermissions } = useFieldPermissions();
@@ -169,6 +172,28 @@ export default function UserDetailsPage({
     navigate(`/contacts/${loggedInUserId}`);
   };
 
+  const handleUserEdited = () => {
+    setRefreshTrigger((prev) => prev + 1);
+    if (onUserEdited) {
+      onUserEdited();
+    }
+  };
+
+  const handleToggleEditUsertModal = () => {
+    if (isEditUserModalOpen) {
+      setIsBlockingInteraction(true);
+      setTimeout(() => {
+        setIsBlockingInteraction(false);
+        setIsEditUserModalOpen(false);
+        if (onUserEdited) {
+          onUserEdited();
+        }
+      }, 300);
+    } else {
+      setIsEditUserModalOpen(true);
+    }
+  };
+
   console.log("hasEditPermission:", hasEditPermission);
   console.log("API Response for permissions:", entityPermissions);
 
@@ -241,7 +266,7 @@ export default function UserDetailsPage({
                   {hasEditPermission && (
                     <div
                       className={styles["top-right-button"]}
-                      onClick={handleEditUserClick}
+                      onClick={handleToggleEditUsertModal}
                     >
                       <img
                         src={SettingsIcon}
@@ -349,17 +374,15 @@ export default function UserDetailsPage({
         </AddItemModal>
       )}
 
-      {activeAction === "editUser" && (
-        <AddItemModal isOpen={true} onClose={handleCloseModal}>
-          <EditUserForm
-            userId={userId || ""}
-            onCancel={handleCloseModal}
-            onContinue={handleCloseModal}
-            fieldPermissions={entityPermissions}
-            fields={[]}
-          />
-        </AddItemModal>
-      )}
+      <EditUserForm
+        userId={userId || ""}
+        fieldPermissions={entityPermissions}
+        fields={[]}
+        isOpen={isEditUserModalOpen}
+        onClose={handleToggleEditUsertModal}
+        isBlockingInteraction={isBlockingInteraction}
+        onUserEdited={handleUserEdited}
+      />
       <DeleteUser
         isOpen={isDeleteUserModalOpen}
         onClose={handleToggleDeleteUsertModal}
