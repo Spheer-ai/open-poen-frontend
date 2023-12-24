@@ -64,19 +64,21 @@ export default function ActivitiesPage() {
   ]);
 
   useEffect(() => {
-    if (initiativeId && user?.token) {
-      fetchActivities(Number(initiativeId), user.token)
-        .then((initiativeData) => {
-          console.log("Fetched activities:", initiativeData.activities);
-          const updatedActivities = initiativeData.activities || [];
-
-          setActivities(updatedActivities);
-        })
-        .catch((error) => {
-          console.error("Error fetching activities:", error);
-        });
+    if (!initiativeId) {
+      console.error("initiativeId is not defined.");
+      return;
     }
-  }, [initiativeId, user, refreshTrigger]);
+
+    fetchActivities(Number(initiativeId), user?.token ?? "")
+      .then((initiativeData) => {
+        console.log("Fetched activities:", initiativeData.activities);
+        const updatedActivities = initiativeData.activities || [];
+        setActivities(updatedActivities);
+      })
+      .catch((error) => {
+        console.error("Error fetching activities:", error);
+      });
+  }, [initiativeId, user?.token, refreshTrigger]);
 
   const calculateBarWidth = (income, expenses) => {
     const total = Math.abs(income) + Math.abs(expenses);

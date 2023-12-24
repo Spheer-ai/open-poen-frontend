@@ -74,12 +74,12 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
   );
 
   useEffect(() => {
-    if (initiativeId && authToken) {
+    if (initiativeId) {
       fetchFundDetails(authToken, initiativeId)
         .then((data) => {
           setFundDetails(data);
           setCurrentFundData(data);
-          setInitiativeOwners(data.initiative_owners); // Set initiativeOwners here
+          setInitiativeOwners(data.initiative_owners);
         })
         .catch((error) => {
           console.error("Error fetching fund details:", error);

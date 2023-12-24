@@ -26,17 +26,22 @@ const FundsActivities: React.FC<{
   const [selectedActivity, setSelectedActivity] = useState<string | null>(null);
 
   useEffect(() => {
-    if (initiativeId && user?.token) {
-      fetchActivities(Number(initiativeId), user.token)
-        .then((initiativeData) => {
-          console.log("Fetched activities:", initiativeData.activities);
-          const updatedActivities = initiativeData.activities || [];
-
+    if (initiativeId) {
+      const fetchActivitiesData = async () => {
+        try {
+          const result = await fetchActivities(
+            Number(initiativeId),
+            user?.token || "",
+          );
+          console.log("Fetched activities:", result.activities);
+          const updatedActivities = result.activities || [];
           setActivities(updatedActivities);
-        })
-        .catch((error) => {
+        } catch (error) {
           console.error("Error fetching activities:", error);
-        });
+        }
+      };
+
+      fetchActivitiesData();
     }
   }, [initiativeId, user]);
 

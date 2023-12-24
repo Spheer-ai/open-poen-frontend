@@ -37,7 +37,7 @@ const ActivityUsers: React.FC<{
 
   useEffect(() => {
     setIsLoading(true);
-    if (initiativeId && token) {
+    if (initiativeId) {
       fetchActivityDetails(token, initiativeId, activityId)
         .then((data) => {
           setActivityOwners(data.activity_owners);
