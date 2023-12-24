@@ -172,6 +172,10 @@ export default function Contacts() {
     setRefreshTrigger((prev) => prev + 1);
   };
 
+  const handlePasswordChanged = () => {
+    setRefreshTrigger((prev) => prev + 1);
+  };
+
   return (
     <div className={styles["container"]}>
       <div className={styles["side-panel"]}>
@@ -238,6 +242,7 @@ export default function Contacts() {
           onUserDeleted={handleUserDeleted}
           onUserEdited={handleUserEdited}
           onUserProfileEdited={handleUserProfileEdited}
+          onPasswordChanged={handlePasswordChanged}
         />
       )}
     </div>

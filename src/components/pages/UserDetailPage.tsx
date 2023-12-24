@@ -6,9 +6,8 @@ import UserDetails from "../../types/UserTypes";
 import ProfilePlaceholder from "/profile-placeholder.png";
 import styles from "../../assets/scss/UserDetailPage.module.scss";
 import LoadingDot from "../animation/LoadingDot";
-import AddItemModal from "../modals/AddItemModal";
-import ChangePasswordForm from "../forms/ChangePasswordForm";
-import EditUserProfileForm from "../forms/EditUserProfileForm";
+import ChangePasswordForm from "../modals/ChangePassword";
+import EditUserProfileForm from "../modals/EditUserProfile";
 import EditIcon from "/edit-icon.svg";
 import DeleteIcon from "/bin-icon.svg";
 import SettingsIcon from "/setting-icon.svg";
@@ -33,12 +32,15 @@ interface DecodedToken {
 interface UserDetailsPageProps {
   onUserDeleted: () => void;
   onUserEdited: () => void;
-  onUserProfileEdited: () => void;}
+  onUserProfileEdited: () => void;
+  onPasswordChanged: () => void;
+}
 
 export default function UserDetailsPage({
   onUserDeleted,
   onUserEdited,
-  onUserProfileEdited
+  onUserProfileEdited,
+  onPasswordChanged,
 }: UserDetailsPageProps) {
   const { user: authUser } = useAuth();
   const { user } = useAuth();
@@ -55,15 +57,16 @@ export default function UserDetailsPage({
   const [isBlockingInteraction, setIsBlockingInteraction] = useState(false);
   const [isDeleteUserModalOpen, setIsDeleteUserModalOpen] = useState(false);
   const [isEditUserModalOpen, setIsEditUserModalOpen] = useState(false);
-  const [isEditUserProfileModalOpen, setIsEditUserProfileModalOpen] = useState(false);
+  const [isEditUserProfileModalOpen, setIsEditUserProfileModalOpen] =
+    useState(false);
+  const [isChangePasswordModalOpen, setIsChangePasswordModalOpen] =
+    useState(false);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
-  const [activeAction, setActiveAction] = useState<string | null>(null);
   const { fetchFieldPermissions } = useFieldPermissions();
   const { fetchPermissions } = usePermissions();
   const [entityPermissions, setEntityPermissions] = useState<string[]>([]);
   const [hasEditPermission, setHasEditPermission] = useState(false);
   const [hasDeletePermission, setHasDeletePermission] = useState(false);
-  const [selectedInitiativeId, setSelectedInitiativeId] = useState(null);
 
   useEffect(() => {
     async function fetchUserPermissions() {
@@ -135,14 +138,6 @@ export default function UserDetailsPage({
     }
   }, [userId, token, refreshTrigger]);
 
-  const handleChangePasswordClick = () => {
-    setActiveAction("changePassword");
-  };
-
-  const handleCloseModal = () => {
-    setActiveAction(null);
-  };
-
   const handleToggleDeleteUserModal = () => {
     if (isDeleteUserModalOpen) {
       setIsBlockingInteraction(true);
@@ -207,6 +202,28 @@ export default function UserDetailsPage({
       }, 300);
     } else {
       setIsEditUserProfileModalOpen(true);
+    }
+  };
+
+  const handlePasswordChanged = () => {
+    setRefreshTrigger((prev) => prev + 1);
+    if (onPasswordChanged) {
+      onPasswordChanged();
+    }
+  };
+
+  const handleToggleChangePasswordModal = () => {
+    if (isChangePasswordModalOpen) {
+      setIsBlockingInteraction(true);
+      setTimeout(() => {
+        setIsBlockingInteraction(false);
+        setIsChangePasswordModalOpen(false);
+        if (onPasswordChanged) {
+          onPasswordChanged();
+        }
+      }, 300);
+    } else {
+      setIsChangePasswordModalOpen(true);
     }
   };
 
@@ -296,7 +313,7 @@ export default function UserDetailsPage({
                   {loggedInUserId === userId && (
                     <div
                       className={styles["top-right-button"]}
-                      onClick={handleChangePasswordClick}
+                      onClick={handleToggleChangePasswordModal}
                     >
                       <img
                         src={ChangePasswordIcon}
@@ -369,25 +386,27 @@ export default function UserDetailsPage({
         </div>
       </div>
 
-      {activeAction === "changePassword" && (
-        <AddItemModal isOpen={true} onClose={handleCloseModal}>
-          <ChangePasswordForm onClose={handleCloseModal} userId={userId} />
-        </AddItemModal>
-      )}
+      <ChangePasswordForm
+        userId={userId}
+        isOpen={isChangePasswordModalOpen}
+        onClose={handleToggleChangePasswordModal}
+        isBlockingInteraction={isBlockingInteraction}
+        onPasswordChanged={handlePasswordChanged}
+      />
 
-<EditUserProfileForm
-            userId={userId || null}
-            first_name={""}
-            last_name={""}
-            biography={""}
-            hidden={true}
-            fieldPermissions={entityPermissions}
-            fields={[]}
-            isOpen={isEditUserProfileModalOpen}
-            onClose={handleToggleEditUserProfileModal}
-            isBlockingInteraction={isBlockingInteraction}
-            onUserProfileEdited={handleUserProfileEdited}
-          />
+      <EditUserProfileForm
+        userId={userId || null}
+        first_name={""}
+        last_name={""}
+        biography={""}
+        hidden={true}
+        fieldPermissions={entityPermissions}
+        fields={[]}
+        isOpen={isEditUserProfileModalOpen}
+        onClose={handleToggleEditUserProfileModal}
+        isBlockingInteraction={isBlockingInteraction}
+        onUserProfileEdited={handleUserProfileEdited}
+      />
 
       <EditUserForm
         userId={userId || ""}
@@ -402,7 +421,7 @@ export default function UserDetailsPage({
         isOpen={isDeleteUserModalOpen}
         onClose={handleToggleDeleteUserModal}
         onUserDeleted={handleUserDeleted}
-        userId={userId}
+        userId={userId || ""}
         isBlockingInteraction={isBlockingInteraction}
       />
     </>

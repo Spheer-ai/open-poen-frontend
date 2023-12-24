@@ -1,5 +1,7 @@
 export interface DeleteUserFormProps {
   userId: string;
-  onCancel: () => void;
-  onContinue: () => void;
+  isOpen: boolean;
+  onClose: () => void;
+  onUserDeleted: () => void;
+  isBlockingInteraction: boolean;
 }
