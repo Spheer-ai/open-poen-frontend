@@ -16,6 +16,7 @@ import PermissionChecker from "../components/pages/PermissionChecker";
 import RegulationList from "../components/lists/RegulationList";
 import SponsorList from "../components/lists/SponsorsList";
 import Activities from "../components/pages/Activities";
+import RequestPasswordRequest from "../components/pages/account-recovery/RequestPasswordReset";
 
 export default function AppRoutes() {
   const navigate = useNavigate();
@@ -68,6 +69,14 @@ export default function AppRoutes() {
             element={
               <ResetPasswordLayout>
                 <ResetPasswordRequest />
+              </ResetPasswordLayout>
+            }
+          />
+          <Route
+            path="/account-recovery"
+            element={
+              <ResetPasswordLayout>
+                <RequestPasswordRequest />
               </ResetPasswordLayout>
             }
           />
