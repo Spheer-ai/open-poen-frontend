@@ -9,6 +9,7 @@ import EditPayment from "../../../modals/EditPayment";
 import AddPayment from "../../../modals/AddPayment";
 import { usePermissions } from "../../../../contexts/PermissionContext";
 import { useAuth } from "../../../../contexts/AuthContext";
+import LoadingDot from "../../../animation/LoadingDot";
 
 interface Transaction {
   id: number;
@@ -57,32 +58,61 @@ const ActivityTransactions: React.FC<{
   const [selectedTransaction, setSelectedTransaction] =
     useState<Transaction | null>(null);
 
-  useEffect(() => {
-    const fetchTransactions = async () => {
-      try {
-        const response = await getPaymentsByActivity(
-          authToken,
-          initiativeId,
-          activityId,
-        );
+  const [currentPage, setCurrentPage] = useState(1);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [hasMoreTransactions, setHasMoreTransactions] = useState(true);
+  const [pageSize] = useState(3);
 
-        if (response && response.payments) {
-          const formattedTransactions = response.payments.map(
-            (transaction) => ({
-              ...transaction,
-              booking_date: formatDate(transaction.booking_date),
-            }),
-          );
+  const fetchTransactions = async () => {
+    try {
+      setLoadingMore(true);
+      const response = await getPaymentsByActivity(
+        authToken,
+        initiativeId,
+        activityId,
+        currentPage,
+        pageSize,
+      );
 
-          setTransactions(formattedTransactions);
+      if (response && response.payments) {
+        const formattedTransactions = response.payments.map((transaction) => ({
+          ...transaction,
+          booking_date: formatDate(transaction.booking_date),
+        }));
+
+        if (formattedTransactions.length > 0) {
+          if (currentPage === 1) {
+            setTransactions(formattedTransactions);
+          } else {
+            setTransactions((prevTransactions) => [
+              ...prevTransactions,
+              ...formattedTransactions,
+            ]);
+          }
+
+          if (formattedTransactions.length < pageSize) {
+            setHasMoreTransactions(false);
+          }
+        } else {
+          setHasMoreTransactions(false);
         }
-      } catch (error) {
-        console.error("Error fetching transactions:", error);
       }
-    };
+    } catch (error) {
+      console.error("Error fetching transactions:", error);
+    } finally {
+      setLoadingMore(false);
+    }
+  };
 
+  const handleLoadMore = () => {
+    if (!loadingMore && hasMoreTransactions) {
+      setCurrentPage((prevPage) => prevPage + 1);
+    }
+  };
+
+  useEffect(() => {
     fetchTransactions();
-  }, [authToken, initiativeId, activityId, refreshTrigger]);
+  }, [currentPage]);
 
   useEffect(() => {
     async function fetchUserPermissions() {
@@ -321,6 +351,27 @@ const ActivityTransactions: React.FC<{
             ))}
           </tbody>
         </table>
+        {hasMoreTransactions && (
+          <div className={styles.loadMoreButtonContainer}>
+            <button
+              className={styles.loadMoreButton}
+              onClick={handleLoadMore}
+              disabled={loadingMore}
+            >
+              {loadingMore ? (
+                <div className={styles["loading-dots"]}>
+                  <LoadingDot delay={0} />
+                  <LoadingDot delay={0.1} />
+                  <LoadingDot delay={0.1} />
+                  <LoadingDot delay={0.2} />
+                  <LoadingDot delay={0.2} />
+                </div>
+              ) : (
+                "Load More"
+              )}
+            </button>
+          </div>
+        )}
         <PaymentDetails
           isOpen={isFetchPaymentDetailsModalOpen}
           onClose={handleToggleFetchPaymentDetailsModal}

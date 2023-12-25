@@ -1478,15 +1478,22 @@ export const deleteActivity = async (token, initiativeId, activityId) => {
 export const getPaymentsByInitiative = async (
   token,
   initiativeId,
+  page: number = 0,
+  limit: number = 3,
   queryParams = {},
 ) => {
   try {
+    const offset = (page - 1) * limit;
     const response = await api.get(`/payments/initiative/${initiativeId}`, {
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
-      params: queryParams,
+      params: {
+        queryParams,
+        offset,
+        limit,
+      },
     });
 
     if (response.status === 200) {
@@ -1506,9 +1513,12 @@ export const getPaymentsByActivity = async (
   token,
   initiativeId,
   activityId,
+  page: number = 0,
+  limit: number = 3,
   queryParams = {},
 ) => {
   try {
+    const offset = (page - 1) * limit;
     const response = await api.get(
       `/payments/initiative/${initiativeId}/activity/${activityId}`,
       {
@@ -1516,7 +1526,11 @@ export const getPaymentsByActivity = async (
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
-        params: queryParams,
+        params: {
+          queryParams,
+          offset,
+          limit,
+        },
       },
     );
 
