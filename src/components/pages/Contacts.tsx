@@ -20,7 +20,6 @@ export default function Contacts() {
   const token = localStorage.getItem("token");
   const { user } = useAuth();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [userData, setUserData] = useState<UserData[]>([]);
   const [error, setError] = useState<Error | null>(null);
   const [loggedInUserId, setLoggedInUserId] = useState<string | null>(null);
   const [isBlockingInteraction, setIsBlockingInteraction] = useState(false);
@@ -34,6 +33,11 @@ export default function Contacts() {
   const [permissionsFetched, setPermissionsFetched] = useState(false);
   const [entityPermissions, setEntityPermissions] = useState<string[]>([]);
   const hasPermission = entityPermissions.includes("create");
+  const [page, setPage] = useState(1);
+  const [userList, setUserList] = useState<UserData[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [initialUserList, setInitialUserList] = useState<UserData[]>([]);
+  const [noResultsFound, setNoResultsFound] = useState(false);
 
   useEffect(() => {
     if (user && user.token && !permissionsFetched) {
@@ -66,13 +70,26 @@ export default function Contacts() {
           setLoggedInUserId(userId);
         }
 
-        const usersResponse = await getUsersOrdered(token || "", 0, 20);
+        const usersResponse = await getUsersOrdered(
+          token || "",
+          currentPage,
+          3,
+          searchQuery,
+        );
 
-        let originalUsers = [...usersResponse];
+        const noResults = usersResponse.users.length === 0 && currentPage !== 0;
+
+        if (noResults) {
+          setNoResultsFound(true);
+        } else {
+          setNoResultsFound(false);
+        }
+
+        let originalUsers = [...usersResponse.users];
 
         if (loggedIn) {
           const loggedInUser = await getUserById(userId || "", token || "");
-          originalUsers = [loggedInUser, ...usersResponse];
+          originalUsers = [loggedInUser, ...usersResponse.users];
         }
 
         const filteredUsers = originalUsers.reduce((uniqueUsers, user) => {
@@ -88,7 +105,21 @@ export default function Contacts() {
           return uniqueUsers;
         }, []);
 
-        setUserData(filteredUsers);
+        if (searchQuery) {
+          setUserList(filteredUsers);
+        } else {
+          if (currentPage === 0) {
+            setInitialUserList(filteredUsers);
+          }
+
+          setUserList((prevUserList) => [
+            ...prevUserList,
+            ...filteredUsers.filter((user) =>
+              prevUserList.every((prevUser) => prevUser.id !== user.id),
+            ),
+          ]);
+        }
+
         setUserListLoaded(true);
 
         if (filteredUsers.length > 0) {
@@ -101,10 +132,10 @@ export default function Contacts() {
     }
 
     fetchData();
-  }, [refreshTrigger]);
+  }, [refreshTrigger, currentPage, searchQuery]);
 
   useEffect(() => {
-    const updatedFilteredData = userData.filter((user) => {
+    const updatedFilteredData = userList.filter((user) => {
       const fullName = `${user.first_name || ""} ${user.last_name || ""}`;
       const email = user.email || "";
       const keywords = searchQuery.toLowerCase().split(" ");
@@ -117,17 +148,17 @@ export default function Contacts() {
     });
 
     setFilteredData(updatedFilteredData);
-  }, [searchQuery, userData]);
+  }, [searchQuery, userList]);
 
   useEffect(() => {
-    if (userListLoaded && userData.length > 0) {
-      if (userData[0].id === loggedInUserId) {
+    if (userListLoaded && userList.length > 0) {
+      if (userList[0].id === loggedInUserId) {
         setActiveUserId(loggedInUserId);
       } else {
-        setActiveUserId(userData[0].id);
+        setActiveUserId(userList[0].id);
       }
     }
-  }, [userListLoaded, userData, loggedInUserId]);
+  }, [userListLoaded, userList, loggedInUserId]);
 
   const handleCtaClick = () => {
     setIsModalOpen(true);
@@ -176,24 +207,28 @@ export default function Contacts() {
     setRefreshTrigger((prev) => prev + 1);
   };
 
+  const handleLoadMore = () => {
+    setCurrentPage(currentPage + 1);
+  };
+
   return (
     <div className={styles["container"]}>
       <div className={styles["side-panel"]}>
         <TopNavigationBar
-          title={`Gebruikers ${userData.length}`}
+          title={`Gebruikers ${userList.length}`}
           showSettings={false}
           showCta={true}
           onSettingsClick={() => {}}
           onCtaClick={handleCtaClick}
           onSearch={handleSearch}
           hasPermission={hasPermission}
-          showSearch={false}
+          showSearch={true}
         />
         {error ? (
           <p>Error: {error.message}</p>
         ) : (
           <div>
-            {userData.length === 0 ? (
+            {userList.length === 0 ? (
               <div className={styles["loading-container"]}>
                 <LoadingDot delay={0} />
                 <LoadingDot delay={0.1} />
@@ -203,7 +238,7 @@ export default function Contacts() {
               </div>
             ) : (
               <ul>
-                {userData.map((user, index) => (
+                {userList.map((user, index) => (
                   <li
                     key={user.id}
                     className={`${styles["user-fade-in"]}`}
@@ -227,6 +262,17 @@ export default function Contacts() {
                 ))}
               </ul>
             )}
+            {userList.length > 0 && (
+              <div className={styles["load-more-button-container"]}>
+                <button
+                  className={styles["load-more-button"]}
+                  onClick={handleLoadMore}
+                >
+                  Load More
+                </button>
+              </div>
+            )}
+
             <Outlet />
           </div>
         )}

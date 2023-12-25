@@ -213,10 +213,13 @@ export const getUserById = async (userId: string, token: string) => {
 
 export const getUsersOrdered = async (
   token: string,
-  offset: number = 0,
+  page: number = 0,
   limit: number = 20,
+  email: string = "",
 ) => {
   try {
+    const offset = (page - 1) * limit;
+    console.log("Email Query:", email);
     const response = await api.get("/users", {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -224,9 +227,10 @@ export const getUsersOrdered = async (
       params: {
         offset,
         limit,
+        email,
       },
     });
-    return response.data.users;
+    return response.data;
   } catch (error) {
     throw error;
   }
