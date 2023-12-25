@@ -1,22 +1,17 @@
 import React, { useEffect, useState } from "react";
-import styles from "../../assets/scss/layout/AddFundDesktop.module.scss";
+import { useAuth } from "../../contexts/AuthContext";
+import { DeleteUserFormProps } from "../../types/DeleteUserForm";
 import { deleteUser } from "../middleware/Api";
+import styles from "../../assets/scss/layout/AddFundDesktop.module.scss";
 
-interface DeleteUserProps {
-  isOpen: boolean;
-  onClose: () => void;
-  isBlockingInteraction: boolean;
-  onUserDeleted: () => void;
-  userId?: string;
-}
-
-const DeleteUser: React.FC<DeleteUserProps> = ({
+const DeleteUserForm: React.FC<DeleteUserFormProps> = ({
+  userId,
   isOpen,
   onClose,
   isBlockingInteraction,
   onUserDeleted,
-  userId,
 }) => {
+  const { user } = useAuth();
   const [modalIsOpen, setModalIsOpen] = useState(isOpen);
 
   useEffect(() => {
@@ -29,18 +24,16 @@ const DeleteUser: React.FC<DeleteUserProps> = ({
     }
   }, [isOpen]);
 
+  if (!userId) {
+    console.error("userId is undefined or null");
+    return null;
+  }
+
   const handleDelete = async () => {
     try {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        console.error("Token is not available in localStorage");
-        return;
-      }
-      if (!userId) {
-        console.error("User ID is missing");
-        return;
-      }
-      await deleteUser(userId, token);
+      const token = user?.token || "";
+      const response = await deleteUser(userId, token);
+      console.log("User deleted:", response);
       onUserDeleted();
       handleClose();
     } catch (error) {
@@ -60,32 +53,34 @@ const DeleteUser: React.FC<DeleteUserProps> = ({
   }
 
   return (
-    <>
+    <div>
       <div
         className={`${styles.backdrop} ${modalIsOpen ? styles.open : ""}`}
         onClick={handleClose}
       ></div>
       <div className={`${styles.modal} ${modalIsOpen ? styles.open : ""}`}>
         <h2 className={styles.title}>Gebruiker verwijderen</h2>
-        <hr />
-        <div className={styles.formGroup}>
-          <h3>Info</h3>
-          <p>
-            Je staat op het punt deze gebruiker te verwijderen. Dit kan niet
-            ongedaan gemaakt worden. Weet je het zeker?
-          </p>
-        </div>
+        <hr></hr>
+        <form>
+          <div className={styles.formGroup}>
+            <h3>Info</h3>
+            <p>
+              Je staat op het punt deze gebruiker te verwijderen. Dit kan niet
+              ongedaan gemaakt worden. Weet je het zeker?
+            </p>
+          </div>
+        </form>
         <div className={styles.buttonContainer}>
           <button onClick={handleClose} className={styles.cancelButton}>
             Annuleren
           </button>
           <button onClick={handleDelete} className={styles.deleteButton}>
-            Verwijderen
+            Opslaan
           </button>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 
-export default DeleteUser;
+export default DeleteUserForm;

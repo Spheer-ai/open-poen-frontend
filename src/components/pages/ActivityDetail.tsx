@@ -173,7 +173,7 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
   }, [user, initiativeId, fetchFieldPermissions]);
 
   useEffect(() => {
-    if (activityId && authToken) {
+    if (activityId) {
       fetchActivityDetails(authToken, initiativeId, activityId)
         .then((data) => {
           setActivityDetails(data);

@@ -1,7 +1,9 @@
 export interface EditUserFormProps {
   userId: string | null;
-  onCancel: () => void;
-  onContinue: () => void;
   fieldPermissions;
   fields: string[];
+  isOpen: boolean;
+  onClose: () => void;
+  onUserEdited: () => void;
+  isBlockingInteraction: boolean;
 }

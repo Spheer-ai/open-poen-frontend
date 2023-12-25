@@ -10,7 +10,7 @@ import TopNavigationBar from "../ui/top-navigation-bar/TopNavigationBar";
 import styles from "../../assets/scss/Funds.module.scss";
 import { usePermissions } from "../../contexts/PermissionContext";
 import { useAuth } from "../../contexts/AuthContext";
-import { editGrant, fetchInitiatives } from "../middleware/Api";
+import { fetchInitiatives } from "../middleware/Api";
 import LoadingDot from "../animation/LoadingDot";
 
 interface Initiative {
@@ -24,7 +24,6 @@ interface Initiative {
 export default function Funds() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const { fetchPermissions } = usePermissions();
   const [entityPermissions, setEntityPermissions] = useState<string[]>([]);
   const hasPermission = useMemo(
@@ -32,9 +31,7 @@ export default function Funds() {
     [entityPermissions],
   );
   const [onlyMine, setOnlyMine] = useState(false);
-  const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [initiatives, setInitiatives] = useState<Initiative[]>([]);
-  const [isBlockingInteraction, setIsBlockingInteraction] = useState(false);
   const [isFetchingInitiatives, setIsFetchingInitiatives] = useState(false);
   const [allInitiatives, setAllInitiatives] = useState<Initiative[]>([]);
   const [myInitiatives, setMyInitiatives] = useState<Initiative[]>([]);

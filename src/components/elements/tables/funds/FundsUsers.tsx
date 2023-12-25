@@ -34,7 +34,7 @@ const FundsUsers: React.FC<{
 
   useEffect(() => {
     setIsLoading(true);
-    if (initiativeId && token) {
+    if (initiativeId) {
       fetchFundDetails(token, initiativeId)
         .then((data) => {
           setInitiativeOwners(data.initiative_owners);

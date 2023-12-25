@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { fetchActivityMedia } from "../../../middleware/Api";
 import styles from "../../../../assets/scss/FundMedia.module.scss";
-import { Document, Page, pdfjs } from "react-pdf";
-pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
 interface MediaItem {
   attachment_thumbnail_url_512: string;
@@ -54,11 +52,17 @@ const ActivityMedia: React.FC<ActivityMediaProps> = ({
             onClick={() => handleItemClick(media)}
           >
             {isPdf(media.attachment_url) ? (
-              <div className={styles["pdf-preview"]}>
-                <Document file={encodeURIComponent(media.attachment_url)}>
-                  <Page pageNumber={1} />
-                </Document>
-              </div>
+              <object
+                data={media.attachment_url}
+                type="application/pdf"
+                width="100%"
+                height="500px"
+              >
+                <p>
+                  PDF cannot be displayed. Download it{" "}
+                  <a href={media.attachment_url}>here</a>.
+                </p>
+              </object>
             ) : (
               <img
                 src={media.attachment_thumbnail_url_512}
@@ -72,11 +76,17 @@ const ActivityMedia: React.FC<ActivityMediaProps> = ({
         <div className={styles["image-preview-overlay"]} onClick={closePreview}>
           <div className={styles["image-preview"]}>
             {isPdf(selectedItem.attachment_url) ? (
-              <div className={styles["pdf-preview"]}>
-                <Document file={selectedItem.attachment_url}>
-                  <Page pageNumber={1} />
-                </Document>
-              </div>
+              <object
+                data={selectedItem.attachment_url}
+                type="application/pdf"
+                width="100%"
+                height="500px"
+              >
+                <p>
+                  PDF cannot be displayed. Download it{" "}
+                  <a href={selectedItem.attachment_url}>here</a>.
+                </p>
+              </object>
             ) : (
               <img
                 src={selectedItem.attachment_thumbnail_url_512}

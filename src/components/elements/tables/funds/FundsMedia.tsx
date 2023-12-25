@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { fetchInitiativeMedia } from "../../../middleware/Api";
 import styles from "../../../../assets/scss/FundMedia.module.scss";
-import { Document, Page, pdfjs } from "react-pdf";
-pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
 interface MediaItem {
   attachment_thumbnail_url_512: string;
@@ -30,10 +28,14 @@ const FundsMedia: React.FC<FundsMediaProps> = ({ initiativeId }) => {
     fetchMedia();
   }, [initiativeId]);
 
-  const isPdf = (url: string) => url.toLowerCase().includes(".pdf");
+  const isPdf = (url: string) => /\.pdf/i.test(url); // Case-insensitive check
 
   const handleItemClick = (item: MediaItem) => {
     setSelectedItem(item);
+
+    if (isPdf(item.attachment_url)) {
+      console.log("Clicked item is recognized as a PDF:", item);
+    }
   };
 
   const closePreview = () => {
@@ -50,11 +52,17 @@ const FundsMedia: React.FC<FundsMediaProps> = ({ initiativeId }) => {
             onClick={() => handleItemClick(media)}
           >
             {isPdf(media.attachment_url) ? (
-              <div className={styles["pdf-preview"]}>
-                <Document file={encodeURIComponent(media.attachment_url)}>
-                  <Page pageNumber={1} />
-                </Document>
-              </div>
+              <object
+                data={media.attachment_url}
+                type="application/pdf"
+                width="100%"
+                height="500px"
+              >
+                <p>
+                  PDF cannot be displayed. Download it{" "}
+                  <a href={media.attachment_url}>here</a>.
+                </p>
+              </object>
             ) : (
               <img
                 src={media.attachment_thumbnail_url_512}
@@ -68,11 +76,17 @@ const FundsMedia: React.FC<FundsMediaProps> = ({ initiativeId }) => {
         <div className={styles["image-preview-overlay"]} onClick={closePreview}>
           <div className={styles["image-preview"]}>
             {isPdf(selectedItem.attachment_url) ? (
-              <div className={styles["pdf-preview"]}>
-                <Document file={selectedItem.attachment_url}>
-                  <Page pageNumber={1} />
-                </Document>
-              </div>
+              <object
+                data={selectedItem.attachment_url}
+                type="application/pdf"
+                width="100%"
+                height="500px"
+              >
+                <p>
+                  PDF cannot be displayed. Download it{" "}
+                  <a href={selectedItem.attachment_url}>here</a>.
+                </p>
+              </object>
             ) : (
               <img
                 src={selectedItem.attachment_thumbnail_url_512}

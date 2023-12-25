@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from "react";
-import FormButtons from "./buttons/FormButton";
-import FormLayout from "./FormLayout";
 import { useAuth } from "../../contexts/AuthContext";
 import { EditUserProfileFormProps } from "../../types/EditUserProfileFormType";
-import styles from "../../assets/scss/EditUserProfileForm.module.scss";
+import styles from "../../assets/scss/layout/AddFundDesktop.module.scss";
 import ImageUploader from "../elements/uploadder/ImageUploader";
 import {
   fetchUserProfileData,
@@ -13,8 +11,11 @@ import {
 
 const EditUserProfileForm: React.FC<EditUserProfileFormProps> = ({
   userId,
-  onCancel,
   fieldPermissions,
+  isOpen,
+  onClose,
+  isBlockingInteraction,
+  onUserProfileEdited,
 }) => {
   console.log("fieldPermissions:", fieldPermissions);
   const { user } = useAuth();
@@ -30,11 +31,21 @@ const EditUserProfileForm: React.FC<EditUserProfileFormProps> = ({
     hidden: false,
   });
 
-  const [isConfirmed, setIsConfirmed] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [isError, setIsError] = useState(false);
   const [bioCharCount, setBioCharCount] = useState<number>(0);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [modalIsOpen, setModalIsOpen] = useState(isOpen);
+
+  useEffect(() => {
+    if (isOpen) {
+      setModalIsOpen(true);
+    } else {
+      setTimeout(() => {
+        setModalIsOpen(false);
+      }, 300);
+    }
+  }, [isOpen]);
 
   useEffect(() => {
     if (userId) {
@@ -106,10 +117,10 @@ const EditUserProfileForm: React.FC<EditUserProfileFormProps> = ({
       const response = await updateUserProfile(userId, formDataToSend, token);
 
       console.log("User profile updated:", response);
-
-      setIsConfirmed(true);
       setIsSuccess(true);
       setIsError(false);
+      onUserProfileEdited();
+      handleClose();
     } catch (error) {
       console.error("Failed to update user profile:", error);
 
@@ -118,8 +129,11 @@ const EditUserProfileForm: React.FC<EditUserProfileFormProps> = ({
     }
   };
 
-  const handleCancel = () => {
-    onCancel();
+  const handleClose = () => {
+    if (!isBlockingInteraction) {
+      setModalIsOpen(false);
+      onClose();
+    }
   };
 
   const handleBioChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -130,27 +144,24 @@ const EditUserProfileForm: React.FC<EditUserProfileFormProps> = ({
     setFormData({ ...formData, biography: value });
   };
 
+  if (!isOpen && !modalIsOpen) {
+    return null;
+  }
+
   return (
     <>
-      <FormLayout
-        title="Profiel bewerken"
-        showIcon={false}
-        showOverviewButton={isConfirmed}
-        reloadWindow={handleCancel}
-      >
-        {isConfirmed ? (
-          <div className={styles["confirmation-container"]}>
-            <h3>Profielgegevens bijgewerkt</h3>
-            <p>
-              De wijzigingen in het profiel van de gebruiker zijn succesvol
-              bijgewerkt.
-            </p>
-          </div>
-        ) : (
-          <form>
+      <div
+        className={`${styles.backdrop} ${modalIsOpen ? styles.open : ""}`}
+        onClick={handleClose}
+      ></div>
+      <div className={`${styles.modal} ${modalIsOpen ? styles.open : ""}`}>
+        <h2 className={styles.title}>Gebruiker bewerken</h2>
+        <hr></hr>
+        <form>
+          <div className={styles.formGroup}>
             <h3>Info</h3>
             {fieldPermissions.fields.includes("first_name") && (
-              <div className={styles["form-group"]}>
+              <>
                 <label
                   className={styles["label-first_name"]}
                   htmlFor="first_name"
@@ -166,77 +177,73 @@ const EditUserProfileForm: React.FC<EditUserProfileFormProps> = ({
                   onChange={handleChange}
                   className={isSuccess ? "success" : isError ? "error" : ""}
                 />
-              </div>
+              </>
             )}
-            {fieldPermissions.fields.includes("last_name") && (
-              <div className={styles["form-group"]}>
-                <label
-                  className={styles["label-last_name"]}
-                  htmlFor="last_name"
-                >
-                  Achternaam
-                </label>
-                <input
-                  type="text"
-                  id="last_name"
-                  name="last_name"
-                  placeholder="Voer de achternaam in"
-                  value={formData.last_name}
-                  onChange={handleChange}
-                  className={isSuccess ? "success" : isError ? "error" : ""}
-                />
-              </div>
-            )}
-            {fieldPermissions.fields.includes("biography") && (
-              <div className={styles["form-group"]}>
-                <label
-                  className={styles["label-biography"]}
-                  htmlFor="biography"
-                >
-                  Biografie
-                </label>
-                <textarea
-                  id="biography"
-                  name="biography"
-                  placeholder="Voer een biografie in"
-                  value={formData.biography}
-                  onChange={handleBioChange}
-                  className={isSuccess ? "success" : isError ? "error" : ""}
-                />
+          </div>
+          {fieldPermissions.fields.includes("last_name") && (
+            <div className={styles.formGroup}>
+              <label className={styles["label-last_name"]} htmlFor="last_name">
+                Achternaam
+              </label>
+              <input
+                type="text"
+                id="last_name"
+                name="last_name"
+                placeholder="Voer de achternaam in"
+                value={formData.last_name}
+                onChange={handleChange}
+                className={isSuccess ? "success" : isError ? "error" : ""}
+              />
+            </div>
+          )}
+          {fieldPermissions.fields.includes("biography") && (
+            <div className={styles.formGroup}>
+              <label className={styles["label-biography"]} htmlFor="biography">
+                Biografie
+              </label>
+              <textarea
+                id="biography"
+                name="biography"
+                placeholder="Voer een biografie in"
+                value={formData.biography}
+                onChange={handleBioChange}
+                className={isSuccess ? "success" : isError ? "error" : ""}
+              />
 
-                <div className={styles["chart-count-container"]}>
-                  <div
-                    className={
-                      bioCharCount > 500
-                        ? styles["char-count-error"]
-                        : styles["char-count"]
-                    }
-                  >
-                    {bioCharCount}/500
-                  </div>
-                  {bioCharCount > 500 && (
-                    <div className={styles["error-message"]}>
-                      Biografie mag maximaal 500 tekens bevatten.
-                    </div>
-                  )}
+              <div className={styles["chart-count-container"]}>
+                <div
+                  className={
+                    bioCharCount > 500
+                      ? styles["char-count-error"]
+                      : styles["char-count"]
+                  }
+                >
+                  {bioCharCount}/500
                 </div>
+                {bioCharCount > 500 && (
+                  <div className={styles["error-message"]}>
+                    Biografie mag maximaal 500 tekens bevatten.
+                  </div>
+                )}
               </div>
-            )}
-            {userId && (
-              <div className={styles["form-group"]}>
-                <label>Profielfoto</label>
-                <ImageUploader
-                  onImageUpload={handleImageUpload}
-                  userId={userId}
-                  token={user?.token || ""}
-                />
-              </div>
-            )}
-            <hr />
-            {fieldPermissions.fields.includes("hidden") && (
-              <>
+            </div>
+          )}
+          {userId && (
+            <div className={styles.formGroup}>
+              <label>Profielfoto</label>
+              <ImageUploader
+                onImageUpload={handleImageUpload}
+                userId={userId}
+                token={user?.token || ""}
+              />
+            </div>
+          )}
+          <hr />
+          {fieldPermissions.fields.includes("hidden") && (
+            <>
+              <div className={styles.formGroup}>
                 <h3>Instellingen</h3>
-                <div className={styles["form-group"]}>
+                <div className={styles.roleOptions}>
                   <label>
                     <input
                       type="checkbox"
@@ -248,19 +255,19 @@ const EditUserProfileForm: React.FC<EditUserProfileFormProps> = ({
                     <p>Gebruiker verbergen in overzicht</p>
                   </label>
                 </div>
-              </>
-            )}
-          </form>
-        )}
-        {!isConfirmed && (
-          <FormButtons
-            continueLabel="Opslaan"
-            cancelLabel="Annuleren"
-            onContinue={handleSubmit}
-            onCancel={handleCancel}
-          />
-        )}
-      </FormLayout>
+              </div>
+            </>
+          )}
+        </form>
+        <div className={styles.buttonContainer}>
+          <button onClick={handleClose} className={styles.cancelButton}>
+            Annuleren
+          </button>
+          <button onClick={handleSubmit} className={styles.saveButton}>
+            Opslaan
+          </button>
+        </div>
+      </div>
     </>
   );
 };

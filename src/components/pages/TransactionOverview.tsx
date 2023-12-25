@@ -16,17 +16,13 @@ const TransactionOverview = () => {
   const [lowercaseQuery, setLowercaseQuery] = useState<string>("");
   const [sortCriteria, setSortCriteria] = useState<string>("");
   const [sortDirection, setSortDirection] = useState<string>("asc");
+  const [searchQuery, setSearchQuery] = useState("");
   const [openDropdownForPayment, setOpenDropdownForPayment] = useState<
     number | null
   >(null);
   const [openDropdownForActivity, setOpenDropdownForActivity] = useState<
     number | null
   >(null);
-
-  const [activePaymentId, setActivePaymentId] = useState<number | null>(null);
-  const [activeTransactionId, setActiveTransactionId] = useState<number | null>(
-    null,
-  );
   const [transactionsWithInitiatives, setTransactionsWithInitiatives] =
     useState<any[]>([]);
   const [initiativeLinkingStatus, setInitiativeLinkingStatus] = useState<
@@ -38,26 +34,19 @@ const TransactionOverview = () => {
   const [activeInitiativeId, setActiveInitiativeId] = useState<number | null>(
     null,
   );
-  const [linkedActivityIds, setLinkedActivityIds] = useState<
-    Record<number, number | null>
-  >({});
   const [linkedActivities, setLinkedActivities] = useState<
     Record<number, number | null>
   >({});
   const [selectedActivities, setSelectedActivities] = useState<
     Record<number, string | null>
   >({});
-  const [linkedActivityNames, setLinkedActivityNames] = useState<
-    Record<number, string | null>
-  >({});
   const [isActivityLinkingEnabled, setIsActivityLinkingEnabled] =
-    useState<boolean>(
-      true, // Set the initial state based on your requirements
-    );
+    useState<boolean>(true);
   const [offset, setOffset] = useState(0);
   const [limit, setLimit] = useState(3);
   const [totalTransactionsCount, setTotalTransactionsCount] = useState(0);
   const [isLoadingMore, setIsLoadingMore] = useState<boolean>(false);
+  const [filterOption, setFilterOption] = useState<string>("all");
 
   const [allTransactions, setAllTransactions] = useState<any[]>([]);
 
@@ -71,7 +60,30 @@ const TransactionOverview = () => {
 
   useEffect(() => {
     setTransactions(allTransactions.slice(0, limit));
-  }, [allTransactions, limit]);
+  }, [allTransactions, limit, searchQuery]);
+
+  useEffect(() => {
+    const filtered = allTransactions.filter((transaction) => {
+      const initiativeNameMatch =
+        transaction.initiative_name &&
+        transaction.initiative_name
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase());
+      const activityNameMatch =
+        transaction.activity_name &&
+        transaction.activity_name
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase());
+      const ibanMatch =
+        transaction.iban &&
+        transaction.iban.toLowerCase().includes(searchQuery.toLowerCase());
+
+      return initiativeNameMatch || activityNameMatch || ibanMatch;
+    });
+
+    setFilteredTransactions(filtered);
+    setTransactions(filtered.slice(0, limit));
+  }, [allTransactions, limit, searchQuery]);
 
   const handleLoadMore = async () => {
     const newOffset = offset + limit;
@@ -88,6 +100,7 @@ const TransactionOverview = () => {
           user.token,
           newOffset,
           limit,
+          searchQuery,
         );
         console.log("Fetched transactions:", data.payments);
 
@@ -159,7 +172,9 @@ const TransactionOverview = () => {
       });
   };
 
-  const handleSearch = (query: string) => {};
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+  };
 
   const handleSort = (criteria: string) => {
     if (criteria === sortCriteria) {
@@ -221,10 +236,6 @@ const TransactionOverview = () => {
     };
 
     return headerStyle;
-  };
-
-  const handleInitiativeClick = (paymentId: number) => {
-    setOpenDropdownForPayment(paymentId);
   };
 
   const handleInitiativeLinked = (
@@ -321,8 +332,8 @@ const TransactionOverview = () => {
             </tr>
           </thead>
           <tbody>
-            {allTransactions.length ? (
-              allTransactions.map((transaction, index) => (
+            {filteredTransactions.length ? (
+              filteredTransactions.map((transaction, index) => (
                 <tr key={`${transaction.id}-${index}`}>
                   <td>
                     {highlightMatch(
