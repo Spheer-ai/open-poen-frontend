@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useAuth } from "../../contexts/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useIntl } from "react-intl";
 import styles from "../../assets/scss/Login.module.scss";
 
@@ -145,6 +145,9 @@ export default function Login({ onLogin }: { onLogin: () => void }) {
                 {isLoading ? "Inloggen..." : "Login"}
               </button>
             </form>
+            <div className={styles["forgot-password-link"]}>
+              <Link to="/account-recovery">Wachtwoord vergeten?</Link>
+            </div>
             {error && <p className={styles["error-message"]}>{error}</p>}
             {formSubmitted && emailValidationError && (
               <p className={styles["error-message"]}>
