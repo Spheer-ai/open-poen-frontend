@@ -19,6 +19,10 @@ interface LinkInitiativeToPaymentProps {
   initiativeId: number | null;
   onInitiativeLinked: (initiativeId: number | null) => void;
   isActivityLinked: boolean;
+  linkingStatus: Record<
+    number,
+    { initiativeId: number | null; activityId: number | null }
+  >;
 }
 
 const LinkInitiativeToPayment: React.FC<LinkInitiativeToPaymentProps> = ({
@@ -27,7 +31,6 @@ const LinkInitiativeToPayment: React.FC<LinkInitiativeToPaymentProps> = ({
   initiativeName,
   onInitiativeLinked,
   isActivityLinked,
-  initiativeId,
 }) => {
   const [linkableInitiatives, setLinkableInitiatives] = useState<Initiative[]>(
     [],
@@ -35,10 +38,22 @@ const LinkInitiativeToPayment: React.FC<LinkInitiativeToPaymentProps> = ({
   const [selectedInitiative, setSelectedInitiative] = useState<number | "">("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isSelectClicked, setIsSelectClicked] = useState<boolean>(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
+  const [noDataLabel, setNoDataLabel] = useState<string>("");
+  const [isLinking, setIsLinking] = useState<boolean>(false);
 
   const verbreekVerbindingOption: Initiative = {
     id: -1,
     name: "Verbreek verbinding",
+  };
+
+  const handleInitiativeNameClick = () => {
+    setIsDropdownOpen(true);
+
+    if (!isSelectClicked) {
+      setIsSelectClicked(true);
+      setNoDataLabel("Gegevens ophalen");
+    }
   };
 
   useEffect(() => {
@@ -72,7 +87,9 @@ const LinkInitiativeToPayment: React.FC<LinkInitiativeToPaymentProps> = ({
 
   const handleLinkInitiative = async () => {
     try {
+      setIsLinking(true);
       setIsLoading(true);
+
       if (selectedInitiative !== undefined) {
         if (selectedInitiative === verbreekVerbindingOption.id) {
           await linkInitiativeToPayment(token, paymentId, null);
@@ -81,13 +98,13 @@ const LinkInitiativeToPayment: React.FC<LinkInitiativeToPaymentProps> = ({
           await linkInitiativeToPayment(token, paymentId, selectedInitiative);
           onInitiativeLinked(selectedInitiative as number | null);
         }
-
-        console.log("Link Initiative to Payment successful!");
       }
       setIsLoading(false);
+      setIsLinking(false);
     } catch (error) {
       console.error("Error linking initiative to payment:", error);
       setIsLoading(false);
+      setIsLinking(false);
     }
   };
 
@@ -96,52 +113,66 @@ const LinkInitiativeToPayment: React.FC<LinkInitiativeToPaymentProps> = ({
     label: initiative.name,
   }));
 
-  const handleSelectClick = () => {
-    setIsSelectClicked(true);
-  };
-
   return (
     <div className={styles["customDropdown"]}>
-      {isActivityLinked ? (
-        <div className={styles["disabled-dropdown"]}>
-          <span className={styles["initiativeText"]}>Verbind initiatief</span>
-        </div>
-      ) : isLoading ? (
+      <div className={styles["customContainer"]}>
+        {isActivityLinked ? (
+          <div className={styles["disabled-dropdown"]}>
+            <span className={styles["initiativeText"]}>
+              {" "}
+              {initiativeName || "Verbind initiatief"}
+            </span>
+          </div>
+        ) : (
+          <div
+            onClick={handleInitiativeNameClick}
+            className="custom-dropdown-container"
+          >
+            {isLinking ? (
+              <div className={styles["loading-column"]}>
+                <div className={styles["loading-container"]}>
+                  <LoadingDot delay={0} />
+                  <LoadingDot delay={0.1} />
+                  <LoadingDot delay={0.1} />
+                  <LoadingDot delay={0.2} />
+                </div>
+              </div>
+            ) : (
+              <Select
+                values={
+                  selectedInitiative === ""
+                    ? []
+                    : mappedInitiatives.filter(
+                        (option) => option.value === selectedInitiative,
+                      )
+                }
+                options={mappedInitiatives}
+                onChange={(values) =>
+                  setSelectedInitiative(values[0] ? values[0].value : "")
+                }
+                labelField="label"
+                valueField="value"
+                placeholder={
+                  selectedInitiative === ""
+                    ? initiativeName || "Verbind initiatief"
+                    : mappedInitiatives.find(
+                        (option) => option.value === selectedInitiative,
+                      )?.label || ""
+                }
+                className={styles["custom-option"]}
+                noDataLabel={isLoading ? "Gegevens ophalen" : ""}
+              />
+            )}
+          </div>
+        )}
+      </div>
+      {isLoading && !isLinking && (
         <div className={styles["loading-column"]}>
           <div className={styles["loading-container"]}>
             <LoadingDot delay={0} />
             <LoadingDot delay={0.1} />
             <LoadingDot delay={0.1} />
             <LoadingDot delay={0.2} />
-          </div>
-        </div>
-      ) : (
-        <div className={styles["customContainer"]}>
-          <div
-            onClick={handleSelectClick}
-            className="custom-dropdown-container"
-          >
-            <Select
-              values={
-                selectedInitiative === ""
-                  ? []
-                  : mappedInitiatives.filter(
-                      (option) => option.value === selectedInitiative,
-                    )
-              }
-              options={mappedInitiatives}
-              onChange={(values) =>
-                setSelectedInitiative(values[0] ? values[0].value : "")
-              }
-              labelField="label"
-              valueField="value"
-              placeholder={
-                selectedInitiative === ""
-                  ? initiativeName || "Verbind initiatief"
-                  : ""
-              }
-              className={styles["custom-option"]}
-            />
           </div>
         </div>
       )}

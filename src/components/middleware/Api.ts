@@ -1219,19 +1219,21 @@ export const linkInitiativeToPayment = async (
     console.log("paymentId:", paymentId);
     console.log("initiativeId:", initiativeId);
 
+    const requestData = {
+      initiative_id: initiativeId,
+    };
+
+    console.log("Link initiative to payment request data:", requestData);
+
     const response = await api.patch(
       `/payment/${paymentId}/initiative`,
-      {
-        initiative_id: initiativeId,
-      },
+      requestData,
       {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       },
     );
-
-    console.log("Link initiative to payment response:", response);
 
     if (response.status === 200) {
       return response.data;

@@ -207,8 +207,13 @@
 }
 
 .loading-column {
+  max-height: 30px;
+  display: flex;
+  align-items: center;
+
   .loading-container {
-    height: fit-content;
+    height: 30px;
+    padding: 5px;
   }
 }
 

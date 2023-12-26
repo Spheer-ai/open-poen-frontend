@@ -10,45 +10,20 @@ import LoadingDot from "../animation/LoadingDot";
 const TransactionOverview = () => {
   const { user } = useAuth();
   const [transactions, setTransactions] = useState<any[]>([]);
-  const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [filteredTransactions, setFilteredTransactions] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [lowercaseQuery, setLowercaseQuery] = useState<string>("");
   const [sortCriteria, setSortCriteria] = useState<string>("");
   const [sortDirection, setSortDirection] = useState<string>("asc");
   const [searchQuery, setSearchQuery] = useState("");
-  const [openDropdownForPayment, setOpenDropdownForPayment] = useState<
-    number | null
-  >(null);
-  const [openDropdownForActivity, setOpenDropdownForActivity] = useState<
-    number | null
-  >(null);
-  const [transactionsWithInitiatives, setTransactionsWithInitiatives] =
-    useState<any[]>([]);
-  const [initiativeLinkingStatus, setInitiativeLinkingStatus] = useState<
-    Record<number, boolean>
-  >({});
-  const [activityLinkingStatus, setActivityLinkingStatus] = useState<
-    Record<number, boolean>
-  >({});
-  const [activeInitiativeId, setActiveInitiativeId] = useState<number | null>(
-    null,
-  );
-  const [linkedActivities, setLinkedActivities] = useState<
-    Record<number, number | null>
-  >({});
-  const [selectedActivities, setSelectedActivities] = useState<
-    Record<number, string | null>
-  >({});
-  const [isActivityLinkingEnabled, setIsActivityLinkingEnabled] =
-    useState<boolean>(true);
   const [offset, setOffset] = useState(0);
   const [limit, setLimit] = useState(3);
   const [totalTransactionsCount, setTotalTransactionsCount] = useState(0);
   const [isLoadingMore, setIsLoadingMore] = useState<boolean>(false);
-  const [filterOption, setFilterOption] = useState<string>("all");
-
   const [allTransactions, setAllTransactions] = useState<any[]>([]);
+  const [linkingStatus, setLinkingStatus] = useState<
+    Record<number, { initiativeId: number | null; activityId: number | null }>
+  >({});
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -60,7 +35,7 @@ const TransactionOverview = () => {
 
   useEffect(() => {
     setTransactions(allTransactions.slice(0, limit));
-  }, [allTransactions, limit, searchQuery]);
+  }, [allTransactions, linkingStatus, searchQuery, limit]);
 
   useEffect(() => {
     const filtered = allTransactions.filter((transaction) => {
@@ -102,7 +77,16 @@ const TransactionOverview = () => {
           limit,
           searchQuery,
         );
-        console.log("Fetched transactions:", data.payments);
+        const updatedLinkingStatus = { ...linkingStatus };
+
+        data.payments.forEach((transaction) => {
+          updatedLinkingStatus[transaction.id] = {
+            initiativeId: transaction.initiative_id || null,
+            activityId: transaction.activity_id || null,
+          };
+        });
+
+        setLinkingStatus(updatedLinkingStatus);
 
         setTotalTransactionsCount(data.totalCount || 0);
 
@@ -242,42 +226,32 @@ const TransactionOverview = () => {
     transactionId: number,
     initiativeId: number | null,
   ) => {
-    const updatedTransactions = transactionsWithInitiatives.map(
-      (transaction) => {
-        if (transaction.id === transactionId) {
-          return {
-            ...transaction,
-            initiative_id: initiativeId,
-          };
-        }
-        return transaction;
-      },
-    );
-
-    setTransactionsWithInitiatives(updatedTransactions);
-    setInitiativeLinkingStatus((prevStatus) => ({
-      ...prevStatus,
-      [transactionId]: initiativeId !== null,
-    }));
-    setActiveInitiativeId(initiativeId);
-    setIsActivityLinkingEnabled(initiativeId === null);
+    setLinkingStatus((prevStatus) => {
+      const newStatus = {
+        ...prevStatus,
+        [transactionId]: {
+          initiativeId,
+          activityId: prevStatus[transactionId]?.activityId || null,
+        },
+      };
+      return newStatus;
+    });
   };
 
   const handleActivityLinked = (
     transactionId: number,
     activityId: number | null,
   ) => {
-    setSelectedActivities((prevSelectedActivities) => ({
-      ...prevSelectedActivities,
-      [transactionId]: activityId !== null ? activityId.toString() : null,
-    }));
-
-    setActivityLinkingStatus((prevActivityLinkingStatus) => ({
-      ...prevActivityLinkingStatus,
-      [transactionId]: activityId !== null,
-    }));
-
-    setOpenDropdownForActivity(null);
+    setLinkingStatus((prevStatus) => {
+      const newStatus = {
+        ...prevStatus,
+        [transactionId]: {
+          initiativeId: prevStatus[transactionId]?.initiativeId || null,
+          activityId,
+        },
+      };
+      return newStatus;
+    });
   };
 
   return (
@@ -333,80 +307,94 @@ const TransactionOverview = () => {
           </thead>
           <tbody>
             {filteredTransactions.length ? (
-              filteredTransactions.map((transaction, index) => (
-                <tr key={`${transaction.id}-${index}`}>
-                  <td>
-                    {highlightMatch(
-                      formatDate(transaction.booking_date),
-                      lowercaseQuery,
-                    )}
-                  </td>
-                  <td>
-                    <LinkInitiativeToPayment
-                      token={user?.token || ""}
-                      paymentId={transaction.id}
-                      initiativeId={transaction.initiative_id || null}
-                      onInitiativeLinked={(initiativeId) =>
-                        handleInitiativeLinked(transaction.id, initiativeId)
-                      }
-                      initiativeName={transaction.initiative_name || ""}
-                      isActivityLinked={
-                        activityLinkingStatus[transaction.id] || false
-                      }
-                    />
-                  </td>
-                  <td>
-                    <LinkActivityToPayment
-                      token={user?.token || ""}
-                      paymentId={transaction.id}
-                      initiativeId={transaction.initiative_id}
-                      activityName={transaction.activity_name || ""}
-                      onActivityLinked={(transactionId, activityId) =>
-                        handleActivityLinked(
-                          transactionId,
-                          activityId as number | null,
-                        )
-                      }
-                      linkedActivityId={
-                        linkedActivities[transaction.id] || null
-                      }
-                      isInitiativeLinked={
-                        initiativeLinkingStatus[transaction.id] || false
-                      }
-                    />
-                  </td>
+              filteredTransactions.map((transaction, index) => {
+                const isInitiativeLinked =
+                  linkingStatus[transaction.id]?.initiativeId !== null;
+                const isActivityLinked =
+                  linkingStatus[transaction.id]?.activityId !== null;
 
-                  <td>
-                    {highlightMatch(transaction.creditor_name, lowercaseQuery)}
-                  </td>
-                  <td>
-                    {highlightMatch(
-                      transaction.short_user_description,
-                      lowercaseQuery,
-                    )}
-                  </td>
-                  <td>{highlightMatch(transaction.iban, lowercaseQuery)}</td>
-                  <td>
-                    <span
-                      style={{
-                        display: "inline-block",
-                        width: "20px",
-                        textAlign: "right",
-                      }}
-                    >
-                      {transaction.transaction_amount < 0 ? "-" : ""}
-                    </span>
-                    €{" "}
-                    {highlightMatch(
-                      Math.abs(transaction.transaction_amount).toLocaleString(
-                        "nl-NL",
-                        { minimumFractionDigits: 2 },
-                      ),
-                      lowercaseQuery,
-                    )}
-                  </td>
-                </tr>
-              ))
+                return (
+                  <tr key={`${transaction.id}-${index}`}>
+                    <td>
+                      {highlightMatch(
+                        formatDate(transaction.booking_date),
+                        lowercaseQuery,
+                      )}
+                    </td>
+                    <td>
+                      <LinkInitiativeToPayment
+                        token={user?.token || ""}
+                        paymentId={transaction.id}
+                        initiativeName={transaction.initiative_name || ""}
+                        initiativeId={transaction.initiative_id || null}
+                        onInitiativeLinked={(initiativeId) =>
+                          handleInitiativeLinked(transaction.id, initiativeId)
+                        }
+                        isActivityLinked={
+                          linkingStatus[transaction.id]?.activityId !== null
+                        }
+                        linkingStatus={linkingStatus}
+                      />
+                    </td>
+
+                    <td>
+                      <LinkActivityToPayment
+                        token={user?.token || ""}
+                        paymentId={transaction.id}
+                        initiativeId={
+                          linkingStatus[transaction.id]?.initiativeId ||
+                          transaction.initiative_id
+                        }
+                        activityName={transaction.activity_name || ""}
+                        onActivityLinked={(transactionId, activityId) =>
+                          handleActivityLinked(
+                            transactionId,
+                            activityId as number | null,
+                          )
+                        }
+                        linkedActivityId={
+                          linkingStatus[transaction.id]?.activityId || null
+                        }
+                        isInitiativeLinked={isInitiativeLinked}
+                        linkingStatus={linkingStatus}
+                      />
+                    </td>
+
+                    <td>
+                      {highlightMatch(
+                        transaction.creditor_name,
+                        lowercaseQuery,
+                      )}
+                    </td>
+                    <td>
+                      {highlightMatch(
+                        transaction.short_user_description,
+                        lowercaseQuery,
+                      )}
+                    </td>
+                    <td>{highlightMatch(transaction.iban, lowercaseQuery)}</td>
+                    <td>
+                      <span
+                        style={{
+                          display: "inline-block",
+                          width: "20px",
+                          textAlign: "right",
+                        }}
+                      >
+                        {transaction.transaction_amount < 0 ? "-" : ""}
+                      </span>
+                      €{" "}
+                      {highlightMatch(
+                        Math.abs(transaction.transaction_amount).toLocaleString(
+                          "nl-NL",
+                          { minimumFractionDigits: 2 },
+                        ),
+                        lowercaseQuery,
+                      )}
+                    </td>
+                  </tr>
+                );
+              })
             ) : (
               <tr>
                 <td colSpan={7}>Geen transactie gevonden</td>
