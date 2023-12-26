@@ -20,6 +20,10 @@ interface LinkActivityToPaymentProps {
   onActivityLinked: (transactionId: number, activityId: number | null) => void;
   linkedActivityId: number | null;
   isInitiativeLinked: boolean;
+  linkingStatus: Record<
+    number,
+    { initiativeId: number | null; activityId: number | null }
+  >;
 }
 
 const LinkActivityToPayment: React.FC<LinkActivityToPaymentProps> = ({
@@ -30,13 +34,21 @@ const LinkActivityToPayment: React.FC<LinkActivityToPaymentProps> = ({
   onActivityLinked,
   linkedActivityId,
   isInitiativeLinked,
+  linkingStatus,
 }) => {
-  const [linkableActivities, setLinkableActivities] = useState<Activity[]>([]);
+  const [linkableActivities, setLinkableActivities] = useState<Activity[]>(
+    linkedActivityId !== null
+      ? [{ id: linkedActivityId, name: activityName }]
+      : [],
+  );
+
   const [selectedActivity, setSelectedActivity] = useState<
     number | string | null
   >(linkedActivityId !== null ? linkedActivityId : null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isSelectClicked, setIsSelectClicked] = useState<boolean>(false);
+  const [noDataLabel, setNoDataLabel] = useState<string>("");
+  const [isLinking, setIsLinking] = useState<boolean>(false);
 
   const verbreekVerbindingOption: Activity = {
     id: -1,
@@ -45,13 +57,12 @@ const LinkActivityToPayment: React.FC<LinkActivityToPaymentProps> = ({
 
   useEffect(() => {
     if (isInitiativeLinked && initiativeId !== null) {
-      setIsSelectClicked(true);
     }
   }, [isInitiativeLinked, initiativeId]);
 
   const handleSelectClick = () => {
     setIsSelectClicked(true);
-    console.log("Initiative ID when dropdown is clicked:", initiativeId);
+    setNoDataLabel("Gegevens ophalen");
   };
 
   useEffect(() => {
@@ -85,7 +96,7 @@ const LinkActivityToPayment: React.FC<LinkActivityToPaymentProps> = ({
 
   const handleLinkActivity = async () => {
     try {
-      console.log("Linking activity to payment...");
+      setIsLinking(true);
       setIsLoading(true);
 
       let valueToPass: number | null = null;
@@ -99,16 +110,15 @@ const LinkActivityToPayment: React.FC<LinkActivityToPaymentProps> = ({
         }
       }
 
-      console.log("Linking with value:", valueToPass);
-
       await linkActivityToPayment(token, paymentId, initiativeId, valueToPass);
 
-      console.log("Linking successful!");
       onActivityLinked(paymentId, valueToPass);
       setIsLoading(false);
+      setIsLinking(false);
     } catch (error) {
       console.error("Error linking activity to payment:", error);
       setIsLoading(false);
+      setIsLinking(false);
     }
   };
 
@@ -120,31 +130,57 @@ const LinkActivityToPayment: React.FC<LinkActivityToPaymentProps> = ({
   return (
     <div className={styles["customDropdown"]}>
       <div className={styles["customContainer"]}>
-        <div onClick={handleSelectClick} className="custom-dropdown-container">
-          <Select
-            values={
-              selectedActivity !== null
-                ? mappedActivities.filter(
-                    (option) => option.value === selectedActivity,
+        {linkingStatus[paymentId]?.initiativeId === null ? (
+          <div className={styles["disabled-dropdown"]}>
+            <span className={styles["initiativeText"]}>
+              {" "}
+              {"Verbind activiteit"}
+            </span>
+          </div>
+        ) : (
+          <div
+            onClick={handleSelectClick}
+            className="custom-dropdown-container"
+          >
+            {isLinking ? (
+              <div className={styles["loading-column"]}>
+                <div className={styles["loading-container"]}>
+                  <LoadingDot delay={0} />
+                  <LoadingDot delay={0.1} />
+                  <LoadingDot delay={0.1} />
+                  <LoadingDot delay={0.2} />
+                </div>
+              </div>
+            ) : (
+              <Select
+                values={
+                  selectedActivity !== null
+                    ? mappedActivities.filter(
+                        (option) => option.value === selectedActivity,
+                      )
+                    : []
+                }
+                options={mappedActivities}
+                onChange={(values) =>
+                  setSelectedActivity(
+                    values.length > 0 ? values[0].value : null,
                   )
-                : []
-            }
-            options={mappedActivities}
-            onChange={(values) =>
-              setSelectedActivity(values.length > 0 ? values[0].value : null)
-            }
-            labelField="label"
-            valueField="value"
-            placeholder={
-              selectedActivity !== null
-                ? ""
-                : activityName || "Verbind activiteit"
-            }
-            className={styles["custom-option"]}
-          />
-        </div>
+                }
+                labelField="label"
+                valueField="value"
+                placeholder={
+                  selectedActivity !== null
+                    ? ""
+                    : activityName || "Verbind activiteit"
+                }
+                className={styles["custom-option"]}
+                noDataLabel={isLoading ? "Gegevens ophalen" : ""}
+              />
+            )}
+          </div>
+        )}
       </div>
-      {isLoading && (
+      {isLoading && !isLinking && (
         <div className={styles["loading-column"]}>
           <div className={styles["loading-container"]}>
             <LoadingDot delay={0} />

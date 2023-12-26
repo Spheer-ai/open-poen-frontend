@@ -38,10 +38,22 @@ const LinkInitiativeToPayment: React.FC<LinkInitiativeToPaymentProps> = ({
   const [selectedInitiative, setSelectedInitiative] = useState<number | "">("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isSelectClicked, setIsSelectClicked] = useState<boolean>(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
+  const [noDataLabel, setNoDataLabel] = useState<string>("");
+  const [isLinking, setIsLinking] = useState<boolean>(false);
 
   const verbreekVerbindingOption: Initiative = {
     id: -1,
     name: "Verbreek verbinding",
+  };
+
+  const handleInitiativeNameClick = () => {
+    setIsDropdownOpen(true);
+
+    if (!isSelectClicked) {
+      setIsSelectClicked(true);
+      setNoDataLabel("Gegevens ophalen");
+    }
   };
 
   useEffect(() => {
@@ -75,25 +87,24 @@ const LinkInitiativeToPayment: React.FC<LinkInitiativeToPaymentProps> = ({
 
   const handleLinkInitiative = async () => {
     try {
-      console.log("Linking initiative to payment...");
+      setIsLinking(true);
       setIsLoading(true);
+
       if (selectedInitiative !== undefined) {
         if (selectedInitiative === verbreekVerbindingOption.id) {
-          console.log("Unlinking initiative...");
           await linkInitiativeToPayment(token, paymentId, null);
           onInitiativeLinked(null);
         } else {
-          console.log("Linking initiative...");
           await linkInitiativeToPayment(token, paymentId, selectedInitiative);
           onInitiativeLinked(selectedInitiative as number | null);
         }
-
-        console.log("Link Initiative to Payment successful!");
       }
       setIsLoading(false);
+      setIsLinking(false);
     } catch (error) {
       console.error("Error linking initiative to payment:", error);
       setIsLoading(false);
+      setIsLinking(false);
     }
   };
 
@@ -102,35 +113,31 @@ const LinkInitiativeToPayment: React.FC<LinkInitiativeToPaymentProps> = ({
     label: initiative.name,
   }));
 
-  const handleSelectClick = () => {
-    setIsSelectClicked(true);
-  };
-
   return (
     <div className={styles["customDropdown"]}>
-      {isLoading ? (
-        <div className={styles["loading-column"]}>
-          <div className={styles["loading-container"]}>
-            <LoadingDot delay={0} />
-            <LoadingDot delay={0.1} />
-            <LoadingDot delay={0.1} />
-            <LoadingDot delay={0.2} />
+      <div className={styles["customContainer"]}>
+        {isActivityLinked ? (
+          <div className={styles["disabled-dropdown"]}>
+            <span className={styles["initiativeText"]}>
+              {" "}
+              {initiativeName || "Verbind initiatief"}
+            </span>
           </div>
-        </div>
-      ) : (
-        <div className={styles["customContainer"]}>
-          {isActivityLinked ? (
-            <div className={styles["disabled-dropdown"]}>
-              <span className={styles["initiativeText"]}>
-                {" "}
-                {initiativeName || "Verbind initiatief"}
-              </span>
-            </div>
-          ) : (
-            <div
-              onClick={handleSelectClick}
-              className="custom-dropdown-container"
-            >
+        ) : (
+          <div
+            onClick={handleInitiativeNameClick}
+            className="custom-dropdown-container"
+          >
+            {isLinking ? (
+              <div className={styles["loading-column"]}>
+                <div className={styles["loading-container"]}>
+                  <LoadingDot delay={0} />
+                  <LoadingDot delay={0.1} />
+                  <LoadingDot delay={0.1} />
+                  <LoadingDot delay={0.2} />
+                </div>
+              </div>
+            ) : (
               <Select
                 values={
                   selectedInitiative === ""
@@ -153,9 +160,20 @@ const LinkInitiativeToPayment: React.FC<LinkInitiativeToPaymentProps> = ({
                       )?.label || ""
                 }
                 className={styles["custom-option"]}
+                noDataLabel={isLoading ? "Gegevens ophalen" : ""}
               />
-            </div>
-          )}
+            )}
+          </div>
+        )}
+      </div>
+      {isLoading && !isLinking && (
+        <div className={styles["loading-column"]}>
+          <div className={styles["loading-container"]}>
+            <LoadingDot delay={0} />
+            <LoadingDot delay={0.1} />
+            <LoadingDot delay={0.1} />
+            <LoadingDot delay={0.2} />
+          </div>
         </div>
       )}
     </div>

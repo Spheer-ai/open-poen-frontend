@@ -34,11 +34,6 @@ const TransactionOverview = () => {
   };
 
   useEffect(() => {
-    console.log("user:", user);
-    console.log("allTransactions:", allTransactions);
-    console.log("limit:", limit);
-    console.log("searchQuery:", searchQuery);
-
     setTransactions(allTransactions.slice(0, limit));
   }, [allTransactions, linkingStatus, searchQuery, limit]);
 
@@ -82,8 +77,6 @@ const TransactionOverview = () => {
           limit,
           searchQuery,
         );
-        console.log("Fetched transactions:", data.payments);
-
         const updatedLinkingStatus = { ...linkingStatus };
 
         data.payments.forEach((transaction) => {
@@ -241,8 +234,6 @@ const TransactionOverview = () => {
           activityId: prevStatus[transactionId]?.activityId || null,
         },
       };
-
-      console.log("Updated linkingStatus:", newStatus);
       return newStatus;
     });
   };
@@ -259,7 +250,6 @@ const TransactionOverview = () => {
           activityId,
         },
       };
-      console.log("Updated linkingStatus:", newStatus);
       return newStatus;
     });
   };
@@ -366,6 +356,7 @@ const TransactionOverview = () => {
                           linkingStatus[transaction.id]?.activityId || null
                         }
                         isInitiativeLinked={isInitiativeLinked}
+                        linkingStatus={linkingStatus}
                       />
                     </td>
 
