@@ -12,9 +12,6 @@ const TransactionOverview = () => {
   const [transactions, setTransactions] = useState<any[]>([]);
   const [filteredTransactions, setFilteredTransactions] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [lowercaseQuery, setLowercaseQuery] = useState<string>("");
-  const [sortCriteria, setSortCriteria] = useState<string>("");
-  const [sortDirection, setSortDirection] = useState<string>("asc");
   const [searchQuery, setSearchQuery] = useState("");
   const [offset, setOffset] = useState(0);
   const [limit, setLimit] = useState(3);
@@ -105,121 +102,9 @@ const TransactionOverview = () => {
     }
   };
 
-  const highlightMatch = (text: string | null, query: string) => {
-    if (query === "") {
-      return text;
-    }
-
-    if (text == null) {
-      return null;
-    }
-
-    if (typeof text === "string" && /\d{2}-\d{2}-\d{4}/.test(text)) {
-      const [day, month, year] = text.split("-");
-
-      const regex = new RegExp(`(${query})`, "gi");
-      const dayPart = regex.test(day) ? (
-        <span className={styles.highlight}>{day}</span>
-      ) : (
-        day
-      );
-      const monthPart = regex.test(month) ? (
-        <span className={styles.highlight}>{month}</span>
-      ) : (
-        month
-      );
-      const yearPart = regex.test(year) ? (
-        <span className={styles.highlight}>{year}</span>
-      ) : (
-        year
-      );
-
-      return (
-        <span>
-          {dayPart}-{monthPart}-{yearPart}
-        </span>
-      );
-    }
-
-    const regex = new RegExp(`(${query})`, "gi");
-    return text
-      .toString()
-      .split(regex)
-      .map((part, index) => {
-        return regex.test(part) ? (
-          <span key={index} className={styles.highlight}>
-            {part}
-          </span>
-        ) : (
-          part
-        );
-      });
-  };
-
   const handleSearch = (query: string) => {
     setSearchQuery(query);
-  };
-
-  const handleSort = (criteria: string) => {
-    if (criteria === sortCriteria) {
-      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
-    } else {
-      setSortCriteria(criteria);
-      setSortDirection("asc");
-    }
-
-    const sortedTransactions = [...filteredTransactions];
-
-    sortedTransactions.sort((a, b) => {
-      if (criteria === "iban") {
-        const ibanA = (a[criteria] || "").replace(/[^0-9]/g, "");
-        const ibanB = (b[criteria] || "").replace(/[^0-9]/g, "");
-
-        if (sortDirection === "asc") {
-          return ibanA.localeCompare(ibanB);
-        } else {
-          return ibanB.localeCompare(ibanA);
-        }
-      } else if (criteria === "booking_date") {
-        const dateA: Date | any = new Date(a[criteria]);
-        const dateB: Date | any = new Date(b[criteria]);
-
-        if (sortDirection === "asc") {
-          return dateA - dateB;
-        } else {
-          return dateB - dateA;
-        }
-      } else if (criteria === "transaction_amount") {
-        const priceA: number = a[criteria];
-        const priceB: number = b[criteria];
-
-        if (sortDirection === "asc") {
-          return priceA - priceB;
-        } else {
-          return priceB - priceA;
-        }
-      } else {
-      }
-    });
-
-    setFilteredTransactions(sortedTransactions);
-  };
-
-  const getSortIndicator = (criteria: string) => {
-    if (criteria === sortCriteria) {
-      return sortDirection === "asc" ? "↑" : "↓";
-    }
-
-    return "";
-  };
-
-  const getHeaderStyle = (criteria: string) => {
-    const headerStyle: React.CSSProperties = {
-      cursor: "pointer",
-      color: criteria === sortCriteria ? "#2660d5" : "grey",
-    };
-
-    return headerStyle;
+    console.log("Search Query:", query);
   };
 
   const handleInitiativeLinked = (
@@ -261,48 +146,13 @@ const TransactionOverview = () => {
         <table className={styles.transactionTable}>
           <thead>
             <tr>
-              <th
-                onClick={() => handleSort("booking_date")}
-                style={getHeaderStyle("booking_date")}
-              >
-                Datum {getSortIndicator("booking_date")}
-              </th>
-              <th
-                onClick={() => handleSort("initiative_name")}
-                style={getHeaderStyle("initiative_name")}
-              >
-                Initiatief {getSortIndicator("initiative_name")}
-              </th>
-              <th
-                onClick={() => handleSort("activity_name")}
-                style={getHeaderStyle("activity_name")}
-              >
-                Activiteit {getSortIndicator("activity_name")}
-              </th>
-              <th
-                onClick={() => handleSort("creditor_name")}
-                style={getHeaderStyle("creditor_name")}
-              >
-                Ontvanger {getSortIndicator("creditor_name")}
-              </th>
-              <th
-                onClick={() => handleSort("short_user_description")}
-                style={getHeaderStyle("short_user_description")}
-              >
-                Beschrijving {getSortIndicator("short_user_description")}
-              </th>
-              <th
-                onClick={() => handleSort("iban")}
-                style={getHeaderStyle("iban")}
-              >
-                IBAN {getSortIndicator("iban")}
-              </th>
-              <th
-                onClick={() => handleSort("transaction_amount")}
-                style={getHeaderStyle("transaction_amount")}
-              >
-                Bedrag {getSortIndicator("transaction_amount")}
-              </th>
+              <th>Datum</th>
+              <th>Initiatief</th>
+              <th>Activiteit</th>
+              <th>Ontvanger</th>
+              <th>Beschrijving</th>
+              <th>IBAN</th>
+              <th>Bedrag</th>
             </tr>
           </thead>
           <tbody>
@@ -315,12 +165,7 @@ const TransactionOverview = () => {
 
                 return (
                   <tr key={`${transaction.id}-${index}`}>
-                    <td>
-                      {highlightMatch(
-                        formatDate(transaction.booking_date),
-                        lowercaseQuery,
-                      )}
-                    </td>
+                    <td>{formatDate(transaction.booking_date)}</td>
                     <td>
                       <LinkInitiativeToPayment
                         token={user?.token || ""}
@@ -336,7 +181,6 @@ const TransactionOverview = () => {
                         linkingStatus={linkingStatus}
                       />
                     </td>
-
                     <td>
                       <LinkActivityToPayment
                         token={user?.token || ""}
@@ -359,20 +203,9 @@ const TransactionOverview = () => {
                         linkingStatus={linkingStatus}
                       />
                     </td>
-
-                    <td>
-                      {highlightMatch(
-                        transaction.creditor_name,
-                        lowercaseQuery,
-                      )}
-                    </td>
-                    <td>
-                      {highlightMatch(
-                        transaction.short_user_description,
-                        lowercaseQuery,
-                      )}
-                    </td>
-                    <td>{highlightMatch(transaction.iban, lowercaseQuery)}</td>
+                    <td>{transaction.creditor_name}</td>
+                    <td>{transaction.short_user_description}</td>
+                    <td>{transaction.iban}</td>
                     <td>
                       <span
                         style={{
@@ -384,12 +217,9 @@ const TransactionOverview = () => {
                         {transaction.transaction_amount < 0 ? "-" : ""}
                       </span>
                       €{" "}
-                      {highlightMatch(
-                        Math.abs(transaction.transaction_amount).toLocaleString(
-                          "nl-NL",
-                          { minimumFractionDigits: 2 },
-                        ),
-                        lowercaseQuery,
+                      {Math.abs(transaction.transaction_amount).toLocaleString(
+                        "nl-NL",
+                        { minimumFractionDigits: 2 },
                       )}
                     </td>
                   </tr>
