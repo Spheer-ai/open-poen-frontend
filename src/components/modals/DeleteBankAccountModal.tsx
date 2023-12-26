@@ -1,9 +1,6 @@
 import React, { useEffect, useState } from "react";
 import styles from "../../assets/scss/layout/AddFundDesktop.module.scss";
-import { useLocation } from "react-router-dom";
-import Step1DeleteBankAccount from "./steps-modal/delete-bankaccount/Step1DeleteBankAccount";
-import Step2DeleteBankConfirmation from "./steps-modal/delete-bankaccount/Step2DeleteConfirmation";
-import { deleteBankAccount } from "../middleware/Api";
+import { revokeBankConnection } from "../middleware/Api";
 
 interface DeleteBankAccountModalProps {
   isOpen: boolean;
@@ -12,6 +9,7 @@ interface DeleteBankAccountModalProps {
   userId: string | null;
   token: string | null;
   bankAccountId: number | null;
+  onBankRevoked: () => void;
 }
 
 const DeleteBankAccountModal: React.FC<DeleteBankAccountModalProps> = ({
@@ -21,67 +19,80 @@ const DeleteBankAccountModal: React.FC<DeleteBankAccountModalProps> = ({
   userId,
   token,
   bankAccountId,
+  onBankRevoked,
 }) => {
-  const [currentStep, setCurrentStep] = useState(1);
-  const [isVisible, setIsVisible] = useState(false);
-  const location = useLocation();
+  const [modalIsOpen, setModalIsOpen] = useState(isOpen);
 
   useEffect(() => {
     if (isOpen) {
-      setIsVisible(true);
-      setCurrentStep(1);
+      setModalIsOpen(true);
     } else {
-      setIsVisible(false);
-      setCurrentStep(1);
+      setTimeout(() => {
+        setModalIsOpen(false);
+      }, 300);
     }
+    console.log("modalIsOpen:", modalIsOpen);
   }, [isOpen]);
+
+  const handleSubmit = async () => {
+    console.log("Verwijderen button clicked");
+    try {
+      if (userId && token && bankAccountId) {
+        console.log(
+          "Data sent to API - User ID:",
+          userId,
+          "Token:",
+          token,
+          "Bank Account ID:",
+          bankAccountId,
+        );
+
+        await revokeBankConnection(userId, token, bankAccountId);
+        console.log("Bank account deleted successfully");
+        handleClose();
+        onBankRevoked();
+      }
+    } catch (error) {
+      console.error("Error revoking bank account:", error);
+    }
+  };
 
   const handleClose = () => {
     if (!isBlockingInteraction) {
-      setIsVisible(false);
-      setCurrentStep(1);
+      setModalIsOpen(false);
       onClose();
     }
   };
 
-  const redirectToStep2 = () => {
-    setCurrentStep(2);
-  };
-
-  const modalClasses = `${styles.modal} ${isVisible ? styles.open : ""}`;
+  if (!isOpen && !modalIsOpen) {
+    return null;
+  }
 
   return (
-    <div className={styles.modalWrapper}>
-      <div className={modalClasses}>
-        <div className={styles.modalBody}>
-          {currentStep === 1 && (
-            <>
-              <div className={styles["modal-top-section"]}>
-                <h2 className={styles.title}>Bank account verwijderen</h2>
-              </div>
-              <Step1DeleteBankAccount
-                userId={userId}
-                token={token}
-                bankAccountId={bankAccountId}
-                onDelete={redirectToStep2}
-              />
-            </>
-          )}
-          {currentStep === 2 && (
-            <>
-              <div className={styles["modal-top-section"]}>
-                <h2 className={styles.title}>Bank account verwijderen</h2>
-              </div>
-              <Step2DeleteBankConfirmation onClose={handleClose} />
-            </>
-          )}
-        </div>
-      </div>
+    <>
       <div
-        className={`${styles.backdrop} ${isVisible ? styles.open : ""}`}
+        className={`${styles.backdrop} ${modalIsOpen ? styles.open : ""}`}
         onClick={handleClose}
       ></div>
-    </div>
+      <div className={`${styles.modal} ${modalIsOpen ? styles.open : ""}`}>
+        <h2 className={styles.title}>Bank account verwijderen</h2>
+        <hr></hr>
+        <p>
+          Er staat een verwijdering van de bankkoppeling op het punt uitgevoerd
+          te worden. Belangrijk: deze actie resulteert in de definitieve
+          verwijdering van alle transacties die via deze bankrekening zijn
+          verwerkt uit het systeem. Deze handeling is onomkeerbaar.
+        </p>
+        <div className={styles.buttonContainer}>
+          <button onClick={handleClose} className={styles.cancelButton}>
+            Annuleren
+          </button>
+          <button onClick={handleSubmit} className={styles.deleteButton}>
+            Verwijderen
+          </button>
+        </div>
+      </div>
+    </>
   );
 };
 
