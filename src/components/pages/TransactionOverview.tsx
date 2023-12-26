@@ -41,7 +41,7 @@ const TransactionOverview = () => {
     Record<number, string | null>
   >({});
   const [isActivityLinkingEnabled, setIsActivityLinkingEnabled] =
-    useState<boolean>(true);
+    useState<boolean>(!activeInitiativeId);
   const [offset, setOffset] = useState(0);
   const [limit, setLimit] = useState(3);
   const [totalTransactionsCount, setTotalTransactionsCount] = useState(0);
@@ -58,7 +58,24 @@ const TransactionOverview = () => {
     return `${day}-${month}-${year}`;
   };
 
+  const isAnyActivityLinked = (payment) => {
+    // Check if the payment has an activity_id
+    const result = payment.activity_id !== null;
+    console.log(`isAnyActivityLinked for payment ID ${payment.id}: ${result}`);
+    return result;
+  };
+
   useEffect(() => {
+    setIsActivityLinkingEnabled(!activeInitiativeId);
+  }, [activeInitiativeId]);
+
+  useEffect(() => {
+    console.log("user:", user);
+    console.log("allTransactions:", allTransactions);
+    console.log("limit:", limit);
+    console.log("searchQuery:", searchQuery);
+    // Add more relevant logs here
+
     setTransactions(allTransactions.slice(0, limit));
   }, [allTransactions, limit, searchQuery]);
 
@@ -260,7 +277,9 @@ const TransactionOverview = () => {
       [transactionId]: initiativeId !== null,
     }));
     setActiveInitiativeId(initiativeId);
-    setIsActivityLinkingEnabled(initiativeId === null);
+
+    console.log("initiativeLinkingStatus:", initiativeLinkingStatus);
+    console.log("isActivityLinkingEnabled:", isActivityLinkingEnabled);
   };
 
   const handleActivityLinked = (
@@ -272,9 +291,10 @@ const TransactionOverview = () => {
       [transactionId]: activityId !== null ? activityId.toString() : null,
     }));
 
-    setActivityLinkingStatus((prevActivityLinkingStatus) => ({
-      ...prevActivityLinkingStatus,
-      [transactionId]: activityId !== null,
+    // Update the linkedActivities state to reflect the linked activity.
+    setLinkedActivities((prevLinkedActivities) => ({
+      ...prevLinkedActivities,
+      [transactionId]: activityId !== null ? activityId : null,
     }));
 
     setOpenDropdownForActivity(null);
@@ -350,11 +370,11 @@ const TransactionOverview = () => {
                         handleInitiativeLinked(transaction.id, initiativeId)
                       }
                       initiativeName={transaction.initiative_name || ""}
-                      isActivityLinked={
-                        activityLinkingStatus[transaction.id] || false
-                      }
+                      isActivityLinked={false}
+                      isAnyActivityLinked={isAnyActivityLinked(transaction)} // Pass the payment object to the function
                     />
                   </td>
+
                   <td>
                     <LinkActivityToPayment
                       token={user?.token || ""}
@@ -373,6 +393,7 @@ const TransactionOverview = () => {
                       isInitiativeLinked={
                         initiativeLinkingStatus[transaction.id] || false
                       }
+                      isActivityLinkingEnabled={isActivityLinkingEnabled}
                     />
                   </td>
 

@@ -19,6 +19,7 @@ interface LinkInitiativeToPaymentProps {
   initiativeId: number | null;
   onInitiativeLinked: (initiativeId: number | null) => void;
   isActivityLinked: boolean;
+  isAnyActivityLinked: boolean;
 }
 
 const LinkInitiativeToPayment: React.FC<LinkInitiativeToPaymentProps> = ({
@@ -27,6 +28,7 @@ const LinkInitiativeToPayment: React.FC<LinkInitiativeToPaymentProps> = ({
   initiativeName,
   onInitiativeLinked,
   isActivityLinked,
+  isAnyActivityLinked,
   initiativeId,
 }) => {
   const [linkableInitiatives, setLinkableInitiatives] = useState<Initiative[]>(
@@ -42,6 +44,7 @@ const LinkInitiativeToPayment: React.FC<LinkInitiativeToPaymentProps> = ({
   };
 
   useEffect(() => {
+    console.log("isActivityLinked:", isActivityLinked); // Log the value of isActivityLinked
     if (isSelectClicked) {
       const getLinkableInitiativesForPayment = async () => {
         try {
@@ -72,12 +75,15 @@ const LinkInitiativeToPayment: React.FC<LinkInitiativeToPaymentProps> = ({
 
   const handleLinkInitiative = async () => {
     try {
+      console.log("Linking initiative to payment...");
       setIsLoading(true);
       if (selectedInitiative !== undefined) {
         if (selectedInitiative === verbreekVerbindingOption.id) {
+          console.log("Unlinking initiative...");
           await linkInitiativeToPayment(token, paymentId, null);
           onInitiativeLinked(null);
         } else {
+          console.log("Linking initiative...");
           await linkInitiativeToPayment(token, paymentId, selectedInitiative);
           onInitiativeLinked(selectedInitiative as number | null);
         }
@@ -102,7 +108,7 @@ const LinkInitiativeToPayment: React.FC<LinkInitiativeToPaymentProps> = ({
 
   return (
     <div className={styles["customDropdown"]}>
-      {isActivityLinked ? (
+      {isAnyActivityLinked ? (
         <div className={styles["disabled-dropdown"]}>
           <span className={styles["initiativeText"]}>Verbind initiatief</span>
         </div>
