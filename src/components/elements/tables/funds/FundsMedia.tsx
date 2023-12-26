@@ -28,7 +28,7 @@ const FundsMedia: React.FC<FundsMediaProps> = ({ initiativeId }) => {
     fetchMedia();
   }, [initiativeId]);
 
-  const isPdf = (url: string) => /\.pdf/i.test(url); // Case-insensitive check
+  const isPdf = (url: string) => /\.pdf/i.test(url);
 
   const handleItemClick = (item: MediaItem) => {
     setSelectedItem(item);
@@ -52,17 +52,9 @@ const FundsMedia: React.FC<FundsMediaProps> = ({ initiativeId }) => {
             onClick={() => handleItemClick(media)}
           >
             {isPdf(media.attachment_url) ? (
-              <object
-                data={media.attachment_url}
-                type="application/pdf"
-                width="100%"
-                height="500px"
-              >
-                <p>
-                  PDF cannot be displayed. Download it{" "}
-                  <a href={media.attachment_url}>here</a>.
-                </p>
-              </object>
+              <a href={media.attachment_url} download>
+                PDF
+              </a>
             ) : (
               <img
                 src={media.attachment_thumbnail_url_512}
@@ -75,23 +67,17 @@ const FundsMedia: React.FC<FundsMediaProps> = ({ initiativeId }) => {
       {selectedItem && (
         <div className={styles["image-preview-overlay"]} onClick={closePreview}>
           <div className={styles["image-preview"]}>
-            {isPdf(selectedItem.attachment_url) ? (
-              <object
-                data={selectedItem.attachment_url}
-                type="application/pdf"
-                width="100%"
-                height="500px"
-              >
-                <p>
-                  PDF cannot be displayed. Download it{" "}
-                  <a href={selectedItem.attachment_url}>here</a>.
-                </p>
-              </object>
-            ) : (
+            {!isPdf(selectedItem.attachment_url) ? (
               <img
                 src={selectedItem.attachment_thumbnail_url_512}
                 alt="Preview"
               />
+            ) : (
+              <div>
+                <a href={selectedItem.attachment_url} download>
+                  Download PDF
+                </a>
+              </div>
             )}
           </div>
         </div>
