@@ -20,7 +20,6 @@ interface LinkActivityToPaymentProps {
   onActivityLinked: (transactionId: number, activityId: number | null) => void;
   linkedActivityId: number | null;
   isInitiativeLinked: boolean;
-  isActivityLinkingEnabled: boolean;
 }
 
 const LinkActivityToPayment: React.FC<LinkActivityToPaymentProps> = ({

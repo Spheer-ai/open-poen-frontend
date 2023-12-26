@@ -19,7 +19,6 @@ interface LinkInitiativeToPaymentProps {
   initiativeId: number | null;
   onInitiativeLinked: (initiativeId: number | null) => void;
   isActivityLinked: boolean;
-  isAnyActivityLinked: boolean;
 }
 
 const LinkInitiativeToPayment: React.FC<LinkInitiativeToPaymentProps> = ({
@@ -28,8 +27,6 @@ const LinkInitiativeToPayment: React.FC<LinkInitiativeToPaymentProps> = ({
   initiativeName,
   onInitiativeLinked,
   isActivityLinked,
-  isAnyActivityLinked,
-  initiativeId,
 }) => {
   const [linkableInitiatives, setLinkableInitiatives] = useState<Initiative[]>(
     [],
@@ -44,7 +41,6 @@ const LinkInitiativeToPayment: React.FC<LinkInitiativeToPaymentProps> = ({
   };
 
   useEffect(() => {
-    console.log("isActivityLinked:", isActivityLinked); // Log the value of isActivityLinked
     if (isSelectClicked) {
       const getLinkableInitiativesForPayment = async () => {
         try {
@@ -108,11 +104,7 @@ const LinkInitiativeToPayment: React.FC<LinkInitiativeToPaymentProps> = ({
 
   return (
     <div className={styles["customDropdown"]}>
-      {isAnyActivityLinked ? (
-        <div className={styles["disabled-dropdown"]}>
-          <span className={styles["initiativeText"]}>Verbind initiatief</span>
-        </div>
-      ) : isLoading ? (
+      {isLoading ? (
         <div className={styles["loading-column"]}>
           <div className={styles["loading-container"]}>
             <LoadingDot delay={0} />
@@ -123,32 +115,43 @@ const LinkInitiativeToPayment: React.FC<LinkInitiativeToPaymentProps> = ({
         </div>
       ) : (
         <div className={styles["customContainer"]}>
-          <div
-            onClick={handleSelectClick}
-            className="custom-dropdown-container"
-          >
-            <Select
-              values={
-                selectedInitiative === ""
-                  ? []
-                  : mappedInitiatives.filter(
-                      (option) => option.value === selectedInitiative,
-                    )
-              }
-              options={mappedInitiatives}
-              onChange={(values) =>
-                setSelectedInitiative(values[0] ? values[0].value : "")
-              }
-              labelField="label"
-              valueField="value"
-              placeholder={
-                selectedInitiative === ""
-                  ? initiativeName || "Verbind initiatief"
-                  : ""
-              }
-              className={styles["custom-option"]}
-            />
-          </div>
+          {isActivityLinked ? (
+            <div className={styles["disabled-dropdown"]}>
+              <span className={styles["initiativeText"]}>
+                {" "}
+                {initiativeName || "Verbind initiatief"}
+              </span>
+            </div>
+          ) : (
+            <div
+              onClick={handleSelectClick}
+              className="custom-dropdown-container"
+            >
+              <Select
+                values={
+                  selectedInitiative === ""
+                    ? []
+                    : mappedInitiatives.filter(
+                        (option) => option.value === selectedInitiative,
+                      )
+                }
+                options={mappedInitiatives}
+                onChange={(values) =>
+                  setSelectedInitiative(values[0] ? values[0].value : "")
+                }
+                labelField="label"
+                valueField="value"
+                placeholder={
+                  selectedInitiative === ""
+                    ? initiativeName || "Verbind initiatief"
+                    : mappedInitiatives.find(
+                        (option) => option.value === selectedInitiative,
+                      )?.label || ""
+                }
+                className={styles["custom-option"]}
+              />
+            </div>
+          )}
         </div>
       )}
     </div>
