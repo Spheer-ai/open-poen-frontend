@@ -44,7 +44,7 @@ const LinkActivityToPayment: React.FC<LinkActivityToPaymentProps> = ({
 
   const [selectedActivity, setSelectedActivity] = useState<
     number | string | null
-  >(linkedActivityId !== null ? linkedActivityId : null);
+  >(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isSelectClicked, setIsSelectClicked] = useState<boolean>(false);
   const [noDataLabel, setNoDataLabel] = useState<string>("");
@@ -96,7 +96,7 @@ const LinkActivityToPayment: React.FC<LinkActivityToPaymentProps> = ({
 
   const handleLinkActivity = async () => {
     try {
-      setIsLinking(true);
+      console.log("handleLinkActivity: Linking activity to payment...");
       setIsLoading(true);
 
       let valueToPass: number | null = null;

@@ -31,10 +31,15 @@ const TransactionOverview = () => {
   };
 
   useEffect(() => {
+    console.log("useEffect 1 - Transactions Updated:", transactions);
     setTransactions(allTransactions.slice(0, limit));
   }, [allTransactions, linkingStatus, searchQuery, limit]);
 
   useEffect(() => {
+    console.log(
+      "useEffect 2 - Filtered Transactions Updated:",
+      filteredTransactions,
+    );
     const filtered = allTransactions.filter((transaction) => {
       const initiativeNameMatch =
         transaction.initiative_name &&
@@ -111,6 +116,7 @@ const TransactionOverview = () => {
     transactionId: number,
     initiativeId: number | null,
   ) => {
+    console.log("Initiative Linked - Transaction ID:", transactionId);
     setLinkingStatus((prevStatus) => {
       const newStatus = {
         ...prevStatus,
@@ -185,10 +191,7 @@ const TransactionOverview = () => {
                       <LinkActivityToPayment
                         token={user?.token || ""}
                         paymentId={transaction.id}
-                        initiativeId={
-                          linkingStatus[transaction.id]?.initiativeId ||
-                          transaction.initiative_id
-                        }
+                        initiativeId={transaction.initiative_id || null}
                         activityName={transaction.activity_name || ""}
                         onActivityLinked={(transactionId, activityId) =>
                           handleActivityLinked(

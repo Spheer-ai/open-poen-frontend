@@ -27,8 +27,10 @@ const BankConnections = () => {
   const [selectedBankId, setSelectedBankId] = useState<number | null>(null);
   const [isRevokeBankModalOpen, setIsRevokeBankModalOpen] = useState(false);
   const [selectedBank, setSelectedBank] = useState<string | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
   const { user } = useAuth();
   const userId = user?.userId ? user.userId.toString() : null;
   const token = user?.token ? user.token.toString() : null;
@@ -43,9 +45,22 @@ const BankConnections = () => {
   >([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  const handleOpenRevokeBankModal = (bankId: number) => {
-    setSelectedBankId(bankId);
-    setIsRevokeBankModalOpen(true);
+  const handleToggleRevokeBankModal = () => {
+    if (isModalOpen) {
+      setIsBlockingInteraction(true);
+      setTimeout(() => {
+        setIsBlockingInteraction(false);
+        setIsModalOpen(false);
+        navigate("/transactions/bankconnections");
+      }, 300);
+    } else {
+      setIsModalOpen(true);
+      navigate("/transactions/bankconnections/revoke-bank");
+    }
+  };
+
+  const handleBankRevoked = () => {
+    setRefreshTrigger((prev) => prev + 1);
   };
 
   useEffect(() => {
@@ -80,7 +95,7 @@ const BankConnections = () => {
     };
 
     fetchData();
-  }, [user]);
+  }, [user, refreshTrigger]);
   useEffect(() => {
     if (location.pathname === "/transactions/bankconnections/add-bank") {
       setIsAddBankConnectionModalOpen(true);
@@ -142,185 +157,186 @@ const BankConnections = () => {
 
   return (
     <>
-      <div className={styles["bank-connections-container"]}>
-        {isLoading ? (
-          <p>Loading...</p>
-        ) : (
-          <>
-            <section>
-              <h3 className={styles["section-title"]}>
-                Jouw gekoppelde rekeningnummers
-              </h3>
-              <ul>
-                {Array.isArray(ownedBankConnections) &&
-                ownedBankConnections.length > 0 ? (
-                  ownedBankConnections.map((connection) => (
-                    <li key={connection.id} className={styles["bank-item"]}>
-                      <div className={styles["bank-details"]}>
-                        {connection.institution_logo !== null ? (
-                          <img
-                            src={connection.institution_logo}
-                            alt={`${connection.name} Logo`}
-                            className={styles["bank-logo"]}
-                          />
-                        ) : (
-                          connection.institution_name === "Sandbox" && (
+      <div className={styles["scrollable-container"]}>
+        <div className={styles["bank-connections-container"]}>
+          {isLoading ? (
+            <p>Loading...</p>
+          ) : (
+            <>
+              <section>
+                <h3 className={styles["section-title"]}>
+                  Jouw gekoppelde rekeningnummers
+                </h3>
+                <ul>
+                  {Array.isArray(ownedBankConnections) &&
+                  ownedBankConnections.length > 0 ? (
+                    ownedBankConnections.map((connection) => (
+                      <li key={connection.id} className={styles["bank-item"]}>
+                        <div className={styles["bank-details"]}>
+                          {connection.institution_logo !== null ? (
                             <img
-                              src="/sandbox-bank.png"
-                              alt="Sandbox Bank Logo"
+                              src={connection.institution_logo}
+                              alt={`${connection.name} Logo`}
                               className={styles["bank-logo"]}
                             />
-                          )
-                        )}
-                        <div className={styles["bank-info"]}>
-                          <span className={styles["bank-name"]}>
-                            {connection.institution_name}
-                          </span>
-                          <span className={styles["name"]}>
-                            {connection.name}
-                          </span>
-                          <span className={styles["bank-iban"]}>
-                            IBAN: {connection.iban}
-                          </span>
-                          <span className={styles["bank-expiration"]}>
-                            Vervalt op:{" "}
-                            {format(
-                              new Date(connection.expiration_date),
-                              "dd MMM yyyy",
-                            )}{" "}
-                            (
-                            {calculateDaysUntilExpiration(
-                              connection.expiration_date,
-                            )}{" "}
-                            dagen)
-                          </span>
-                        </div>
-                      </div>
-                      <div className={styles["bank-options"]}>
-                        <span className={styles["bank-user-count"]}>
-                          {connection.user_count === 1 ? (
-                            <span>
-                              Gedeeld met <b>1 persoon</b>
-                            </span>
-                          ) : connection.user_count > 1 ? (
-                            <span>
-                              Gedeeld met{" "}
-                              <b>{connection.user_count} personen</b>
-                            </span>
                           ) : (
-                            "Niet gedeeld met personen"
-                          )}
-                        </span>
-                        <button
-                          className={styles["saveButton"]}
-                          onClick={() =>
-                            handleToggleAddBankModalWrapper(
-                              "Bank account vernieuwen",
+                            connection.institution_name === "Sandbox" && (
+                              <img
+                                src="/sandbox-bank.png"
+                                alt="Sandbox Bank Logo"
+                                className={styles["bank-logo"]}
+                              />
                             )
-                          }
-                        >
-                          Vernieuw nu
-                        </button>
-                        <button
-                          onClick={() =>
-                            handleToggleInviteBankUsersModal(connection.id)
-                          }
-                        >
-                          Personen uitnodigen
-                        </button>
+                          )}
+                          <div className={styles["bank-info"]}>
+                            <span className={styles["bank-name"]}>
+                              {connection.institution_name}
+                            </span>
+                            <span className={styles["name"]}>
+                              {connection.name}
+                            </span>
+                            <span className={styles["bank-iban"]}>
+                              IBAN: {connection.iban}
+                            </span>
+                            <span className={styles["bank-expiration"]}>
+                              Vervalt op:{" "}
+                              {format(
+                                new Date(connection.expiration_date),
+                                "dd MMM yyyy",
+                              )}{" "}
+                              (
+                              {calculateDaysUntilExpiration(
+                                connection.expiration_date,
+                              )}{" "}
+                              dagen)
+                            </span>
+                          </div>
+                        </div>
+                        <div className={styles["bank-options"]}>
+                          <span className={styles["bank-user-count"]}>
+                            {connection.user_count === 1 ? (
+                              <span>
+                                Gedeeld met <b>1 persoon</b>
+                              </span>
+                            ) : connection.user_count > 1 ? (
+                              <span>
+                                Gedeeld met{" "}
+                                <b>{connection.user_count} personen</b>
+                              </span>
+                            ) : (
+                              "Niet gedeeld met personen"
+                            )}
+                          </span>
+                          <button
+                            className={styles["saveButton"]}
+                            onClick={() =>
+                              handleToggleAddBankModalWrapper(
+                                "Bank account vernieuwen",
+                              )
+                            }
+                          >
+                            Vernieuw nu
+                          </button>
+                          <button
+                            onClick={() =>
+                              handleToggleInviteBankUsersModal(connection.id)
+                            }
+                          >
+                            Personen uitnodigen
+                          </button>
 
-                        <button
-                          onClick={() =>
-                            handleOpenRevokeBankModal(connection.id)
-                          }
-                          className={styles["button-danger"]}
-                        >
-                          Verwijderen
-                        </button>
-                      </div>
-                    </li>
-                  ))
-                ) : (
-                  <li>Geen bankkoppelingen gevonden...</li>
-                )}
-              </ul>
-            </section>
+                          <button
+                            onClick={handleToggleRevokeBankModal}
+                            className={styles["button-danger"]}
+                          >
+                            Verwijderen
+                          </button>
+                        </div>
+                      </li>
+                    ))
+                  ) : (
+                    <li>Geen bankkoppelingen gevonden...</li>
+                  )}
+                </ul>
+              </section>
 
-            <section>
-              <h3 className={styles["section-title"]}>
-                Met jouw gedeelde rekeningnummers
-              </h3>
-              <ul>
-                {Array.isArray(usedBankConnections) &&
-                usedBankConnections.length > 0 ? (
-                  usedBankConnections.map((connection) => (
-                    <li key={connection.id} className={styles["bank-item"]}>
-                      <div className={styles["bank-details"]}>
-                        {connection.institution_logo !== null ? (
-                          <img
-                            src={connection.institution_logo}
-                            alt={`${connection.institution_name} Logo`}
-                            className={styles["bank-logo"]}
-                          />
-                        ) : (
-                          connection.institution_name === "Sandbox" && (
+              <section>
+                <h3 className={styles["section-title"]}>
+                  Met jouw gedeelde rekeningnummers
+                </h3>
+                <ul>
+                  {Array.isArray(usedBankConnections) &&
+                  usedBankConnections.length > 0 ? (
+                    usedBankConnections.map((connection) => (
+                      <li key={connection.id} className={styles["bank-item"]}>
+                        <div className={styles["bank-details"]}>
+                          {connection.institution_logo !== null ? (
                             <img
-                              src="/sandbox-bank.png"
-                              alt="Sandbox Bank Logo"
+                              src={connection.institution_logo}
+                              alt={`${connection.institution_name} Logo`}
                               className={styles["bank-logo"]}
                             />
-                          )
-                        )}
-                        <div className={styles["bank-info"]}>
-                          <span className={styles["bank-name"]}>
-                            {connection.institution_name}
-                          </span>
-                          <span className={styles["name"]}>
-                            {connection.name}
-                          </span>
-                          <span className={styles["bank-iban"]}>
-                            IBAN: {connection.iban}
-                          </span>
-                          <span className={styles["bank-expiration"]}>
-                            Vervalt op:{" "}
-                            {format(
-                              new Date(connection.expiration_date),
-                              "dd MMM yyyy",
-                            )}{" "}
-                            (
-                            {calculateDaysUntilExpiration(
-                              connection.expiration_date,
-                            )}{" "}
-                            dagen)
-                          </span>
+                          ) : (
+                            connection.institution_name === "Sandbox" && (
+                              <img
+                                src="/sandbox-bank.png"
+                                alt="Sandbox Bank Logo"
+                                className={styles["bank-logo"]}
+                              />
+                            )
+                          )}
+                          <div className={styles["bank-info"]}>
+                            <span className={styles["bank-name"]}>
+                              {connection.institution_name}
+                            </span>
+                            <span className={styles["name"]}>
+                              {connection.name}
+                            </span>
+                            <span className={styles["bank-iban"]}>
+                              IBAN: {connection.iban}
+                            </span>
+                            <span className={styles["bank-expiration"]}>
+                              Vervalt op:{" "}
+                              {format(
+                                new Date(connection.expiration_date),
+                                "dd MMM yyyy",
+                              )}{" "}
+                              (
+                              {calculateDaysUntilExpiration(
+                                connection.expiration_date,
+                              )}{" "}
+                              dagen)
+                            </span>
+                          </div>
                         </div>
-                      </div>
-                    </li>
-                  ))
-                ) : (
-                  <li>Geen gedeelde bankrekeningnummers gevonden...</li>
-                )}
-              </ul>
-            </section>
+                      </li>
+                    ))
+                  ) : (
+                    <li>Geen gedeelde bankrekeningnummers gevonden...</li>
+                  )}
+                </ul>
+              </section>
 
-            <InviteBankUsersModal
-              isOpen={isInviteBankUsersModalOpen}
-              onClose={() => handleToggleInviteBankUsersModal(null)}
-              isBlockingInteraction={isBlockingInteraction}
-              bankAccountId={selectedBankId}
-              userId={userId as any}
-              token={token || ""}
-            />
-            <DeleteBankAccountModal
-              isOpen={isRevokeBankModalOpen}
-              onClose={() => setIsRevokeBankModalOpen(false)}
-              isBlockingInteraction={isBlockingInteraction}
-              userId={userId as any}
-              token={token ? token.toString() : ""}
-              bankAccountId={selectedBankId}
-            />
-          </>
-        )}
+              <InviteBankUsersModal
+                isOpen={isInviteBankUsersModalOpen}
+                onClose={() => handleToggleInviteBankUsersModal(null)}
+                isBlockingInteraction={isBlockingInteraction}
+                bankAccountId={selectedBankId}
+                userId={userId as any}
+                token={token || ""}
+              />
+              <DeleteBankAccountModal
+                isOpen={isModalOpen}
+                onClose={handleToggleRevokeBankModal}
+                isBlockingInteraction={isBlockingInteraction}
+                userId={userId as any}
+                token={token ? token.toString() : ""}
+                bankAccountId={selectedBankId}
+                onBankRevoked={handleBankRevoked}
+              />
+            </>
+          )}
+        </div>
       </div>
       <div className={styles["button-container"]}>
         <button

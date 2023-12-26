@@ -212,8 +212,8 @@
   align-items: center;
 
   .loading-container {
-    height: 30px;
-    padding: 5px;
+    max-height: 30px;
+    padding: 10px;
   }
 }
 

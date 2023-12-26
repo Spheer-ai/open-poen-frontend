@@ -305,6 +305,14 @@ export default function AppRoutes() {
                 }
               />
               <Route
+                path="/transactions/bankconnections/delete-bank"
+                element={
+                  <InlineModalLayout navigate={navigate}>
+                    {<Transactions />}
+                  </InlineModalLayout>
+                }
+              />
+              <Route
                 path="/transactions/bankconnections/invite-user"
                 element={
                   <InlineModalLayout navigate={navigate}>
