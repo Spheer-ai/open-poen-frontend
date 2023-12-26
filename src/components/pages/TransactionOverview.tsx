@@ -84,14 +84,16 @@ const TransactionOverview = () => {
         );
         console.log("Fetched transactions:", data.payments);
 
-        // Log the initiative_id and activity_id for each payment
+        const updatedLinkingStatus = { ...linkingStatus };
+
         data.payments.forEach((transaction) => {
-          console.log(
-            `Transaction ID: ${transaction.id}`,
-            `Initiative ID: ${transaction.initiative_id || "Not Linked"}`,
-            `Activity ID: ${transaction.activity_id || "Not Linked"}`,
-          );
+          updatedLinkingStatus[transaction.id] = {
+            initiativeId: transaction.initiative_id || null,
+            activityId: transaction.activity_id || null,
+          };
         });
+
+        setLinkingStatus(updatedLinkingStatus);
 
         setTotalTransactionsCount(data.totalCount || 0);
 
@@ -257,12 +259,11 @@ const TransactionOverview = () => {
           activityId,
         },
       };
-
       console.log("Updated linkingStatus:", newStatus);
-
       return newStatus;
     });
   };
+
   return (
     <div className={styles.transactionOverview}>
       <TransactionSearchInput onSearch={handleSearch} />
@@ -334,12 +335,15 @@ const TransactionOverview = () => {
                       <LinkInitiativeToPayment
                         token={user?.token || ""}
                         paymentId={transaction.id}
+                        initiativeName={transaction.initiative_name || ""}
                         initiativeId={transaction.initiative_id || null}
                         onInitiativeLinked={(initiativeId) =>
                           handleInitiativeLinked(transaction.id, initiativeId)
                         }
-                        initiativeName={transaction.initiative_name || ""}
-                        isActivityLinked={transaction.activity_id !== null}
+                        isActivityLinked={
+                          linkingStatus[transaction.id]?.activityId !== null
+                        }
+                        linkingStatus={linkingStatus}
                       />
                     </td>
 
@@ -347,7 +351,10 @@ const TransactionOverview = () => {
                       <LinkActivityToPayment
                         token={user?.token || ""}
                         paymentId={transaction.id}
-                        initiativeId={transaction.initiative_id}
+                        initiativeId={
+                          linkingStatus[transaction.id]?.initiativeId ||
+                          transaction.initiative_id
+                        }
                         activityName={transaction.activity_name || ""}
                         onActivityLinked={(transactionId, activityId) =>
                           handleActivityLinked(
@@ -355,7 +362,9 @@ const TransactionOverview = () => {
                             activityId as number | null,
                           )
                         }
-                        linkedActivityId={null}
+                        linkedActivityId={
+                          linkingStatus[transaction.id]?.activityId || null
+                        }
                         isInitiativeLinked={isInitiativeLinked}
                       />
                     </td>

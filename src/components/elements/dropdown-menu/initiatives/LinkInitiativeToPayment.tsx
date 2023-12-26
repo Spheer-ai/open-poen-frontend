@@ -19,6 +19,10 @@ interface LinkInitiativeToPaymentProps {
   initiativeId: number | null;
   onInitiativeLinked: (initiativeId: number | null) => void;
   isActivityLinked: boolean;
+  linkingStatus: Record<
+    number,
+    { initiativeId: number | null; activityId: number | null }
+  >;
 }
 
 const LinkInitiativeToPayment: React.FC<LinkInitiativeToPaymentProps> = ({

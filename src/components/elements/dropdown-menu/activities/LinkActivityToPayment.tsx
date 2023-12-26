@@ -51,10 +51,11 @@ const LinkActivityToPayment: React.FC<LinkActivityToPaymentProps> = ({
 
   const handleSelectClick = () => {
     setIsSelectClicked(true);
+    console.log("Initiative ID when dropdown is clicked:", initiativeId);
   };
 
   useEffect(() => {
-    if (isSelectClicked && initiativeId !== null) {
+    if (isSelectClicked) {
       const getLinkableActivitiesForPayment = async () => {
         try {
           setIsLoading(true);
