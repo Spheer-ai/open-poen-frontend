@@ -340,7 +340,26 @@ const ActivityTransactions: React.FC<{
                 <td>{transaction.creditor_name}</td>
                 <td>{transaction.debtor_name}</td>
                 <td>{transaction.n_attachments}</td>
-                <td>{transaction.transaction_amount}</td>
+                <td
+                  className={
+                    transaction.transaction_amount < 0 ? styles["red-text"] : ""
+                  }
+                >
+                  <span
+                    style={{
+                      display: "inline-block",
+                      width: "20px",
+                      textAlign: "right",
+                    }}
+                  >
+                    {transaction.transaction_amount < 0 ? "-" : ""}
+                  </span>
+                  €{" "}
+                  {Math.abs(transaction.transaction_amount).toLocaleString(
+                    "nl-NL",
+                    { minimumFractionDigits: 2 },
+                  )}
+                </td>
                 <td>
                   {hasEditPermission ? (
                     <img
