@@ -38,7 +38,8 @@ const ActivityTransactions: React.FC<{
   authToken: string;
   initiativeId: string;
   activityId: string;
-}> = ({ authToken, initiativeId, activityId }) => {
+  onRefreshTrigger: () => void;
+}> = ({ authToken, initiativeId, activityId, onRefreshTrigger }) => {
   const { user } = useAuth();
   const { fetchPermissions } = usePermissions();
   const [hasEditPermission, setHasEditPermission] = useState(false);
@@ -57,7 +58,8 @@ const ActivityTransactions: React.FC<{
   const [isEditPaymentModalOpen, setIsEditPaymentModalOpen] = useState(false);
   const [selectedTransaction, setSelectedTransaction] =
     useState<Transaction | null>(null);
-
+  const [editedTransaction, setEditedTransaction] =
+    useState<Transaction | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMoreTransactions, setHasMoreTransactions] = useState(true);
@@ -111,8 +113,10 @@ const ActivityTransactions: React.FC<{
   };
 
   useEffect(() => {
+    console.log("FundsTransactions component mounted or refreshed.");
+
     fetchTransactions();
-  }, [currentPage]);
+  }, [currentPage, refreshTrigger]);
 
   useEffect(() => {
     async function fetchUserPermissions() {
@@ -215,7 +219,7 @@ const ActivityTransactions: React.FC<{
 
         console.log("Selected Transaction ID:", transactionId);
 
-        setSelectedTransaction({
+        setEditedTransaction({
           ...selectedTransaction,
           booking_date: isoDate,
         });
@@ -259,10 +263,6 @@ const ActivityTransactions: React.FC<{
     }
   };
 
-  const handlePaymentEdited = () => {
-    setRefreshTrigger((prev) => prev + 1);
-  };
-
   const handleToggleAddPaymentModal = () => {
     if (isAddPaymentModalOpen) {
       setIsBlockingInteraction(true);
@@ -277,8 +277,25 @@ const ActivityTransactions: React.FC<{
     }
   };
 
-  const handlePaymentAdded = () => {
+  useEffect(() => {
+    if (refreshTrigger > 0) {
+      console.log(
+        `Refresh triggered. Current trigger count: ${refreshTrigger}`,
+      );
+      fetchTransactions();
+    }
+  }, [refreshTrigger]);
+
+  const handlePaymentEdited = () => {
+    console.log("Payment edited. Triggering refresh.");
     setRefreshTrigger((prev) => prev + 1);
+    onRefreshTrigger();
+  };
+
+  const handlePaymentAdded = () => {
+    console.log("Payment edited. Triggering refresh.");
+    setRefreshTrigger((prev) => prev + 1);
+    onRefreshTrigger();
   };
 
   return (
@@ -384,7 +401,7 @@ const ActivityTransactions: React.FC<{
           isBlockingInteraction={isBlockingInteraction}
           paymentId={selectedTransactionId}
           onPaymentEdited={handlePaymentEdited}
-          paymentData={selectedTransaction}
+          paymentData={editedTransaction}
           token={authToken}
         />
       </div>

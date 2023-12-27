@@ -217,6 +217,18 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
     setRefreshTrigger((prev) => prev + 1);
   };
 
+  useEffect(() => {
+    if (initiativeId && authToken) {
+      fetchFundDetails(authToken, initiativeId)
+        .then((data) => {
+          setFundDetails(data);
+        })
+        .catch((error) => {
+          console.error("Error fetching fund details:", error);
+        });
+    }
+  }, [initiativeId, authToken]);
+
   const handleActivityDeleted = () => {
     setRefreshTrigger((prev) => prev + 1);
   };
@@ -228,19 +240,11 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
       const availableBudgetValue = receivedBudget + spentBudget;
       setAvailableBudget(availableBudgetValue);
     }
-  }, [activityDetails]);
+  }, [activityDetails, refreshTrigger]);
 
-  useEffect(() => {
-    if (initiativeId && authToken) {
-      fetchFundDetails(authToken, initiativeId)
-        .then((data) => {
-          setFundDetails(data);
-        })
-        .catch((error) => {
-          console.error("Error fetching fund details:", error);
-        });
-    }
-  }, [initiativeId, authToken, refreshTrigger]);
+  const handleRefreshTrigger = () => {
+    setRefreshTrigger((prev) => prev + 1);
+  };
 
   return (
     <>
@@ -446,6 +450,7 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
             initiativeId={initiativeId}
             authToken={user?.token || ""}
             activityId={activityId}
+            onRefreshTrigger={handleRefreshTrigger}
           />
         )}
         {activeTab === "details" && (

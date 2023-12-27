@@ -3,13 +3,24 @@ import styles from "../../assets/scss/layout/AddFundDesktop.module.scss";
 import LoadingDot from "../animation/LoadingDot";
 import { editPayment, uploadPaymentAttachment } from "../middleware/Api";
 
+export interface Transaction {
+  id: number;
+  booking_date: string;
+  activity_name: string;
+  creditor_name: string;
+  debtor_name: string;
+  n_attachments: number;
+  transaction_amount: number;
+  transaction_id: number;
+}
+
 interface EditPaymentProps {
   isOpen: boolean;
   onClose: () => void;
   isBlockingInteraction: boolean;
   onPaymentEdited: () => void;
   paymentId: number | null;
-  paymentData: any;
+  paymentData: Transaction | null;
   token: string | null;
 }
 
@@ -49,7 +60,7 @@ const EditPayment: React.FC<EditPaymentProps> = ({
   useEffect(() => {
     if (paymentData) {
       setTransactionData({
-        transaction_amount: parseFloat(paymentData.transaction_amount),
+        transaction_amount: paymentData.transaction_amount,
         booking_date: paymentData.booking_date,
         creditor_name: paymentData.creditor_name,
         debtor_name: paymentData.debtor_name,
@@ -212,7 +223,7 @@ const EditPayment: React.FC<EditPaymentProps> = ({
               <label className={styles.labelField}>Bedrag:</label>
               <input
                 type="number"
-                value={transactionData.transaction_amount}
+                value={transactionData.transaction_amount.toString()}
                 onChange={(e) =>
                   setTransactionData({
                     ...transactionData,

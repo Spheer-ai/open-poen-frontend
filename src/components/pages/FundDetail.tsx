@@ -240,6 +240,10 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
 
   console.log("initiativeOwners:", initiativeOwners);
 
+  const handleRefreshTrigger = () => {
+    setRefreshTrigger((prev) => prev + 1);
+  };
+
   return (
     <>
       <div className={styles["topContainer"]}>
@@ -437,6 +441,7 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
           <FundsTransactions
             initiativeId={initiativeId}
             authToken={user?.token || ""}
+            onRefreshTrigger={handleRefreshTrigger}
           />
         )}
         {activeTab === "activiteiten" && (

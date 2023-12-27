@@ -37,7 +37,8 @@ const formatDate = (dateString: string) => {
 const FundsTransactions: React.FC<{
   authToken: string;
   initiativeId: string;
-}> = ({ authToken, initiativeId }) => {
+  onRefreshTrigger: () => void;
+}> = ({ authToken, initiativeId, onRefreshTrigger }) => {
   const { user } = useAuth();
   const { fetchPermissions } = usePermissions();
   const [hasEditPermission, setHasEditPermission] = useState(false);
@@ -47,18 +48,18 @@ const FundsTransactions: React.FC<{
   const [selectedTransactionId, setSelectedTransactionId] = useState<
     number | null
   >(null);
-  const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [isBlockingInteraction, setIsBlockingInteraction] = useState(false);
   const [isFetchPaymentDetailsModalOpen, setIsFetchPaymentDetailsModalOpen] =
     useState(false);
   const [isAddPaymentModalOpen, setIsAddPaymentModalOpen] = useState(false);
   const [isEditPaymentModalOpen, setIsEditPaymentModalOpen] = useState(false);
-  const [selectedTransaction, setSelectedTransaction] =
-    useState<Transaction | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMoreTransactions, setHasMoreTransactions] = useState(true);
+  const [editedTransaction, setEditedTransaction] =
+    useState<Transaction | null>(null);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [pageSize] = useState(3);
 
   const fetchTransactions = async () => {
@@ -110,8 +111,10 @@ const FundsTransactions: React.FC<{
   };
 
   useEffect(() => {
+    console.log("FundsTransactions component mounted or refreshed.");
+
     fetchTransactions();
-  }, [currentPage]);
+  }, [currentPage, refreshTrigger]);
 
   useEffect(() => {
     async function fetchUserPermissions() {
@@ -214,10 +217,12 @@ const FundsTransactions: React.FC<{
 
         console.log("Selected Transaction ID:", transactionId);
 
-        setSelectedTransaction({
+        // Set the editedTransaction
+        setEditedTransaction({
           ...selectedTransaction,
           booking_date: isoDate,
         });
+
         setIsEditPaymentModalOpen(true);
       } else {
         console.error(
@@ -258,10 +263,6 @@ const FundsTransactions: React.FC<{
     }
   };
 
-  const handlePaymentEdited = () => {
-    setRefreshTrigger((prev) => prev + 1);
-  };
-
   const handleToggleAddPaymentModal = () => {
     if (isAddPaymentModalOpen) {
       setIsBlockingInteraction(true);
@@ -276,8 +277,25 @@ const FundsTransactions: React.FC<{
     }
   };
 
-  const handlePaymentAdded = () => {
+  useEffect(() => {
+    if (refreshTrigger > 0) {
+      console.log(
+        `Refresh triggered. Current trigger count: ${refreshTrigger}`,
+      );
+      fetchTransactions();
+    }
+  }, [refreshTrigger]);
+
+  const handlePaymentEdited = () => {
+    console.log("Payment edited. Triggering refresh.");
     setRefreshTrigger((prev) => prev + 1);
+    onRefreshTrigger();
+  };
+
+  const handlePaymentAdded = () => {
+    console.log("Payment edited. Triggering refresh.");
+    setRefreshTrigger((prev) => prev + 1);
+    onRefreshTrigger();
   };
 
   return (
@@ -298,7 +316,7 @@ const FundsTransactions: React.FC<{
         Transactie toevoegen
       </button>
       <div className={styles.fundTransactionOverview}>
-        <table className={styles.fundTransactionTable}>
+        <table key={refreshTrigger} className={styles.fundTransactionTable}>
           <thead>
             <tr>
               <th>Datum</th>
@@ -384,7 +402,7 @@ const FundsTransactions: React.FC<{
           isBlockingInteraction={isBlockingInteraction}
           paymentId={selectedTransactionId}
           onPaymentEdited={handlePaymentEdited}
-          paymentData={selectedTransaction}
+          paymentData={editedTransaction}
           token={authToken}
         />
       </div>
