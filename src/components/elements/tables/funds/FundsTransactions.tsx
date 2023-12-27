@@ -11,15 +11,21 @@ import { usePermissions } from "../../../../contexts/PermissionContext";
 import { useAuth } from "../../../../contexts/AuthContext";
 import LoadingDot from "../../../animation/LoadingDot";
 
-interface Transaction {
+export interface Transaction {
   id: number;
   booking_date: string;
   activity_name: string;
   creditor_name: string;
   debtor_name: string;
-  n_attachments: number;
+  short_user_description: string;
   transaction_amount: number;
+  n_attachments: number;
   transaction_id: number;
+  creditor_account: string;
+  debtor_account: string;
+  route: string;
+  long_user_description: string;
+  hidden: boolean;
 }
 
 const formatDate = (dateString: string) => {
@@ -217,12 +223,10 @@ const FundsTransactions: React.FC<{
 
         console.log("Selected Transaction ID:", transactionId);
 
-        // Set the editedTransaction
         setEditedTransaction({
           ...selectedTransaction,
           booking_date: isoDate,
         });
-
         setIsEditPaymentModalOpen(true);
       } else {
         console.error(
@@ -319,12 +323,12 @@ const FundsTransactions: React.FC<{
         <table key={refreshTrigger} className={styles.fundTransactionTable}>
           <thead>
             <tr>
-              <th>Datum</th>
+              <th>DATUM</th>
               <th>Activiteit</th>
-              <th>Verzender</th>
-              <th>Ontvanger</th>
-              <th>Media</th>
-              <th>Hoeveelheid</th>
+              <th>VERZENDER</th>
+              <th>ONTVANGER</th>
+              <th>MEDIA</th>
+              <th>HOEVEELHEID</th>
             </tr>
           </thead>
           <tbody>
@@ -336,7 +340,32 @@ const FundsTransactions: React.FC<{
                     { year: "numeric", month: "numeric", day: "numeric" },
                   )}
                 </td>
-                <td>{transaction.activity_name}</td>
+                <td>
+                  {transaction.activity_name ? (
+                    <div
+                      style={{
+                        color: "#265ED4",
+                        fontWeight: "bold",
+                        fontSize: "16px",
+                        marginBottom: "2px",
+                      }}
+                    >
+                      {transaction.activity_name}
+                    </div>
+                  ) : (
+                    <div
+                      style={{
+                        color: "blue",
+                        fontWeight: "bold",
+                        fontSize: "16px",
+                        marginBottom: "2px",
+                      }}
+                    >
+                      -
+                    </div>
+                  )}
+                  <div>{transaction.short_user_description}</div>
+                </td>
                 <td>{transaction.creditor_name}</td>
                 <td>{transaction.debtor_name}</td>
                 <td>{transaction.n_attachments}</td>

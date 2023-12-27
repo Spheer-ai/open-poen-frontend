@@ -11,7 +11,7 @@ import { usePermissions } from "../../../../contexts/PermissionContext";
 import { useAuth } from "../../../../contexts/AuthContext";
 import LoadingDot from "../../../animation/LoadingDot";
 
-interface Transaction {
+export interface Transaction {
   id: number;
   booking_date: string;
   activity_name: string;
@@ -21,6 +21,11 @@ interface Transaction {
   transaction_amount: number;
   n_attachments: number;
   transaction_id: number;
+  creditor_account: string;
+  debtor_account: string;
+  route: string;
+  long_user_description: string;
+  hidden: boolean;
 }
 
 const formatDate = (dateString: string) => {
@@ -38,8 +43,15 @@ const ActivityTransactions: React.FC<{
   authToken: string;
   initiativeId: string;
   activityId: string;
+  activity_name: string;
   onRefreshTrigger: () => void;
-}> = ({ authToken, initiativeId, activityId, onRefreshTrigger }) => {
+}> = ({
+  authToken,
+  initiativeId,
+  activityId,
+  activity_name,
+  onRefreshTrigger,
+}) => {
   const { user } = useAuth();
   const { fetchPermissions } = usePermissions();
   const [hasEditPermission, setHasEditPermission] = useState(false);
@@ -316,11 +328,11 @@ const ActivityTransactions: React.FC<{
         Transactie toevoegen
       </button>
       <div className={styles.fundTransactionOverview}>
-        <table className={styles.fundTransactionTable}>
+        <table key={refreshTrigger} className={styles.fundTransactionTable}>
           <thead>
             <tr>
               <th>DATUM</th>
-              <th>ACTIVITEIT BESCHRIJVING</th>
+              <th>BESCHRIJVING</th>
               <th>VERZENDER</th>
               <th>ONTVANGER</th>
               <th>MEDIA</th>
@@ -336,7 +348,9 @@ const ActivityTransactions: React.FC<{
                     { year: "numeric", month: "numeric", day: "numeric" },
                   )}
                 </td>
-                <td>{`${transaction.activity_name} ${transaction.short_user_description}`}</td>
+                <td>
+                  <div>{transaction.short_user_description}</div>
+                </td>
                 <td>{transaction.creditor_name}</td>
                 <td>{transaction.debtor_name}</td>
                 <td>{transaction.n_attachments}</td>
@@ -363,7 +377,7 @@ const ActivityTransactions: React.FC<{
                 <td>
                   {hasEditPermission ? (
                     <img
-                      src={EditIcon}
+                      src={ViewIcon}
                       alt="Edit Icon"
                       onClick={() => handleTransactionEditClick(transaction.id)}
                       style={{ cursor: "pointer" }}

@@ -12,6 +12,12 @@ export interface Transaction {
   n_attachments: number;
   transaction_amount: number;
   transaction_id: number;
+  creditor_account: string;
+  debtor_account: string;
+  route: string;
+  short_user_description: string;
+  long_user_description: string;
+  hidden: boolean;
 }
 
 interface EditPaymentProps {
@@ -45,7 +51,17 @@ const EditPayment: React.FC<EditPaymentProps> = ({
     booking_date: "",
     creditor_name: "",
     debtor_name: "",
+    creditor_account: "",
+    debtor_account: "",
+    route: "inkomen",
+    short_user_description: "",
+    long_user_description: "",
+    hidden: true,
   });
+
+  useEffect(() => {
+    console.log("Payment data received in EditPayment:", paymentData);
+  }, [paymentData]);
 
   useEffect(() => {
     if (isOpen) {
@@ -64,6 +80,12 @@ const EditPayment: React.FC<EditPaymentProps> = ({
         booking_date: paymentData.booking_date,
         creditor_name: paymentData.creditor_name,
         debtor_name: paymentData.debtor_name,
+        creditor_account: paymentData.creditor_account,
+        debtor_account: paymentData.debtor_account,
+        route: paymentData.route || "inkomen",
+        short_user_description: paymentData.short_user_description,
+        long_user_description: paymentData.long_user_description,
+        hidden: paymentData.hidden || true,
       });
 
       setDisplayDate(formatDateForInput(new Date(paymentData.booking_date)));
@@ -120,6 +142,7 @@ const EditPayment: React.FC<EditPaymentProps> = ({
 
       onPaymentEdited();
       handleResetState();
+      resetState();
       setIsLoading(false);
       handleClose();
     } catch (error) {
@@ -127,9 +150,28 @@ const EditPayment: React.FC<EditPaymentProps> = ({
     }
   };
 
+  const resetState = () => {
+    setTransactionData({
+      transaction_amount: 0,
+      booking_date: "",
+      creditor_name: "",
+      debtor_name: "",
+      creditor_account: "",
+      debtor_account: "",
+      route: "inkomen",
+      short_user_description: "",
+      long_user_description: "",
+      hidden: true,
+    });
+    setDisplayDate("");
+    setApiDate("");
+    setSelectedFile(null);
+    setIsLoading(false);
+  };
+
   const handleClose = () => {
     if (!isBlockingInteraction) {
-      handleResetState();
+      resetState();
       setModalIsOpen(false);
       onClose();
     }
@@ -246,6 +288,33 @@ const EditPayment: React.FC<EditPaymentProps> = ({
               <label className={styles.labelField}>Naam betaler:</label>
               <input
                 type="text"
+                value={transactionData.debtor_name}
+                onChange={(e) =>
+                  setTransactionData({
+                    ...transactionData,
+                    debtor_name: e.target.value,
+                  })
+                }
+                onKeyDown={handleEnterKeyPress}
+              />
+            </div>
+            <div className={styles.formGroup}>
+              <label className={styles.labelField}>Betaal IBAN</label>
+              <input
+                type="text"
+                value={transactionData.debtor_account}
+                onChange={(e) =>
+                  setTransactionData({
+                    ...transactionData,
+                    debtor_account: e.target.value,
+                  })
+                }
+              />
+            </div>
+            <div className={styles.formGroup}>
+              <label className={styles.labelField}>Naam ontvanger:</label>
+              <input
+                type="text"
                 value={transactionData.creditor_name}
                 onChange={(e) =>
                   setTransactionData({
@@ -257,18 +326,77 @@ const EditPayment: React.FC<EditPaymentProps> = ({
               />
             </div>
             <div className={styles.formGroup}>
-              <label className={styles.labelField}>Naam ontvanger:</label>
+              <label className={styles.labelField}>Ontvanger IBAN</label>
               <input
                 type="text"
-                value={transactionData.debtor_name}
+                value={transactionData.creditor_account}
                 onChange={(e) =>
                   setTransactionData({
                     ...transactionData,
-                    debtor_name: e.target.value,
+                    creditor_account: e.target.value,
                   })
                 }
-                onKeyDown={handleEnterKeyPress}
               />
+            </div>
+
+            <div className={styles.formGroup}>
+              <label className={styles.labelField}>Route:</label>
+              <select
+                value={transactionData.route}
+                onChange={(e) =>
+                  setTransactionData({
+                    ...transactionData,
+                    route: e.target.value,
+                  })
+                }
+              >
+                <option value="inkomen">Inkomen</option>
+                <option value="uitgaven">Uitgaven</option>
+              </select>
+            </div>
+
+            <div className={styles.formGroup}>
+              <label className={styles.labelField}>Korte beschrijving</label>
+              <input
+                type="text"
+                value={transactionData.short_user_description}
+                onChange={(e) =>
+                  setTransactionData({
+                    ...transactionData,
+                    short_user_description: e.target.value,
+                  })
+                }
+              />
+            </div>
+
+            <div className={styles.formGroup}>
+              <label className={styles.labelField}>lange beschrijving</label>
+              <input
+                type="text"
+                value={transactionData.long_user_description}
+                onChange={(e) =>
+                  setTransactionData({
+                    ...transactionData,
+                    long_user_description: e.target.value,
+                  })
+                }
+              />
+            </div>
+
+            <div className={styles.formGroup}>
+              <label className={styles.labelField}>
+                <input
+                  type="checkbox"
+                  checked={transactionData.hidden}
+                  onChange={(e) =>
+                    setTransactionData({
+                      ...transactionData,
+                      hidden: e.target.checked,
+                    })
+                  }
+                />
+                Hidden:
+              </label>
             </div>
           </>
         ) : null}
