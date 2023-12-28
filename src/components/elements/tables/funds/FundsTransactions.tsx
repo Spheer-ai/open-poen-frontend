@@ -78,9 +78,9 @@ const FundsTransactions: React.FC<{
       );
 
       if (response && response.payments) {
-        const formattedTransactions = response.payments.map((transaction) => ({
-          ...transaction,
-          booking_date: formatDate(transaction.booking_date),
+        const formattedTransactions = response.payments.map((payment) => ({
+          ...payment.payment, // Access payment details from the nested structure
+          booking_date: formatDate(payment.payment.booking_date),
         }));
 
         console.log("Fetched transactions:", formattedTransactions);
