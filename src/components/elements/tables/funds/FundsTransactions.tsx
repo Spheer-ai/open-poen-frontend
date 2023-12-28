@@ -312,12 +312,14 @@ const FundsTransactions: React.FC<{
         initiativeId={initiativeId}
         activityId={null}
       />
-      <button
-        className={styles["saveButton"]}
-        onClick={handleToggleAddPaymentModal}
-      >
-        Transactie toevoegen
-      </button>
+      {user ? (
+        <button
+          className={styles["saveButton"]}
+          onClick={handleToggleAddPaymentModal}
+        >
+          Transactie toevoegen
+        </button>
+      ) : null}
       <div className={styles.fundTransactionOverview}>
         <table key={refreshTrigger} className={styles.fundTransactionTable}>
           <thead>

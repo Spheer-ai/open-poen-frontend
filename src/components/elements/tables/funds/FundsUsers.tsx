@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import styles from "../../../../assets/scss/FundsUsers.module.scss";
 import LoadingDot from "../../../animation/LoadingDot";
 import { fetchFundDetails } from "../../../middleware/Api";
+import { useAuth } from "../../../../contexts/AuthContext";
 
 import LinkFundOwners from "../../../modals/LinkFundOwners";
 
@@ -10,6 +11,8 @@ const FundsUsers: React.FC<{
   initiativeId: string;
   token: string;
 }> = ({ initiativeId, token }) => {
+  const { user } = useAuth();
+
   const navigate = useNavigate();
   const [isBlockingInteraction, setIsBlockingInteraction] = useState(false);
   const [isLinkFundOwnerModalOpen, setIsLinkFundOwnerModalOpen] =
@@ -64,17 +67,19 @@ const FundsUsers: React.FC<{
         token={token}
         initiativeOwners={initiativeOwners}
       />
-      <button
-        className={styles["saveButton"]}
-        onClick={handleToggleLinkFundOwnerModal}
-      >
-        <img
-          src="../../../link-owner.svg"
-          alt="Link owner"
-          className={styles["link-owner"]}
-        />
-        Initatiefnemer toevoegen
-      </button>
+      {user && token ? (
+        <button
+          className={styles["saveButton"]}
+          onClick={handleToggleLinkFundOwnerModal}
+        >
+          <img
+            src="../../../../link-owner.svg"
+            alt="Link owner"
+            className={styles["link-owner"]}
+          />
+          Initatiefnemer toevoegen
+        </button>
+      ) : null}
       <div className={styles["user-list-container"]}>
         {isLoading ? (
           <div className={styles["loading-container"]}>

@@ -17,6 +17,7 @@ interface Activities {
   income: number;
   expenses: number;
   initiativeName: string;
+  hidden: boolean;
 }
 
 export default function ActivitiesPage() {
@@ -57,14 +58,7 @@ export default function ActivitiesPage() {
     } else {
       console.log("Token is not available or permissions are already fetched.");
     }
-  }, [
-    action,
-    user,
-    fetchPermissions,
-    permissionsFetched,
-    initiativeId,
-    refreshTrigger,
-  ]);
+  }, [action, user, fetchPermissions, permissionsFetched, initiativeId]);
 
   useEffect(() => {
     setIsLoading(true);
@@ -243,6 +237,9 @@ export default function ActivitiesPage() {
                     <span>€{activity.expenses}</span>
                   </div>
                 </li>
+                {activity?.hidden && (
+                  <span className={styles["hidden-label"]}>Verborgen</span>
+                )}
               </div>
             ))}
           </ul>

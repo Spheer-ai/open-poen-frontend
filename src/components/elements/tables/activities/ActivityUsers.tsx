@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "../../../../assets/scss/FundsUsers.module.scss";
+import { useAuth } from "../../../../contexts/AuthContext";
 import LinkActivityOwners from "../../../modals/LinkActivityOwners";
 import { fetchActivityDetails } from "../../../middleware/Api";
 import LoadingDot from "../../../animation/LoadingDot";
@@ -12,6 +13,7 @@ const ActivityUsers: React.FC<{
   token: string;
 }> = ({ initiativeId, activityId, token }) => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [isBlockingInteraction, setIsBlockingInteraction] = useState(false);
   const [isLinkActivityOwnerModalOpen, setIsLinkActivityOwnerModalOpen] =
     useState(false);
@@ -67,17 +69,19 @@ const ActivityUsers: React.FC<{
         token={token}
         activityOwners={activityOwners}
       />
-      <button
-        className={styles["saveButton"]}
-        onClick={handleToggleLinkActivityOwnerModal}
-      >
-        <img
-          src="../../../../link-owner.svg"
-          alt="Link owner"
-          className={styles["link-owner"]}
-        />
-        Activiteitnemer toevoegen
-      </button>
+      {user && token ? (
+        <button
+          className={styles["saveButton"]}
+          onClick={handleToggleLinkActivityOwnerModal}
+        >
+          <img
+            src="../../../../link-owner.svg"
+            alt="Link owner"
+            className={styles["link-owner"]}
+          />
+          Activiteitnemer toevoegen
+        </button>
+      ) : null}
       <div className={styles["user-list-container"]}>
         {isLoading ? (
           <div className={styles["loading-parent"]}>
