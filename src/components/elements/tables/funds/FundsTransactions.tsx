@@ -79,7 +79,7 @@ const FundsTransactions: React.FC<{
 
       if (response && response.payments) {
         const formattedTransactions = response.payments.map((payment) => ({
-          ...payment.payment, // Access payment details from the nested structure
+          ...payment.payment,
           booking_date: formatDate(payment.payment.booking_date),
         }));
 
@@ -330,6 +330,11 @@ const FundsTransactions: React.FC<{
               <th>HOEVEELHEID</th>
             </tr>
           </thead>
+          {transactions.length === 0 && !loadingMore ? (
+            <p className={styles["no-transactions"]}>
+              Geen transacties gevonden
+            </p>
+          ) : null}
           <tbody>
             {transactions.map((transaction, index) => (
               <tr key={index}>
@@ -424,7 +429,7 @@ const FundsTransactions: React.FC<{
               disabled={loadingMore}
             >
               {loadingMore ? (
-                <div className={styles["loading-dots"]}>
+                <div className={styles["loading-container"]}>
                   <LoadingDot delay={0} />
                   <LoadingDot delay={0.1} />
                   <LoadingDot delay={0.1} />
@@ -432,7 +437,7 @@ const FundsTransactions: React.FC<{
                   <LoadingDot delay={0.2} />
                 </div>
               ) : (
-                "Load More"
+                "Meer transacties laden"
               )}
             </button>
           </div>

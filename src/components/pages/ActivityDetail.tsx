@@ -55,7 +55,6 @@ interface FundDetails {
     reference: string;
     budget: number;
   };
-  // other properties if present in the data
 }
 
 const ActivityDetail: React.FC<ActivityDetailProps> = ({
@@ -294,7 +293,7 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
                   {activityDetails.name ? (
                     <h1>{activityDetails.name}</h1>
                   ) : (
-                    <p>Name not found</p>
+                    <p>Geen naam gevonden</p>
                   )}
                 </div>
                 <div className={styles["fund-description"]}>
@@ -317,7 +316,7 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
                       )}
                     </div>
                   ) : (
-                    <p>Description not found</p>
+                    <p>Geen beschrijving gevonden</p>
                   )}
                 </div>
               </div>
@@ -331,7 +330,7 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
                     alt="Fund Image"
                   />
                 ) : (
-                  <p>Image not found</p>
+                  <p>Geen afbeelding gevonden</p>
                 )}
               </div>
             </div>
@@ -340,11 +339,11 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
                 className={styles["fund-budget"]}
                 style={{ backgroundColor: "#E9EFFB" }}
               >
-                {activityDetails.budget ? (
+                {activityDetails.budget !== null ? (
                   <>
                     <p>
                       Toegekend budget: <br />
-                      <span>€ {activityDetails.budget} </span>
+                      <span>€ {activityDetails.budget}</span>
                     </p>
                   </>
                 ) : (
@@ -355,7 +354,7 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
                 className={styles["fund-income"]}
                 style={{ backgroundColor: "#E9EFFB" }}
               >
-                {activityDetails.income ? (
+                {activityDetails.income !== null ? (
                   <>
                     <p>
                       Ontvangen budget: <br />
@@ -370,11 +369,10 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
                 className={styles["fund-expenses"]}
                 style={{ backgroundColor: "#FEE6F0" }}
               >
-                {activityDetails.expenses ? (
+                {activityDetails.expenses !== null ? (
                   <>
                     <p style={{ color: "#B82466" }}>
-                      Besteed:
-                      <br />
+                      Besteed: <br />
                       <span style={{ color: "#B82466" }}>
                         € {activityDetails.expenses}
                       </span>
@@ -389,12 +387,20 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
                   className={styles["fund-available-budget"]}
                   style={{ backgroundColor: "#E7FDEA" }}
                 >
-                  <p style={{ color: "#008000" }}>
-                    Beschikbaar budget: <br />
-                    <span style={{ color: "#008000" }}>
-                      € {availableBudget}
-                    </span>
-                  </p>
+                  {availableBudget !== null ? (
+                    <>
+                      <p style={{ color: "#008000" }}>
+                        Beschikbaar budget: <br />
+                        <span style={{ color: "#008000" }}>
+                          € {availableBudget}
+                        </span>
+                      </p>
+                    </>
+                  ) : (
+                    <p style={{ color: "#008000" }}>
+                      Available budget not found
+                    </p>
+                  )}
                 </div>
               )}
             </div>
@@ -451,6 +457,7 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
             authToken={user?.token || ""}
             activityId={activityId}
             onRefreshTrigger={handleRefreshTrigger}
+            activity_name={""}
           />
         )}
         {activeTab === "details" && (

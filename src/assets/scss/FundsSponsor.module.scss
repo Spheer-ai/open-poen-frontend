@@ -1,0 +1,18 @@
+.details-container {
+  display: flex;
+  justify-content: space-between;
+  padding: 20px;
+
+  .details-item {
+    label {
+      font-weight: normal;
+      color: #4f575e;
+      font-size: 12px;
+    }
+
+    p {
+      font-size: 12px;
+      color: #2f2f2f;
+    }
+  }
+}

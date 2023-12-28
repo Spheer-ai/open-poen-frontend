@@ -336,11 +336,11 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
                 className={styles["fund-budget"]}
                 style={{ backgroundColor: "#E9EFFB" }}
               >
-                {fundDetails.budget ? (
+                {fundDetails.budget !== null ? (
                   <>
                     <p>
                       Toegekend budget: <br />
-                      <span>€ {fundDetails.budget} </span>
+                      <span>€ {fundDetails.budget}</span>
                     </p>
                   </>
                 ) : (
@@ -351,7 +351,7 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
                 className={styles["fund-income"]}
                 style={{ backgroundColor: "#E9EFFB" }}
               >
-                {fundDetails.income ? (
+                {fundDetails.income !== null ? (
                   <>
                     <p>
                       Ontvangen budget: <br />
@@ -366,7 +366,7 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
                 className={styles["fund-expenses"]}
                 style={{ backgroundColor: "#FEE6F0" }}
               >
-                {fundDetails.expenses ? (
+                {fundDetails.expenses !== null ? (
                   <>
                     <p style={{ color: "#B82466" }}>
                       Besteed:
@@ -385,12 +385,20 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
                   className={styles["fund-available-budget"]}
                   style={{ backgroundColor: "#E7FDEA" }}
                 >
-                  <p style={{ color: "#008000" }}>
-                    Beschikbaar budget: <br />
-                    <span style={{ color: "#008000" }}>
-                      € {availableBudget}
-                    </span>
-                  </p>
+                  {availableBudget !== null ? (
+                    <>
+                      <p style={{ color: "#008000" }}>
+                        Beschikbaar budget: <br />
+                        <span style={{ color: "#008000" }}>
+                          € {availableBudget}
+                        </span>
+                      </p>
+                    </>
+                  ) : (
+                    <p style={{ color: "#008000" }}>
+                      Available budget not found
+                    </p>
+                  )}
                 </div>
               )}
             </div>
