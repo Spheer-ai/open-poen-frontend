@@ -16,6 +16,7 @@ interface Activities {
   budget: number;
   income: number;
   expenses: number;
+  initiativeName: string;
 }
 
 export default function ActivitiesPage() {
@@ -30,8 +31,10 @@ export default function ActivitiesPage() {
   const [entityPermissions, setEntityPermissions] = useState<string[]>([]);
   const hasPermission = entityPermissions.includes("create_activity");
   const [activities, setActivities] = useState<Activities[]>([]);
+  const [initiativeName, setInitiativeName] = useState("");
   const initiativeId = useParams()?.initiativeId || "";
   const [selectedActivity, setSelectedActivity] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     console.log("action:", action);
@@ -64,8 +67,11 @@ export default function ActivitiesPage() {
   ]);
 
   useEffect(() => {
+    setIsLoading(true);
+
     if (!initiativeId) {
       console.error("initiativeId is not defined.");
+      setIsLoading(false);
       return;
     }
 
@@ -73,10 +79,20 @@ export default function ActivitiesPage() {
       .then((initiativeData) => {
         console.log("Fetched activities:", initiativeData.activities);
         const updatedActivities = initiativeData.activities || [];
-        setActivities(updatedActivities);
+        setInitiativeName(initiativeData.name);
+
+        const activitiesWithInitiativeNames = updatedActivities.map(
+          (activity) => ({
+            ...activity,
+            initiativeName: initiativeData.name,
+          }),
+        );
+        setActivities(activitiesWithInitiativeNames);
+        setIsLoading(false);
       })
       .catch((error) => {
         console.error("Error fetching activities:", error);
+        setIsLoading(false);
       });
   }, [initiativeId, user?.token, refreshTrigger]);
 
@@ -102,6 +118,12 @@ export default function ActivitiesPage() {
 
   const handleBackClick = () => {
     navigate("/funds");
+  };
+
+  const handleTitleClick = () => {
+    const newUrl = `/funds/${initiativeId}/activities/${initiativeName}`;
+    window.location.assign(newUrl);
+    window.location.reload();
   };
 
   const handleToggleAddActivityModal = () => {
@@ -134,6 +156,8 @@ export default function ActivitiesPage() {
       <div className={styles["side-panel"]}>
         <TopNavigationBar
           title={`Activiteiten`}
+          subtitle={`${initiativeName}`}
+          onTitleClick={handleTitleClick}
           showSettings={false}
           showCta={true}
           onBackArrowClick={handleBackClick}
@@ -143,7 +167,7 @@ export default function ActivitiesPage() {
           hasPermission={hasPermission}
           showSearch={false}
         />
-        {Array.isArray(activities) && activities.length === 0 ? (
+        {isLoading ? (
           <div className={styles["loading-container"]}>
             <LoadingDot delay={0} />
             <LoadingDot delay={0.1} />
@@ -151,6 +175,8 @@ export default function ActivitiesPage() {
             <LoadingDot delay={0.2} />
             <LoadingDot delay={0.2} />
           </div>
+        ) : Array.isArray(activities) && activities.length === 0 ? (
+          <p className={styles["no-activities"]}>Geen activiteiten gevonden</p>
         ) : (
           <ul className={styles["shared-unordered-list"]}>
             {activities.map((activity, index) => (

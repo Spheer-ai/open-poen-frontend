@@ -217,7 +217,7 @@ export default function Contacts() {
         <TopNavigationBar
           title={`Gebruikers ${userList.length}`}
           showSettings={false}
-          showCta={true}
+          showCta={isLoggedIn}
           onSettingsClick={() => {}}
           onCtaClick={handleCtaClick}
           onSearch={handleSearch}

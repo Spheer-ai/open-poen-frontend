@@ -17,6 +17,13 @@
   align-items: flex-start;
 }
 
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
 .sponsor-list-item {
   align-items: center;
   cursor: pointer;
@@ -93,4 +100,8 @@
   opacity: 0;
   transform: translateY(20px);
   animation-fill-mode: forwards;
+}
+
+.no-sponsors-message {
+  text-align: center;
 }

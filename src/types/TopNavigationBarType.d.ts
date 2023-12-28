@@ -1,5 +1,7 @@
 export interface TopNavigationBarProps {
   title: string;
+  subtitle?: React.ReactNode;
+  subtitleStyle?: React.CSSProperties;
   showSettings: boolean;
   onSettingsClick: () => void;
   showCta: boolean;
@@ -9,7 +11,8 @@ export interface TopNavigationBarProps {
   onBackClick?: () => void;
   onBackArrowClick?: () => void;
   entityClass?: string;
-  children?: ReactNode;
+  children?: React.ReactNode;
   hasPermission: boolean;
   showSearch: boolean;
+  onTitleClick?: () => void;
 }

@@ -8,7 +8,6 @@ import Transactions from "../components/pages/Transactions";
 import Login from "../components/pages/Login";
 import InlineModalLayout from "../components/ui/layout/InlideModalLayout";
 import styles from "../assets/scss/Routes.module.scss";
-import FundDetail from "../components/pages/FundDetail";
 import ResetPassword from "../components/pages/onboarding/ResetPassword";
 import ResetPasswordLayout from "../components/pages/onboarding/ResetPasswordLayout";
 import ResetPasswordRequest from "../components/pages/onboarding/ResetPasswordRequest";
@@ -102,6 +101,14 @@ export default function AppRoutes() {
           />
           <Route
             path="/funds/:initiativeId/activities"
+            element={
+              <InlineModalLayout navigate={navigate}>
+                <Activities />
+              </InlineModalLayout>
+            }
+          />
+          <Route
+            path="/funds/:initiativeId/activities/:initiativeName"
             element={
               <InlineModalLayout navigate={navigate}>
                 <Activities />

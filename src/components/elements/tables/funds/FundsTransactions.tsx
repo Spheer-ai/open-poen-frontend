@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { getPaymentsByInitiative } from "../../../middleware/Api";
 import styles from "../../../../assets/scss/TransactionOverview.module.scss";
 import PaymentDetails from "../../../modals/PaymentDetails";
-import EditIcon from "/edit-icon.svg";
 import ViewIcon from "/eye.svg";
 import { useNavigate } from "react-router-dom";
 import EditPayment from "../../../modals/EditPayment";

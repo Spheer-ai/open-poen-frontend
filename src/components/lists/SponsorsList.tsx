@@ -9,6 +9,7 @@ import EditSponsor from "../modals/EditSponsor";
 import TopNavigationBar from "../ui/top-navigation-bar/TopNavigationBar";
 import AddSponsorDesktop from "../modals/AddSponsorDesktop";
 import DeleteSponsor from "../modals/DeleteSponsor";
+import LoadingDot from "../animation/LoadingDot";
 
 type Sponsor = {
   id: string;
@@ -37,7 +38,7 @@ const SponsorList = () => {
   const [fetchedSponsorPermissions, setFetchedSponsorPermissions] = useState<{
     [key: string]: string[];
   }>({});
-
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const [selectedSponsorData, setSelectedSponsorData] =
     useState<Sponsor | null>(null);
@@ -58,11 +59,14 @@ const SponsorList = () => {
 
   useEffect(() => {
     const fetchData = async () => {
+      setIsLoading(true);
       try {
         const data = await fetchSponsors();
         setSponsors(data);
       } catch (error) {
         console.error("Error fetching sponsors:", error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -95,7 +99,7 @@ const SponsorList = () => {
     }
   }, [user, sponsors, fetchPermissions, permissionsFetched]);
 
-  const handleSponsorClick = (sponsorId: string) => {
+  const handleSponsorClick = (sponsorId: string, sponsorName: string) => {
     if (user && user.token) {
       if (!permissionsFetchedForSession) {
         fetchPermissions("Funder", undefined, user.token)
@@ -207,80 +211,102 @@ const SponsorList = () => {
           showSearch={false}
         />
         <div>
-          <ul className={styles["sponsor-list"]}>
-            {sponsors.map((sponsor, index) => {
-              const isActive = activeSponsorId === sponsor.id.toString();
-              const permissions =
-                fetchedSponsorPermissions[sponsor.id.toString()];
-              const hasEditPermission =
-                Array.isArray(permissions) && permissions.includes("edit");
-              const hasDeletePermission =
-                Array.isArray(permissions) && permissions.includes("delete");
+          {isLoading ? (
+            <div className={styles["loading-container"]}>
+              <div className={styles["loading-dots"]}>
+                <LoadingDot delay={0} />
+                <LoadingDot delay={0.1} />
+                <LoadingDot delay={0.1} />
+                <LoadingDot delay={0.2} />
+                <LoadingDot delay={0.2} />
+              </div>
+            </div>
+          ) : sponsors.length > 0 ? (
+            <ul className={styles["sponsor-list"]}>
+              {sponsors.map((sponsor, index) => {
+                const isActive = activeSponsorId === sponsor.id.toString();
+                const permissions =
+                  fetchedSponsorPermissions[sponsor.id.toString()];
+                const hasEditPermission =
+                  Array.isArray(permissions) && permissions.includes("edit");
+                const hasDeletePermission =
+                  Array.isArray(permissions) && permissions.includes("delete");
 
-              return (
-                <li
-                  key={`${sponsor.id}-${index}`}
-                  style={{
-                    animationDelay: `${index * 0.1}s`,
-                  }}
-                  className={`${styles["sponsor-fade-in"]} ${
-                    styles["sponsor-list-item"]
-                  } ${isActive ? styles["active-sponsor"] : ""}`}
-                >
-                  <div
-                    className={styles["sponsor-info"]}
-                    onClick={() => handleSponsorClick(sponsor.id.toString())}
+                return (
+                  <li
+                    key={`${sponsor.id}-${index}`}
+                    style={{
+                      animationDelay: `${index * 0.1}s`,
+                    }}
+                    className={`${styles["sponsor-fade-in"]} ${
+                      styles["sponsor-list-item"]
+                    } ${isActive ? styles["active-sponsor"] : ""}`}
                   >
-                    <a
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className={`${styles["sponsor-link"]}`}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        handleSponsorClick(sponsor.id.toString());
-                      }}
+                    <div
+                      className={styles["sponsor-info"]}
+                      onClick={() =>
+                        handleSponsorClick(sponsor.id.toString(), sponsor.name)
+                      }
                     >
-                      {sponsor.name}
-                    </a>
-                    <p className={styles["sponsor-website"]}>{sponsor.url}</p>
-                  </div>
-                  {hasEditPermission && (
-                    <SponsorDropdown
-                      isOpen={false}
-                      onEditClick={() =>
-                        handleToggleEditSponsorModal(sponsor.id.toString())
-                      }
-                      onDeleteClick={() =>
-                        handleToggleDeleteSponsorModal(sponsor.id.toString())
-                      }
-                      sponsorId={sponsor.id.toString()}
-                      userPermissions={hasEditPermission}
-                      hasDeletePermission={hasDeletePermission}
-                    />
-                  )}
-                </li>
-              );
-            })}
-          </ul>
-          <EditSponsor
-            isOpen={isEditSponsorModalOpen}
-            onClose={handleToggleEditSponsorModal}
-            isBlockingInteraction={isBlockingInteraction}
-            onSponsorEdited={handleSponsorEdited}
-            sponsorId={sponsorId}
-            hasEditSponsorPermission={hasEditSponsorPermission}
-            currentName={selectedSponsorData?.name || ""}
-            currentUrl={selectedSponsorData?.url || ""}
-          />
-          <DeleteSponsor
-            isOpen={isDeleteSponsorModalOpen}
-            onClose={handleToggleDeleteSponsorModal}
-            isBlockingInteraction={isBlockingInteraction}
-            onSponsorDeleted={handleSponsorDeleted}
-            sponsorId={sponsorId}
-          />
+                      <a
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={`${styles["sponsor-link"]}`}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handleSponsorClick(
+                            sponsor.id.toString(),
+                            sponsor.name,
+                          );
+                        }}
+                      >
+                        {sponsor.name}
+                      </a>
+                      <p className={styles["sponsor-website"]}>{sponsor.url}</p>
+                    </div>
+
+                    {hasEditPermission && (
+                      <SponsorDropdown
+                        isOpen={false}
+                        onEditClick={() =>
+                          handleToggleEditSponsorModal(sponsor.id.toString())
+                        }
+                        onDeleteClick={() =>
+                          handleToggleDeleteSponsorModal(sponsor.id.toString())
+                        }
+                        sponsorId={sponsor.id.toString()}
+                        userPermissions={hasEditPermission}
+                        hasDeletePermission={hasDeletePermission}
+                      />
+                    )}
+                  </li>
+                );
+              })}
+            </ul>
+          ) : (
+            <p className={styles["no-sponsors-message"]}>
+              Geen sponsors gevonden
+            </p>
+          )}
         </div>
       </div>
+      <EditSponsor
+        isOpen={isEditSponsorModalOpen}
+        onClose={handleToggleEditSponsorModal}
+        isBlockingInteraction={isBlockingInteraction}
+        onSponsorEdited={handleSponsorEdited}
+        sponsorId={sponsorId}
+        hasEditSponsorPermission={hasEditSponsorPermission}
+        currentName={selectedSponsorData?.name || ""}
+        currentUrl={selectedSponsorData?.url || ""}
+      />
+      <DeleteSponsor
+        isOpen={isDeleteSponsorModalOpen}
+        onClose={handleToggleDeleteSponsorModal}
+        isBlockingInteraction={isBlockingInteraction}
+        onSponsorDeleted={handleSponsorDeleted}
+        sponsorId={sponsorId}
+      />
       <AddSponsorDesktop
         isOpen={isModalOpen}
         onClose={handleToggleAddSponsorModal}
