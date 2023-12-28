@@ -67,6 +67,16 @@ export default function UserDetailsPage({
   const [entityPermissions, setEntityPermissions] = useState<string[]>([]);
   const [hasEditPermission, setHasEditPermission] = useState(false);
   const [hasDeletePermission, setHasDeletePermission] = useState(false);
+  const [initiativeId, setInitiativeId] = useState(null);
+  const [activityId, setActivityId] = useState(null);
+
+  if (initiativeId !== null) {
+    navigate(`/funds/${initiativeId}/activities`);
+  }
+
+  if (activityId !== null) {
+    navigate(`/funds/${initiativeId}/activities/${activityId}`);
+  }
 
   useEffect(() => {
     async function fetchUserPermissions() {
@@ -353,6 +363,10 @@ export default function UserDetailsPage({
                     <li
                       className={styles["initiative-list-item"]}
                       key={initiative.id}
+                      onClick={() => {
+                        setInitiativeId(initiative.id);
+                        setActivityId(null);
+                      }}
                     >
                       {initiative.name}
                     </li>
@@ -367,6 +381,10 @@ export default function UserDetailsPage({
                       <li
                         className={styles["initiative-list-item"]}
                         key={activity.id}
+                        onClick={() => {
+                          setActivityId(activity.id);
+                          setInitiativeId(activity.initiative_id);
+                        }}
                       >
                         {activity.name}
                       </li>
