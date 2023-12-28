@@ -75,7 +75,7 @@ const ActivityTransactions: React.FC<{
   const [currentPage, setCurrentPage] = useState(1);
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMoreTransactions, setHasMoreTransactions] = useState(true);
-  const [pageSize] = useState(3);
+  const [pageSize] = useState(20);
 
   const fetchTransactions = async () => {
     try {

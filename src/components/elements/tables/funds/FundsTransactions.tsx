@@ -65,7 +65,7 @@ const FundsTransactions: React.FC<{
   const [editedTransaction, setEditedTransaction] =
     useState<Transaction | null>(null);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
-  const [pageSize] = useState(3);
+  const [pageSize] = useState(20);
 
   const fetchTransactions = async () => {
     try {

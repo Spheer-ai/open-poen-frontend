@@ -135,7 +135,7 @@ export default function Funds() {
             } else {
               clearInterval(interval);
             }
-          }, 0);
+          }, 50);
 
           setIsFetchingInitiatives(false);
           setIsLoadingMoreInitiatives(false);
