@@ -75,7 +75,7 @@ export default function Contacts() {
         const usersResponse = await getUsersOrdered(
           token || "",
           currentPage,
-          3,
+          20,
           searchQuery,
         );
 
