@@ -1,4 +1,5 @@
 import React from "react";
+import styles from "../../../../assets/scss/FundsDetails.module.scss";
 
 interface ActivityDetailsProps {
   name?: string;
@@ -14,7 +15,7 @@ const ActivityDetails: React.FC<ActivityDetailsProps> = ({
   target_audience,
 }) => {
   return (
-    <div>
+    <div className={styles["details-container"]}>
       <label>Naam</label>
       <p>{name}</p>
       <label>Beschrijving</label>

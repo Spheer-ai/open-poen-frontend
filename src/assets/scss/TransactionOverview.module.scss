@@ -78,6 +78,11 @@
   }
 }
 
+.red-text {
+  color: #d45050;
+  font-weight: bold;
+}
+
 @media screen and (max-width: 768px) {
   .transactionOverview {
     padding: 10px;
@@ -385,4 +390,11 @@
     color: grey;
     border: solid 1px #ccc;
   }
+}
+.loading-container {
+  height: 200px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }

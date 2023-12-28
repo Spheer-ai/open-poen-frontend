@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import styles from "../../../../assets/scss/Funds.module.scss";
 import { useAuth } from "../../../../contexts/AuthContext";
+import LoadingDot from "../../../animation/LoadingDot";
 import { fetchActivities } from "../../../middleware/Api";
 
 interface Activities {
@@ -21,7 +22,9 @@ const FundsActivities: React.FC<{
   const { user } = useAuth();
 
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(true);
   const [activities, setActivities] = useState<Activities[]>([]);
+  const [error, setError] = useState<string | null>(null);
   const initiativeId = useParams()?.initiativeId || "";
   const [selectedActivity, setSelectedActivity] = useState<string | null>(null);
 
@@ -29,6 +32,8 @@ const FundsActivities: React.FC<{
     if (initiativeId) {
       const fetchActivitiesData = async () => {
         try {
+          setIsLoading(true);
+          setError(null);
           const result = await fetchActivities(
             Number(initiativeId),
             user?.token || "",
@@ -38,6 +43,9 @@ const FundsActivities: React.FC<{
           setActivities(updatedActivities);
         } catch (error) {
           console.error("Error fetching activities:", error);
+          setError("Error fetching activities.");
+        } finally {
+          setIsLoading(false);
         }
       };
 
@@ -69,70 +77,86 @@ const FundsActivities: React.FC<{
 
   return (
     <div className={styles["shared-container"]}>
-      <ul className={styles["shared-unordered-list"]}>
-        {activities.map((activity, index) => (
-          <div
-            className={`${styles["shared-styling"]} ${styles["initiative-fade-in"]}`}
-            key={`${activity?.id}-${index}`}
-            style={{
-              animationDelay: `${index * 0.2}s`,
-            }}
-            onClick={() => handleActivityClick(activity.id)}
-          >
-            <li className={styles["shared-name"]}>
-              <strong>{activity.name}</strong>
-            </li>
-            <div className={styles["values-bar"]}>
-              <div
-                key={`income-${activity.id}`}
-                className={styles["income-bar"]}
-                style={{
-                  width: calculateBarWidth(activity.income, activity.expenses)
-                    .incomeWidth,
-                }}
-              ></div>
-              <div
-                key={`expenses-${activity.id}`}
-                className={styles["expenses-bar"]}
-                style={{
-                  width: calculateBarWidth(activity.income, activity.expenses)
-                    .expensesWidth,
-                }}
-              ></div>
-            </div>
-            <li key={activity.id} className={styles["shared-list"]}>
-              <div className={styles["shared-values"]}>
-                <label>Begroting:</label>
-                <span>€{activity.budget}</span>
-              </div>
-              <div className={styles["shared-values"]}>
-                <label
-                  className={
-                    activity.income
-                      ? styles["value-income"]
-                      : styles["value-expenses"]
-                  }
-                >
-                  Beschikbaar:
-                </label>
-                <span>€{activity.income}</span>
-              </div>
-              <div className={styles["shared-values"]}>
-                <label
-                  className={
-                    activity.expenses
-                      ? styles["value-expenses"]
-                      : styles["value-income"]
-                  }
-                >
-                  Besteed:
-                </label>
-                <span>€{activity.expenses}</span>
-              </div>
-            </li>
+      {isLoading && (
+        <div className={styles["loading-container"]}>
+          <div className={styles["loading-dots"]}>
+            <LoadingDot delay={0} />
+            <LoadingDot delay={0.1} />
+            <LoadingDot delay={0.1} />
+            <LoadingDot delay={0.2} />
+            <LoadingDot delay={0.2} />
           </div>
-        ))}
-      </ul>
+        </div>
+      )}
+      {!isLoading && activities.length === 0 && (
+        <p>Geen activiteiten gevonden</p>
+      )}
+      {!isLoading && activities.length > 0 && (
+        <ul className={styles["shared-unordered-list"]}>
+          {activities.map((activity, index) => (
+            <div
+              className={`${styles["shared-styling"]} ${styles["initiative-fade-in"]}`}
+              key={`${activity?.id}-${index}`}
+              style={{
+                animationDelay: `${index * 0.2}s`,
+              }}
+              onClick={() => handleActivityClick(activity.id)}
+            >
+              <li className={styles["shared-name"]}>
+                <strong>{activity.name}</strong>
+              </li>
+              <div className={styles["values-bar"]}>
+                <div
+                  key={`income-${activity.id}`}
+                  className={styles["income-bar"]}
+                  style={{
+                    width: calculateBarWidth(activity.income, activity.expenses)
+                      .incomeWidth,
+                  }}
+                ></div>
+                <div
+                  key={`expenses-${activity.id}`}
+                  className={styles["expenses-bar"]}
+                  style={{
+                    width: calculateBarWidth(activity.income, activity.expenses)
+                      .expensesWidth,
+                  }}
+                ></div>
+              </div>
+              <li key={activity.id} className={styles["shared-list"]}>
+                <div className={styles["shared-values"]}>
+                  <label>Begroting:</label>
+                  <span>€{activity.budget}</span>
+                </div>
+                <div className={styles["shared-values"]}>
+                  <label
+                    className={
+                      activity.income
+                        ? styles["value-income"]
+                        : styles["value-expenses"]
+                    }
+                  >
+                    Beschikbaar:
+                  </label>
+                  <span>€{activity.income}</span>
+                </div>
+                <div className={styles["shared-values"]}>
+                  <label
+                    className={
+                      activity.expenses
+                        ? styles["value-expenses"]
+                        : styles["value-income"]
+                    }
+                  >
+                    Besteed:
+                  </label>
+                  <span>€{activity.expenses}</span>
+                </div>
+              </li>
+            </div>
+          ))}
+        </ul>
+      )}
     </div>
   );
 };

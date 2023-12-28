@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import styles from "../../assets/scss/RegulationList.module.scss";
 import TopNavigationBar from "../ui/top-navigation-bar/TopNavigationBar";
-import { fetchFunderRegulations } from "../middleware/Api";
+import { fetchFunderRegulations, getFunderById } from "../middleware/Api";
 import { useAuth } from "../../contexts/AuthContext";
 import RegulationDetail from "../pages/RegulationDetail";
 import AddRegulationDesktop from "../modals/AddRegulationDesktop";
@@ -16,6 +16,7 @@ type Regulation = {
 
 const RegulationList = () => {
   const { sponsorId } = useParams<{ sponsorId: string }>();
+  const [sponsorName, setSponsorName] = useState("");
   const { action } = useParams();
   const [isModalOpen, setIsModalOpen] = useState(action === "add-regulation");
   const navigate = useNavigate();
@@ -24,6 +25,7 @@ const RegulationList = () => {
   const [selectedRegulationId, setSelectedRegulationId] = useState<
     string | null
   >(null);
+  const [isLoading, setIsLoading] = useState(false);
   const [isBlockingInteraction, setIsBlockingInteraction] = useState(false);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const { fetchPermissions } = usePermissions();
@@ -52,6 +54,7 @@ const RegulationList = () => {
   useEffect(() => {
     async function getRegulations() {
       try {
+        setIsLoading(true);
         console.log("Checking values: token", token);
         console.log("Checking values: sponsorId", sponsorId);
         if (token && sponsorId) {
@@ -60,11 +63,8 @@ const RegulationList = () => {
             sponsorId,
           );
           setRegulations(fetchedRegulations);
-
-          if (fetchedRegulations && fetchedRegulations.length > 0) {
-            setSelectedRegulationId(fetchedRegulations[0].id.toString());
-          }
         }
+        setIsLoading(false);
       } catch (error) {
         console.error("Failed to fetch regulations:", error);
       }
@@ -79,6 +79,21 @@ const RegulationList = () => {
       setIsModalOpen(true);
     }
   }, [action]);
+
+  useEffect(() => {
+    async function fetchSponsorName() {
+      if (token && sponsorId) {
+        try {
+          const sponsorData = await getFunderById(token, parseInt(sponsorId));
+          setSponsorName(sponsorData?.name || "");
+        } catch (error) {
+          console.error("Error fetching sponsor data:", error);
+        }
+      }
+    }
+
+    fetchSponsorName();
+  }, [token, sponsorId]);
 
   const handleToggleAddRegulationModal = () => {
     if (isModalOpen) {
@@ -98,12 +113,15 @@ const RegulationList = () => {
     navigate("/sponsors");
   };
 
+  const handleTitleClick = () => {
+    navigate("/sponsors");
+  };
+
   const handleSearch = (query) => {
     console.log("Search query in UserDetailsPage:", query);
   };
 
   const handleRegulationClick = (regulationId: string) => {
-    navigate(`/sponsors/${sponsorId}/regulations/${regulationId}`);
     setSelectedRegulationId(regulationId);
   };
 
@@ -124,6 +142,8 @@ const RegulationList = () => {
       <div className={styles["side-panel"]}>
         <TopNavigationBar
           title={`Regelingen`}
+          subtitle={sponsorName}
+          onTitleClick={handleTitleClick}
           onBackArrowClick={handleBackClick}
           showSettings={false}
           showCta={true}
@@ -134,7 +154,15 @@ const RegulationList = () => {
           showSearch={false}
         />
 
-        {regulations.length > 0 ? (
+        {isLoading ? (
+          <div className={styles["loading-container"]}>
+            <LoadingDot delay={0} />
+            <LoadingDot delay={0.1} />
+            <LoadingDot delay={0.1} />
+            <LoadingDot delay={0.2} />
+            <LoadingDot delay={0.2} />
+          </div>
+        ) : regulations.length > 0 ? (
           <ul className={styles["regulation-list"]}>
             {regulations.map((regulation, index) => (
               <li
@@ -152,12 +180,8 @@ const RegulationList = () => {
             ))}
           </ul>
         ) : (
-          <div className={styles["loading-container"]}>
-            <LoadingDot delay={0} />
-            <LoadingDot delay={0.1} />
-            <LoadingDot delay={0.1} />
-            <LoadingDot delay={0.2} />
-            <LoadingDot delay={0.2} />
+          <div className={styles["no-regulations"]}>
+            Geen regelingen gevonden
           </div>
         )}
       </div>

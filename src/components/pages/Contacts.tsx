@@ -36,6 +36,7 @@ export default function Contacts() {
   const [page, setPage] = useState(1);
   const [userList, setUserList] = useState<UserData[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [isLoading, setIsLoading] = useState(true);
   const [initialUserList, setInitialUserList] = useState<UserData[]>([]);
   const [noResultsFound, setNoResultsFound] = useState(false);
 
@@ -59,6 +60,7 @@ export default function Contacts() {
   useEffect(() => {
     async function fetchData() {
       try {
+        setIsLoading(true);
         let loggedIn = false;
         let userId: string | null = null;
 
@@ -126,6 +128,7 @@ export default function Contacts() {
           setActiveUserId(filteredUsers[0].id);
           navigate(`/contacts/${filteredUsers[0].id}`);
         }
+        setIsLoading(false);
       } catch (error) {
         setError(error);
       }
@@ -217,7 +220,7 @@ export default function Contacts() {
         <TopNavigationBar
           title={`Gebruikers ${userList.length}`}
           showSettings={false}
-          showCta={true}
+          showCta={isLoggedIn}
           onSettingsClick={() => {}}
           onCtaClick={handleCtaClick}
           onSearch={handleSearch}
@@ -226,16 +229,18 @@ export default function Contacts() {
         />
         {error ? (
           <p>Error: {error.message}</p>
+        ) : isLoading ? (
+          <div className={styles["loading-container"]}>
+            <LoadingDot delay={0} />
+            <LoadingDot delay={0.1} />
+            <LoadingDot delay={0.1} />
+            <LoadingDot delay={0.2} />
+            <LoadingDot delay={0.2} />
+          </div>
         ) : (
           <div>
             {userList.length === 0 ? (
-              <div className={styles["loading-container"]}>
-                <LoadingDot delay={0} />
-                <LoadingDot delay={0.1} />
-                <LoadingDot delay={0.1} />
-                <LoadingDot delay={0.2} />
-                <LoadingDot delay={0.2} />
-              </div>
+              <p className={styles["no-users"]}>Geen gegevens gevonden</p>
             ) : (
               <ul>
                 {userList.map((user, index) => (

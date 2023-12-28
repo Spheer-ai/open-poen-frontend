@@ -19,6 +19,7 @@ interface Initiative {
   budget: number;
   income: number;
   expenses: number;
+  hidden: boolean;
 }
 
 export default function Funds() {
@@ -134,7 +135,7 @@ export default function Funds() {
             } else {
               clearInterval(interval);
             }
-          }, 50);
+          }, 0);
 
           setIsFetchingInitiatives(false);
           setIsLoadingMoreInitiatives(false);
@@ -163,8 +164,10 @@ export default function Funds() {
     console.log("Search query in UserDetailsPage:", query);
   };
 
-  const navigateToActivities = (initiativeId) => {
-    navigate(`/funds/${initiativeId}/activities`);
+  const navigateToActivities = (initiativeId, initiativeName) => {
+    navigate(`/funds/${initiativeId}/activities/${initiativeName}`, {
+      state: { initiativeName },
+    });
   };
 
   const calculateBarWidth = (income, expenses) => {
@@ -195,43 +198,44 @@ export default function Funds() {
           hasPermission={hasPermission}
           showSearch={false}
         />
-        <div className={styles["filter-buttons"]}>
-          <button
-            className={
-              !onlyMine ? styles["active-button"] : styles["filter-button"]
-            }
-            onClick={() => {
-              setOnlyMine(false);
-              setOffset(0);
-              setLimit(20);
-              setIsFetchingInitiatives(true);
-              setInitiatives([]);
-              setAllInitiatives([]);
-              setMyInitiatives([]);
-              fetchAndDisplayInitiatives(user?.token, false, 0, 20);
-            }}
-          >
-            Alle Initiatieven
-          </button>
-
-          <button
-            className={
-              onlyMine ? styles["active-button"] : styles["filter-button"]
-            }
-            onClick={() => {
-              setOnlyMine(true);
-              setOffset(0);
-              setLimit(3);
-              setIsFetchingInitiatives(true);
-              setInitiatives([]);
-              setAllInitiatives([]);
-              setMyInitiatives([]);
-              fetchAndDisplayInitiatives(user?.token, true, 0, 20);
-            }}
-          >
-            Mijn Initiatieven
-          </button>
-        </div>
+        {user && (
+          <div className={styles["filter-buttons"]}>
+            <button
+              className={
+                !onlyMine ? styles["active-button"] : styles["filter-button"]
+              }
+              onClick={() => {
+                setOnlyMine(false);
+                setOffset(0);
+                setLimit(20);
+                setIsFetchingInitiatives(true);
+                setInitiatives([]);
+                setAllInitiatives([]);
+                setMyInitiatives([]);
+                fetchAndDisplayInitiatives(user?.token, false, 0, 20);
+              }}
+            >
+              Alle Initiatieven
+            </button>
+            <button
+              className={
+                onlyMine ? styles["active-button"] : styles["filter-button"]
+              }
+              onClick={() => {
+                setOnlyMine(true);
+                setOffset(0);
+                setLimit(3);
+                setIsFetchingInitiatives(true);
+                setInitiatives([]);
+                setAllInitiatives([]);
+                setMyInitiatives([]);
+                fetchAndDisplayInitiatives(user?.token, true, 0, 20);
+              }}
+            >
+              Mijn Initiatieven
+            </button>
+          </div>
+        )}
         {isFetchingInitiatives && offset === 0 && (
           <div className={styles["loading-container"]}>
             <LoadingDot delay={0} />
@@ -250,7 +254,9 @@ export default function Funds() {
                 style={{
                   animationDelay: `${index * 0.1}s`,
                 }}
-                onClick={() => navigateToActivities(initiative?.id)}
+                onClick={() =>
+                  navigateToActivities(initiative?.id, initiative?.name)
+                }
               >
                 <li className={styles["shared-name"]}>
                   <strong>{initiative?.name}</strong>
@@ -308,6 +314,9 @@ export default function Funds() {
                     <span>€{initiative?.expenses}</span>
                   </div>
                 </li>
+                {initiative?.hidden && (
+                  <span className={styles["hidden-label"]}>Verborgen</span>
+                )}
               </div>
             ),
           )}

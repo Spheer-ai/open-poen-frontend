@@ -1,4 +1,5 @@
 import React from "react";
+import styles from "../../../../assets/scss/FundsSponsor.module.scss";
 
 interface FundsSponsorsProps {
   grantId?: number;
@@ -13,11 +14,33 @@ const FundsSponsors: React.FC<FundsSponsorsProps> = ({
   grantReference,
   grantBudget,
 }) => {
+  const formattedBudget = grantBudget?.toLocaleString("nl-NL", {
+    style: "currency",
+    currency: "EUR",
+  });
   return (
-    <div>
-      {grantName && <p>{grantName}</p>}
-      {grantReference && <p>Beslissingsnummer/referentie {grantReference}</p>}
-      {grantBudget && <p>Begroting: {grantBudget}</p>}
+    <div className={styles["details-container"]}>
+      <div className={styles["details-item"]}>
+        <label>Subsidieregeling:</label>
+        {grantName && <p>{grantName}</p>}
+      </div>
+      <div className={styles["details-item"]}>
+        <label>Beslissingsnummer/referentie: </label>
+        {grantReference && <p>{grantReference}</p>}
+      </div>
+      <div className={styles["details-item"]}>
+        <label>Begroting:</label>
+        {formattedBudget && <p>{formattedBudget}</p>}
+      </div>
+      <div className={styles["details-item"]}>
+        <label>Verantwoordelijk:</label>
+        {<p>Nee</p>}
+      </div>
+      <div className={styles["details-item"]}>
+        <label>Verantwoordelijkheid:</label>
+        {<p>Nee</p>}
+      </div>
+      <hr></hr>
     </div>
   );
 };

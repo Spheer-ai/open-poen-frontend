@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { getPaymentsByInitiative } from "../../../middleware/Api";
 import styles from "../../../../assets/scss/TransactionOverview.module.scss";
 import PaymentDetails from "../../../modals/PaymentDetails";
-import EditIcon from "/edit-icon.svg";
 import ViewIcon from "/eye.svg";
 import { useNavigate } from "react-router-dom";
 import EditPayment from "../../../modals/EditPayment";
@@ -11,15 +10,21 @@ import { usePermissions } from "../../../../contexts/PermissionContext";
 import { useAuth } from "../../../../contexts/AuthContext";
 import LoadingDot from "../../../animation/LoadingDot";
 
-interface Transaction {
+export interface Transaction {
   id: number;
   booking_date: string;
   activity_name: string;
   creditor_name: string;
   debtor_name: string;
-  n_attachments: number;
+  short_user_description: string;
   transaction_amount: number;
+  n_attachments: number;
   transaction_id: number;
+  creditor_account: string;
+  debtor_account: string;
+  route: string;
+  long_user_description: string;
+  hidden: boolean;
 }
 
 const formatDate = (dateString: string) => {
@@ -37,7 +42,8 @@ const formatDate = (dateString: string) => {
 const FundsTransactions: React.FC<{
   authToken: string;
   initiativeId: string;
-}> = ({ authToken, initiativeId }) => {
+  onRefreshTrigger: () => void;
+}> = ({ authToken, initiativeId, onRefreshTrigger }) => {
   const { user } = useAuth();
   const { fetchPermissions } = usePermissions();
   const [hasEditPermission, setHasEditPermission] = useState(false);
@@ -47,18 +53,18 @@ const FundsTransactions: React.FC<{
   const [selectedTransactionId, setSelectedTransactionId] = useState<
     number | null
   >(null);
-  const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [isBlockingInteraction, setIsBlockingInteraction] = useState(false);
   const [isFetchPaymentDetailsModalOpen, setIsFetchPaymentDetailsModalOpen] =
     useState(false);
   const [isAddPaymentModalOpen, setIsAddPaymentModalOpen] = useState(false);
   const [isEditPaymentModalOpen, setIsEditPaymentModalOpen] = useState(false);
-  const [selectedTransaction, setSelectedTransaction] =
-    useState<Transaction | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMoreTransactions, setHasMoreTransactions] = useState(true);
+  const [editedTransaction, setEditedTransaction] =
+    useState<Transaction | null>(null);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [pageSize] = useState(3);
 
   const fetchTransactions = async () => {
@@ -72,9 +78,9 @@ const FundsTransactions: React.FC<{
       );
 
       if (response && response.payments) {
-        const formattedTransactions = response.payments.map((transaction) => ({
-          ...transaction,
-          booking_date: formatDate(transaction.booking_date),
+        const formattedTransactions = response.payments.map((payment) => ({
+          ...payment.payment,
+          booking_date: formatDate(payment.payment.booking_date),
         }));
 
         console.log("Fetched transactions:", formattedTransactions);
@@ -110,8 +116,10 @@ const FundsTransactions: React.FC<{
   };
 
   useEffect(() => {
+    console.log("FundsTransactions component mounted or refreshed.");
+
     fetchTransactions();
-  }, [currentPage]);
+  }, [currentPage, refreshTrigger]);
 
   useEffect(() => {
     async function fetchUserPermissions() {
@@ -214,7 +222,7 @@ const FundsTransactions: React.FC<{
 
         console.log("Selected Transaction ID:", transactionId);
 
-        setSelectedTransaction({
+        setEditedTransaction({
           ...selectedTransaction,
           booking_date: isoDate,
         });
@@ -258,10 +266,6 @@ const FundsTransactions: React.FC<{
     }
   };
 
-  const handlePaymentEdited = () => {
-    setRefreshTrigger((prev) => prev + 1);
-  };
-
   const handleToggleAddPaymentModal = () => {
     if (isAddPaymentModalOpen) {
       setIsBlockingInteraction(true);
@@ -276,8 +280,25 @@ const FundsTransactions: React.FC<{
     }
   };
 
-  const handlePaymentAdded = () => {
+  useEffect(() => {
+    if (refreshTrigger > 0) {
+      console.log(
+        `Refresh triggered. Current trigger count: ${refreshTrigger}`,
+      );
+      fetchTransactions();
+    }
+  }, [refreshTrigger]);
+
+  const handlePaymentEdited = () => {
+    console.log("Payment edited. Triggering refresh.");
     setRefreshTrigger((prev) => prev + 1);
+    onRefreshTrigger();
+  };
+
+  const handlePaymentAdded = () => {
+    console.log("Payment edited. Triggering refresh.");
+    setRefreshTrigger((prev) => prev + 1);
+    onRefreshTrigger();
   };
 
   return (
@@ -291,24 +312,31 @@ const FundsTransactions: React.FC<{
         initiativeId={initiativeId}
         activityId={null}
       />
-      <button
-        className={styles["saveButton"]}
-        onClick={handleToggleAddPaymentModal}
-      >
-        Transactie toevoegen
-      </button>
+      {user ? (
+        <button
+          className={styles["saveButton"]}
+          onClick={handleToggleAddPaymentModal}
+        >
+          Transactie toevoegen
+        </button>
+      ) : null}
       <div className={styles.fundTransactionOverview}>
-        <table className={styles.fundTransactionTable}>
+        <table key={refreshTrigger} className={styles.fundTransactionTable}>
           <thead>
             <tr>
-              <th>Datum</th>
+              <th>DATUM</th>
               <th>Activiteit</th>
-              <th>Verzender</th>
-              <th>Ontvanger</th>
-              <th>Media</th>
-              <th>Hoeveelheid</th>
+              <th>VERZENDER</th>
+              <th>ONTVANGER</th>
+              <th>MEDIA</th>
+              <th>HOEVEELHEID</th>
             </tr>
           </thead>
+          {transactions.length === 0 && !loadingMore ? (
+            <p className={styles["no-transactions"]}>
+              Geen transacties gevonden
+            </p>
+          ) : null}
           <tbody>
             {transactions.map((transaction, index) => (
               <tr key={index}>
@@ -318,11 +346,55 @@ const FundsTransactions: React.FC<{
                     { year: "numeric", month: "numeric", day: "numeric" },
                   )}
                 </td>
-                <td>{transaction.activity_name}</td>
+                <td>
+                  {transaction.activity_name ? (
+                    <div
+                      style={{
+                        color: "#265ED4",
+                        fontWeight: "bold",
+                        fontSize: "16px",
+                        marginBottom: "2px",
+                      }}
+                    >
+                      {transaction.activity_name}
+                    </div>
+                  ) : (
+                    <div
+                      style={{
+                        color: "blue",
+                        fontWeight: "bold",
+                        fontSize: "16px",
+                        marginBottom: "2px",
+                      }}
+                    >
+                      -
+                    </div>
+                  )}
+                  <div>{transaction.short_user_description}</div>
+                </td>
                 <td>{transaction.creditor_name}</td>
                 <td>{transaction.debtor_name}</td>
                 <td>{transaction.n_attachments}</td>
-                <td>{transaction.transaction_amount}</td>
+                <td
+                  className={
+                    transaction.transaction_amount < 0 ? styles["red-text"] : ""
+                  }
+                >
+                  <span
+                    style={{
+                      display: "inline-block",
+                      width: "20px",
+                      textAlign: "right",
+                    }}
+                  >
+                    {transaction.transaction_amount < 0 ? "-" : ""}
+                  </span>
+                  €{" "}
+                  {Math.abs(transaction.transaction_amount).toLocaleString(
+                    "nl-NL",
+                    { minimumFractionDigits: 2 },
+                  )}
+                </td>
                 <td>{transaction.transaction_id}</td>
                 <td>
                   {hasEditPermission ? (
@@ -359,7 +431,7 @@ const FundsTransactions: React.FC<{
               disabled={loadingMore}
             >
               {loadingMore ? (
-                <div className={styles["loading-dots"]}>
+                <div className={styles["loading-container"]}>
                   <LoadingDot delay={0} />
                   <LoadingDot delay={0.1} />
                   <LoadingDot delay={0.1} />
@@ -367,7 +439,7 @@ const FundsTransactions: React.FC<{
                   <LoadingDot delay={0.2} />
                 </div>
               ) : (
-                "Load More"
+                "Meer transacties laden"
               )}
             </button>
           </div>
@@ -384,7 +456,7 @@ const FundsTransactions: React.FC<{
           isBlockingInteraction={isBlockingInteraction}
           paymentId={selectedTransactionId}
           onPaymentEdited={handlePaymentEdited}
-          paymentData={selectedTransaction}
+          paymentData={editedTransaction}
           token={authToken}
         />
       </div>
