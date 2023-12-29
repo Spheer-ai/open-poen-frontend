@@ -27,7 +27,6 @@ const BankConnections = () => {
   const [selectedBankId, setSelectedBankId] = useState<number | null>(null);
   const [isRevokeBankModalOpen, setIsRevokeBankModalOpen] = useState(false);
   const [selectedBank, setSelectedBank] = useState<string | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const [refreshTrigger, setRefreshTrigger] = useState(0);
@@ -45,16 +44,17 @@ const BankConnections = () => {
   >([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  const handleToggleRevokeBankModal = () => {
-    if (isModalOpen) {
+  const handleToggleRevokeBankModal = (bankId: number | null) => {
+    if (isRevokeBankModalOpen) {
       setIsBlockingInteraction(true);
       setTimeout(() => {
         setIsBlockingInteraction(false);
-        setIsModalOpen(false);
+        setIsRevokeBankModalOpen(false);
         navigate("/transactions/bankconnections");
       }, 300);
     } else {
-      setIsModalOpen(true);
+      setIsRevokeBankModalOpen(true);
+      setSelectedBankId(bankId);
       navigate("/transactions/bankconnections/revoke-bank");
     }
   };
@@ -246,7 +246,9 @@ const BankConnections = () => {
                           </button>
 
                           <button
-                            onClick={handleToggleRevokeBankModal}
+                            onClick={() =>
+                              handleToggleRevokeBankModal(connection.id)
+                            }
                             className={styles["button-danger"]}
                           >
                             Verwijderen
@@ -326,8 +328,8 @@ const BankConnections = () => {
                 token={token || ""}
               />
               <DeleteBankAccountModal
-                isOpen={isModalOpen}
-                onClose={handleToggleRevokeBankModal}
+                isOpen={isRevokeBankModalOpen}
+                onClose={() => handleToggleRevokeBankModal}
                 isBlockingInteraction={isBlockingInteraction}
                 userId={userId as any}
                 token={token ? token.toString() : ""}

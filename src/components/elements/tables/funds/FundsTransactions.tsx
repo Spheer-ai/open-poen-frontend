@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import EditPayment from "../../../modals/EditPayment";
 import AddPayment from "../../../modals/AddPayment";
 import { usePermissions } from "../../../../contexts/PermissionContext";
+import { useFieldPermissions } from "../../../../contexts/FieldPermissionContext";
 import { useAuth } from "../../../../contexts/AuthContext";
 import LoadingDot from "../../../animation/LoadingDot";
 
@@ -43,6 +44,7 @@ const FundsTransactions: React.FC<{
   authToken: string;
   initiativeId: string;
   onRefreshTrigger: () => void;
+  entityPermissions;
 }> = ({ authToken, initiativeId, onRefreshTrigger }) => {
   const { user } = useAuth();
   const { fetchPermissions } = usePermissions();
@@ -55,7 +57,9 @@ const FundsTransactions: React.FC<{
     useState(false);
   const [isAddPaymentModalOpen, setIsAddPaymentModalOpen] = useState(false);
   const [isEditPaymentModalOpen, setIsEditPaymentModalOpen] = useState(false);
+  const { fetchFieldPermissions } = useFieldPermissions();
   const [currentPage, setCurrentPage] = useState(1);
+  const [entityPermissions, setEntityPermissions] = useState<string[]>([]);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMoreTransactions, setHasMoreTransactions] = useState(true);
@@ -198,6 +202,29 @@ const FundsTransactions: React.FC<{
       }
     }
   };
+
+  useEffect(() => {
+    async function fetchFieldPermissionsOnMount() {
+      try {
+        if (user && user.token && selectedTransactionId) {
+          const fieldPermissions: string[] | undefined =
+            await fetchFieldPermissions(
+              "Payment",
+              selectedTransactionId,
+              user.token,
+            );
+
+          if (fieldPermissions) {
+            setEntityPermissions(fieldPermissions);
+          }
+        }
+      } catch (error) {
+        console.error("Failed to fetch field permissions:", error);
+      }
+    }
+
+    fetchFieldPermissionsOnMount();
+  }, [user, selectedTransactionId, fetchFieldPermissions]);
 
   const handleToggleFetchPaymentDetailsModal = () => {
     if (isFetchPaymentDetailsModalOpen) {
@@ -412,6 +439,8 @@ const FundsTransactions: React.FC<{
           onPaymentEdited={handlePaymentEdited}
           paymentData={editedTransaction}
           token={authToken}
+          fieldPermissions={entityPermissions}
+          fields={[]}
         />
       </div>
     </>

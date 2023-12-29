@@ -3,7 +3,7 @@ export interface EditUserProfileFormProps {
   first_name: string;
   last_name: string;
   biography: string;
-  hidden: true;
+  hidden: boolean;
   fieldPermissions;
   fields: string[];
   isOpen: boolean;
