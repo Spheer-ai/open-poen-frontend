@@ -86,6 +86,7 @@ const FundsTransactions: React.FC<{
 
       if (response && response.payments) {
         const formattedTransactions = response.payments.map((payment) => ({
+          ...payment,
           ...payment.payment,
           booking_date: formatDate(payment.payment.booking_date),
         }));
@@ -151,9 +152,9 @@ const FundsTransactions: React.FC<{
     }
   };
 
-  const handleEyeIconClick = (transactionId: number) => {
+  const handleEyeIconClick = async (transactionId: number) => {
     if (permissionsFetchedForTransaction !== transactionId) {
-      handleFetchPermissions(transactionId);
+      await handleFetchPermissions(transactionId);
     }
 
     if (hasEditPermission) {
@@ -314,7 +315,7 @@ const FundsTransactions: React.FC<{
                       style={{
                         color: "#265ED4",
                         fontWeight: "bold",
-                        fontSize: "16px",
+                        fontSize: "14px",
                         marginBottom: "2px",
                       }}
                     >
@@ -325,14 +326,20 @@ const FundsTransactions: React.FC<{
                       style={{
                         color: "blue",
                         fontWeight: "bold",
-                        fontSize: "16px",
+                        fontSize: "14px",
                         marginBottom: "2px",
                       }}
                     >
                       -
                     </div>
                   )}
-                  <div>{transaction.short_user_description}</div>
+                  <div
+                    style={{
+                      fontSize: "12px",
+                    }}
+                  >
+                    {transaction.short_user_description}
+                  </div>
                 </td>
                 <td>{transaction.creditor_name}</td>
                 <td>{transaction.debtor_name}</td>

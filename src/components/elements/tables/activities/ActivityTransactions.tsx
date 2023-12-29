@@ -97,7 +97,8 @@ const ActivityTransactions: React.FC<{
 
       if (response && response.payments) {
         const formattedTransactions = response.payments.map((payment) => ({
-          ...payment.payment, // Access payment details from the nested structure
+          ...payment,
+          ...payment.payment,
           booking_date: formatDate(payment.payment.booking_date),
         }));
 
@@ -160,9 +161,9 @@ const ActivityTransactions: React.FC<{
     }
   };
 
-  const handleEyeIconClick = (transactionId: number) => {
+  const handleEyeIconClick = async (transactionId: number) => {
     if (permissionsFetchedForTransaction !== transactionId) {
-      handleFetchPermissions(transactionId);
+      await handleFetchPermissions(transactionId);
     }
 
     if (hasEditPermission) {
@@ -171,7 +172,6 @@ const ActivityTransactions: React.FC<{
       handleTransactionDetailsClick(transactionId);
     }
   };
-
   const handleTransactionDetailsClick = (transactionId: number) => {
     setSelectedTransactionId(transactionId);
 

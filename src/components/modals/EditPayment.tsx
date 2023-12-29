@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import styles from "../../assets/scss/layout/AddFundDesktop.module.scss";
 import LoadingDot from "../animation/LoadingDot";
 import { editPayment, uploadPaymentAttachment } from "../middleware/Api";
+import { useFieldPermissions } from "../../contexts/FieldPermissionContext";
 
 export interface Transaction {
   id: number;
@@ -41,10 +42,12 @@ const EditPayment: React.FC<EditPaymentProps> = ({
 }) => {
   console.log("Token prop received in EditPayment:", token);
   const [modalIsOpen, setModalIsOpen] = useState(isOpen);
+  const { fetchFieldPermissions } = useFieldPermissions();
   const [displayDate, setDisplayDate] = useState("");
   const [apiDate, setApiDate] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [entityPermissions, setEntityPermissions] = useState<string[]>([]);
 
   const [transactionData, setTransactionData] = useState({
     transaction_amount: 0,
@@ -72,6 +75,25 @@ const EditPayment: React.FC<EditPaymentProps> = ({
       }, 300);
     }
   }, [isOpen]);
+
+  useEffect(() => {
+    async function fetchFieldPermissionsOnMount() {
+      try {
+        if (token && paymentId) {
+          const fieldPermissions: string[] | undefined =
+            await fetchFieldPermissions("Payment", paymentId, token);
+
+          if (fieldPermissions) {
+            setEntityPermissions(fieldPermissions);
+          }
+        }
+      } catch (error) {
+        console.error("Failed to fetch field permissions:", error);
+      }
+    }
+
+    fetchFieldPermissionsOnMount();
+  }, [paymentId, fetchFieldPermissions]);
 
   useEffect(() => {
     if (paymentData) {
