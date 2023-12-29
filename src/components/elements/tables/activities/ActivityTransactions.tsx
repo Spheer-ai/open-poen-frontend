@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { getPaymentsByActivity } from "../../../middleware/Api";
 import styles from "../../../../assets/scss/TransactionOverview.module.scss";
 import PaymentDetails from "../../../modals/PaymentDetails";
-import EditIcon from "/edit-icon.svg";
 import ViewIcon from "/eye.svg";
 import { useNavigate } from "react-router-dom";
 import EditPayment from "../../../modals/EditPayment";
@@ -54,8 +53,12 @@ const ActivityTransactions: React.FC<{
 }) => {
   const { user } = useAuth();
   const { fetchPermissions } = usePermissions();
-  const [hasEditPermission, setHasEditPermission] = useState(false);
-  const [hasReadPermission, setHasReadPermission] = useState(false);
+  const [hasEditPermission, setHasEditPermission] = useState<
+    boolean | undefined
+  >(false);
+  const [hasReadPermission, setHasReadPermission] = useState<
+    boolean | undefined
+  >(false);
   const [hasDeletePermission, setHasDeletePermission] = useState(false);
   const navigate = useNavigate();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -64,6 +67,10 @@ const ActivityTransactions: React.FC<{
   >(null);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [isBlockingInteraction, setIsBlockingInteraction] = useState(false);
+  const [
+    permissionsFetchedForTransaction,
+    setPermissionsFetchedForTransaction,
+  ] = useState<number | null>(null);
   const [isFetchPaymentDetailsModalOpen, setIsFetchPaymentDetailsModalOpen] =
     useState(false);
   const [isAddPaymentModalOpen, setIsAddPaymentModalOpen] = useState(false);
@@ -90,7 +97,8 @@ const ActivityTransactions: React.FC<{
 
       if (response && response.payments) {
         const formattedTransactions = response.payments.map((payment) => ({
-          ...payment.payment, // Access payment details from the nested structure
+          ...payment,
+          ...payment.payment,
           booking_date: formatDate(payment.payment.booking_date),
         }));
 
@@ -130,86 +138,40 @@ const ActivityTransactions: React.FC<{
     fetchTransactions();
   }, [currentPage, refreshTrigger]);
 
-  useEffect(() => {
-    async function fetchUserPermissions() {
-      try {
-        let userToken = authToken;
+  const handleFetchPermissions = async (transactionId: number) => {
+    try {
+      const userToken = user && user.token ? user.token : authToken;
+      const userPermissions: string[] | undefined = await fetchPermissions(
+        "Payment",
+        transactionId,
+        userToken,
+      );
 
-        if (user && user.token && activityId && transactions.length > 0) {
-          userToken = user.token;
+      const hasEditPermission =
+        userPermissions && userPermissions.includes("edit");
+      setHasEditPermission(hasEditPermission);
 
-          console.log(
-            "Transaction IDs:",
-            transactions.map((transaction) => transaction.transaction_id),
-          );
+      const hasReadPermission =
+        userPermissions && userPermissions.includes("read");
+      setHasReadPermission(hasReadPermission);
 
-          for (const transaction of transactions) {
-            const transactionId = transaction.id;
+      setPermissionsFetchedForTransaction(transactionId);
+    } catch (error) {
+      console.error("Failed to fetch user permissions:", error);
+    }
+  };
 
-            if (transactionId) {
-              const userPermissions: string[] | undefined =
-                await fetchPermissions("Payment", transactionId, userToken);
-
-              console.log(
-                `API Request for permissions for transaction ${transactionId}:`,
-              );
-              console.log({
-                resourceType: "Payment",
-                resourceId: transactionId,
-                userToken,
-              });
-
-              console.log(
-                `API Response for permissions for transaction ${transactionId}:`,
-              );
-              console.log(userPermissions);
-
-              if (userPermissions && userPermissions.includes("read")) {
-                console.log(
-                  `User has read permission for transaction ${transactionId}`,
-                );
-                setHasReadPermission(true);
-              } else {
-                console.log(
-                  `User does not have edit permission for transaction ${transactionId}`,
-                );
-                setHasReadPermission(false);
-              }
-
-              if (userPermissions && userPermissions.includes("edit")) {
-                console.log(
-                  `User has edit permission for transaction ${transactionId}`,
-                );
-                setHasEditPermission(true);
-              } else {
-                console.log(
-                  `User does not have edit permission for transaction ${transactionId}`,
-                );
-                setHasEditPermission(false);
-              }
-
-              if (userPermissions && userPermissions.includes("delete")) {
-                console.log(
-                  `User has delete permission for transaction ${transactionId}`,
-                );
-              } else {
-                console.log(
-                  `User does not have delete permission for transaction ${transactionId}`,
-                );
-              }
-            } else {
-              console.error("Transaction ID is undefined for a transaction");
-            }
-          }
-        }
-      } catch (error) {
-        console.error("Failed to fetch user permissions:", error);
-      }
+  const handleEyeIconClick = async (transactionId: number) => {
+    if (permissionsFetchedForTransaction !== transactionId) {
+      await handleFetchPermissions(transactionId);
     }
 
-    fetchUserPermissions();
-  }, [user, activityId, transactions, authToken]);
-
+    if (hasEditPermission) {
+      handleTransactionEditClick(transactionId);
+    } else {
+      handleTransactionDetailsClick(transactionId);
+    }
+  };
   const handleTransactionDetailsClick = (transactionId: number) => {
     setSelectedTransactionId(transactionId);
 
@@ -382,27 +344,12 @@ const ActivityTransactions: React.FC<{
                   )}
                 </td>
                 <td>
-                  {hasEditPermission ? (
-                    <img
-                      src={ViewIcon}
-                      alt="Edit Icon"
-                      onClick={() => handleTransactionEditClick(transaction.id)}
-                      style={{ cursor: "pointer" }}
-                    />
-                  ) : (
-                    <img
-                      src={ViewIcon}
-                      alt="View Icon"
-                      onClick={() =>
-                        handleTransactionDetailsClick(transaction.id)
-                      }
-                      style={{
-                        cursor: "pointer",
-                        width: "24px",
-                        height: "24px",
-                      }}
-                    />
-                  )}
+                  <img
+                    src={ViewIcon}
+                    alt="Eye Icon"
+                    onClick={() => handleEyeIconClick(transaction.id)}
+                    style={{ cursor: "pointer" }}
+                  />
                 </td>
               </tr>
             ))}
