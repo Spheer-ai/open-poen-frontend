@@ -51,17 +51,19 @@ export default function Funds() {
   const initialFetchDoneRef = useRef(false);
 
   useEffect(() => {
-    if (user?.token && entityPermissions.length === 0) {
-      fetchPermissions("Funder", undefined, user.token)
-        .then((permissions) => {
-          console.log("Fetched permissions:", permissions);
-          setEntityPermissions(permissions || []);
-        })
-        .catch((error) => {
-          console.error("Failed to fetch permissions:", error);
-        });
+    if (user?.token) {
+      if (entityPermissions.length === 0) {
+        fetchPermissions("Funder", undefined, user.token)
+          .then((permissions) => {
+            console.log("Fetched permissions:", permissions);
+            setEntityPermissions(permissions || []);
+          })
+          .catch((error) => {
+            console.error("Failed to fetch permissions:", error);
+          });
+      }
     }
-  }, [user, entityPermissions]);
+  }, [user]);
 
   useEffect(() => {
     if (!initialFetchDoneRef.current) {
