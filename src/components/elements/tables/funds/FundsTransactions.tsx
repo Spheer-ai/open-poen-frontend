@@ -11,6 +11,7 @@ import { useFieldPermissions } from "../../../../contexts/FieldPermissionContext
 import { useAuth } from "../../../../contexts/AuthContext";
 import LoadingDot from "../../../animation/LoadingDot";
 import LoadingCircle from "../../../animation/LoadingCircle";
+import FilterPayment from "../../../modals/FilterPayment";
 
 export interface Transaction {
   id: number;
@@ -57,6 +58,8 @@ const FundsTransactions: React.FC<{
   const [isFetchPaymentDetailsModalOpen, setIsFetchPaymentDetailsModalOpen] =
     useState(false);
   const [isAddPaymentModalOpen, setIsAddPaymentModalOpen] = useState(false);
+  const [isFilterPaymentModalOpen, setIsFilterPaymentModalOpen] =
+    useState(false);
   const [isEditPaymentModalOpen, setIsEditPaymentModalOpen] = useState(false);
   const { fetchFieldPermissions } = useFieldPermissions();
   const [currentPage, setCurrentPage] = useState(1);
@@ -81,24 +84,51 @@ const FundsTransactions: React.FC<{
   const [hasDeletePermission, setHasDeletePermission] = useState<
     boolean | undefined
   >(false);
+  const [startDate, setStartDate] = useState<string>("");
+  const [endDate, setEndDate] = useState<string>("");
+  const [minAmount, setMinAmount] = useState<string>("");
+  const [maxAmount, setMaxAmount] = useState<string>("");
+  const [route, setRoute] = useState<string>("");
   const [pageSize] = useState(20);
+  const [filterCriteria, setFilterCriteria] = useState({
+    startDate: "",
+    endDate: "",
+    minAmount: "",
+    maxAmount: "",
+    route: "",
+  });
 
   const fetchTransactions = async () => {
     try {
       setLoadingMore(true);
+
+      const queryParams = {
+        start_date: startDate || undefined,
+        end_date: endDate || undefined,
+        min_amount: minAmount || undefined,
+        max_amount: maxAmount || undefined,
+        route: route || undefined,
+      };
+
+      // Merge filter criteria separately
+      const mergedQueryParams = { ...queryParams, ...filterCriteria };
+
       const response = await getPaymentsByInitiative(
         authToken,
         initiativeId,
         currentPage,
         pageSize,
+        mergedQueryParams, // Use mergedQueryParams here
       );
 
-      if (response && response.payments) {
-        const formattedTransactions = response.payments.map((payment) => ({
-          ...payment,
-          ...payment.payment,
-          booking_date: formatDate(payment.payment.booking_date),
-        }));
+      if (response) {
+        const formattedTransactions = response.payments
+          ? response.payments.map((payment) => ({
+              ...payment,
+              ...payment.payment,
+              booking_date: formatDate(payment.payment.booking_date),
+            }))
+          : [];
 
         console.log("Fetched transactions:", formattedTransactions);
 
@@ -116,6 +146,7 @@ const FundsTransactions: React.FC<{
             setHasMoreTransactions(false);
           }
         } else {
+          setTransactions([]);
           setHasMoreTransactions(false);
         }
       }
@@ -126,6 +157,16 @@ const FundsTransactions: React.FC<{
     }
   };
 
+  const handleClearFilter = () => {
+    setFilterCriteria({
+      startDate: "",
+      endDate: "",
+      minAmount: "",
+      maxAmount: "",
+      route: "",
+    });
+  };
+
   const handleLoadMore = () => {
     if (!loadingMore && hasMoreTransactions) {
       setCurrentPage((prevPage) => prevPage + 1);
@@ -134,9 +175,16 @@ const FundsTransactions: React.FC<{
 
   useEffect(() => {
     console.log("FundsTransactions component mounted or refreshed.");
-
     fetchTransactions();
-  }, [currentPage, refreshTrigger]);
+  }, [
+    currentPage,
+    refreshTrigger,
+    startDate,
+    endDate,
+    minAmount,
+    maxAmount,
+    route,
+  ]);
 
   const handleEyeIconClick = async (transactionId: number) => {
     console.log("isLoadingPermissions set to true");
@@ -300,6 +348,31 @@ const FundsTransactions: React.FC<{
     onRefreshTrigger();
   };
 
+  const handleToggleFilterPaymentModal = () => {
+    if (isFilterPaymentModalOpen) {
+      setIsBlockingInteraction(true);
+      setTimeout(() => {
+        setIsBlockingInteraction(false);
+        setIsFilterPaymentModalOpen(false);
+        navigate(`/funds/${initiativeId}/activities`);
+      }, 300);
+    } else {
+      setIsFilterPaymentModalOpen(true);
+      navigate(`/funds/${initiativeId}/activities/filter-payment`);
+    }
+  };
+
+  const handleFilterApplied = (filters) => {
+    setFilterCriteria(filters);
+    setStartDate(filters.startDate);
+    setEndDate(filters.endDate);
+    setMinAmount(filters.minAmount);
+    setMaxAmount(filters.maxAmount);
+    setRoute(filters.route);
+
+    fetchTransactions();
+  };
+
   return (
     <>
       {" "}
@@ -311,13 +384,29 @@ const FundsTransactions: React.FC<{
         initiativeId={initiativeId}
         activityId={null}
       />
+      <FilterPayment
+        isOpen={isFilterPaymentModalOpen}
+        onClose={handleToggleFilterPaymentModal}
+        isBlockingInteraction={isBlockingInteraction}
+        onFilterApplied={handleFilterApplied}
+        initiativeId={initiativeId}
+        activityId={null}
+      />
       {user ? (
-        <button
-          className={styles["saveButton"]}
-          onClick={handleToggleAddPaymentModal}
-        >
-          Transactie toevoegen
-        </button>
+        <div className={styles["transactionContainer"]}>
+          <button
+            className={styles["saveButton"]}
+            onClick={handleToggleAddPaymentModal}
+          >
+            Transactie toevoegen
+          </button>
+          <button
+            className={styles["filterButton"]}
+            onClick={handleToggleFilterPaymentModal}
+          >
+            Filter
+          </button>
+        </div>
       ) : null}
       <div className={styles.fundTransactionOverview}>
         <table key={refreshTrigger} className={styles.fundTransactionTable}>

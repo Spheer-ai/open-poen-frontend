@@ -11,6 +11,7 @@ import { useAuth } from "../../../../contexts/AuthContext";
 import LoadingDot from "../../../animation/LoadingDot";
 import LoadingCircle from "../../../animation/LoadingCircle";
 import { useFieldPermissions } from "../../../../contexts/FieldPermissionContext";
+import FilterPayment from "../../../modals/FilterPayment";
 
 export interface Transaction {
   id: number;
@@ -82,6 +83,8 @@ const ActivityTransactions: React.FC<{
   const [isFetchPaymentDetailsModalOpen, setIsFetchPaymentDetailsModalOpen] =
     useState(false);
   const [isAddPaymentModalOpen, setIsAddPaymentModalOpen] = useState(false);
+  const [isFilterPaymentModalOpen, setIsFilterPaymentModalOpen] =
+    useState(false);
   const [isEditPaymentModalOpen, setIsEditPaymentModalOpen] = useState(false);
   const [selectedTransaction, setSelectedTransaction] =
     useState<Transaction | null>(null);
@@ -90,25 +93,44 @@ const ActivityTransactions: React.FC<{
   const [currentPage, setCurrentPage] = useState(1);
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMoreTransactions, setHasMoreTransactions] = useState(true);
+  const [startDate, setStartDate] = useState<string>("");
+  const [endDate, setEndDate] = useState<string>("");
+  const [minAmount, setMinAmount] = useState<string>("");
+  const [maxAmount, setMaxAmount] = useState<string>("");
+  const [route, setRoute] = useState<string>("");
   const [pageSize] = useState(20);
 
   const fetchTransactions = async () => {
     try {
       setLoadingMore(true);
+
+      const queryParams = {
+        start_date: startDate || undefined,
+        end_date: endDate || undefined,
+        min_amount: minAmount || undefined,
+        max_amount: maxAmount || undefined,
+        route: route || undefined,
+      };
+
       const response = await getPaymentsByActivity(
         authToken,
         initiativeId,
         activityId,
         currentPage,
         pageSize,
+        queryParams,
       );
 
-      if (response && response.payments) {
-        const formattedTransactions = response.payments.map((payment) => ({
-          ...payment,
-          ...payment.payment,
-          booking_date: formatDate(payment.payment.booking_date),
-        }));
+      if (response) {
+        const formattedTransactions = response.payments
+          ? response.payments.map((payment) => ({
+              ...payment,
+              ...payment.payment,
+              booking_date: formatDate(payment.payment.booking_date),
+            }))
+          : [];
+
+        console.log("Fetched transactions:", formattedTransactions);
 
         if (formattedTransactions.length > 0) {
           if (currentPage === 1) {
@@ -124,6 +146,7 @@ const ActivityTransactions: React.FC<{
             setHasMoreTransactions(false);
           }
         } else {
+          setTransactions([]);
           setHasMoreTransactions(false);
         }
       }
@@ -142,9 +165,16 @@ const ActivityTransactions: React.FC<{
 
   useEffect(() => {
     console.log("FundsTransactions component mounted or refreshed.");
-
     fetchTransactions();
-  }, [currentPage, refreshTrigger]);
+  }, [
+    currentPage,
+    refreshTrigger,
+    startDate,
+    endDate,
+    minAmount,
+    maxAmount,
+    route,
+  ]);
 
   const handleEyeIconClick = async (transactionId: number) => {
     console.log("isLoadingPermissions set to true");
@@ -308,6 +338,30 @@ const ActivityTransactions: React.FC<{
     onRefreshTrigger();
   };
 
+  const handleToggleFilterPaymentModal = () => {
+    if (isFilterPaymentModalOpen) {
+      setIsBlockingInteraction(true);
+      setTimeout(() => {
+        setIsBlockingInteraction(false);
+        setIsFilterPaymentModalOpen(false);
+        navigate(`/funds/${initiativeId}/activities`);
+      }, 300);
+    } else {
+      setIsFilterPaymentModalOpen(true);
+      navigate(`/funds/${initiativeId}/activities/filter-payment`);
+    }
+  };
+
+  const handleFilterApplied = (filters) => {
+    setStartDate(filters.startDate);
+    setEndDate(filters.endDate);
+    setMinAmount(filters.minAmount);
+    setMaxAmount(filters.maxAmount);
+    setRoute(filters.route);
+
+    fetchTransactions();
+  };
+
   return (
     <>
       {" "}
@@ -319,13 +373,29 @@ const ActivityTransactions: React.FC<{
         initiativeId={initiativeId}
         activityId={activityId}
       />
+      <FilterPayment
+        isOpen={isFilterPaymentModalOpen}
+        onClose={handleToggleFilterPaymentModal}
+        isBlockingInteraction={isBlockingInteraction}
+        onFilterApplied={handleFilterApplied}
+        initiativeId={initiativeId}
+        activityId={activityId}
+      />
       {user ? (
-        <button
-          className={styles["saveButton"]}
-          onClick={handleToggleAddPaymentModal}
-        >
-          Transactie toevoegen
-        </button>
+        <div className={styles["transactionContainer"]}>
+          <button
+            className={styles["saveButton"]}
+            onClick={handleToggleAddPaymentModal}
+          >
+            Transactie toevoegen
+          </button>
+          <button
+            className={styles["filterButton"]}
+            onClick={handleToggleFilterPaymentModal}
+          >
+            Filter
+          </button>
+        </div>
       ) : null}
       <div className={styles.fundTransactionOverview}>
         <table key={refreshTrigger} className={styles.fundTransactionTable}>

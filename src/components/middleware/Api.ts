@@ -1481,7 +1481,7 @@ export const getPaymentsByInitiative = async (
   token,
   initiativeId,
   page: number = 0,
-  limit: number = 3,
+  limit: number = 20,
   queryParams = {},
 ) => {
   try {
@@ -1492,7 +1492,7 @@ export const getPaymentsByInitiative = async (
         "Content-Type": "application/json",
       },
       params: {
-        queryParams,
+        ...queryParams,
         offset,
         limit,
       },
@@ -1516,7 +1516,7 @@ export const getPaymentsByActivity = async (
   initiativeId,
   activityId,
   page: number = 0,
-  limit: number = 3,
+  limit: number = 20,
   queryParams = {},
 ) => {
   try {
@@ -1529,7 +1529,7 @@ export const getPaymentsByActivity = async (
           "Content-Type": "application/json",
         },
         params: {
-          queryParams,
+          ...queryParams,
           offset,
           limit,
         },
