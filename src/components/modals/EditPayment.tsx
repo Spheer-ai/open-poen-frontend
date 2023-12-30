@@ -123,51 +123,47 @@ const EditPayment: React.FC<EditPaymentProps> = ({
       }
       console.log("Received paymentId:", paymentId);
       const displayDateObject = new Date(displayDate);
-  
+
       if (isNaN(displayDateObject.getTime())) {
         console.error("Invalid date format");
         return;
       }
-  
+
       const apiDate = displayDateObject.toISOString();
-  
-      // Create a requestData object with only non-empty fields
+
+      const originalPaymentData = paymentData || {};
+
       const requestData = {
         transaction_id: paymentId,
         booking_date: apiDate,
-        ...(transactionData.transaction_amount !== 0 && {
-          transaction_amount: transactionData.transaction_amount,
-        }),
-        ...(transactionData.creditor_name && {
-          creditor_name: transactionData.creditor_name,
-        }),
-        ...(transactionData.debtor_name && {
-          debtor_name: transactionData.debtor_name,
-        }),
-        ...(transactionData.creditor_account && {
-          creditor_account: transactionData.creditor_account,
-        }),
-        ...(transactionData.debtor_account && {
-          debtor_account: transactionData.debtor_account,
-        }),
-        route: transactionData.route || "inkomen",
-        ...(transactionData.short_user_description && {
-          short_user_description: transactionData.short_user_description,
-        }),
-        ...(transactionData.long_user_description && {
-          long_user_description: transactionData.long_user_description,
-        }),
+        transaction_amount: transactionData.transaction_amount,
+        creditor_name: transactionData.creditor_name,
+        debtor_name: transactionData.debtor_name,
+        creditor_account: transactionData.creditor_account,
+        debtor_account: transactionData.debtor_account,
+        route: transactionData.route,
+        short_user_description: transactionData.short_user_description,
+        long_user_description: transactionData.long_user_description,
         hidden: transactionData.hidden,
       };
-  
+
+      for (const key in requestData) {
+        if (
+          requestData[key] === originalPaymentData[key] ||
+          requestData[key] === ""
+        ) {
+          delete requestData[key];
+        }
+      }
+
       console.log("Data to be sent to API:", requestData);
-  
+
       if (selectedFile) {
         await uploadPaymentAttachment(paymentId, selectedFile, token);
       }
-  
+
       await editPayment(paymentId, requestData, token);
-  
+
       onPaymentEdited();
       handleResetState();
       resetState();
