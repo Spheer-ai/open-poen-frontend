@@ -32,8 +32,10 @@ const ChangePasswordForm = ({
       const token = user?.token || "";
 
       if (newPassword !== confirmPassword) {
-        setError("Passwords do not match.");
+        setError("Wachtwoorden komt niet overeen");
         return;
+      } else {
+        setError(null);
       }
 
       const formData = {
@@ -130,6 +132,11 @@ const ChangePasswordForm = ({
                   className={styles["eye-icon"]}
                 />
               </span>
+              {error && (
+                <p style={{ color: "red", display: "block", marginTop: "5px" }}>
+                  {error}
+                </p>
+              )}
             </div>
           </div>
         </form>
