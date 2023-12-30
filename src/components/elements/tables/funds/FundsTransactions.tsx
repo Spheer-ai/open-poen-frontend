@@ -78,6 +78,9 @@ const FundsTransactions: React.FC<{
   const [hasReadPermission, setHasReadPermission] = useState<
     boolean | undefined
   >(false);
+  const [hasDeletePermission, setHasDeletePermission] = useState<
+    boolean | undefined
+  >(false);
   const [pageSize] = useState(20);
 
   const fetchTransactions = async () => {
@@ -135,29 +138,6 @@ const FundsTransactions: React.FC<{
     fetchTransactions();
   }, [currentPage, refreshTrigger]);
 
-  const handleFetchPermissions = async (transactionId: number) => {
-    try {
-      const userToken = user && user.token ? user.token : authToken;
-      const userPermissions: string[] | undefined = await fetchPermissions(
-        "Payment",
-        transactionId,
-        userToken,
-      );
-
-      const hasEditPermission =
-        userPermissions && userPermissions.includes("edit");
-      setHasEditPermission(hasEditPermission);
-
-      const hasReadPermission =
-        userPermissions && userPermissions.includes("read");
-      setHasReadPermission(hasReadPermission);
-
-      setPermissionsFetchedForTransaction(transactionId);
-    } catch (error) {
-      console.error("Failed to fetch user permissions:", error);
-    }
-  };
-
   const handleEyeIconClick = async (transactionId: number) => {
     console.log("isLoadingPermissions set to true");
     setIsLoadingPermissions(true);
@@ -177,6 +157,10 @@ const FundsTransactions: React.FC<{
       const hasReadPermission =
         userPermissions && userPermissions.includes("read");
       setHasReadPermission(hasReadPermission);
+
+      const hasDeletePermission =
+        userPermissions && userPermissions.includes("delete");
+      setHasDeletePermission(hasDeletePermission);
 
       setPermissionsFetchedForTransaction(transactionId);
 
@@ -474,6 +458,7 @@ const FundsTransactions: React.FC<{
           token={authToken}
           fieldPermissions={entityPermissions}
           fields={[]}
+          hasDeletePermission={hasDeletePermission}
         />
       </div>
     </>

@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from "react";
 import styles from "../../assets/scss/layout/AddFundDesktop.module.scss";
 import LoadingDot from "../animation/LoadingDot";
-import { editPayment, uploadPaymentAttachment } from "../middleware/Api";
+import {
+  cancelPayment,
+  editPayment,
+  uploadPaymentAttachment,
+} from "../middleware/Api";
 
 export interface Transaction {
   id: number;
@@ -30,6 +34,7 @@ interface EditPaymentProps {
   token: string | null;
   fieldPermissions;
   fields: string[];
+  hasDeletePermission;
 }
 
 const EditPayment: React.FC<EditPaymentProps> = ({
@@ -41,6 +46,7 @@ const EditPayment: React.FC<EditPaymentProps> = ({
   paymentData,
   token,
   fieldPermissions,
+  hasDeletePermission,
   fields,
 }) => {
   console.log("fieldPermissions:", fieldPermissions);
@@ -198,6 +204,29 @@ const EditPayment: React.FC<EditPaymentProps> = ({
       resetState();
       setModalIsOpen(false);
       onClose();
+    }
+  };
+
+  const handleDelete = async () => {
+    try {
+      setIsLoading(true);
+      if (!token) {
+        console.error("Token is not available.");
+        return;
+      }
+
+      if (!paymentId) {
+        console.error("Payment ID is not available.");
+        return;
+      }
+
+      await cancelPayment(paymentId, token);
+      onPaymentEdited();
+      resetState();
+      setIsLoading(false);
+      handleClose();
+    } catch (error) {
+      console.error("Error deleting payment:", error);
     }
   };
 
@@ -467,6 +496,11 @@ const EditPayment: React.FC<EditPaymentProps> = ({
           </>
         ) : null}
         <div className={styles.buttonContainer}>
+          {hasDeletePermission && (
+            <button onClick={handleDelete} className={styles.deleteButton}>
+              Verwijderen
+            </button>
+          )}
           <button onClick={handleClose} className={styles.cancelButton}>
             Annuleren
           </button>

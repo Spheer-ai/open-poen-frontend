@@ -62,7 +62,9 @@ const ActivityTransactions: React.FC<{
   const [hasReadPermission, setHasReadPermission] = useState<
     boolean | undefined
   >(false);
-  const [hasDeletePermission, setHasDeletePermission] = useState(false);
+  const [hasDeletePermission, setHasDeletePermission] = useState<
+    boolean | undefined
+  >(false);
   const navigate = useNavigate();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [selectedTransactionId, setSelectedTransactionId] = useState<
@@ -144,29 +146,6 @@ const ActivityTransactions: React.FC<{
     fetchTransactions();
   }, [currentPage, refreshTrigger]);
 
-  const handleFetchPermissions = async (transactionId: number) => {
-    try {
-      const userToken = user && user.token ? user.token : authToken;
-      const userPermissions: string[] | undefined = await fetchPermissions(
-        "Payment",
-        transactionId,
-        userToken,
-      );
-
-      const hasEditPermission =
-        userPermissions && userPermissions.includes("edit");
-      setHasEditPermission(hasEditPermission);
-
-      const hasReadPermission =
-        userPermissions && userPermissions.includes("read");
-      setHasReadPermission(hasReadPermission);
-
-      setPermissionsFetchedForTransaction(transactionId);
-    } catch (error) {
-      console.error("Failed to fetch user permissions:", error);
-    }
-  };
-
   const handleEyeIconClick = async (transactionId: number) => {
     console.log("isLoadingPermissions set to true");
     setIsLoadingPermissions(true);
@@ -186,6 +165,10 @@ const ActivityTransactions: React.FC<{
       const hasReadPermission =
         userPermissions && userPermissions.includes("read");
       setHasReadPermission(hasReadPermission);
+
+      const hasDeletePermission =
+        userPermissions && userPermissions.includes("delete");
+      setHasDeletePermission(hasDeletePermission);
 
       setPermissionsFetchedForTransaction(transactionId);
 
@@ -432,7 +415,7 @@ const ActivityTransactions: React.FC<{
                   <LoadingDot delay={0.2} />
                 </div>
               ) : (
-                "Load More"
+                "Meer transacties laden"
               )}
             </button>
           </div>
@@ -453,6 +436,7 @@ const ActivityTransactions: React.FC<{
           token={authToken}
           fieldPermissions={entityPermissions}
           fields={[]}
+          hasDeletePermission={hasDeletePermission}
         />
       </div>
     </>

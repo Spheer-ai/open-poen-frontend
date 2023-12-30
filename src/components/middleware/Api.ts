@@ -1743,6 +1743,29 @@ export const editPayment = async (paymentId, paymentData, token) => {
   }
 };
 
+export const cancelPayment = async (paymentId, token) => {
+  try {
+    const response = await api.delete(`/payment/${paymentId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (response.status === 200) {
+      return response.data;
+    } else if (response.status === 422) {
+      throw new Error("Validation Error: " + JSON.stringify(response.data));
+    } else {
+      console.error("Non-200 status code:", response.status);
+      return response.data;
+    }
+  } catch (error) {
+    console.error("Error canceling payment:", error);
+    throw error;
+  }
+};
+
 export const uploadPaymentAttachment = async (paymentId, file, token) => {
   try {
     const formData = new FormData();
