@@ -153,10 +153,9 @@ textarea {
 
 .buttonContainer {
   display: flex;
-  justify-content: space-between;
   margin: 20px;
   margin-top: auto;
-  width: 50%;
+  gap: 10px;
   align-self: end;
 }
 
@@ -166,7 +165,6 @@ textarea {
   border-radius: 5px;
   padding: 15px;
   flex: 1;
-  margin-right: 10px;
   cursor: pointer;
 }
 

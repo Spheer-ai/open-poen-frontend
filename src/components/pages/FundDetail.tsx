@@ -450,6 +450,7 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
             initiativeId={initiativeId}
             authToken={user?.token || ""}
             onRefreshTrigger={handleRefreshTrigger}
+            entityPermissions={entityPermissions}
           />
         )}
         {activeTab === "activiteiten" && (

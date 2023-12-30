@@ -7,8 +7,10 @@ import { useNavigate } from "react-router-dom";
 import EditPayment from "../../../modals/EditPayment";
 import AddPayment from "../../../modals/AddPayment";
 import { usePermissions } from "../../../../contexts/PermissionContext";
+import { useFieldPermissions } from "../../../../contexts/FieldPermissionContext";
 import { useAuth } from "../../../../contexts/AuthContext";
 import LoadingDot from "../../../animation/LoadingDot";
+import LoadingCircle from "../../../animation/LoadingCircle";
 
 export interface Transaction {
   id: number;
@@ -43,6 +45,7 @@ const FundsTransactions: React.FC<{
   authToken: string;
   initiativeId: string;
   onRefreshTrigger: () => void;
+  entityPermissions;
 }> = ({ authToken, initiativeId, onRefreshTrigger }) => {
   const { user } = useAuth();
   const { fetchPermissions } = usePermissions();
@@ -55,7 +58,9 @@ const FundsTransactions: React.FC<{
     useState(false);
   const [isAddPaymentModalOpen, setIsAddPaymentModalOpen] = useState(false);
   const [isEditPaymentModalOpen, setIsEditPaymentModalOpen] = useState(false);
+  const { fetchFieldPermissions } = useFieldPermissions();
   const [currentPage, setCurrentPage] = useState(1);
+  const [entityPermissions, setEntityPermissions] = useState<string[]>([]);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMoreTransactions, setHasMoreTransactions] = useState(true);
@@ -65,11 +70,15 @@ const FundsTransactions: React.FC<{
     permissionsFetchedForTransaction,
     setPermissionsFetchedForTransaction,
   ] = useState<number | null>(null);
+  const [isLoadingPermissions, setIsLoadingPermissions] = useState(false);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [hasEditPermission, setHasEditPermission] = useState<
     boolean | undefined
   >(false);
   const [hasReadPermission, setHasReadPermission] = useState<
+    boolean | undefined
+  >(false);
+  const [hasDeletePermission, setHasDeletePermission] = useState<
     boolean | undefined
   >(false);
   const [pageSize] = useState(20);
@@ -129,7 +138,10 @@ const FundsTransactions: React.FC<{
     fetchTransactions();
   }, [currentPage, refreshTrigger]);
 
-  const handleFetchPermissions = async (transactionId: number) => {
+  const handleEyeIconClick = async (transactionId: number) => {
+    console.log("isLoadingPermissions set to true");
+    setIsLoadingPermissions(true);
+
     try {
       const userToken = user && user.token ? user.token : authToken;
       const userPermissions: string[] | undefined = await fetchPermissions(
@@ -146,21 +158,22 @@ const FundsTransactions: React.FC<{
         userPermissions && userPermissions.includes("read");
       setHasReadPermission(hasReadPermission);
 
+      const hasDeletePermission =
+        userPermissions && userPermissions.includes("delete");
+      setHasDeletePermission(hasDeletePermission);
+
       setPermissionsFetchedForTransaction(transactionId);
+
+      if (hasEditPermission) {
+        handleTransactionEditClick(transactionId);
+      } else {
+        handleTransactionDetailsClick(transactionId);
+      }
     } catch (error) {
       console.error("Failed to fetch user permissions:", error);
-    }
-  };
-
-  const handleEyeIconClick = async (transactionId: number) => {
-    if (permissionsFetchedForTransaction !== transactionId) {
-      await handleFetchPermissions(transactionId);
-    }
-
-    if (hasEditPermission) {
-      handleTransactionEditClick(transactionId);
-    } else {
-      handleTransactionDetailsClick(transactionId);
+    } finally {
+      console.log("isLoadingPermissions set to false");
+      setIsLoadingPermissions(false);
     }
   };
 
@@ -198,6 +211,29 @@ const FundsTransactions: React.FC<{
       }
     }
   };
+
+  useEffect(() => {
+    async function fetchFieldPermissionsOnMount() {
+      try {
+        if (user && user.token && selectedTransactionId) {
+          const fieldPermissions: string[] | undefined =
+            await fetchFieldPermissions(
+              "Payment",
+              selectedTransactionId,
+              user.token,
+            );
+
+          if (fieldPermissions) {
+            setEntityPermissions(fieldPermissions);
+          }
+        }
+      } catch (error) {
+        console.error("Failed to fetch field permissions:", error);
+      }
+    }
+
+    fetchFieldPermissionsOnMount();
+  }, [user, selectedTransactionId, fetchFieldPermissions]);
 
   const handleToggleFetchPaymentDetailsModal = () => {
     if (isFetchPaymentDetailsModalOpen) {
@@ -302,7 +338,11 @@ const FundsTransactions: React.FC<{
           ) : null}
           <tbody>
             {transactions.map((transaction, index) => (
-              <tr key={index}>
+              <tr
+                className={styles["transaction-row"]}
+                key={index}
+                onClick={() => handleEyeIconClick(transaction.id)}
+              >
                 <td>
                   {new Date(transaction.booking_date).toLocaleDateString(
                     "nl-NL",
@@ -366,12 +406,16 @@ const FundsTransactions: React.FC<{
                 </td>
                 <td>{transaction.transaction_id}</td>
                 <td>
-                  <img
-                    src={ViewIcon}
-                    alt="Eye Icon"
-                    onClick={() => handleEyeIconClick(transaction.id)}
-                    style={{ cursor: "pointer" }}
-                  />
+                  {isLoadingPermissions ? (
+                    <LoadingCircle />
+                  ) : (
+                    <img
+                      src={ViewIcon}
+                      alt="Eye Icon"
+                      onClick={() => handleEyeIconClick(transaction.id)}
+                      style={{ cursor: "pointer" }}
+                    />
+                  )}
                 </td>
               </tr>
             ))}
@@ -412,6 +456,9 @@ const FundsTransactions: React.FC<{
           onPaymentEdited={handlePaymentEdited}
           paymentData={editedTransaction}
           token={authToken}
+          fieldPermissions={entityPermissions}
+          fields={[]}
+          hasDeletePermission={hasDeletePermission}
         />
       </div>
     </>
