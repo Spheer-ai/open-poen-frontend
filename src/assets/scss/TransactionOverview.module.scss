@@ -196,7 +196,7 @@
         }
 
         td {
-          padding: 15px 10px;
+          padding: 10px 5px;
           font-size: 14px;
           text-align: left;
           border-bottom: 1px solid #eaeaea;
@@ -397,4 +397,12 @@
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.transaction-row {
+  cursor: pointer;
+}
+
+.transaction-row:hover {
+  background-color: rgba(0, 0, 0, 0.08) !important;
 }

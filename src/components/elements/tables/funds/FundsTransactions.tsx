@@ -10,6 +10,7 @@ import { usePermissions } from "../../../../contexts/PermissionContext";
 import { useFieldPermissions } from "../../../../contexts/FieldPermissionContext";
 import { useAuth } from "../../../../contexts/AuthContext";
 import LoadingDot from "../../../animation/LoadingDot";
+import LoadingCircle from "../../../animation/LoadingCircle";
 
 export interface Transaction {
   id: number;
@@ -69,6 +70,7 @@ const FundsTransactions: React.FC<{
     permissionsFetchedForTransaction,
     setPermissionsFetchedForTransaction,
   ] = useState<number | null>(null);
+  const [isLoadingPermissions, setIsLoadingPermissions] = useState(false);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [hasEditPermission, setHasEditPermission] = useState<
     boolean | undefined
@@ -157,8 +159,13 @@ const FundsTransactions: React.FC<{
   };
 
   const handleEyeIconClick = async (transactionId: number) => {
+    console.log("isLoadingPermissions set to trnjgjhjhgjhgue");
     if (permissionsFetchedForTransaction !== transactionId) {
+      setIsLoadingPermissions(true);
+      console.log("isLoadingPermissions set to true");
       await handleFetchPermissions(transactionId);
+      setIsLoadingPermissions(false);
+      console.log("isLoadingPermissions set to false");
     }
 
     if (hasEditPermission) {
@@ -329,7 +336,11 @@ const FundsTransactions: React.FC<{
           ) : null}
           <tbody>
             {transactions.map((transaction, index) => (
-              <tr key={index}>
+              <tr
+                className={styles["transaction-row"]}
+                key={index}
+                onClick={() => handleEyeIconClick(transaction.id)}
+              >
                 <td>
                   {new Date(transaction.booking_date).toLocaleDateString(
                     "nl-NL",
@@ -393,12 +404,16 @@ const FundsTransactions: React.FC<{
                 </td>
                 <td>{transaction.transaction_id}</td>
                 <td>
-                  <img
-                    src={ViewIcon}
-                    alt="Eye Icon"
-                    onClick={() => handleEyeIconClick(transaction.id)}
-                    style={{ cursor: "pointer" }}
-                  />
+                  {isLoadingPermissions ? (
+                    <LoadingCircle />
+                  ) : (
+                    <img
+                      src={ViewIcon}
+                      alt="Eye Icon"
+                      onClick={() => handleEyeIconClick(transaction.id)}
+                      style={{ cursor: "pointer" }}
+                    />
+                  )}
                 </td>
               </tr>
             ))}

@@ -9,6 +9,8 @@ import AddPayment from "../../../modals/AddPayment";
 import { usePermissions } from "../../../../contexts/PermissionContext";
 import { useAuth } from "../../../../contexts/AuthContext";
 import LoadingDot from "../../../animation/LoadingDot";
+import LoadingCircle from "../../../animation/LoadingCircle";
+import { useFieldPermissions } from "../../../../contexts/FieldPermissionContext";
 
 export interface Transaction {
   id: number;
@@ -44,6 +46,7 @@ const ActivityTransactions: React.FC<{
   activityId: string;
   activity_name: string;
   onRefreshTrigger: () => void;
+  entityPermissions;
 }> = ({
   authToken,
   initiativeId,
@@ -67,6 +70,9 @@ const ActivityTransactions: React.FC<{
   >(null);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [isBlockingInteraction, setIsBlockingInteraction] = useState(false);
+  const [entityPermissions, setEntityPermissions] = useState<string[]>([]);
+  const [isLoadingPermissions, setIsLoadingPermissions] = useState(false);
+  const { fetchFieldPermissions } = useFieldPermissions();
   const [
     permissionsFetchedForTransaction,
     setPermissionsFetchedForTransaction,
@@ -162,8 +168,13 @@ const ActivityTransactions: React.FC<{
   };
 
   const handleEyeIconClick = async (transactionId: number) => {
+    console.log("isLoadingPermissions set to trnjgjhjhgjhgue");
     if (permissionsFetchedForTransaction !== transactionId) {
+      setIsLoadingPermissions(true);
+      console.log("isLoadingPermissions set to true");
       await handleFetchPermissions(transactionId);
+      setIsLoadingPermissions(false);
+      console.log("isLoadingPermissions set to false");
     }
 
     if (hasEditPermission) {
@@ -172,6 +183,7 @@ const ActivityTransactions: React.FC<{
       handleTransactionDetailsClick(transactionId);
     }
   };
+
   const handleTransactionDetailsClick = (transactionId: number) => {
     setSelectedTransactionId(transactionId);
 
@@ -206,6 +218,29 @@ const ActivityTransactions: React.FC<{
       }
     }
   };
+
+  useEffect(() => {
+    async function fetchFieldPermissionsOnMount() {
+      try {
+        if (user && user.token && selectedTransactionId) {
+          const fieldPermissions: string[] | undefined =
+            await fetchFieldPermissions(
+              "Payment",
+              selectedTransactionId,
+              user.token,
+            );
+
+          if (fieldPermissions) {
+            setEntityPermissions(fieldPermissions);
+          }
+        }
+      } catch (error) {
+        console.error("Failed to fetch field permissions:", error);
+      }
+    }
+
+    fetchFieldPermissionsOnMount();
+  }, [user, selectedTransactionId, fetchFieldPermissions]);
 
   const handleToggleFetchPaymentDetailsModal = () => {
     if (isFetchPaymentDetailsModalOpen) {
@@ -310,7 +345,11 @@ const ActivityTransactions: React.FC<{
           ) : null}
           <tbody>
             {transactions.map((transaction, index) => (
-              <tr key={index}>
+              <tr
+                className={styles["transaction-row"]}
+                key={index}
+                onClick={() => handleEyeIconClick(transaction.id)}
+              >
                 <td>
                   {new Date(transaction.booking_date).toLocaleDateString(
                     "nl-NL",
@@ -344,12 +383,16 @@ const ActivityTransactions: React.FC<{
                   )}
                 </td>
                 <td>
-                  <img
-                    src={ViewIcon}
-                    alt="Eye Icon"
-                    onClick={() => handleEyeIconClick(transaction.id)}
-                    style={{ cursor: "pointer" }}
-                  />
+                  {isLoadingPermissions ? (
+                    <LoadingCircle />
+                  ) : (
+                    <img
+                      src={ViewIcon}
+                      alt="Eye Icon"
+                      onClick={() => handleEyeIconClick(transaction.id)}
+                      style={{ cursor: "pointer" }}
+                    />
+                  )}
                 </td>
               </tr>
             ))}
@@ -390,6 +433,8 @@ const ActivityTransactions: React.FC<{
           onPaymentEdited={handlePaymentEdited}
           paymentData={editedTransaction}
           token={authToken}
+          fieldPermissions={entityPermissions}
+          fields={[]}
         />
       </div>
     </>
