@@ -168,19 +168,37 @@ const ActivityTransactions: React.FC<{
   };
 
   const handleEyeIconClick = async (transactionId: number) => {
-    console.log("isLoadingPermissions set to trnjgjhjhgjhgue");
-    if (permissionsFetchedForTransaction !== transactionId) {
-      setIsLoadingPermissions(true);
-      console.log("isLoadingPermissions set to true");
-      await handleFetchPermissions(transactionId);
-      setIsLoadingPermissions(false);
-      console.log("isLoadingPermissions set to false");
-    }
+    console.log("isLoadingPermissions set to true");
+    setIsLoadingPermissions(true);
 
-    if (hasEditPermission) {
-      handleTransactionEditClick(transactionId);
-    } else {
-      handleTransactionDetailsClick(transactionId);
+    try {
+      const userToken = user && user.token ? user.token : authToken;
+      const userPermissions: string[] | undefined = await fetchPermissions(
+        "Payment",
+        transactionId,
+        userToken,
+      );
+
+      const hasEditPermission =
+        userPermissions && userPermissions.includes("edit");
+      setHasEditPermission(hasEditPermission);
+
+      const hasReadPermission =
+        userPermissions && userPermissions.includes("read");
+      setHasReadPermission(hasReadPermission);
+
+      setPermissionsFetchedForTransaction(transactionId);
+
+      if (hasEditPermission) {
+        handleTransactionEditClick(transactionId);
+      } else {
+        handleTransactionDetailsClick(transactionId);
+      }
+    } catch (error) {
+      console.error("Failed to fetch user permissions:", error);
+    } finally {
+      console.log("isLoadingPermissions set to false");
+      setIsLoadingPermissions(false);
     }
   };
 
