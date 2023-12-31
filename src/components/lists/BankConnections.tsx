@@ -178,8 +178,14 @@ const BankConnections = () => {
                 <ul>
                   {Array.isArray(ownedBankConnections) &&
                   ownedBankConnections.length > 0 ? (
-                    ownedBankConnections.map((connection) => (
-                      <li key={connection.id} className={styles["bank-item"]}>
+                    ownedBankConnections.map((connection, index) => (
+                      <li
+                        key={`${connection.id}-${index}`}
+                        className={`${styles["bank-item"]} ${styles["row-fade-in"]}`}
+                        style={{
+                          animationDelay: `${index * 0.1}s`,
+                        }}
+                      >
                         <div className={styles["bank-details"]}>
                           {connection.institution_logo !== null ? (
                             <img

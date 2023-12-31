@@ -218,7 +218,13 @@ const TransactionOverview = () => {
                     linkingStatus[transaction.id]?.activityId !== null;
 
                   return (
-                    <tr key={`${transaction.id}-${index}`}>
+                    <tr
+                      className={`${styles["row-fade-in"]}`}
+                      key={`${transaction.id}-${index}`}
+                      style={{
+                        animationDelay: `${index * 0.1}s`,
+                      }}
+                    >
                       <td>{formatDate(transaction.booking_date)}</td>
                       <td>
                         <LinkInitiativeToPayment
