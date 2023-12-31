@@ -29,6 +29,45 @@ const TransactionOverview = () => {
     const year = date.getFullYear().toString();
     return `${day}-${month}-${year}`;
   };
+  useEffect(() => {
+    fetchInitialTransactions();
+  }, []);
+
+  const fetchInitialTransactions = async () => {
+    if (user && user.userId && user.token) {
+      setIsLoading(true);
+      try {
+        const data = await fetchPayments(
+          user.userId,
+          user.token,
+          0,
+          20,
+          searchQuery,
+        );
+        const updatedLinkingStatus = { ...linkingStatus };
+
+        data.payments.forEach((transaction) => {
+          updatedLinkingStatus[transaction.id] = {
+            initiativeId: transaction.initiative_id || null,
+            activityId: transaction.activity_id || null,
+          };
+        });
+
+        setLinkingStatus(updatedLinkingStatus);
+
+        setTotalTransactionsCount(data.totalCount || 0);
+
+        setAllTransactions(data.payments);
+        setIsLoading(false);
+        setIsLoadingMore(false);
+        setOffset(20);
+      } catch (error) {
+        console.error("Error fetching payments:", error);
+        setIsLoading(false);
+        setIsLoadingMore(false);
+      }
+    }
+  };
 
   useEffect(() => {
     console.log("useEffect 1 - Transactions Updated:", transactions);
