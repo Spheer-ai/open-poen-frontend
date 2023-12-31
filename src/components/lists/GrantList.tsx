@@ -5,6 +5,7 @@ import { Grant } from "../../types/GranListType";
 import { usePermissions } from "../../contexts/PermissionContext";
 import { useAuth } from "../../contexts/AuthContext";
 import styles from "../../assets/scss/RegulationDetail.module.scss";
+import { fetchGrantDetails } from "../middleware/Api";
 
 interface GrantListProps {
   grants: Grant[];
@@ -15,6 +16,8 @@ interface GrantListProps {
   onAddOfficerClick: (grantId: number) => void;
   onAddFundClick: (grantId: number) => void;
   grantPermissions: Record<number, string[]>;
+  regulationId?: number;
+  funderId?: number;
 }
 
 const GrantList: React.FC<GrantListProps> = ({
@@ -25,6 +28,8 @@ const GrantList: React.FC<GrantListProps> = ({
   onDeleteGrantClick,
   onAddOfficerClick,
   onAddFundClick,
+  regulationId,
+  funderId,
 }) => {
   const { user } = useAuth();
   const { fetchPermissions } = usePermissions();
@@ -32,33 +37,37 @@ const GrantList: React.FC<GrantListProps> = ({
   const [grantPermissionsMap, setGrantPermissionsMap] = useState<
     Record<number, string[]>
   >({});
+  const [initiativeCounts, setInitiativeCounts] = useState<
+    Record<number, number>
+  >({});
 
   useEffect(() => {
-    async function fetchGrantPermissions() {
+    async function fetchInitiativeCounts() {
       try {
-        const grantIds = grants.map((grant) => grant.id);
-        const grantPermissionsMap: Record<number, string[]> = {};
+        const counts = await Promise.all(
+          grants.map(async (grant) => {
+            const response = await fetchGrantDetails(
+              user?.token || "",
+              funderId,
+              regulationId,
+              grant.id,
+            );
+            return response.initiatives.length;
+          }),
+        );
 
-        for (const grantId of grantIds) {
-          const permissions: string[] | undefined = await fetchPermissions(
-            "Grant",
-            grantId,
-            user?.token || "",
-          );
-          grantPermissionsMap[grantId] = permissions || [];
-        }
+        const countMap: Record<number, number> = {};
+        grants.forEach((grant, index) => {
+          countMap[grant.id] = counts[index];
+        });
 
-        setPermissionsFetched(true);
-        setGrantPermissionsMap((prev) => ({
-          ...prev,
-          ...grantPermissionsMap,
-        }));
+        setInitiativeCounts(countMap);
       } catch (error) {
-        console.error("Failed to fetch grant permissions:", error);
+        console.error("Failed to fetch initiative counts:", error);
       }
     }
 
-    fetchGrantPermissions();
+    fetchInitiativeCounts();
   }, [grants, user?.token]);
 
   return (
@@ -111,7 +120,10 @@ const GrantList: React.FC<GrantListProps> = ({
                 className={styles["add-button"]}
                 onClick={() => onAddFundClick(grant.id)}
               >
-                Initiatief
+                Initiatief{" "}
+                <span className={styles["initiative-count"]}>
+                  ({initiativeCounts[grant.id] || 0})
+                </span>
               </button>
             </div>
           </li>

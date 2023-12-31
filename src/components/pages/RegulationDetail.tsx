@@ -397,6 +397,8 @@ const RegulationDetail: React.FC<RegulationDetailProps> = ({
           setSelectedGrantId(grantId);
           handleToggleAddFundModal();
         }}
+        funderId={sponsorId ? parseInt(sponsorId) : 0}
+        regulationId={regulationId ? parseInt(regulationId) : 0}
       />
 
       <h3 className={styles["section-title"]}>Subsidiemedewerkers:</h3>
