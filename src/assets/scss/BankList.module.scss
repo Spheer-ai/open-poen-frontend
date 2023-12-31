@@ -12,6 +12,11 @@
   margin-top: 10px;
   max-width: 100%;
   overflow: scroll;
+  width: 100%;
+  justify-content: center;
+  min-height: 300px;
+  display: flex;
+  flex-direction: column;
 
   ul {
     padding-left: 0px;
@@ -21,6 +26,12 @@
       color: #696969;
     }
   }
+}
+
+.loading-container {
+  display: flex;
+  width: 100%;
+  justify-content: center;
 }
 
 .title {
