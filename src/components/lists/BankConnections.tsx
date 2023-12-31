@@ -7,6 +7,7 @@ import { fetchBankConnections } from "../middleware/Api";
 import { format, differenceInDays } from "date-fns";
 import InviteBankUsersModal from "../modals/InviteBankUsersModal";
 import DeleteBankAccountModal from "../modals/DeleteBankAccountModal";
+import LoadingDot from "../animation/LoadingDot";
 
 type BankConnection = {
   id: number;
@@ -96,6 +97,7 @@ const BankConnections = () => {
 
     fetchData();
   }, [user, refreshTrigger]);
+
   useEffect(() => {
     if (location.pathname === "/transactions/bankconnections/add-bank") {
       setIsAddBankConnectionModalOpen(true);
@@ -160,7 +162,13 @@ const BankConnections = () => {
       <div className={styles["scrollable-container"]}>
         <div className={styles["bank-connections-container"]}>
           {isLoading ? (
-            <p>Loading...</p>
+            <div className={styles["loading-container"]}>
+              <LoadingDot delay={0} />
+              <LoadingDot delay={0.1} />
+              <LoadingDot delay={0.1} />
+              <LoadingDot delay={0.2} />
+              <LoadingDot delay={0.2} />
+            </div>
           ) : (
             <>
               <section>
