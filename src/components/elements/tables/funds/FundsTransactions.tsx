@@ -102,7 +102,7 @@ const FundsTransactions: React.FC<{
     try {
       setLoadingMore(true);
 
-      const queryParams = {
+      let queryParams = {
         start_date: startDate || undefined,
         end_date: endDate || undefined,
         min_amount: minAmount || undefined,
@@ -110,15 +110,25 @@ const FundsTransactions: React.FC<{
         route: route || undefined,
       };
 
-      // Merge filter criteria separately
-      const mergedQueryParams = { ...queryParams, ...filterCriteria };
+      if (
+        filterCriteria.startDate ||
+        filterCriteria.endDate ||
+        filterCriteria.minAmount ||
+        filterCriteria.maxAmount ||
+        filterCriteria.route
+      ) {
+        queryParams = {
+          ...queryParams,
+          ...filterCriteria,
+        };
+      }
 
       const response = await getPaymentsByInitiative(
         authToken,
         initiativeId,
         currentPage,
         pageSize,
-        mergedQueryParams, // Use mergedQueryParams here
+        queryParams,
       );
 
       if (response) {
@@ -363,7 +373,6 @@ const FundsTransactions: React.FC<{
   };
 
   const handleFilterApplied = (filters) => {
-    setFilterCriteria(filters);
     setStartDate(filters.startDate);
     setEndDate(filters.endDate);
     setMinAmount(filters.minAmount);
