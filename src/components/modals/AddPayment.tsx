@@ -165,7 +165,7 @@ const AddPayment: React.FC<AddPaymentProps> = ({
         </div>
         <div className={styles.buttonContainer}>
           <button onClick={handleClose} className={styles.cancelButton}>
-            Cancel
+            Annuleren
           </button>
           <button onClick={handleSave} className={styles.saveButton}>
             Opslaan

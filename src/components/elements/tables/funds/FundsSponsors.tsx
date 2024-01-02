@@ -113,7 +113,7 @@ const FundsSponsors: React.FC<FundsSponsorsProps> = ({
           {formattedBudget && <p>{formattedBudget}</p>}
         </div>
         <div className={styles["details-item"]}>
-        <label>Verantwoord:</label>
+          <label>Verantwoord:</label>
           {grantDetails && grantDetails.verantwoordelijk ? (
             <p>{grantDetails.verantwoordelijk}</p>
           ) : (
@@ -121,7 +121,7 @@ const FundsSponsors: React.FC<FundsSponsorsProps> = ({
           )}
         </div>
         <div className={styles["details-item"]}>
-        <label>Verantwoording:</label>
+          <label>Verantwoording:</label>
           {grantDetails && grantDetails.verantwoordelijkheid ? (
             <p>{grantDetails.verantwoordelijkheid}</p>
           ) : (
