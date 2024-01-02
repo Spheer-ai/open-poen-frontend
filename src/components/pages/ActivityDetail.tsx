@@ -458,6 +458,7 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
             activityId={activityId}
             onRefreshTrigger={handleRefreshTrigger}
             activity_name={""}
+            entityPermissions={entityPermissions}
           />
         )}
         {activeTab === "details" && (
@@ -474,6 +475,7 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
             grantName={fundDetails?.grant?.name}
             grantReference={fundDetails?.grant?.reference}
             grantBudget={fundDetails?.grant?.budget}
+            token={user?.token || ""}
           />
         )}
         {activeTab === "media" && (

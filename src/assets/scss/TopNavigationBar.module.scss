@@ -141,15 +141,8 @@ h2 {
 
 .subtitle {
   font-size: 14px;
-  color: #265ed4;
   text-align: left;
-  text-decoration: underline;
-  font-weight: bold;
   margin-top: -10px;
   cursor: pointer;
   transition: text-decoration 0.3s ease-in-out;
-}
-
-.subtitle:hover {
-  text-decoration: none;
 }

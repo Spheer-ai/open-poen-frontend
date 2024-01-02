@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useAuth } from "../../contexts/AuthContext";
 import { fetchPayments } from "../middleware/Api";
 import styles from "../../assets/scss/TransactionOverview.module.scss";
@@ -6,6 +6,7 @@ import TransactionSearchInput from "../elements/search/transactions/TransactionS
 import LinkInitiativeToPayment from "../elements/dropdown-menu/initiatives/LinkInitiativeToPayment";
 import LinkActivityToPayment from "../elements/dropdown-menu/activities/LinkActivityToPayment";
 import LoadingDot from "../animation/LoadingDot";
+import TransactionFilters from "../elements/dropdown-menu/transactions/TransactionFilters";
 
 const TransactionOverview = () => {
   const { user } = useAuth();
@@ -14,14 +15,17 @@ const TransactionOverview = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [offset, setOffset] = useState(0);
-  const [limit, setLimit] = useState(3);
+  const [limit, setLimit] = useState(20);
   const [totalTransactionsCount, setTotalTransactionsCount] = useState(0);
   const [isLoadingMore, setIsLoadingMore] = useState<boolean>(false);
   const [allTransactions, setAllTransactions] = useState<any[]>([]);
   const [linkingStatus, setLinkingStatus] = useState<
     Record<number, { initiativeId: number | null; activityId: number | null }>
   >({});
-
+  const [ibanFilter, setIbanFilter] = useState("");
+  const [initiativeFilter, setInitiativeFilter] = useState("");
+  const [activityFilter, setActivityFilter] = useState("");
+  const filteredTransactionsRef = useRef<any[]>([]);
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     const day = date.getDate().toString().padStart(2, "0");
@@ -29,9 +33,58 @@ const TransactionOverview = () => {
     const year = date.getFullYear().toString();
     return `${day}-${month}-${year}`;
   };
+
+  const handleFilterChange = ({ iban, initiative, activity }) => {
+    setIbanFilter(iban);
+    setInitiativeFilter(initiative);
+    setActivityFilter(activity);
+  };
+
   useEffect(() => {
     fetchInitialTransactions();
-  }, []);
+  }, [searchQuery]);
+
+  useEffect(() => {
+    const unifiedQuery =
+      `${searchQuery} ${ibanFilter} ${initiativeFilter} ${activityFilter}`.trim();
+
+    const filtered = allTransactions.filter((transaction) => {
+      const ibanMatch = ibanFilter === "" || transaction.iban === ibanFilter;
+      const initiativeMatch =
+        initiativeFilter === "" ||
+        transaction.initiative_name === initiativeFilter;
+      const activityMatch =
+        activityFilter === "" || transaction.activity_name === activityFilter;
+
+      const unifiedQueryMatch =
+        unifiedQuery === "" ||
+        (transaction.initiative_name &&
+          transaction.initiative_name
+            .toLowerCase()
+            .includes(unifiedQuery.toLowerCase())) ||
+        (transaction.activity_name &&
+          transaction.activity_name
+            .toLowerCase()
+            .includes(unifiedQuery.toLowerCase())) ||
+        (transaction.iban &&
+          transaction.iban.toLowerCase().includes(unifiedQuery.toLowerCase()));
+
+      return (
+        (ibanMatch || initiativeMatch || activityMatch) && unifiedQueryMatch
+      );
+    });
+
+    filteredTransactionsRef.current = filtered;
+
+    setFilteredTransactions(filtered.slice(0, limit));
+  }, [
+    searchQuery,
+    ibanFilter,
+    initiativeFilter,
+    activityFilter,
+    allTransactions,
+    limit,
+  ]);
 
   const fetchInitialTransactions = async () => {
     if (user && user.userId && user.token) {
@@ -62,7 +115,6 @@ const TransactionOverview = () => {
         setIsLoadingMore(false);
         setOffset(20);
       } catch (error) {
-        console.error("Error fetching payments:", error);
         setIsLoading(false);
         setIsLoadingMore(false);
       }
@@ -70,15 +122,6 @@ const TransactionOverview = () => {
   };
 
   useEffect(() => {
-    console.log("useEffect 1 - Transactions Updated:", transactions);
-    setTransactions(allTransactions.slice(0, limit));
-  }, [allTransactions, linkingStatus, searchQuery, limit]);
-
-  useEffect(() => {
-    console.log(
-      "useEffect 2 - Filtered Transactions Updated:",
-      filteredTransactions,
-    );
     const filtered = allTransactions.filter((transaction) => {
       const initiativeNameMatch =
         transaction.initiative_name &&
@@ -139,7 +182,6 @@ const TransactionOverview = () => {
         setIsLoadingMore(false);
         setOffset(newOffset);
       } catch (error) {
-        console.error("Error fetching payments:", error);
         setIsLoading(false);
         setIsLoadingMore(false);
       }
@@ -148,14 +190,12 @@ const TransactionOverview = () => {
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
-    console.log("Search Query:", query);
   };
 
   const handleInitiativeLinked = (
     transactionId: number,
     initiativeId: number | null,
   ) => {
-    console.log("Initiative Linked - Transaction ID:", transactionId);
     setLinkingStatus((prevStatus) => {
       const newStatus = {
         ...prevStatus,
@@ -164,8 +204,16 @@ const TransactionOverview = () => {
           activityId: prevStatus[transactionId]?.activityId || null,
         },
       };
+
       return newStatus;
     });
+    setTransactions((prevTransactions) =>
+      prevTransactions.map((transaction) =>
+        transaction.id === transactionId
+          ? { ...transaction, initiative_id: initiativeId }
+          : transaction,
+      ),
+    );
   };
 
   const handleActivityLinked = (
@@ -173,20 +221,35 @@ const TransactionOverview = () => {
     activityId: number | null,
   ) => {
     setLinkingStatus((prevStatus) => {
-      const newStatus = {
+      const existingStatus = prevStatus[transactionId] || {
+        initiativeId: null,
+        activityId: null,
+      };
+      return {
         ...prevStatus,
         [transactionId]: {
-          initiativeId: prevStatus[transactionId]?.initiativeId || null,
-          activityId,
+          initiativeId: existingStatus.initiativeId,
+          activityId: activityId,
         },
       };
-      return newStatus;
     });
   };
 
   return (
     <div className={styles.transactionOverview}>
-      <TransactionSearchInput onSearch={handleSearch} />
+      <div className={styles.transactionOptions}>
+        <TransactionSearchInput onSearch={handleSearch} />
+        <TransactionFilters
+          transactions={allTransactions}
+          onFilter={handleFilterChange}
+          ibanFilter={ibanFilter}
+          setIbanFilter={setIbanFilter}
+          initiativeFilter={initiativeFilter}
+          setInitiativeFilter={setInitiativeFilter}
+          activityFilter={activityFilter}
+          setActivityFilter={setActivityFilter}
+        />
+      </div>
       <div className={styles["transaction-table-container"]}>
         {isLoading ? (
           <div className={styles["loading-container"]}>
@@ -218,7 +281,13 @@ const TransactionOverview = () => {
                     linkingStatus[transaction.id]?.activityId !== null;
 
                   return (
-                    <tr key={`${transaction.id}-${index}`}>
+                    <tr
+                      className={`${styles["row-fade-in"]}`}
+                      key={`${transaction.id}-${index}`}
+                      style={{
+                        animationDelay: `${index * 0.1}s`,
+                      }}
+                    >
                       <td>{formatDate(transaction.booking_date)}</td>
                       <td>
                         <LinkInitiativeToPayment

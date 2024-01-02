@@ -55,6 +55,8 @@ const LinkActivityToPayment: React.FC<LinkActivityToPaymentProps> = ({
     name: "Verbreek verbinding",
   };
 
+  useEffect(() => {}, [linkingStatus]);
+
   useEffect(() => {
     if (isInitiativeLinked && initiativeId !== null) {
     }
@@ -70,23 +72,25 @@ const LinkActivityToPayment: React.FC<LinkActivityToPaymentProps> = ({
       const getLinkableActivitiesForPayment = async () => {
         try {
           setIsLoading(true);
+          const selectedInitiativeId =
+            linkingStatus[paymentId]?.initiativeId || initiativeId;
+
           const activities: Activity[] = await fetchLinkableActivities(
             token,
-            initiativeId,
+            selectedInitiativeId,
           );
 
           setLinkableActivities([verbreekVerbindingOption, ...activities]);
 
           setIsLoading(false);
         } catch (error) {
-          console.error("Error fetching linkable activities:", error);
           setIsLoading(false);
         }
       };
 
       getLinkableActivitiesForPayment();
     }
-  }, [token, paymentId, initiativeId, isSelectClicked]);
+  }, [token, paymentId, initiativeId, isSelectClicked, linkingStatus]);
 
   useEffect(() => {
     if (selectedActivity !== null) {
@@ -96,10 +100,12 @@ const LinkActivityToPayment: React.FC<LinkActivityToPaymentProps> = ({
 
   const handleLinkActivity = async () => {
     try {
-      console.log("handleLinkActivity: Linking activity to payment...");
       setIsLoading(true);
 
       let valueToPass: number | null = null;
+
+      const selectedInitiativeId =
+        linkingStatus[paymentId]?.initiativeId || initiativeId;
 
       if (
         selectedActivity !== null &&
@@ -110,13 +116,17 @@ const LinkActivityToPayment: React.FC<LinkActivityToPaymentProps> = ({
         }
       }
 
-      await linkActivityToPayment(token, paymentId, initiativeId, valueToPass);
+      await linkActivityToPayment(
+        token,
+        paymentId,
+        selectedInitiativeId,
+        valueToPass,
+      );
 
       onActivityLinked(paymentId, valueToPass);
       setIsLoading(false);
       setIsLinking(false);
     } catch (error) {
-      console.error("Error linking activity to payment:", error);
       setIsLoading(false);
       setIsLinking(false);
     }

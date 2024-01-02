@@ -14,11 +14,13 @@
     margin-top: 0;
   }
 
-  .transaction-search-container {
-    display: block;
+  .transactionOptions {
+    display: flex;
     padding: 20px 0px;
     border-bottom: 1px solid #eaeaea;
     max-width: calc(100% - 20px);
+    align-items: center;
+    gap: 20px;
   }
 
   h3 {
@@ -423,4 +425,11 @@
   .saveButton {
     flex: unset;
   }
+}
+
+.filterButtons {
+  display: flex;
+  gap: 20px;
+  z-index: 10000;
+  position: relative;
 }
