@@ -14,11 +14,13 @@
     margin-top: 0;
   }
 
-  .transaction-search-container {
-    display: block;
+  .transactionOptions {
+    display: flex;
     padding: 20px 0px;
     border-bottom: 1px solid #eaeaea;
     max-width: calc(100% - 20px);
+    align-items: center;
+    gap: 20px;
   }
 
   h3 {
@@ -425,20 +427,9 @@
   }
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.row-fade-in {
-  animation: fadeIn 0.5s ease-in-out;
-  opacity: 0;
-  transform: translateY(20px);
-  animation-fill-mode: forwards;
+.filterButtons {
+  display: flex;
+  gap: 20px;
+  z-index: 10000;
+  position: relative;
 }
