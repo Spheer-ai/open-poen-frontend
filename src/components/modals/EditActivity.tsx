@@ -3,11 +3,7 @@ import deleteIcon from "/delete-icon.svg";
 import styles from "../../assets/scss/layout/AddFundDesktop.module.scss";
 import SearchFundUsers from "../elements/search/funds/SearchFundsUser";
 import ActivityImageUploader from "../elements/uploadder/ActivityImageUploader";
-import {
-  editActivity,
-  updateActivityOwners,
-  uploadActivityPicture,
-} from "../middleware/Api";
+import { editActivity, uploadActivityPicture } from "../middleware/Api";
 
 interface ActivityOwner {
   id: number;
@@ -30,7 +26,6 @@ interface EditActivityProps {
   activityId: string;
   authToken: string;
   activityData: ActivityDetails | null;
-  activityOwners: ActivityOwner[];
   fieldPermissions;
   fields: string[];
 }
@@ -44,7 +39,6 @@ const EditActivity: React.FC<EditActivityProps> = ({
   activityId,
   authToken,
   activityData,
-  activityOwners,
   fieldPermissions,
 }) => {
   console.log("fieldPermissions:", fieldPermissions);
@@ -57,19 +51,10 @@ const EditActivity: React.FC<EditActivityProps> = ({
     budget: 0,
   });
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
-  const [selectedUserIds, setSelectedUserIds] = useState<number[]>([]);
-  const [userEmailMapping, setUserEmailMapping] = useState<{
-    [key: number]: string;
-  }>({});
-  const [selectedOwners, setSelectedOwners] = useState<ActivityOwner[]>([]);
-  const [selectedUsers, setSelectedUsers] = useState<ActivityOwner[]>([]);
   const [charCount, setCharCount] = useState(0);
   const [nameError, setNameError] = useState("");
   const [isSaveClicked, setIsSaveClicked] = useState(false);
-
-  useEffect(() => {
-    setSelectedOwners(activityOwners);
-  }, [activityOwners]);
+  const [descriptionError, setDescriptionError] = useState("");
 
   useEffect(() => {
     if (isOpen) {
@@ -84,6 +69,10 @@ const EditActivity: React.FC<EditActivityProps> = ({
   useEffect(() => {
     if (isOpen && activityData) {
       setFormData(activityData);
+
+      setCharCount(
+        activityData.description ? activityData.description.length : 0,
+      );
     } else {
       setFormData({
         name: "",
@@ -131,12 +120,6 @@ const EditActivity: React.FC<EditActivityProps> = ({
         updatedActivityData,
       );
 
-      await linkOwnersToActivity(
-        initiativeId,
-        activityId,
-        selectedUserIds,
-        authToken,
-      );
       setApiError("");
       handleClose();
       onActivityEdited();
@@ -168,36 +151,6 @@ const EditActivity: React.FC<EditActivityProps> = ({
 
   const handleImageChange = (file: File) => {
     setSelectedImage(file);
-  };
-
-  const handleSearchResult = (user) => {
-    if (!selectedUsers.some((selectedUser) => selectedUser.id === user.id)) {
-      setSelectedUsers((prevSelectedUsers) => [...prevSelectedUsers, user]);
-    }
-  };
-
-  const handleDeleteOwner = (ownerId: number) => {
-    setSelectedUsers((prevSelectedUsers) =>
-      prevSelectedUsers.filter((user) => user.id !== ownerId),
-    );
-  };
-
-  const linkOwnersToActivity = async (
-    initiativeId,
-    activityId,
-    selectedUserIds,
-    authToken,
-  ) => {
-    try {
-      await updateActivityOwners(
-        initiativeId,
-        activityId,
-        selectedUserIds,
-        authToken,
-      );
-    } catch (error) {
-      console.error("Error linking owners to activity:", error);
-    }
   };
 
   return (
@@ -248,18 +201,40 @@ const EditActivity: React.FC<EditActivityProps> = ({
               )}
             </>
           )}
+        </div>
+        <div className={styles.formGroup}>
           {fieldPermissions.fields.includes("description") && (
             <>
               <label className={styles.label}>Beschrijving:</label>
               <textarea
                 placeholder="Beschrijving"
-                value={formData?.description}
-                onChange={(e) =>
-                  setFormData({ ...formData, description: e.target.value })
-                }
+                value={formData?.description || ""}
+                onChange={(e) => {
+                  const newDescription = e.target.value;
+
+                  if (newDescription.length > 512) {
+                    setDescriptionError(
+                      "Beschrijving mag niet meer dan 512 karakters bevatten",
+                    );
+                  } else {
+                    setDescriptionError("");
+                  }
+
+                  setFormData({ ...formData, description: newDescription });
+                  setCharCount(newDescription.length);
+                }}
+                style={{ borderColor: descriptionError ? "red" : "" }}
               />
+              {descriptionError && (
+                <p style={{ color: "red", display: "block", marginTop: "5px" }}>
+                  {descriptionError}
+                </p>
+              )}
+              <div className={styles["chart-count"]}>{charCount} / 512</div>
             </>
           )}
+        </div>
+        <div className={styles.formGroup}>
           {fieldPermissions.fields.includes("hidden") && (
             <div className={styles.roleOptions}>
               <label className={styles.roleLabel}>
@@ -272,9 +247,11 @@ const EditActivity: React.FC<EditActivityProps> = ({
               </label>
             </div>
           )}
+        </div>
+        <div className={styles.formGroup}>
           {fieldPermissions.fields.includes("budget") && (
-            <>
-              <label className={styles.labelField}>Begroting:</label>
+            <div className={styles.budgetContainer}>
+              <label className={styles.labelField}> Begroting: </label>
               <input
                 type="number"
                 placeholder="Vul het begrootte bedrag in"
@@ -288,39 +265,16 @@ const EditActivity: React.FC<EditActivityProps> = ({
                   })
                 }
               />
-            </>
+            </div>
           )}
         </div>
-        <div className={styles.formGroup}>
-          <SearchFundUsers
-            authToken={authToken}
-            onUserClick={handleSearchResult}
-          />
-          <div className={styles.selectedUsers}>
-            <h4>Activitieitnemers</h4>
-            <ul>
-              {selectedUsers.map((user) => (
-                <li key={user.id}>
-                  {user.email}
-                  <button onClick={() => handleDeleteOwner(user.id)}>
-                    <img
-                      src={deleteIcon}
-                      alt="Delete"
-                      className={styles.deleteIcon}
-                    />
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </div>
 
-          <ActivityImageUploader
-            initiativeId={initiativeId}
-            token={authToken}
-            onImageSelected={handleImageChange}
-            activityId={activityId}
-          />
-        </div>
+        <ActivityImageUploader
+          initiativeId={initiativeId}
+          token={authToken}
+          onImageSelected={handleImageChange}
+          activityId={activityId}
+        />
         <div className={styles.buttonContainer}>
           <button onClick={handleClose} className={styles.cancelButton}>
             Annuleren

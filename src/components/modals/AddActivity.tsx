@@ -261,10 +261,10 @@ const AddActivity: React.FC<AddActivityProps> = ({
         </div>
         <div className={styles.buttonContainer}>
           <button onClick={handleClose} className={styles.cancelButton}>
-            Cancel
+            Annuleren
           </button>
           <button onClick={handleSave} className={styles.saveButton}>
-            Save
+            Opslaan
           </button>
         </div>
       </div>

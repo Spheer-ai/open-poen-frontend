@@ -213,6 +213,10 @@ textarea {
 .roleOptions {
   display: flex;
   flex-direction: column;
+
+  input {
+    flex: unset;
+  }
 }
 
 .imagePreview {
@@ -448,4 +452,8 @@ body {
     align-items: center;
     margin-top: 5px;
   }
+}
+
+.chart-count {
+  font-size: 12px;
 }
