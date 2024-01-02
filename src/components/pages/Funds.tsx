@@ -55,7 +55,6 @@ export default function Funds() {
       if (entityPermissions.length === 0) {
         fetchPermissions("Funder", undefined, user.token)
           .then((permissions) => {
-            console.log("Fetched permissions:", permissions);
             setEntityPermissions(permissions || []);
           })
           .catch((error) => {
@@ -67,15 +66,6 @@ export default function Funds() {
 
   useEffect(() => {
     if (!initialFetchDoneRef.current) {
-      console.log("useEffect triggered for initial fetch", {
-        user,
-        onlyMine,
-        entityPermissions,
-        initialFetchDone,
-        offset,
-        limit,
-      });
-
       const cleanup = fetchAndDisplayInitiatives(
         user?.token,
         onlyMine,
@@ -105,8 +95,6 @@ export default function Funds() {
 
       fetchInitiatives(apiToken, onlyMine, offset, limit)
         .then((initiativesData: Initiative[]) => {
-          console.log("Fetched initiatives:", initiativesData);
-
           setAllFetchedInitiatives((prevInitiatives) => [
             ...prevInitiatives,
             ...initiativesData,
@@ -153,18 +141,11 @@ export default function Funds() {
 
   const handleLoadMoreClick = () => {
     const newOffset = offset + limit;
-    console.log("Current Offset:", offset);
-    console.log("Current Limit:", limit);
-    console.log("New Offset:", newOffset);
     setOffset(newOffset);
-
-    console.log("Fetching more initiatives...");
     fetchAndDisplayInitiatives(user?.token, onlyMine, newOffset, limit);
   };
 
-  const handleSearch = (query) => {
-    console.log("Search query in UserDetailsPage:", query);
-  };
+  const handleSearch = (query) => {};
 
   const navigateToActivities = (initiativeId, initiativeName) => {
     navigate(`/funds/${initiativeId}/activities/${initiativeName}`, {

@@ -38,7 +38,6 @@ export default function ActivitiesPage() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    console.log("action:", action);
     if (!initiativeId) {
       console.error("initiativeId is not defined.");
       return;
@@ -47,7 +46,6 @@ export default function ActivitiesPage() {
     if (user?.token && !permissionsFetched) {
       fetchPermissions("Initiative", parseInt(initiativeId), user.token)
         .then((permissions) => {
-          console.log("Fetched permissions:", permissions);
           setEntityPermissions(permissions || []);
           setPermissionsFetched(true);
         })
@@ -56,7 +54,6 @@ export default function ActivitiesPage() {
           setPermissionsFetched(true);
         });
     } else {
-      console.log("Token is not available or permissions are already fetched.");
     }
   }, [action, user, fetchPermissions, permissionsFetched, initiativeId]);
 
@@ -64,14 +61,12 @@ export default function ActivitiesPage() {
     setIsLoading(true);
 
     if (!initiativeId) {
-      console.error("initiativeId is not defined.");
       setIsLoading(false);
       return;
     }
 
     fetchActivities(Number(initiativeId), user?.token ?? "")
       .then((initiativeData) => {
-        console.log("Fetched activities:", initiativeData.activities);
         const updatedActivities = initiativeData.activities || [];
         setInitiativeName(initiativeData.name);
 
@@ -106,9 +101,7 @@ export default function ActivitiesPage() {
     };
   };
 
-  const handleSearch = (query) => {
-    console.log("Search query in UserDetailsPage:", query);
-  };
+  const handleSearch = (query) => {};
 
   const handleBackClick = () => {
     navigate("/funds");
@@ -134,14 +127,10 @@ export default function ActivitiesPage() {
   };
 
   const handleActivityAdded = () => {
-    console.log("Activity added. Refreshing activities list...");
     setRefreshTrigger((prev) => prev + 1);
   };
 
-  console.log("initiativeId:", initiativeId);
-
   const handleActivityClick = (activityId) => {
-    console.log("Clicked activity ID:", activityId);
     setSelectedActivity(activityId);
     navigate(`/funds/${initiativeId}/activities/${activityId}`);
   };

@@ -70,7 +70,6 @@ const LinkInitiativeToPayment: React.FC<LinkInitiativeToPaymentProps> = ({
 
           setIsLoading(false);
         } catch (error) {
-          console.error("Error fetching linkable initiatives:", error);
           setIsLoading(false);
         }
       };
@@ -102,7 +101,6 @@ const LinkInitiativeToPayment: React.FC<LinkInitiativeToPaymentProps> = ({
       setIsLoading(false);
       setIsLinking(false);
     } catch (error) {
-      console.error("Error linking initiative to payment:", error);
       setIsLoading(false);
       setIsLinking(false);
     }

@@ -1,18 +1,41 @@
 .details-container {
   display: flex;
   justify-content: space-between;
-  padding: 20px;
 
   .details-item {
+    font-size: 16px;
     label {
       font-weight: normal;
       color: #4f575e;
-      font-size: 12px;
+      font-size: 14px;
     }
 
     p {
-      font-size: 12px;
       color: #2f2f2f;
     }
   }
+}
+
+.details-bold {
+  font-weight: bold;
+}
+
+.funder-details-container {
+  display: flex;
+  gap: 20px;
+}
+
+.details-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  padding: 20px 0;
+}
+
+.loading-container {
+  display: flex;
+  align-items: center;
+  height: 30vh;
+  justify-content: center;
+  align-content: center;
 }

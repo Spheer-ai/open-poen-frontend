@@ -115,7 +115,6 @@ const TransactionOverview = () => {
         setIsLoadingMore(false);
         setOffset(20);
       } catch (error) {
-        console.error("Error fetching payments:", error);
         setIsLoading(false);
         setIsLoadingMore(false);
       }
@@ -123,10 +122,6 @@ const TransactionOverview = () => {
   };
 
   useEffect(() => {
-    console.log(
-      "useEffect 3 - Filtered Transactions Updated:",
-      filteredTransactions,
-    );
     const filtered = allTransactions.filter((transaction) => {
       const initiativeNameMatch =
         transaction.initiative_name &&
@@ -187,7 +182,6 @@ const TransactionOverview = () => {
         setIsLoadingMore(false);
         setOffset(newOffset);
       } catch (error) {
-        console.error("Error fetching payments:", error);
         setIsLoading(false);
         setIsLoadingMore(false);
       }
@@ -196,14 +190,12 @@ const TransactionOverview = () => {
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
-    console.log("Search Query:", query);
   };
 
   const handleInitiativeLinked = (
     transactionId: number,
     initiativeId: number | null,
   ) => {
-    console.log("Initiative Linked - Transaction ID:", transactionId);
     setLinkingStatus((prevStatus) => {
       const newStatus = {
         ...prevStatus,
@@ -212,8 +204,16 @@ const TransactionOverview = () => {
           activityId: prevStatus[transactionId]?.activityId || null,
         },
       };
+
       return newStatus;
     });
+    setTransactions((prevTransactions) =>
+      prevTransactions.map((transaction) =>
+        transaction.id === transactionId
+          ? { ...transaction, initiative_id: initiativeId }
+          : transaction,
+      ),
+    );
   };
 
   const handleActivityLinked = (
@@ -221,14 +221,17 @@ const TransactionOverview = () => {
     activityId: number | null,
   ) => {
     setLinkingStatus((prevStatus) => {
-      const newStatus = {
+      const existingStatus = prevStatus[transactionId] || {
+        initiativeId: null,
+        activityId: null,
+      };
+      return {
         ...prevStatus,
         [transactionId]: {
-          initiativeId: prevStatus[transactionId]?.initiativeId || null,
-          activityId,
+          initiativeId: existingStatus.initiativeId,
+          activityId: activityId,
         },
       };
-      return newStatus;
     });
   };
 

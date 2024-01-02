@@ -473,6 +473,7 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
             grantName={fundDetails?.grant?.name}
             grantReference={fundDetails?.grant?.reference}
             grantBudget={fundDetails?.grant?.budget}
+            token={user?.token || ""}
           />
         )}
         {activeTab === "media" && <FundsMedia initiativeId={initiativeId} />}
