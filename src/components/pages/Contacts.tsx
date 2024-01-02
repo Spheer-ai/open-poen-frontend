@@ -273,7 +273,7 @@ export default function Contacts() {
                   className={styles["load-more-button"]}
                   onClick={handleLoadMore}
                 >
-                  Load More
+                  Meer gebruikers laden...
                 </button>
               </div>
             )}
