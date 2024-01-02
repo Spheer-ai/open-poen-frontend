@@ -206,7 +206,7 @@ const AddActivity: React.FC<AddActivityProps> = ({
           <label className={styles.labelField}>Doel:</label>
           <input
             type="text"
-            placeholder="Vul de doelstelling van het acitviteit in"
+            placeholder="Vul de doelstelling van de activiteit in"
             value={purpose}
             onChange={(e) => setPurpose(e.target.value)}
             onKeyDown={handleEnterKeyPress}
@@ -221,7 +221,7 @@ const AddActivity: React.FC<AddActivityProps> = ({
           <label className={styles.labelField}>Doelgroep:</label>
           <input
             type="text"
-            placeholder="Vul de doelgroep van het acitviteit in"
+            placeholder="Vul de doelgroep van de activiteit in"
             value={targetAudience}
             onChange={(e) => setTargetAudience(e.target.value)}
             onKeyDown={handleEnterKeyPress}
