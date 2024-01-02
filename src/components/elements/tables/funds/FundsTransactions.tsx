@@ -430,9 +430,11 @@ const FundsTransactions: React.FC<{
             </tr>
           </thead>
           {transactions.length === 0 && !loadingMore ? (
-            <span className={styles["no-transactions"]}>
-              Geen transacties gevonden
-            </span>
+            <tr>
+              <td colSpan={6} className={styles["no-transactions"]}>
+                Geen transacties gevonden
+              </td>
+            </tr>
           ) : null}
           <tbody>
             {transactions.map((transaction, index) => (
