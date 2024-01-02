@@ -111,20 +111,34 @@ const AddFundDesktop: React.FC<AddFundDesktopProps> = ({
     if (!fundData.name) {
       validationErrors.name = "Vul een naam in";
       isValid = false;
+    } else if (fundData.name.length > 65) {
+      validationErrors.name = "Naam mag maximaal 65 tekens bevatten";
+      isValid = false;
     }
 
     if (!fundData.description) {
       validationErrors.description = "Vul een beschrijving in";
+      isValid = false;
+    } else if (fundData.description.length > 200) {
+      validationErrors.description =
+        "Beschrijving mag maximaal 200 tekens bevatten";
       isValid = false;
     }
 
     if (!fundData.purpose) {
       validationErrors.purpose = "Vul een doel in";
       isValid = false;
+    } else if (fundData.purpose.length > 65) {
+      validationErrors.purpose = "Doel mag maximaal 65 tekens bevatten";
+      isValid = false;
     }
 
     if (!fundData.target_audience) {
       validationErrors.target_audience = "Vul een doelgroep in";
+      isValid = false;
+    } else if (fundData.target_audience.length > 65) {
+      validationErrors.target_audience =
+        "Doelgroep mag maximaal 65 tekens bevatten";
       isValid = false;
     }
 
