@@ -1,13 +1,7 @@
 import React, { useEffect, useState } from "react";
-import deleteIcon from "/delete-icon.svg";
 import styles from "../../assets/scss/layout/AddFundDesktop.module.scss";
-import SearchFundUsers from "../elements/search/funds/SearchFundsUser";
 import FundImageUploader from "../elements/uploadder/FundImageUploader";
-import {
-  editFund,
-  updateInitiativeOwners,
-  uploadFundPicture,
-} from "../middleware/Api";
+import { editFund, uploadFundPicture } from "../middleware/Api";
 
 interface InitiativeOwner {
   id: number;
@@ -54,19 +48,10 @@ const EditFund: React.FC<EditFundProps> = ({
   const [apiError, setApiError] = useState("");
   const [formData, setFormData] = useState<FundDetails | null>(null);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
-  const [selectedUserIds, setSelectedUserIds] = useState<number[]>([]);
-  const [userEmailMapping, setUserEmailMapping] = useState<{
-    [key: number]: string;
-  }>({});
-  const [selectedOwners, setSelectedOwners] = useState<InitiativeOwner[]>([]);
-  const [selectedUsers, setSelectedUsers] = useState<InitiativeOwner[]>([]);
   const [charCount, setCharCount] = useState(0);
   const [nameError, setNameError] = useState("");
   const [isSaveClicked, setIsSaveClicked] = useState(false);
-
-  useEffect(() => {
-    setSelectedOwners(initiativeOwners);
-  }, [initiativeOwners]);
+  const [descriptionError, setDescriptionError] = useState("");
 
   useEffect(() => {
     if (isOpen) {
@@ -81,6 +66,7 @@ const EditFund: React.FC<EditFundProps> = ({
   useEffect(() => {
     if (isOpen && fundData) {
       setFormData(fundData);
+      setCharCount(fundData.description ? fundData.description.length : 0);
     }
   }, [isOpen, fundData]);
 
@@ -115,8 +101,6 @@ const EditFund: React.FC<EditFundProps> = ({
 
       await editFund(authToken, initiativeId, updatedFundData);
 
-      await linkOwnersToInitiative(initiativeId, selectedUserIds, authToken);
-
       setApiError("");
       handleClose();
       onFundEdited();
@@ -148,30 +132,6 @@ const EditFund: React.FC<EditFundProps> = ({
 
   const handleImageChange = (file: File) => {
     setSelectedImage(file);
-  };
-
-  const handleSearchResult = (user) => {
-    if (!selectedUsers.some((selectedUser) => selectedUser.id === user.id)) {
-      setSelectedUsers((prevSelectedUsers) => [...prevSelectedUsers, user]);
-    }
-  };
-
-  const handleDeleteOwner = (ownerId: number) => {
-    setSelectedUsers((prevSelectedUsers) =>
-      prevSelectedUsers.filter((user) => user.id !== ownerId),
-    );
-  };
-
-  const linkOwnersToInitiative = async (
-    initiativeId,
-    selectedUserIds,
-    authToken,
-  ) => {
-    try {
-      await updateInitiativeOwners(initiativeId, selectedUserIds, authToken);
-    } catch (error) {
-      console.error("Error linking owners to initiative:", error);
-    }
   };
 
   return (
@@ -215,54 +175,69 @@ const EditFund: React.FC<EditFundProps> = ({
                   {nameError}
                 </p>
               )}
-              {charCount > 64 && (
-                <p className={styles.error}>
-                  Naam mag maximaal 64 tekens bevatten
-                </p>
-              )}
             </>
           )}
+        </div>
+        <div className={styles.formGroup}>
           {fieldPermissions.fields.includes("description") && (
             <>
               <label className={styles.label}>Beschrijving:</label>
               <textarea
                 placeholder="Beschrijving"
                 value={formData?.description || ""}
-                onChange={(e) =>
-                  setFormData({ ...formData, description: e.target.value })
-                }
+                onChange={(e) => {
+                  const newDescription = e.target.value;
+
+                  if (newDescription.length > 512) {
+                    setDescriptionError(
+                      "Beschrijving mag niet meer dan 512 karakters bevatten",
+                    );
+                  } else {
+                    setDescriptionError("");
+                  }
+
+                  setFormData({ ...formData, description: newDescription });
+                  setCharCount(newDescription.length);
+                }}
+                style={{ borderColor: descriptionError ? "red" : "" }}
               />
+              {descriptionError && (
+                <p style={{ color: "red", display: "block", marginTop: "5px" }}>
+                  {descriptionError}
+                </p>
+              )}
+              <div className={styles["chart-count"]}>{charCount} / 512</div>
             </>
           )}
+        </div>
+        <div className={styles.formGroup}>
           <div className={styles.roleOptions}>
             {fieldPermissions.fields.includes("hidden") && (
-              <>
-                <label className={styles.roleLabel}>
-                  <input
-                    type="checkbox"
-                    checked={isHidden}
-                    onChange={() => setIsHidden(!isHidden)}
-                  />
-                  Initiatief verbergen
-                </label>
-              </>
+              <label className={styles.roleLabel}>
+                <input
+                  type="checkbox"
+                  checked={isHidden}
+                  onChange={() => setIsHidden(!isHidden)}
+                />
+                Initiatief verbergen
+              </label>
             )}
             {fieldPermissions.fields.includes("hidden_sponsors") && (
-              <>
-                <label className={styles.roleLabel}>
-                  <input
-                    type="checkbox"
-                    checked={isHiddenSponsors}
-                    onChange={() => setIsHiddenSponsors(!isHiddenSponsors)}
-                  />
-                  Sponsors verbergen
-                </label>
-              </>
+              <label className={styles.roleLabel}>
+                <input
+                  type="checkbox"
+                  checked={isHiddenSponsors}
+                  onChange={() => setIsHiddenSponsors(!isHiddenSponsors)}
+                />
+                Sponsors verbergen
+              </label>
             )}
           </div>
+        </div>
+        <div className={styles.formGroup}>
           {fieldPermissions.fields.includes("budget") && (
-            <>
-              <label className={styles.labelField}>Begroting:</label>
+            <div className={styles.budgetContainer}>
+              <label className={styles.labelField}> Begroting: </label>
               <input
                 type="number"
                 placeholder="Vul het begrootte bedrag in"
@@ -276,38 +251,15 @@ const EditFund: React.FC<EditFundProps> = ({
                   })
                 }
               />
-            </>
+            </div>
           )}
         </div>
-        <div className={styles.formGroup}>
-          <SearchFundUsers
-            authToken={authToken}
-            onUserClick={handleSearchResult}
-          />
-          <div className={styles.selectedUsers}>
-            <h4>Initiatiefnemers</h4>
-            <ul>
-              {selectedUsers.map((user) => (
-                <li key={user.id}>
-                  {user.email}
-                  <button onClick={() => handleDeleteOwner(user.id)}>
-                    <img
-                      src={deleteIcon}
-                      alt="Delete"
-                      className={styles.deleteIcon}
-                    />
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </div>
 
-          <FundImageUploader
-            initiativeId={initiativeId}
-            token={authToken}
-            onImageSelected={handleImageChange}
-          />
-        </div>
+        <FundImageUploader
+          initiativeId={initiativeId}
+          token={authToken}
+          onImageSelected={handleImageChange}
+        />
         <div className={styles.buttonContainer}>
           <button onClick={handleClose} className={styles.cancelButton}>
             Annuleren
