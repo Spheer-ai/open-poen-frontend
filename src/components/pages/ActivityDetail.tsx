@@ -432,7 +432,6 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
           authToken={user?.token || ""}
           activityId={activityId}
           activityData={currentActivityData}
-          activityOwners={activityDetails?.activity_owners || []}
           fieldPermissions={entityPermissions}
           fields={[]}
         />

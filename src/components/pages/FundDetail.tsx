@@ -429,7 +429,6 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
           initiativeId={initiativeId}
           authToken={user?.token || ""}
           fundData={currentFundData}
-          initiativeOwners={fundDetails?.initiative_owners || []}
           fieldPermissions={entityPermissions}
           fields={[]}
         />

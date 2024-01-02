@@ -25,7 +25,6 @@ interface EditFundProps {
   initiativeId: string;
   authToken: string;
   fundData: FundDetails | null;
-  initiativeOwners: InitiativeOwner[];
   fieldPermissions;
   fields: string[];
 }
@@ -38,7 +37,6 @@ const EditFund: React.FC<EditFundProps> = ({
   initiativeId,
   authToken,
   fundData,
-  initiativeOwners,
   fieldPermissions,
 }) => {
   console.log("fieldPermissions:", fieldPermissions);
