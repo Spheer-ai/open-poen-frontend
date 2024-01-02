@@ -410,9 +410,9 @@ const ActivityTransactions: React.FC<{
             </tr>
           </thead>
           {transactions.length === 0 && !loadingMore ? (
-            <p className={styles["no-transactions"]}>
+            <span className={styles["no-transactions"]}>
               Geen transacties gevonden
-            </p>
+            </span>
           ) : null}
           <tbody>
             {transactions.map((transaction, index) => (
