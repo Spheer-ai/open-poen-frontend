@@ -313,27 +313,27 @@ const EditPayment: React.FC<EditPaymentProps> = ({
                 </>
               )}
             </div>
-            <div>
+            <div className={styles.formGroup}>
               <h3>Info</h3>
+              {fieldPermissions &&
+                fieldPermissions.fields &&
+                fieldPermissions.fields.includes("transaction_amount") && (
+                  <>
+                    <label className={styles.labelField}>Bedrag:</label>
+                    <input
+                      type="number"
+                      value={transactionData.transaction_amount.toString()}
+                      onChange={(e) =>
+                        setTransactionData({
+                          ...transactionData,
+                          transaction_amount: parseFloat(e.target.value),
+                        })
+                      }
+                      onKeyDown={handleEnterKeyPress}
+                    />
+                  </>
+                )}
             </div>
-            {fieldPermissions &&
-              fieldPermissions.fields &&
-              fieldPermissions.fields.includes("transaction_amount") && (
-                <div className={styles.formGroup}>
-                  <label className={styles.labelField}>Bedrag:</label>
-                  <input
-                    type="number"
-                    value={transactionData.transaction_amount.toString()}
-                    onChange={(e) =>
-                      setTransactionData({
-                        ...transactionData,
-                        transaction_amount: parseFloat(e.target.value),
-                      })
-                    }
-                    onKeyDown={handleEnterKeyPress}
-                  />
-                </div>
-              )}
             {fieldPermissions &&
               fieldPermissions.fields &&
               fieldPermissions.fields.includes("booking_date") && (
@@ -474,25 +474,27 @@ const EditPayment: React.FC<EditPaymentProps> = ({
                   />
                 </div>
               )}
-            {fieldPermissions &&
-              fieldPermissions.fields &&
-              fieldPermissions.fields.includes("hidden") && (
-                <div className={styles.formGroup}>
-                  <label className={styles.labelField}>
-                    <input
-                      type="checkbox"
-                      checked={transactionData.hidden}
-                      onChange={(e) =>
-                        setTransactionData({
-                          ...transactionData,
-                          hidden: e.target.checked,
-                        })
-                      }
-                    />
-                    Hidden:
-                  </label>
-                </div>
-              )}
+            <div className={styles.formGroup}>
+              {fieldPermissions &&
+                fieldPermissions.fields &&
+                fieldPermissions.fields.includes("hidden") && (
+                  <div className={styles.roleOptions}>
+                    <label className={styles.labelField}>
+                      <input
+                        type="checkbox"
+                        checked={false}
+                        onChange={(e) =>
+                          setTransactionData({
+                            ...transactionData,
+                            hidden: e.target.checked,
+                          })
+                        }
+                      />
+                      Transactie verbergen
+                    </label>
+                  </div>
+                )}
+            </div>
           </>
         ) : null}
         <div className={styles.buttonContainer}>
