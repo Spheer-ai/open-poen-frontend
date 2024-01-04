@@ -100,6 +100,10 @@ const ActivityTransactions: React.FC<{
   const [route, setRoute] = useState<string>("");
   const [pageSize] = useState(20);
 
+  useEffect(() => {
+    fetchTransactions();
+  }, [initiativeId, activityId, authToken]);
+
   const fetchTransactions = async () => {
     try {
       setLoadingMore(true);
