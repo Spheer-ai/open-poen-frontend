@@ -495,7 +495,12 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
             token={user?.token || ""}
           />
         )}
-        {activeTab === "media" && <FundsMedia initiativeId={initiativeId} />}
+        {activeTab === "media" && (
+          <FundsMedia
+            initiativeId={initiativeId}
+            authToken={user?.token || ""}
+          />
+        )}
         {activeTab === "gebruikers" && (
           <FundsUsers initiativeId={initiativeId} token={user?.token || ""} />
         )}

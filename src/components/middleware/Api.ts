@@ -1802,12 +1802,16 @@ export const fetchInitiativeMedia = async (
   initiativeId,
   offset = 0,
   limit = 20,
+  token,
 ) => {
   try {
     const response = await api.get(`/initiative/${initiativeId}/media`, {
       params: {
         offset,
         limit,
+      },
+      headers: {
+        Authorization: `Bearer ${token}`,
       },
     });
 
@@ -1816,7 +1820,8 @@ export const fetchInitiativeMedia = async (
     } else if (response.status === 422) {
       throw new Error("Validation Error: " + JSON.stringify(response.data));
     } else {
-      throw new Error("Failed to fetch initiative media");
+      console.error("Non-200 status code:", response.status);
+      return response.data;
     }
   } catch (error) {
     console.error("Error fetching initiative media:", error);
@@ -1829,6 +1834,7 @@ export const fetchActivityMedia = async (
   actitivyId,
   offset = 0,
   limit = 20,
+  token,
 ) => {
   try {
     const response = await api.get(
@@ -1837,6 +1843,9 @@ export const fetchActivityMedia = async (
         params: {
           offset,
           limit,
+        },
+        headers: {
+          Authorization: `Bearer ${token}`,
         },
       },
     );

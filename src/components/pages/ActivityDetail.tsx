@@ -498,7 +498,11 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
           />
         )}
         {activeTab === "media" && (
-          <ActivityMedia initiativeId={initiativeId} activityId={activityId} />
+          <ActivityMedia
+            initiativeId={initiativeId}
+            activityId={activityId}
+            authToken={user?.token || ""}
+          />
         )}
         {activeTab === "gebruikers" && (
           <ActivityUsers
