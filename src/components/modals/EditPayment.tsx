@@ -3,9 +3,19 @@ import styles from "../../assets/scss/layout/AddFundDesktop.module.scss";
 import LoadingDot from "../animation/LoadingDot";
 import {
   cancelPayment,
+  deletePaymentAttachment,
   editPayment,
+  fetchPaymentAttachments,
   uploadPaymentAttachment,
 } from "../middleware/Api";
+
+interface Attachment {
+  attachment_id: number;
+  id: number;
+  name: string;
+  url: string;
+  attachment_thumbnail_url_128: string;
+}
 
 export interface Transaction {
   id: number;
@@ -56,6 +66,10 @@ const EditPayment: React.FC<EditPaymentProps> = ({
   const [apiDate, setApiDate] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [attachments, setAttachments] = useState<Attachment[]>([]);
+  const [deletedAttachmentIds, setDeletedAttachmentIds] = useState<Set<number>>(
+    new Set(),
+  );
 
   const [transactionData, setTransactionData] = useState({
     transaction_amount: 0,
@@ -69,6 +83,26 @@ const EditPayment: React.FC<EditPaymentProps> = ({
     long_user_description: "",
     hidden: true,
   });
+
+  const fetchAttachments = async () => {
+    try {
+      if (paymentId && token) {
+        const fetchedAttachments = await fetchPaymentAttachments(
+          paymentId,
+          token,
+        );
+        setAttachments(fetchedAttachments);
+      }
+    } catch (error) {
+      console.error("Error fetching payment attachments:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (isOpen || paymentData) {
+      fetchAttachments();
+    }
+  }, [isOpen, paymentData, token, paymentId]);
 
   useEffect(() => {
     console.log("Payment data received in EditPayment:", paymentData);
@@ -133,6 +167,10 @@ const EditPayment: React.FC<EditPaymentProps> = ({
       if (isNaN(displayDateObject.getTime())) {
         console.error("Invalid date format");
         return;
+      }
+
+      for (const attachmentId of deletedAttachmentIds) {
+        await deletePaymentAttachment(paymentId, attachmentId, token);
       }
 
       const apiDate = displayDateObject.toISOString();
@@ -251,6 +289,18 @@ const EditPayment: React.FC<EditPaymentProps> = ({
     setSelectedFile(null);
   };
 
+  const handleDeleteImage = (attachmentId: number) => {
+    setDeletedAttachmentIds((prevIds) => {
+      const newIds = new Set(prevIds);
+      if (newIds.has(attachmentId)) {
+        newIds.delete(attachmentId);
+      } else {
+        newIds.add(attachmentId);
+      }
+      return newIds;
+    });
+  };
+
   return (
     <>
       <div
@@ -273,45 +323,73 @@ const EditPayment: React.FC<EditPaymentProps> = ({
         {!isLoading ? (
           <>
             <div className={`${styles.formGroup}`}>
-              {selectedFile && (
-                <div className={styles.imagePreview}>
-                  <div className={styles.imageContainer}>
-                    <img
-                      src={URL.createObjectURL(selectedFile)}
-                      alt="Image Preview"
-                      className={styles.previewImage}
-                      style={{ maxHeight: "150px", borderRadius: "8px" }}
-                    />
-                    <button
-                      className={styles.closeButton}
-                      onClick={handleCancelImage}
-                    >
-                      <img src="/close-preview.svg" alt="Close" />
-                    </button>
-                  </div>
-                </div>
-              )}
-              {!selectedFile && (
-                <>
-                  <label className={styles.labelField}>Media:</label>
-                  <label htmlFor="fileInput" className={styles.customFileInput}>
-                    <div>
-                      {" "}
-                      <img src="/upload-image.svg" alt="Upload Image" />
+              <div className={styles.containerPreview}>
+                {attachments.map(
+                  (attachment, index) =>
+                    !deletedAttachmentIds.has(attachment.id) && (
+                      <div className={styles.imagePreview} key={attachment.id}>
+                        <div className={styles.imageContainer}>
+                          <div>
+                            <img
+                              src={attachment.attachment_thumbnail_url_128}
+                              alt={`Image Preview ${index + 1}`}
+                              className={styles.previewImage}
+                              style={{ borderRadius: "8px" }}
+                            />
+                            <button
+                              className={styles.closeButton}
+                              onClick={() => handleDeleteImage(attachment.id)}
+                            >
+                              <img src="/close-preview.svg" alt="Close" />
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    ),
+                )}
+                {selectedFile && (
+                  <div className={styles.imagePreview}>
+                    <div className={styles.imageContainer}>
+                      <div>
+                        <img
+                          src={URL.createObjectURL(selectedFile)}
+                          alt="Image Preview"
+                          className={styles.previewImage}
+                          style={{
+                            borderRadius: "8px",
+                          }}
+                        />
+                        <button
+                          className={styles.closeButton}
+                          onClick={handleCancelImage}
+                        >
+                          <img src="/close-preview.svg" alt="Close" />
+                        </button>
+                      </div>
                     </div>
-                    <span>
-                      Sleep en zet neer of blader om een bestand te uploaden
-                    </span>
-                    <input
-                      type="file"
-                      id="fileInput"
-                      accept=".pdf, .jpg, .png"
-                      onChange={handleFileChange}
-                      className={styles.hiddenFileInput}
-                    />
-                  </label>
-                </>
-              )}
+                  </div>
+                )}
+              </div>
+
+              <>
+                <label className={styles.labelField}>Media:</label>
+                <label htmlFor="fileInput" className={styles.customFileInput}>
+                  <div>
+                    {" "}
+                    <img src="/upload-image.svg" alt="Upload Image" />
+                  </div>
+                  <span>
+                    Sleep en zet neer of blader om een bestand te uploaden
+                  </span>
+                  <input
+                    type="file"
+                    id="fileInput"
+                    accept=".pdf, .jpg, .png"
+                    onChange={handleFileChange}
+                    className={styles.hiddenFileInput}
+                  />
+                </label>
+              </>
             </div>
             <div className={styles.formGroup}>
               <h3>Info</h3>

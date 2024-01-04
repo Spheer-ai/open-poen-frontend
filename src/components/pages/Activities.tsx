@@ -199,7 +199,13 @@ export default function ActivitiesPage() {
                 <li key={activity.id} className={styles["shared-list"]}>
                   <div className={styles["shared-values"]}>
                     <label>Begroting:</label>
-                    <span>€{activity.budget}</span>
+                    <span>
+                      €
+                      {activity.budget.toLocaleString("nl-NL", {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}
+                    </span>
                   </div>
                   <div className={styles["shared-values"]}>
                     <label
@@ -211,7 +217,13 @@ export default function ActivitiesPage() {
                     >
                       Beschikbaar:
                     </label>
-                    <span>€{activity.income}</span>
+                    <span>
+                      €
+                      {activity.income.toLocaleString("nl-NL", {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}
+                    </span>
                   </div>
                   <div className={styles["shared-values"]}>
                     <label
@@ -223,7 +235,13 @@ export default function ActivitiesPage() {
                     >
                       Besteed:
                     </label>
-                    <span>€{activity.expenses}</span>
+                    <span>
+                      €
+                      {activity.expenses.toLocaleString("nl-NL", {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}
+                    </span>
                   </div>
                 </li>
                 {activity?.hidden && (

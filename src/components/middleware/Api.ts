@@ -1889,3 +1889,53 @@ export const fetchGrantDetails = async (
     throw error;
   }
 };
+
+export const fetchPaymentAttachments = async (paymentId, token) => {
+  try {
+    const response = await api.get(`/payment/${paymentId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (response.status === 200) {
+      const { attachments } = response.data;
+      return attachments;
+    } else if (response.status === 422) {
+      throw new Error("Validation Error: " + JSON.stringify(response.data));
+    } else {
+      console.error("Non-200 status code:", response.status);
+      return [];
+    }
+  } catch (error) {
+    console.error("Error fetching payment attachments:", error);
+    throw error;
+  }
+};
+
+export const deletePaymentAttachment = async (
+  paymentId,
+  attachmentId,
+  token,
+) => {
+  try {
+    const response = await api.delete(
+      `/payment/${paymentId}/attachment/${attachmentId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+
+    if (response.status === 200) {
+    } else if (response.status === 422) {
+      throw new Error("Validation Error: " + JSON.stringify(response.data));
+    } else {
+      console.error("Non-200 status code:", response.status);
+    }
+  } catch (error) {
+    console.error("Error deleting payment attachment:", error);
+    throw error;
+  }
+};

@@ -270,7 +270,13 @@ export default function Funds() {
                 <li className={styles["shared-list"]}>
                   <div className={styles["shared-values"]}>
                     <label>Begroting:</label>
-                    <span>€{initiative?.budget}</span>
+                    <span>
+                      €
+                      {initiative?.budget.toLocaleString("nl-NL", {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}
+                    </span>
                   </div>
                   <div className={styles["shared-values"]}>
                     <label
@@ -282,7 +288,13 @@ export default function Funds() {
                     >
                       Beschikbaar:
                     </label>
-                    <span>€{initiative?.income}</span>
+                    <span>
+                      €
+                      {initiative?.income.toLocaleString("nl-NL", {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}
+                    </span>
                   </div>
                   <div className={styles["shared-values"]}>
                     <label
@@ -294,7 +306,13 @@ export default function Funds() {
                     >
                       Besteed:
                     </label>
-                    <span>€{initiative?.expenses}</span>
+                    <span>
+                      €
+                      {initiative?.expenses.toLocaleString("nl-NL", {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}
+                    </span>
                   </div>
                 </li>
                 {initiative?.hidden && (
