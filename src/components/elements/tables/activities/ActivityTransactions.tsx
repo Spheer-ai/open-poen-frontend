@@ -410,7 +410,7 @@ const ActivityTransactions: React.FC<{
               <th>ONTVANGER</th>
               <th>VERZENDER</th>
               <th>MEDIA</th>
-              <th>HOEVEELHEID</th>
+              <th>BEDRAG</th>
             </tr>
           </thead>
           {transactions.length === 0 && !loadingMore ? (
