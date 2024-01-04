@@ -403,8 +403,8 @@ const ActivityTransactions: React.FC<{
             <tr>
               <th>DATUM</th>
               <th>BESCHRIJVING</th>
-              <th>VERZENDER</th>
               <th>ONTVANGER</th>
+              <th>VERZENDER</th>
               <th>MEDIA</th>
               <th>HOEVEELHEID</th>
             </tr>

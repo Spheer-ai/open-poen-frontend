@@ -423,8 +423,8 @@ const FundsTransactions: React.FC<{
             <tr>
               <th>DATUM</th>
               <th>Activiteit</th>
-              <th>VERZENDER</th>
               <th>ONTVANGER</th>
+              <th>VERZENDER</th>
               <th>MEDIA</th>
               <th>HOEVEELHEID</th>
             </tr>
