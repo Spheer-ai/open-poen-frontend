@@ -18,7 +18,6 @@ const Step2BankApproval: React.FC<Step2BankApprovalProps> = ({
   const navigate = useNavigate();
 
   useEffect(() => {
-    console.log("userId being used:", userId);
     async function initiateGocardlessRequest() {
       try {
         if (!token) {

@@ -36,7 +36,6 @@ export const getUserData = async (token: string) => {
         Authorization: `Bearer ${token}`,
       },
     });
-    console.log("getUserData response:", response.data);
     return response.data;
   } catch (error) {
     console.error("getUserData error:", error);
@@ -52,7 +51,6 @@ export const fetchUserData = async (token: string, userId: string) => {
         "Content-Type": "application/json",
       },
     });
-    console.log("User Details Response:", response.data);
     return response.data;
   } catch (error) {
     console.error("Failed to fetch user data:", error);
@@ -87,7 +85,6 @@ export const getUsers = async (token: string) => {
         Authorization: `Bearer ${token}`,
       },
     });
-    console.log("getUsers response:", response.data);
 
     const sortedUsers = response.data.users.slice();
     sortedUsers.sort((a, b) => {
@@ -112,7 +109,6 @@ export const logoutUser = async (token: string) => {
         Authorization: `Bearer ${token}`,
       },
     });
-    console.log("logoutUser response:", response.data);
     return response.data;
   } catch (error) {
     console.error("logoutUser error:", error);
@@ -219,7 +215,6 @@ export const getUsersOrdered = async (
 ) => {
   try {
     const offset = (page - 1) * limit;
-    console.log("Email Query:", email);
     const response = await api.get("/users", {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -310,7 +305,6 @@ export const addFund = async (
   },
 ) => {
   try {
-    console.log("Data being sent to the server:", data);
     const response = await api.post(
       `/funder/${funderId}/regulation/${regulationId}/grant/${grantId}/initiative`,
       data,
@@ -456,15 +450,6 @@ export const fetchEntityPermissions = async (
   entityId?: number,
   token?: string,
 ): Promise<string[]> => {
-  console.log(
-    "fetchEntityPermissions called with entityClass:",
-    entityClass,
-    "entityId:",
-    entityId,
-    "and token:",
-    token,
-  );
-
   try {
     const params: Record<string, any> = {};
     if (entityClass) {
@@ -483,8 +468,6 @@ export const fetchEntityPermissions = async (
       params,
       headers,
     });
-
-    console.log("API Response for permissions:", response.data);
 
     return response.data.actions;
   } catch (error) {
@@ -1059,11 +1042,6 @@ export const deleteBankAccount = async (userId, token, bankAccountId) => {
 };
 
 export const getEditFieldsForEntity = async (entityClass, entityId, token) => {
-  console.log("API Request Parameters:", {
-    entity_class: entityClass,
-    entity_id: entityId,
-    token: token,
-  });
   try {
     const response = await api.get("/auth/entity-access/edit-fields", {
       params: {
@@ -1214,16 +1192,9 @@ export const linkInitiativeToPayment = async (
   initiativeId,
 ) => {
   try {
-    console.log("Initiating link initiative to payment request");
-    console.log("token:", token);
-    console.log("paymentId:", paymentId);
-    console.log("initiativeId:", initiativeId);
-
     const requestData = {
       initiative_id: initiativeId,
     };
-
-    console.log("Link initiative to payment request data:", requestData);
 
     const response = await api.patch(
       `/payment/${paymentId}/initiative`,
@@ -1782,8 +1753,6 @@ export const uploadPaymentAttachment = async (paymentId, file, token) => {
         },
       },
     );
-
-    console.log("Response Data:", response.data);
 
     if (response.status === 200) {
       return response.data;

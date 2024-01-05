@@ -15,7 +15,6 @@ interface FundsMediaProps {
 }
 
 const FundsMedia: React.FC<FundsMediaProps> = ({ initiativeId, authToken }) => {
-  console.log("Token:", authToken);
   const [mediaData, setMediaData] = useState<MediaItem[]>([]);
   const [selectedItem, setSelectedItem] = useState<MediaItem | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -24,9 +23,6 @@ const FundsMedia: React.FC<FundsMediaProps> = ({ initiativeId, authToken }) => {
   useEffect(() => {
     async function fetchMedia() {
       try {
-        console.log("Initiative ID:", initiativeId);
-        console.log("Token:", authToken);
-
         const response = await fetchInitiativeMedia(
           initiativeId,
           undefined,
@@ -35,10 +31,8 @@ const FundsMedia: React.FC<FundsMediaProps> = ({ initiativeId, authToken }) => {
         );
 
         const attachments = response?.attachments || [];
-        console.log("Attachments in response:", attachments);
 
         setMediaData(attachments);
-        console.log("Fetched media data:", mediaData);
       } catch (error) {
         setError("Failed to fetch media. Please try again later.");
       } finally {
@@ -49,9 +43,7 @@ const FundsMedia: React.FC<FundsMediaProps> = ({ initiativeId, authToken }) => {
     fetchMedia();
   }, [initiativeId, authToken]);
 
-  useEffect(() => {
-    console.log("Updated media data:", mediaData);
-  }, [mediaData]);
+  useEffect(() => {}, [mediaData]);
 
   const isPdf = (url: string) => url.toLowerCase().includes(".pdf");
 

@@ -23,13 +23,8 @@ const ActivityImageUploader: React.FC<ImageUploaderProps> = ({
     if (file) {
       try {
         setIsUploading(true);
-        console.log("Initiating image upload...");
-        console.log("Initiative ID:", initiativeId);
-        console.log("Activity ID:", activityId);
-        console.log("Token:", token);
         await uploadActivityPicture(initiativeId, activityId, file, token);
         setSelectedImage(file);
-        console.log("Image uploaded successfully.");
       } catch (error) {
         console.error("Error uploading image:", error);
       } finally {

@@ -116,11 +116,6 @@ const AddOfficerDesktop: React.FC<AddOfficerDesktopProps> = ({
         return;
       }
 
-      console.log("sponsorId", sponsorId);
-      console.log("regulationId", regulationId);
-      console.log("grantId", grantId);
-      console.log("selectedOfficerId", selectedOfficerId);
-
       if (!sponsorId || !regulationId || !grantId || !selectedOfficerId) {
         console.error("Required IDs are not available.");
         return;
@@ -131,8 +126,6 @@ const AddOfficerDesktop: React.FC<AddOfficerDesktopProps> = ({
       if (selectedOfficerId && !officerIds.includes(selectedOfficerId)) {
         officerIds.push(selectedOfficerId);
       }
-
-      console.log("officerIds to send:", officerIds);
 
       if (officerIds.length === 0) {
         console.error("No officer IDs to send.");

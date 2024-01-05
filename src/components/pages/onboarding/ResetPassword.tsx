@@ -17,8 +17,6 @@ function ResetPassword() {
     const params = new URLSearchParams(window.location.search);
     const token = params.get("token");
 
-    console.log("Token used in useEffect:", token);
-
     if (!token) {
       setError("Er is iets mis gegaan. Vraag een nieuwe link aan");
     } else {
@@ -51,8 +49,6 @@ function ResetPassword() {
 
         const urlSearchParams = new URLSearchParams(location.search);
         const token = urlSearchParams.get("token");
-
-        console.log("Token used in handleSubmit:", token);
 
         if (!token) {
           setError("Invalid or missing token");

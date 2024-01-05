@@ -83,11 +83,6 @@ const BankConnections = () => {
           setOwnedBankConnections(filteredOwnedAccounts);
           setUsedBankConnections(filteredUsedAccounts);
 
-          console.log(
-            "Fetched bank connections:",
-            filteredOwnedAccounts,
-            filteredUsedAccounts,
-          );
           setIsLoading(false);
         } catch (error) {
           console.error("Error fetching bank connections:", error);
@@ -144,7 +139,6 @@ const BankConnections = () => {
     } else {
       setIsInviteBankUsersModalOpen(true);
       setSelectedBankId(bankId);
-      console.log("Selected Bank ID:", bankId);
       navigate(`/transactions/bankconnections/invite-user`);
     }
   };

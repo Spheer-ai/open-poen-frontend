@@ -62,8 +62,6 @@ const AddPayment: React.FC<AddPaymentProps> = ({
         booking_date: formattedDate,
       };
 
-      console.log("Payment Data to be sent:", dataToSend);
-
       await createPayment(dataToSend, token);
 
       onPaymentAdded();

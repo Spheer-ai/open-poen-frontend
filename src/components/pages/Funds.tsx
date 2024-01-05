@@ -79,12 +79,6 @@ export default function Funds() {
 
   const fetchAndDisplayInitiatives = useCallback(
     (token, onlyMine, offset, limit) => {
-      console.log("fetchAndDisplayInitiatives called", {
-        token,
-        onlyMine,
-        offset,
-        limit,
-      });
       if (offset === 0) {
         setIsFetchingInitiatives(true);
       } else {

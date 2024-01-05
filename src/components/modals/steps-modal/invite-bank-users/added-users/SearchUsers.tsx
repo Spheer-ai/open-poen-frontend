@@ -31,7 +31,6 @@ const SearchUsers: React.FC<SearchUsersProps> = ({
       }
 
       const response = await searchUsersByEmail(user.token, searchQuery);
-      console.log("API Response:", response);
 
       const filteredResults = response.filter((result) => {
         const isAlreadyAdded = alreadyAddedEmails.some(
@@ -45,8 +44,6 @@ const SearchUsers: React.FC<SearchUsersProps> = ({
         userId: user.id,
       }));
 
-      console.log("Searched Emails and IDs:", searchedEmailsAndIds);
-
       setSearchResults(searchedEmailsAndIds);
       updateSearchResults(searchedEmailsAndIds);
     } catch (error) {
@@ -55,8 +52,6 @@ const SearchUsers: React.FC<SearchUsersProps> = ({
   };
 
   useEffect(() => {
-    console.log("Search Query Changed:", searchQuery);
-
     const debounceTimeout = setTimeout(() => {
       if (searchQuery) {
         fetchUsers();

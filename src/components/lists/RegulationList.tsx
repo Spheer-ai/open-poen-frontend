@@ -36,8 +36,6 @@ const RegulationList = () => {
   useParams();
 
   useEffect(() => {
-    console.log("action:", action);
-
     if (user && user.token && !permissionsFetched) {
       fetchPermissions("Funder", undefined, user.token)
         .then((permissions) => {
@@ -55,8 +53,6 @@ const RegulationList = () => {
     async function getRegulations() {
       try {
         setIsLoading(true);
-        console.log("Checking values: token", token);
-        console.log("Checking values: sponsorId", sponsorId);
         if (token && sponsorId) {
           const fetchedRegulations = await fetchFunderRegulations(
             token,
@@ -74,7 +70,6 @@ const RegulationList = () => {
   }, [sponsorId, token, refreshTrigger]);
 
   useEffect(() => {
-    console.log("action:", action);
     if (action === "add-regulation") {
       setIsModalOpen(true);
     }
@@ -117,9 +112,7 @@ const RegulationList = () => {
     navigate("/sponsors");
   };
 
-  const handleSearch = (query) => {
-    console.log("Search query in UserDetailsPage:", query);
-  };
+  const handleSearch = (query) => {};
 
   const handleRegulationClick = (regulationId: string) => {
     setSelectedRegulationId(regulationId);

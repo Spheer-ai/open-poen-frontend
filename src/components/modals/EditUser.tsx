@@ -98,8 +98,6 @@ const EditUserForm: React.FC<EditUserFormProps> = ({
       const response = await updateUserProfile(userId, formData, token);
       onUserEdited();
       handleClose();
-
-      console.log("User profile updated:", response);
     } catch (error) {
       console.error("Failed to update user profile:", error);
     }

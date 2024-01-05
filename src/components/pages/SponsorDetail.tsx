@@ -19,10 +19,6 @@ const SponsorDetail = () => {
   const token = user?.token || "";
 
   useEffect(() => {
-    console.log("SponsorDetail component rendered");
-    console.log("funderId in SponsorDetail:", funderId);
-    console.log("Type of funderId in SponsorDetail:", typeof funderId);
-
     if (funderId) {
       const fetchData = async () => {
         try {

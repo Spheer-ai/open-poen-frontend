@@ -85,7 +85,6 @@ const Step1InviteUsers: React.FC<Step1InviteUsersProps> = ({
 
   useEffect(() => {
     const userIdsString = userIds.join(", ");
-    console.log("User IDs in the background:", userIdsString);
   }, [alreadyAddedEmails, userIds]);
 
   const handleNext = () => {

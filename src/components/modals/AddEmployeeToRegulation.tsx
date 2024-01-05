@@ -82,15 +82,12 @@ const AddEmployeeToRegulation: React.FC<AddEmployeeToRegulationProps> = ({
         setSelectedGrantOfficers(grantOfficers);
         setSelectedPolicyOfficers(policyOfficers);
 
-        console.log("Searching for users by email...");
         const allUsersResponse = await getUsers(token);
-        console.log("allUsersResponse:", allUsersResponse);
 
         if (allUsersResponse && allUsersResponse.users) {
           setFilteredGrantOfficers(allUsersResponse.users);
           setFilteredPolicyOfficers(allUsersResponse.users);
         } else {
-          console.log("No users found in allUsersResponse.");
         }
 
         setIsLoading(false);
@@ -172,8 +169,6 @@ const AddEmployeeToRegulation: React.FC<AddEmployeeToRegulationProps> = ({
           "policy officer",
         ),
       ]);
-
-      console.log("API requests completed successfully");
 
       handleClose();
       onEmployeeAdded();

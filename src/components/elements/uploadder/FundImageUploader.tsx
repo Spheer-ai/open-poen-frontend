@@ -21,12 +21,8 @@ const FundImageUploader: React.FC<ImageUploaderProps> = ({
     if (file) {
       try {
         setIsUploading(true);
-        console.log("Initiating image upload...");
-        console.log("Initiative ID:", initiativeId);
-        console.log("Token:", token);
         await uploadFundPicture(initiativeId, file, token);
         setSelectedImage(file);
-        console.log("Image uploaded successfully.");
       } catch (error) {
         console.error("Error uploading image:", error);
       } finally {

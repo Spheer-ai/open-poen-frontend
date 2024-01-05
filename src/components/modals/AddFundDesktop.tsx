@@ -69,8 +69,6 @@ const AddFundDesktop: React.FC<AddFundDesktopProps> = ({
             grantId,
           );
 
-          console.log("Grant Details Data:", grantDetailsData);
-
           setGrantDetails(grantDetailsData);
 
           setFundData({
@@ -210,8 +208,6 @@ const AddFundDesktop: React.FC<AddFundDesktopProps> = ({
         token,
         requestData,
       );
-
-      console.log("Response from the server:", response);
 
       handleClose();
       onFundAdded();

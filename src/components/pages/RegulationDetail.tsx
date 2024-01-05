@@ -103,14 +103,8 @@ const RegulationDetail: React.FC<RegulationDetailProps> = ({
               user.token,
             );
 
-          console.log(
-            "Fetched permissions for the regulation:",
-            regulationPermissions,
-          );
-
           const funderPermissions: string[] | undefined =
             await fetchPermissions("Funder", parseInt(sponsorId), user.token);
-          console.log("Fetched permissions for the funder:", funderPermissions);
 
           if (regulationPermissions && regulationPermissions.includes("edit")) {
             setHasEditPermission(true);
@@ -139,7 +133,6 @@ const RegulationDetail: React.FC<RegulationDetailProps> = ({
             sponsorId,
             regulationId,
           );
-          console.log("Fetched regulation details:", details);
           setRegulationDetails(details);
         } else {
           console.error("Token or sponsorId is not available");
@@ -152,7 +145,6 @@ const RegulationDetail: React.FC<RegulationDetailProps> = ({
   }, [sponsorId, regulationId, user, refreshTrigger]);
 
   useEffect(() => {
-    console.log("action:", action);
     if (action === "edit-regulation") {
       setIsModalOpen(true);
     }

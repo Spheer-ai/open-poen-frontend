@@ -63,8 +63,6 @@ const EditPayment: React.FC<EditPaymentProps> = ({
   initiativeId,
   fields,
 }) => {
-  console.log("fieldPermissions:", fieldPermissions);
-  console.log("Token prop received in EditPayment:", token);
   const [modalIsOpen, setModalIsOpen] = useState(isOpen);
   const [displayDate, setDisplayDate] = useState("");
   const [apiDate, setApiDate] = useState("");
@@ -109,9 +107,7 @@ const EditPayment: React.FC<EditPaymentProps> = ({
     }
   }, [isOpen, paymentData, token, paymentId]);
 
-  useEffect(() => {
-    console.log("Payment data received in EditPayment:", paymentData);
-  }, [paymentData]);
+  useEffect(() => {}, [paymentData]);
 
   useEffect(() => {
     if (isOpen) {
@@ -145,7 +141,6 @@ const EditPayment: React.FC<EditPaymentProps> = ({
 
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newDate = e.target.value;
-    console.log("New Date Value:", newDate);
 
     setDisplayDate(newDate);
 
@@ -166,7 +161,6 @@ const EditPayment: React.FC<EditPaymentProps> = ({
         console.error("Token is not available.");
         return;
       }
-      console.log("Received paymentId:", paymentId);
       const displayDateObject = new Date(displayDate);
 
       if (isNaN(displayDateObject.getTime())) {
@@ -204,8 +198,6 @@ const EditPayment: React.FC<EditPaymentProps> = ({
           delete requestData[key];
         }
       }
-
-      console.log("Data to be sent to API:", requestData);
 
       for (const file of selectedFiles) {
         await uploadPaymentAttachment(paymentId, file, token);
