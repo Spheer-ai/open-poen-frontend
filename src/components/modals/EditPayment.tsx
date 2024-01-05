@@ -74,7 +74,7 @@ const EditPayment: React.FC<EditPaymentProps> = ({
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
 
   const [transactionData, setTransactionData] = useState({
-    transaction_amount: 0,
+    transaction_amount: "",
     booking_date: "",
     creditor_name: "",
     debtor_name: "",
@@ -83,7 +83,7 @@ const EditPayment: React.FC<EditPaymentProps> = ({
     route: "inkomen",
     short_user_description: "",
     long_user_description: "",
-    hidden: true,
+    hidden: false,
   });
 
   const fetchAttachments = async () => {
@@ -123,7 +123,7 @@ const EditPayment: React.FC<EditPaymentProps> = ({
   useEffect(() => {
     if (paymentData) {
       setTransactionData({
-        transaction_amount: paymentData.transaction_amount,
+        transaction_amount: paymentData.transaction_amount.toString(),
         booking_date: paymentData.booking_date,
         creditor_name: paymentData.creditor_name,
         debtor_name: paymentData.debtor_name,
@@ -132,7 +132,7 @@ const EditPayment: React.FC<EditPaymentProps> = ({
         route: paymentData.route || "inkomen",
         short_user_description: paymentData.short_user_description,
         long_user_description: paymentData.long_user_description,
-        hidden: paymentData.hidden || true,
+        hidden: paymentData.hidden || false,
       });
 
       setDisplayDate(formatDateForInput(new Date(paymentData.booking_date)));
@@ -222,7 +222,7 @@ const EditPayment: React.FC<EditPaymentProps> = ({
 
   const resetState = () => {
     setTransactionData({
-      transaction_amount: 0,
+      transaction_amount: "",
       booking_date: "",
       creditor_name: "",
       debtor_name: "",
@@ -231,7 +231,7 @@ const EditPayment: React.FC<EditPaymentProps> = ({
       route: "inkomen",
       short_user_description: "",
       long_user_description: "",
-      hidden: true,
+      hidden: false,
     });
     setDisplayDate("");
     setApiDate("");
@@ -429,14 +429,20 @@ const EditPayment: React.FC<EditPaymentProps> = ({
                   <>
                     <label className={styles.labelField}>Bedrag:</label>
                     <input
-                      type="number"
-                      value={transactionData.transaction_amount.toString()}
-                      onChange={(e) =>
-                        setTransactionData({
-                          ...transactionData,
-                          transaction_amount: parseFloat(e.target.value),
-                        })
-                      }
+                      type="text"
+                      value={transactionData.transaction_amount}
+                      onChange={(e) => {
+                        const inputValue = e.target.value;
+
+                        // Check if the input is a valid number or an empty string
+                        if (/^-?\d*\.?\d*$|^$/.test(inputValue)) {
+                          // Set the input value in your state
+                          setTransactionData({
+                            ...transactionData,
+                            transaction_amount: inputValue,
+                          });
+                        }
+                      }}
                       onKeyDown={handleEnterKeyPress}
                     />
                   </>
