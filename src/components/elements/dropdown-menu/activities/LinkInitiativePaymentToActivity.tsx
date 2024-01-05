@@ -48,9 +48,6 @@ const LinkInitiativePaymentToActivity: React.FC<
   };
 
   useEffect(() => {
-    console.log("Token:", token);
-    console.log("Payment ID:", paymentId);
-    console.log("Initiative ID:", initiativeId);
     if (isSelectClicked) {
       const getLinkableActivitiesForPayment = async () => {
         try {

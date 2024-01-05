@@ -68,7 +68,6 @@ const LinkInitiativeToPayment: React.FC<LinkInitiativeToPaymentProps> = ({
   };
 
   const handleInputClick = async () => {
-    // When the input is clicked, fetch the initiatives as well
     handleInitiativeNameClick();
   };
 
