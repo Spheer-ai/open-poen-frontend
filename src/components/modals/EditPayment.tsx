@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styles from "../../assets/scss/layout/AddFundDesktop.module.scss";
 import LoadingDot from "../animation/LoadingDot";
+import LinkInitiativePaymentToActivity from "../elements/dropdown-menu/activities/LinkInitiativePaymentToActivity";
 import {
   cancelPayment,
   deletePaymentAttachment,
@@ -46,6 +47,7 @@ interface EditPaymentProps {
   fieldPermissions;
   fields: string[];
   hasDeletePermission;
+  initiativeId?: string | null;
 }
 
 const EditPayment: React.FC<EditPaymentProps> = ({
@@ -58,6 +60,7 @@ const EditPayment: React.FC<EditPaymentProps> = ({
   token,
   fieldPermissions,
   hasDeletePermission,
+  initiativeId,
   fields,
 }) => {
   console.log("fieldPermissions:", fieldPermissions);
@@ -318,6 +321,11 @@ const EditPayment: React.FC<EditPaymentProps> = ({
     return attachment.attachment_url;
   };
 
+  function parseNumberOrReturnNull(value) {
+    const parsedValue = parseInt(value, 10);
+    return isNaN(parsedValue) ? null : parsedValue;
+  }
+
   return (
     <>
       <div
@@ -447,6 +455,17 @@ const EditPayment: React.FC<EditPaymentProps> = ({
                     />
                   </>
                 )}
+            </div>
+            <div className={styles.formGroup}>
+              <label className={styles.labelField}>Activiteit:</label>
+              <LinkInitiativePaymentToActivity
+                token={token !== null ? token : undefined}
+                paymentId={parseNumberOrReturnNull(paymentId)}
+                initiativeId={parseNumberOrReturnNull(initiativeId)}
+                activityName={""}
+                isInitiativeLinked={true}
+                linkedActivityId={null}
+              />
             </div>
             {fieldPermissions &&
               fieldPermissions.fields &&

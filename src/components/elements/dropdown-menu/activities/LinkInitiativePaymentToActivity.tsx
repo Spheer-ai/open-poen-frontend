@@ -12,42 +12,29 @@ interface Activity {
   name: string;
 }
 
-interface LinkActivityToPaymentProps {
-  token: string;
-  paymentId: number;
+interface LinkInitiativePaymentToActivityProps {
+  token?: string;
+  paymentId: number | null;
   initiativeId: number | null;
-  activityName: string;
-  onActivityLinked: (transactionId: number, activityId: number | null) => void;
   linkedActivityId: number | null;
+  activityName: string;
   isInitiativeLinked: boolean;
-  linkingStatus: Record<
-    number,
-    { initiativeId: number | null; activityId: number | null }
-  >;
 }
 
-const LinkActivityToPayment: React.FC<LinkActivityToPaymentProps> = ({
-  token,
-  paymentId,
-  initiativeId,
-  activityName,
-  onActivityLinked,
-  linkedActivityId,
-  isInitiativeLinked,
-  linkingStatus,
-}) => {
-  const [linkableActivities, setLinkableActivities] = useState<Activity[]>(
-    linkedActivityId !== null
-      ? [{ id: linkedActivityId, name: activityName }]
-      : [],
-  );
-
+const LinkInitiativePaymentToActivity: React.FC<
+  LinkInitiativePaymentToActivityProps
+> = ({ paymentId, initiativeId, linkedActivityId, token, activityName }) => {
   const [selectedActivity, setSelectedActivity] = useState<
     number | string | null
   >(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isSelectClicked, setIsSelectClicked] = useState<boolean>(false);
   const [isLinking, setIsLinking] = useState<boolean>(false);
+  const [linkableActivities, setLinkableActivities] = useState<Activity[]>(
+    linkedActivityId !== null
+      ? [{ id: linkedActivityId, name: activityName }]
+      : [],
+  );
   const [noDataLabel, setNoDataLabel] = useState<string>("");
 
   const verbreekVerbindingOption: Activity = {
@@ -61,16 +48,17 @@ const LinkActivityToPayment: React.FC<LinkActivityToPaymentProps> = ({
   };
 
   useEffect(() => {
+    console.log("Token:", token);
+    console.log("Payment ID:", paymentId);
+    console.log("Initiative ID:", initiativeId);
     if (isSelectClicked) {
       const getLinkableActivitiesForPayment = async () => {
         try {
           setIsLoading(true);
-          const selectedInitiativeId =
-            linkingStatus[paymentId]?.initiativeId || initiativeId;
 
           const activities: Activity[] = await fetchLinkableActivities(
             token,
-            selectedInitiativeId,
+            initiativeId,
           );
 
           setLinkableActivities([verbreekVerbindingOption, ...activities]);
@@ -83,7 +71,7 @@ const LinkActivityToPayment: React.FC<LinkActivityToPaymentProps> = ({
 
       getLinkableActivitiesForPayment();
     }
-  }, [token, paymentId, initiativeId, isSelectClicked, linkingStatus]);
+  }, [token, paymentId, initiativeId, isSelectClicked]);
 
   useEffect(() => {
     if (selectedActivity !== null) {
@@ -97,9 +85,6 @@ const LinkActivityToPayment: React.FC<LinkActivityToPaymentProps> = ({
 
       let valueToPass: number | null = null;
 
-      const selectedInitiativeId =
-        linkingStatus[paymentId]?.initiativeId || initiativeId;
-
       if (
         selectedActivity !== null &&
         selectedActivity !== verbreekVerbindingOption.id
@@ -109,14 +94,8 @@ const LinkActivityToPayment: React.FC<LinkActivityToPaymentProps> = ({
         }
       }
 
-      await linkActivityToPayment(
-        token,
-        paymentId,
-        selectedInitiativeId,
-        valueToPass,
-      );
+      await linkActivityToPayment(token, paymentId, initiativeId, valueToPass);
 
-      onActivityLinked(paymentId, valueToPass);
       setIsLoading(false);
       setIsLinking(false);
     } catch (error) {
@@ -131,9 +110,9 @@ const LinkActivityToPayment: React.FC<LinkActivityToPaymentProps> = ({
   }));
 
   return (
-    <div className={styles["customDropdown"]}>
+    <div className={styles["customDropdown"]} style={{ marginTop: "10px" }}>
       <div className={styles["customContainer"]}>
-        {linkingStatus[paymentId]?.initiativeId === null ? (
+        {[paymentId] === null ? (
           <div className={styles["disabled-dropdown"]}>
             <span className={styles["initiativeText"]}>
               {" "}
@@ -173,7 +152,7 @@ const LinkActivityToPayment: React.FC<LinkActivityToPaymentProps> = ({
                     ...provided,
                     borderRadius: "6px",
                     padding: "10px 15px",
-                    width: "225px",
+                    width: "100%",
                   }),
                 }}
                 value={
@@ -213,4 +192,4 @@ const LinkActivityToPayment: React.FC<LinkActivityToPaymentProps> = ({
   );
 };
 
-export default LinkActivityToPayment;
+export default LinkInitiativePaymentToActivity;

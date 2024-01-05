@@ -43,7 +43,7 @@ const TransactionFilters: React.FC<
     control: (provided) => ({
       ...provided,
       color: "black",
-      borderRadius: "8px",
+      borderRadius: "6px",
       boxShadow: "none",
     }),
     input: (provided) => ({
@@ -52,9 +52,9 @@ const TransactionFilters: React.FC<
     }),
     menu: (provided) => ({
       ...provided,
-      borderRadius: "8px",
-      width: "fit-content",
+      borderRadius: "6px",
       padding: "10px 15px",
+      width: "fit-content",
     }),
     option: (provided, state) => ({
       ...provided,
@@ -81,13 +81,13 @@ const TransactionFilters: React.FC<
   const uniqueInitiatives = Array.from(
     new Set(transactions.map((t) => t.initiative_name)),
   )
-    .filter((initiative) => initiative !== null) // Filter out null values
+    .filter((initiative) => initiative !== null)
     .map((initiative) => ({ value: initiative, label: initiative }));
 
   const uniqueActivities = Array.from(
     new Set(transactions.map((t) => t.activity_name)),
   )
-    .filter((activity) => activity !== null) // Filter out null values
+    .filter((activity) => activity !== null)
     .map((activity) => ({ value: activity, label: activity }));
 
   const handleChange = (

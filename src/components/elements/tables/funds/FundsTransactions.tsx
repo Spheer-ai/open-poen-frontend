@@ -559,6 +559,7 @@ const FundsTransactions: React.FC<{
           fieldPermissions={entityPermissions}
           fields={[]}
           hasDeletePermission={hasDeletePermission}
+          initiativeId={initiativeId}
         />
       </div>
     </>
