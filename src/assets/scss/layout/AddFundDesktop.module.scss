@@ -457,3 +457,44 @@ body {
 .chart-count {
   font-size: 12px;
 }
+
+.containerPreview {
+  display: flex;
+  position: relative;
+  width: 100%;
+  flex-wrap: wrap;
+  margin: 15px 0px;
+
+  .imagePreview {
+    flex-basis: calc(25% - 10px);
+    margin: 5px;
+    background: #e9eef1;
+    border-radius: 8px;
+    display: flex;
+
+    img {
+      width: 100%;
+    }
+  }
+}
+
+.imageContainer {
+  display: block;
+  flex-basis: 100%;
+  min-height: 100px;
+}
+
+.pdfPreview {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.pdfContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}

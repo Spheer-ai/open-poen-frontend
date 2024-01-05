@@ -340,7 +340,13 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
                   <>
                     <p>
                       Toegekend budget: <br />
-                      <span>€ {fundDetails.budget}</span>
+                      <span>
+                        €{" "}
+                        {fundDetails.budget.toLocaleString("nl-NL", {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })}
+                      </span>
                     </p>
                   </>
                 ) : (
@@ -355,7 +361,13 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
                   <>
                     <p>
                       Ontvangen budget: <br />
-                      <span>€ {fundDetails.income}</span>
+                      <span>
+                        €{" "}
+                        {fundDetails.income.toLocaleString("nl-NL", {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })}
+                      </span>
                     </p>
                   </>
                 ) : (
@@ -372,7 +384,11 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
                       Besteed:
                       <br />
                       <span style={{ color: "#B82466" }}>
-                        € {fundDetails.expenses}
+                        €{" "}
+                        {fundDetails.expenses.toLocaleString("nl-NL", {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })}
                       </span>
                     </p>
                   </>
@@ -390,7 +406,11 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
                       <p style={{ color: "#008000" }}>
                         Beschikbaar budget: <br />
                         <span style={{ color: "#008000" }}>
-                          € {availableBudget}
+                          €{" "}
+                          {availableBudget.toLocaleString("nl-NL", {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          })}
                         </span>
                       </p>
                     </>
@@ -475,7 +495,12 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
             token={user?.token || ""}
           />
         )}
-        {activeTab === "media" && <FundsMedia initiativeId={initiativeId} />}
+        {activeTab === "media" && (
+          <FundsMedia
+            initiativeId={initiativeId}
+            authToken={user?.token || ""}
+          />
+        )}
         {activeTab === "gebruikers" && (
           <FundsUsers initiativeId={initiativeId} token={user?.token || ""} />
         )}

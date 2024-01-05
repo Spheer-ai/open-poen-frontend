@@ -15,6 +15,8 @@ interface ActivityDetails {
   name?: string;
   description?: string;
   budget?: number;
+  purpose?: string;
+  target_audience?: string;
 }
 
 interface EditActivityProps {
@@ -52,9 +54,12 @@ const EditActivity: React.FC<EditActivityProps> = ({
   });
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [charCount, setCharCount] = useState(0);
+  const [purposeCount, setPurposeCount] = useState(0);
   const [nameError, setNameError] = useState("");
   const [isSaveClicked, setIsSaveClicked] = useState(false);
   const [descriptionError, setDescriptionError] = useState("");
+  const [purposeError, setPurposeError] = useState("");
+  const [targetAudienceError, setTargetAudienceError] = useState("");
 
   useEffect(() => {
     if (isOpen) {
@@ -98,6 +103,8 @@ const EditActivity: React.FC<EditActivityProps> = ({
       const updatedActivityData = {
         name: formData.name || "",
         description: formData.description || "",
+        purpose: formData.purpose || "",
+        target_audience: formData.target_audience || "",
         hidden: isHidden,
         budget: formData.budget || 0,
       };
@@ -231,6 +238,75 @@ const EditActivity: React.FC<EditActivityProps> = ({
                 </p>
               )}
               <div className={styles["chart-count"]}>{charCount} / 512</div>
+            </>
+          )}
+        </div>
+        <div className={styles.formGroup}>
+          {fieldPermissions.fields.includes("purpose") && (
+            <>
+              <label className={styles.label}>Doel:</label>
+              <textarea
+                placeholder="Doelstelling"
+                value={formData?.purpose || ""}
+                onChange={(e) => {
+                  const newPurpose = e.target.value;
+
+                  if (newPurpose.length > 512) {
+                    setPurposeError(
+                      "Doelstelling mag niet meer dan 512 karakters bevatten",
+                    );
+                  } else {
+                    setPurposeError("");
+                  }
+
+                  setFormData({ ...formData, purpose: newPurpose });
+                  setPurposeCount(newPurpose.length);
+                }}
+                style={{ borderColor: purposeError ? "red" : "" }}
+              />
+              {purposeError && (
+                <p style={{ color: "red", display: "block", marginTop: "5px" }}>
+                  {purposeError}
+                </p>
+              )}
+              <div className={styles["chart-count"]}>{purposeCount} / 512</div>
+            </>
+          )}
+        </div>
+        <div className={styles.formGroup}>
+          {fieldPermissions.fields.includes("target_audience") && (
+            <>
+              <label className={styles.label}>Doelgroep:</label>
+              <input
+                type="text"
+                placeholder="Doelgroep"
+                value={formData?.target_audience || ""}
+                onKeyPress={handleEnterKeyPress}
+                onChange={(e) => {
+                  const newTargetAudience = e.target.value;
+
+                  if (isSaveClicked) {
+                    if (!newTargetAudience.trim()) {
+                      setTargetAudienceError("Doelgroep mag niet leeg zijn");
+                    } else {
+                      setTargetAudienceError("");
+                    }
+                  }
+
+                  if (newTargetAudience.length <= 64) {
+                    setFormData({
+                      ...formData,
+                      target_audience: newTargetAudience,
+                    });
+                  }
+                  setCharCount(newTargetAudience.length);
+                }}
+              />
+              {isSaveClicked && targetAudienceError && (
+                <p style={{ color: "red", display: "block", marginTop: "5px" }}>
+                  {targetAudienceError}
+                </p>
+              )}
             </>
           )}
         </div>

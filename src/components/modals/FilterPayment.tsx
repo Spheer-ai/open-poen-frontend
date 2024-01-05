@@ -176,19 +176,19 @@ const FilterPayment: React.FC<FilterPaymentProps> = ({
               className={styles.accordionHeader}
               onClick={() => toggleAccordion("amount")}
             >
-              Hoeveelheid {renderIcon(amountOpen)}
+              Bedrag {renderIcon(amountOpen)}
             </button>
             {amountOpen && (
               <div className={styles.accordionContent}>
                 <input
                   type="number"
-                  placeholder="Min Hoeveelheid"
+                  placeholder="Min Bedrag"
                   value={minAmount}
                   onChange={(e) => setMinAmount(e.target.value)}
                 />
                 <input
                   type="number"
-                  placeholder="Max Hoeveelheid"
+                  placeholder="Max Bedrag"
                   value={maxAmount}
                   onChange={(e) => setMaxAmount(e.target.value)}
                 />

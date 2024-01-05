@@ -343,7 +343,13 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
                   <>
                     <p>
                       Toegekend budget: <br />
-                      <span>€ {activityDetails.budget}</span>
+                      <span>
+                        €{" "}
+                        {activityDetails.budget.toLocaleString("nl-NL", {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })}
+                      </span>
                     </p>
                   </>
                 ) : (
@@ -358,7 +364,13 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
                   <>
                     <p>
                       Ontvangen budget: <br />
-                      <span>€ {activityDetails.income}</span>
+                      <span>
+                        €{" "}
+                        {activityDetails.income.toLocaleString("nl-NL", {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })}
+                      </span>
                     </p>
                   </>
                 ) : (
@@ -374,7 +386,11 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
                     <p style={{ color: "#B82466" }}>
                       Besteed: <br />
                       <span style={{ color: "#B82466" }}>
-                        € {activityDetails.expenses}
+                        €{" "}
+                        {activityDetails.expenses.toLocaleString("nl-NL", {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })}
                       </span>
                     </p>
                   </>
@@ -392,7 +408,11 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
                       <p style={{ color: "#008000" }}>
                         Beschikbaar budget: <br />
                         <span style={{ color: "#008000" }}>
-                          € {availableBudget}
+                          €{" "}
+                          {availableBudget.toLocaleString("nl-NL", {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          })}
                         </span>
                       </p>
                     </>
@@ -478,7 +498,11 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
           />
         )}
         {activeTab === "media" && (
-          <ActivityMedia initiativeId={initiativeId} activityId={activityId} />
+          <ActivityMedia
+            initiativeId={initiativeId}
+            activityId={activityId}
+            authToken={user?.token || ""}
+          />
         )}
         {activeTab === "gebruikers" && (
           <ActivityUsers
