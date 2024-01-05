@@ -49,7 +49,6 @@ const InviteBankUsersModal: React.FC<InviteBankUsersModalProps> = ({
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
     const stepParam = searchParams.get("step");
-    console.log("stepParam:", stepParam);
 
     if (stepParam === "2") {
       setTimeout(() => {
@@ -60,7 +59,6 @@ const InviteBankUsersModal: React.FC<InviteBankUsersModalProps> = ({
     ) {
       setCurrentStep(1);
     }
-    console.log("currentStep:", currentStep);
   }, [location.search, location.pathname]);
 
   const handleNextStep = () => {
@@ -82,8 +80,6 @@ const InviteBankUsersModal: React.FC<InviteBankUsersModalProps> = ({
       onClose();
     }
   };
-
-  console.log("isOpen:", isOpen);
 
   const modalClasses = `${styles.modal} ${isVisible ? styles.open : ""}`;
 

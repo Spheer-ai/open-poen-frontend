@@ -43,7 +43,6 @@ const EditActivity: React.FC<EditActivityProps> = ({
   activityData,
   fieldPermissions,
 }) => {
-  console.log("fieldPermissions:", fieldPermissions);
   const [modalIsOpen, setModalIsOpen] = useState(isOpen);
   const [isHidden, setIsHidden] = useState(false);
   const [apiError, setApiError] = useState("");

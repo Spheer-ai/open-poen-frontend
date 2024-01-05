@@ -93,7 +93,6 @@ const AddRegulationDesktop: React.FC<AddRegulationDesktopProps> = ({
       handleClose();
     } catch (error) {
       console.error("Error object:", error);
-      console.log("Error message:", error.message);
       console.error("Failed to create regulation:", error.message);
       if (error.message === "Naam is al in gebruik.") {
         setUniqueNameError(true);

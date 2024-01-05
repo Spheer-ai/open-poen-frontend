@@ -19,10 +19,9 @@ const AddPayment: React.FC<AddPaymentProps> = ({
   initiativeId,
   activityId,
 }) => {
-  const [modalIsOpen, setModalIsOpen] = useState(isOpen);
-  const [paymentData, setPaymentData] = useState({
+  const initialPaymentData = {
     booking_date: new Date(),
-    transaction_amount: 0,
+    transaction_amount: "",
     creditor_name: "",
     creditor_account: "",
     debtor_name: "",
@@ -34,7 +33,9 @@ const AddPayment: React.FC<AddPaymentProps> = ({
     type: "handmatig",
     initiative_id: Number(initiativeId),
     activity_id: activityId ? Number(activityId) : null,
-  });
+  };
+  const [modalIsOpen, setModalIsOpen] = useState(isOpen);
+  const [paymentData, setPaymentData] = useState(initialPaymentData);
 
   useEffect(() => {
     if (isOpen) {
@@ -61,13 +62,12 @@ const AddPayment: React.FC<AddPaymentProps> = ({
         booking_date: formattedDate,
       };
 
-      console.log("Payment Data to be sent:", dataToSend);
-
       await createPayment(dataToSend, token);
 
       onPaymentAdded();
 
       handleClose();
+      setPaymentData(initialPaymentData);
     } catch (error) {
       console.error("Error creating payment:", error);
     }
@@ -77,6 +77,7 @@ const AddPayment: React.FC<AddPaymentProps> = ({
     if (!isBlockingInteraction) {
       setModalIsOpen(false);
       onClose();
+      setPaymentData(initialPaymentData);
     }
   };
 
@@ -110,14 +111,17 @@ const AddPayment: React.FC<AddPaymentProps> = ({
           <h3>Info</h3>
           <label className={styles.labelField}>Bedrag:</label>
           <input
-            type="number"
+            type="text"
             value={paymentData.transaction_amount}
-            onChange={(e) =>
-              setPaymentData({
-                ...paymentData,
-                transaction_amount: Number(e.target.value),
-              })
-            }
+            onChange={(e) => {
+              const inputValue = e.target.value;
+              if (/^-?\d*\.?\d*$/.test(inputValue)) {
+                setPaymentData({
+                  ...paymentData,
+                  transaction_amount: inputValue,
+                });
+              }
+            }}
             onKeyDown={handleEnterKeyPress}
           />
         </div>

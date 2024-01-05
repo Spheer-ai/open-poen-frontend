@@ -54,7 +54,6 @@ const FundsUsers: React.FC<{
     setRefreshTrigger((prev) => prev + 1);
   };
 
-  console.log("initiativeOwners:", initiativeOwners);
   return (
     <div>
       <LinkFundOwners

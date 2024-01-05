@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styles from "../../assets/scss/layout/AddFundDesktop.module.scss";
 import LoadingDot from "../animation/LoadingDot";
+import LinkInitiativePaymentToActivity from "../elements/dropdown-menu/activities/LinkInitiativePaymentToActivity";
 import {
   cancelPayment,
   deletePaymentAttachment,
@@ -46,6 +47,7 @@ interface EditPaymentProps {
   fieldPermissions;
   fields: string[];
   hasDeletePermission;
+  initiativeId?: string | null;
 }
 
 const EditPayment: React.FC<EditPaymentProps> = ({
@@ -58,10 +60,9 @@ const EditPayment: React.FC<EditPaymentProps> = ({
   token,
   fieldPermissions,
   hasDeletePermission,
+  initiativeId,
   fields,
 }) => {
-  console.log("fieldPermissions:", fieldPermissions);
-  console.log("Token prop received in EditPayment:", token);
   const [modalIsOpen, setModalIsOpen] = useState(isOpen);
   const [displayDate, setDisplayDate] = useState("");
   const [apiDate, setApiDate] = useState("");
@@ -74,7 +75,7 @@ const EditPayment: React.FC<EditPaymentProps> = ({
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
 
   const [transactionData, setTransactionData] = useState({
-    transaction_amount: 0,
+    transaction_amount: "",
     booking_date: "",
     creditor_name: "",
     debtor_name: "",
@@ -83,7 +84,7 @@ const EditPayment: React.FC<EditPaymentProps> = ({
     route: "inkomen",
     short_user_description: "",
     long_user_description: "",
-    hidden: true,
+    hidden: false,
   });
 
   const fetchAttachments = async () => {
@@ -106,9 +107,7 @@ const EditPayment: React.FC<EditPaymentProps> = ({
     }
   }, [isOpen, paymentData, token, paymentId]);
 
-  useEffect(() => {
-    console.log("Payment data received in EditPayment:", paymentData);
-  }, [paymentData]);
+  useEffect(() => {}, [paymentData]);
 
   useEffect(() => {
     if (isOpen) {
@@ -123,7 +122,7 @@ const EditPayment: React.FC<EditPaymentProps> = ({
   useEffect(() => {
     if (paymentData) {
       setTransactionData({
-        transaction_amount: paymentData.transaction_amount,
+        transaction_amount: paymentData.transaction_amount.toString(),
         booking_date: paymentData.booking_date,
         creditor_name: paymentData.creditor_name,
         debtor_name: paymentData.debtor_name,
@@ -132,7 +131,7 @@ const EditPayment: React.FC<EditPaymentProps> = ({
         route: paymentData.route || "inkomen",
         short_user_description: paymentData.short_user_description,
         long_user_description: paymentData.long_user_description,
-        hidden: paymentData.hidden || true,
+        hidden: paymentData.hidden || false,
       });
 
       setDisplayDate(formatDateForInput(new Date(paymentData.booking_date)));
@@ -142,7 +141,6 @@ const EditPayment: React.FC<EditPaymentProps> = ({
 
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newDate = e.target.value;
-    console.log("New Date Value:", newDate);
 
     setDisplayDate(newDate);
 
@@ -163,7 +161,6 @@ const EditPayment: React.FC<EditPaymentProps> = ({
         console.error("Token is not available.");
         return;
       }
-      console.log("Received paymentId:", paymentId);
       const displayDateObject = new Date(displayDate);
 
       if (isNaN(displayDateObject.getTime())) {
@@ -202,8 +199,6 @@ const EditPayment: React.FC<EditPaymentProps> = ({
         }
       }
 
-      console.log("Data to be sent to API:", requestData);
-
       for (const file of selectedFiles) {
         await uploadPaymentAttachment(paymentId, file, token);
       }
@@ -222,7 +217,7 @@ const EditPayment: React.FC<EditPaymentProps> = ({
 
   const resetState = () => {
     setTransactionData({
-      transaction_amount: 0,
+      transaction_amount: "",
       booking_date: "",
       creditor_name: "",
       debtor_name: "",
@@ -231,7 +226,7 @@ const EditPayment: React.FC<EditPaymentProps> = ({
       route: "inkomen",
       short_user_description: "",
       long_user_description: "",
-      hidden: true,
+      hidden: false,
     });
     setDisplayDate("");
     setApiDate("");
@@ -317,6 +312,11 @@ const EditPayment: React.FC<EditPaymentProps> = ({
   const isImage = (attachment: Attachment) => {
     return attachment.attachment_url;
   };
+
+  function parseNumberOrReturnNull(value) {
+    const parsedValue = parseInt(value, 10);
+    return isNaN(parsedValue) ? null : parsedValue;
+  }
 
   return (
     <>
@@ -429,18 +429,35 @@ const EditPayment: React.FC<EditPaymentProps> = ({
                   <>
                     <label className={styles.labelField}>Bedrag:</label>
                     <input
-                      type="number"
-                      value={transactionData.transaction_amount.toString()}
-                      onChange={(e) =>
-                        setTransactionData({
-                          ...transactionData,
-                          transaction_amount: parseFloat(e.target.value),
-                        })
-                      }
+                      type="text"
+                      value={transactionData.transaction_amount}
+                      onChange={(e) => {
+                        const inputValue = e.target.value;
+
+                        // Check if the input is a valid number or an empty string
+                        if (/^-?\d*\.?\d*$|^$/.test(inputValue)) {
+                          // Set the input value in your state
+                          setTransactionData({
+                            ...transactionData,
+                            transaction_amount: inputValue,
+                          });
+                        }
+                      }}
                       onKeyDown={handleEnterKeyPress}
                     />
                   </>
                 )}
+            </div>
+            <div className={styles.formGroup}>
+              <label className={styles.labelField}>Activiteit:</label>
+              <LinkInitiativePaymentToActivity
+                token={token !== null ? token : undefined}
+                paymentId={parseNumberOrReturnNull(paymentId)}
+                initiativeId={parseNumberOrReturnNull(initiativeId)}
+                activityName={""}
+                isInitiativeLinked={true}
+                linkedActivityId={null}
+              />
             </div>
             {fieldPermissions &&
               fieldPermissions.fields &&

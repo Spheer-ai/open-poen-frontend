@@ -89,18 +89,14 @@ export default function UserDetailsPage({
           );
 
           if (userPermissions && userPermissions.includes("edit")) {
-            console.log("User has edit permission");
             setHasEditPermission(true);
           } else {
-            console.log("User does not have edit permission");
             setHasEditPermission(false);
           }
 
           if (userPermissions && userPermissions.includes("delete")) {
-            console.log("User has delete permission");
             setHasDeletePermission(true);
           } else {
-            console.log("User does not have delete permission");
             setHasDeletePermission(false);
           }
         }
@@ -236,11 +232,6 @@ export default function UserDetailsPage({
       setIsChangePasswordModalOpen(true);
     }
   };
-
-  console.log("hasEditPermission:", hasEditPermission);
-  console.log("API Response for permissions:", entityPermissions);
-
-  console.log("User Details:", userDetails);
 
   return (
     <>

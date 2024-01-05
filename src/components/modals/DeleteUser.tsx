@@ -33,7 +33,6 @@ const DeleteUserForm: React.FC<DeleteUserFormProps> = ({
     try {
       const token = user?.token || "";
       const response = await deleteUser(userId, token);
-      console.log("User deleted:", response);
       onUserDeleted();
       handleClose();
     } catch (error) {

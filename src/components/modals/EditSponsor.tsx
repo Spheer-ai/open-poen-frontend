@@ -22,10 +22,6 @@ const EditSponsor: React.FC<EditSponsorProps> = ({
   currentName,
   currentUrl,
 }) => {
-  console.log("EditSponsor props - isOpen:", isOpen);
-  console.log("EditSponsor props - sponsorId:", sponsorId);
-  console.log("EditSponsor props - currentName:", currentName);
-  console.log("EditSponsor props - currentUrl:", currentUrl);
   const [modalIsOpen, setModalIsOpen] = useState(isOpen);
   const [funderName, setFunderName] = useState(currentName);
   const [funderUrl, setFunderUrl] = useState(currentUrl);

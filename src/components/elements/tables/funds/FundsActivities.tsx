@@ -38,7 +38,6 @@ const FundsActivities: React.FC<{
             Number(initiativeId),
             user?.token || "",
           );
-          console.log("Fetched activities:", result.activities);
           const updatedActivities = result.activities || [];
           setActivities(updatedActivities);
         } catch (error) {
@@ -70,7 +69,6 @@ const FundsActivities: React.FC<{
   };
 
   const handleActivityClick = (activityId) => {
-    console.log("Clicked activity ID:", activityId);
     setSelectedActivity(activityId);
     navigate(`/funds/${initiativeId}/activities/${activityId}`);
   };

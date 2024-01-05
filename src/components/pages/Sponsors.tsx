@@ -20,15 +20,12 @@ export default function Sponsors() {
   const isMobileScreen = window.innerWidth < 768;
 
   useEffect(() => {
-    console.log("action:", action);
     if (action === "add-sponsor") {
       setIsModalOpen(true);
     }
   }, [action]);
 
-  const handleSearch = (query) => {
-    console.log("Search query in UserDetailsPage:", query);
-  };
+  const handleSearch = (query) => {};
 
   const handleShowPageContent = (sponsorId) => {
     if (sponsorId !== undefined) {

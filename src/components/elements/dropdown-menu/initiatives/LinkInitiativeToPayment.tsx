@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import Select from "react-dropdown-select";
+import Select from "react-select";
 import styles from "../../../../assets/scss/TransactionOverview.module.scss";
 import LoadingDot from "../../../animation/LoadingDot";
 import {
@@ -35,11 +35,11 @@ const LinkInitiativeToPayment: React.FC<LinkInitiativeToPaymentProps> = ({
   const [linkableInitiatives, setLinkableInitiatives] = useState<Initiative[]>(
     [],
   );
-  const [selectedInitiative, setSelectedInitiative] = useState<number | "">("");
+  const [selectedInitiative, setSelectedInitiative] = useState<number | null>(
+    null,
+  );
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isSelectClicked, setIsSelectClicked] = useState<boolean>(false);
-  const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
-  const [noDataLabel, setNoDataLabel] = useState<string>("");
   const [isLinking, setIsLinking] = useState<boolean>(false);
 
   const verbreekVerbindingOption: Initiative = {
@@ -47,39 +47,32 @@ const LinkInitiativeToPayment: React.FC<LinkInitiativeToPaymentProps> = ({
     name: "Verbreek verbinding",
   };
 
-  const handleInitiativeNameClick = () => {
-    setIsDropdownOpen(true);
-
+  const handleInitiativeNameClick = async () => {
     if (!isSelectClicked) {
       setIsSelectClicked(true);
-      setNoDataLabel("Gegevens ophalen");
+
+      try {
+        setIsLoading(true);
+        const initiatives: Initiative[] = await fetchLinkableInitiatives(
+          token,
+          paymentId,
+        );
+
+        setLinkableInitiatives([verbreekVerbindingOption, ...initiatives]);
+
+        setIsLoading(false);
+      } catch (error) {
+        setIsLoading(false);
+      }
     }
   };
 
-  useEffect(() => {
-    if (isSelectClicked) {
-      const getLinkableInitiativesForPayment = async () => {
-        try {
-          setIsLoading(true);
-          const initiatives: Initiative[] = await fetchLinkableInitiatives(
-            token,
-            paymentId,
-          );
-
-          setLinkableInitiatives([verbreekVerbindingOption, ...initiatives]);
-
-          setIsLoading(false);
-        } catch (error) {
-          setIsLoading(false);
-        }
-      };
-
-      getLinkableInitiativesForPayment();
-    }
-  }, [token, paymentId, isSelectClicked]);
+  const handleInputClick = async () => {
+    handleInitiativeNameClick();
+  };
 
   useEffect(() => {
-    if (selectedInitiative !== "") {
+    if (selectedInitiative !== null) {
       handleLinkInitiative();
     }
   }, [selectedInitiative]);
@@ -89,7 +82,7 @@ const LinkInitiativeToPayment: React.FC<LinkInitiativeToPaymentProps> = ({
       setIsLinking(true);
       setIsLoading(true);
 
-      if (selectedInitiative !== undefined) {
+      if (selectedInitiative !== null) {
         if (selectedInitiative === verbreekVerbindingOption.id) {
           await linkInitiativeToPayment(token, paymentId, null);
           onInitiativeLinked(null);
@@ -122,10 +115,7 @@ const LinkInitiativeToPayment: React.FC<LinkInitiativeToPaymentProps> = ({
             </span>
           </div>
         ) : (
-          <div
-            onClick={handleInitiativeNameClick}
-            className="custom-dropdown-container"
-          >
+          <div onClick={handleInputClick} className="custom-dropdown-container">
             {isLinking ? (
               <div className={styles["loading-column"]}>
                 <div className={styles["loading-container"]}>
@@ -137,28 +127,46 @@ const LinkInitiativeToPayment: React.FC<LinkInitiativeToPaymentProps> = ({
               </div>
             ) : (
               <Select
-                values={
-                  selectedInitiative === ""
-                    ? []
-                    : mappedInitiatives.filter(
+                styles={{
+                  control: (provided) => ({
+                    ...provided,
+                    color: "black",
+                    borderRadius: "6px",
+                    padding: "2px 5px",
+                    boxShadow: "none",
+                    overflow: "auto",
+                  }),
+                  placeholder: (provided) => ({
+                    ...provided,
+                    color: "black",
+                  }),
+                  menu: (provided) => ({
+                    ...provided,
+                    borderRadius: "6px",
+                    padding: "10px 15px",
+                    width: "225px",
+                  }),
+                }}
+                value={
+                  selectedInitiative === null
+                    ? null
+                    : mappedInitiatives.find(
                         (option) => option.value === selectedInitiative,
                       )
                 }
                 options={mappedInitiatives}
-                onChange={(values) =>
-                  setSelectedInitiative(values[0] ? values[0].value : "")
+                onChange={(selectedOption) =>
+                  setSelectedInitiative(selectedOption?.value || null)
                 }
-                labelField="label"
-                valueField="value"
                 placeholder={
-                  selectedInitiative === ""
+                  selectedInitiative === null
                     ? initiativeName || "Verbind initiatief"
                     : mappedInitiatives.find(
                         (option) => option.value === selectedInitiative,
                       )?.label || ""
                 }
+                noOptionsMessage={() => (isLoading ? "Gegevens ophalen" : "")}
                 className={styles["custom-option"]}
-                noDataLabel={isLoading ? "Gegevens ophalen" : ""}
               />
             )}
           </div>

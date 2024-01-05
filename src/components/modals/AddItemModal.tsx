@@ -21,8 +21,6 @@ const AddItemModal: React.FC<AddItemModalProps & { isConfirmed?: boolean }> = ({
     e.stopPropagation();
   };
 
-  console.log("AddItemModal isOpen:", isOpen);
-
   const handleConfirmClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     if (onConfirm) {
       onConfirm();

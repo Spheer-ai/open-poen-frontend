@@ -75,8 +75,6 @@ const LinkFundOwner: React.FC<LinkFundOwnerProps> = ({
   };
 
   const handleRemoveUser = (userId: string) => {
-    console.log("Removing user with ID:", userId);
-    console.log("Current initiativeOwners:", initiativeOwners);
     setSelectedUserEmails((prevEmails) => {
       const newEmails = new Set(prevEmails);
       const userToRemove = initiativeOwners.find(
@@ -87,16 +85,12 @@ const LinkFundOwner: React.FC<LinkFundOwnerProps> = ({
         newEmails.delete(userToRemove.email);
       }
 
-      console.log("Updated selectedUserEmails:", Array.from(newEmails));
-
       return newEmails;
     });
 
     setSelectedUserIds((prevUserIds) => {
       const newUserIds = new Set(prevUserIds);
       newUserIds.delete(userId);
-
-      console.log("Updated selectedUserIds:", Array.from(newUserIds));
 
       return newUserIds;
     });
@@ -108,8 +102,6 @@ const LinkFundOwner: React.FC<LinkFundOwnerProps> = ({
 
   const handleSearch = async () => {
     try {
-      console.log("Searching for users with searchTerm:", searchTerm);
-
       const trimmedSearchTerm = searchTerm.trim();
 
       if (trimmedSearchTerm.length < 3) {
@@ -121,7 +113,6 @@ const LinkFundOwner: React.FC<LinkFundOwnerProps> = ({
         token,
         trimmedSearchTerm,
       );
-      console.log("Users with emails:", usersWithEmails);
 
       setSearchedUsers(usersWithEmails);
     } catch (error) {
@@ -145,12 +136,6 @@ const LinkFundOwner: React.FC<LinkFundOwnerProps> = ({
         ...Array.from(selectedUserIds),
         ...filteredInitiativeOwners.map((owner) => owner.id),
       ];
-
-      console.log("Data before filtering:", {
-        initiativeId,
-        updatedOwners,
-        token,
-      });
 
       await updateInitiativeOwners(initiativeId, updatedOwners, token);
 

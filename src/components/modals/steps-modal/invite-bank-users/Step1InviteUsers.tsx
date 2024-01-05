@@ -7,6 +7,14 @@ import {
 import AddedEmailsList from "./added-users/AddedEmailList";
 import SearchUsers from "./added-users/SearchUsers";
 
+interface UserProfile {
+  email: string;
+  userId: number;
+  profile_picture: {
+    attachment_thumbnail_url_128: string | null;
+  } | null;
+}
+
 interface Step1InviteUsersProps {
   onNextStep: () => void;
   bankAccountId: number | null;
@@ -23,13 +31,9 @@ const Step1InviteUsers: React.FC<Step1InviteUsersProps> = ({
   const [userIds, setUserIds] = useState<number[]>([]);
   const [userEmails, setUserEmails] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [alreadyAddedEmails, setAlreadyAddedEmails] = useState<
-    {
-      email: string;
-      userId: number;
-      profile_picture: string | null;
-    }[]
-  >([]);
+  const [alreadyAddedEmails, setAlreadyAddedEmails] = useState<UserProfile[]>(
+    [],
+  );
   const [searchResults, setSearchResults] = useState<
     {
       email: string;
@@ -81,7 +85,6 @@ const Step1InviteUsers: React.FC<Step1InviteUsersProps> = ({
 
   useEffect(() => {
     const userIdsString = userIds.join(", ");
-    console.log("User IDs in the background:", userIdsString);
   }, [alreadyAddedEmails, userIds]);
 
   const handleNext = () => {
@@ -143,8 +146,8 @@ const Step1InviteUsers: React.FC<Step1InviteUsersProps> = ({
                 <img
                   src="/sandbox-bank.png"
                   alt="Sandbox Bank Logo"
-                  width="60"
-                  height="60"
+                  width="80"
+                  height="80"
                 />
               </div>
             ) : (
@@ -153,8 +156,8 @@ const Step1InviteUsers: React.FC<Step1InviteUsersProps> = ({
                   <img
                     src={bankInfo.logo}
                     alt={`${bankInfo.name} Logo`}
-                    width="60"
-                    height="60"
+                    width="80"
+                    height="80"
                   />
                 </div>
               )
@@ -175,17 +178,22 @@ const Step1InviteUsers: React.FC<Step1InviteUsersProps> = ({
                 <div className={styles["profile-container"]}>
                   {user.profile_picture ? (
                     <img
-                      src={user.profile_picture}
+                      src={
+                        user.profile_picture.attachment_thumbnail_url_128 ||
+                        "/profile-placeholder.png"
+                      }
                       alt={`${user.email} Profile Picture`}
-                      width="60"
-                      height="60"
+                      width="40"
+                      height="40"
+                      className={styles["profile-picture"]}
                     />
                   ) : (
                     <img
                       src="/profile-placeholder.png"
                       alt="Profile Placeholder"
-                      width="60"
-                      height="60"
+                      width="40"
+                      height="40"
+                      className={styles["profile-picture"]}
                     />
                   )}
                   {user.email}

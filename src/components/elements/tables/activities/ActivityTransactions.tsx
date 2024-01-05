@@ -134,8 +134,6 @@ const ActivityTransactions: React.FC<{
             }))
           : [];
 
-        console.log("Fetched transactions:", formattedTransactions);
-
         if (formattedTransactions.length > 0) {
           if (currentPage === 1) {
             setTransactions(formattedTransactions);
@@ -168,7 +166,6 @@ const ActivityTransactions: React.FC<{
   };
 
   useEffect(() => {
-    console.log("FundsTransactions component mounted or refreshed.");
     fetchTransactions();
   }, [
     currentPage,
@@ -181,7 +178,6 @@ const ActivityTransactions: React.FC<{
   ]);
 
   const handleEyeIconClick = async (transactionId: number) => {
-    console.log("isLoadingPermissions set to true");
     setIsLoadingPermissions(true);
 
     try {
@@ -212,17 +208,13 @@ const ActivityTransactions: React.FC<{
         handleTransactionDetailsClick(transactionId);
       }
     } catch (error) {
-      console.error("Failed to fetch user permissions:", error);
     } finally {
-      console.log("isLoadingPermissions set to false");
       setIsLoadingPermissions(false);
     }
   };
 
   const handleTransactionDetailsClick = (transactionId: number) => {
     setSelectedTransactionId(transactionId);
-
-    console.log(`Selected Transaction ID: ${transactionId}`);
 
     setIsFetchPaymentDetailsModalOpen(true);
   };
@@ -237,8 +229,6 @@ const ActivityTransactions: React.FC<{
       const newDate = new Date(selectedTransaction.booking_date);
       if (!isNaN(newDate.getTime())) {
         const isoDate = newDate.toISOString();
-
-        console.log("Selected Transaction ID:", transactionId);
 
         setEditedTransaction({
           ...selectedTransaction,
@@ -323,21 +313,16 @@ const ActivityTransactions: React.FC<{
 
   useEffect(() => {
     if (refreshTrigger > 0) {
-      console.log(
-        `Refresh triggered. Current trigger count: ${refreshTrigger}`,
-      );
       fetchTransactions();
     }
   }, [refreshTrigger]);
 
   const handlePaymentEdited = () => {
-    console.log("Payment edited. Triggering refresh.");
     setRefreshTrigger((prev) => prev + 1);
     onRefreshTrigger();
   };
 
   const handlePaymentAdded = () => {
-    console.log("Payment edited. Triggering refresh.");
     setRefreshTrigger((prev) => prev + 1);
     onRefreshTrigger();
   };

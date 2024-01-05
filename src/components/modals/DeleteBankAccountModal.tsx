@@ -31,24 +31,12 @@ const DeleteBankAccountModal: React.FC<DeleteBankAccountModalProps> = ({
         setModalIsOpen(false);
       }, 300);
     }
-    console.log("modalIsOpen:", modalIsOpen);
   }, [isOpen]);
 
   const handleSubmit = async () => {
-    console.log("Verwijderen button clicked");
     try {
       if (userId && token && bankAccountId) {
-        console.log(
-          "Data sent to API - User ID:",
-          userId,
-          "Token:",
-          token,
-          "Bank Account ID:",
-          bankAccountId,
-        );
-
         await revokeBankConnection(userId, token, bankAccountId);
-        console.log("Bank account deleted successfully");
         handleClose();
         onBankRevoked();
       }

@@ -41,7 +41,6 @@ const EditFund: React.FC<EditFundProps> = ({
   fundData,
   fieldPermissions,
 }) => {
-  console.log("fieldPermissions:", fieldPermissions);
   const [modalIsOpen, setModalIsOpen] = useState(isOpen);
   const [isHiddenSponsors, setIsHiddenSponsors] = useState(false);
   const [isHidden, setIsHidden] = useState(false);

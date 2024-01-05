@@ -127,7 +127,6 @@ const SponsorList = () => {
             user.token,
             parseInt(sponsorId),
           );
-          console.log("Fetched sponsor data:", sponsorData);
           setSelectedSponsorData(sponsorData);
         } catch (error) {
           console.error("Error fetching specific sponsor:", error);
@@ -139,7 +138,6 @@ const SponsorList = () => {
   }, [sponsorId, user]);
 
   const handleToggleEditSponsorModal = (sponsorId?: string) => {
-    console.log("sponsorId in handleToggleEditSponsorModal:", sponsorId);
     if (isEditSponsorModalOpen) {
       setIsBlockingInteraction(true);
       setTimeout(() => {
@@ -158,7 +156,6 @@ const SponsorList = () => {
   };
 
   const handleToggleDeleteSponsorModal = (sponsorId?: string) => {
-    console.log("sponsorId in handleToggleDeleteSponsorModal:", sponsorId);
     if (isDeleteSponsorModalOpen) {
       setIsBlockingInteraction(true);
       setTimeout(() => {
@@ -193,9 +190,7 @@ const SponsorList = () => {
     setRefreshTrigger((prev) => prev + 1);
   };
 
-  const handleSearch = (query) => {
-    console.log("Search query in UserDetailsPage:", query);
-  };
+  const handleSearch = (query) => {};
 
   return (
     <div className={styles["container"]}>

@@ -86,7 +86,6 @@ const AddUser: React.FC<AddUserProps> = ({
       }
 
       const response = await createUser(formDataToSend, token);
-      console.log("User created:", response);
 
       handleClose();
       onUserAdded();

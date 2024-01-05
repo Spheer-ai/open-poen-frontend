@@ -17,7 +17,6 @@ const EditUserProfileForm: React.FC<EditUserProfileFormProps> = ({
   isBlockingInteraction,
   onUserProfileEdited,
 }) => {
-  console.log("fieldPermissions:", fieldPermissions);
   const { user } = useAuth();
 
   const handleImageUpload = (image: File) => {
@@ -52,8 +51,6 @@ const EditUserProfileForm: React.FC<EditUserProfileFormProps> = ({
       fetchUserProfileDataFromApi(userId, user?.token || "");
     }
   }, [userId]);
-
-  console.log("fieldPermissions222:", fieldPermissions);
 
   const fetchUserProfileDataFromApi = async (userId: string, token: string) => {
     try {
@@ -116,7 +113,6 @@ const EditUserProfileForm: React.FC<EditUserProfileFormProps> = ({
 
       const response = await updateUserProfile(userId, formDataToSend, token);
 
-      console.log("User profile updated:", response);
       setIsSuccess(true);
       setIsError(false);
       onUserProfileEdited();

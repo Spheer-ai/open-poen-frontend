@@ -134,18 +134,14 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
           );
 
           if (userPermissions && userPermissions.includes("edit")) {
-            console.log("User has edit permission");
             setHasEditPermission(true);
           } else {
-            console.log("User does not have edit permission");
             setHasEditPermission(false);
           }
 
           if (userPermissions && userPermissions.includes("delete")) {
-            console.log("User has delete permission");
             setHasDeletePermission(true);
           } else {
-            console.log("User does not have delete permission");
             setHasDeletePermission(false);
           }
         }
@@ -237,8 +233,6 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
       setAvailableBudget(availableBudgetValue);
     }
   }, [fundDetails, refreshTrigger]);
-
-  console.log("initiativeOwners:", initiativeOwners);
 
   const handleRefreshTrigger = () => {
     setRefreshTrigger((prev) => prev + 1);
