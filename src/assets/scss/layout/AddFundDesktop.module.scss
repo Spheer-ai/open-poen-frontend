@@ -531,3 +531,19 @@ body {
 .profile-picture {
   border-radius: 50%;
 }
+
+.flexed {
+  display: flex;
+  flex-direction: column;
+  margin: 10px 20px;
+  gap: 5px;
+
+  label {
+    color: #606060;
+    font-weight: 400;
+  }
+
+  .cursiveText {
+    font-style: italic;
+  }
+}
