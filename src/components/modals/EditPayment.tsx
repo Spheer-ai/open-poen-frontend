@@ -73,7 +73,6 @@ const EditPayment: React.FC<EditPaymentProps> = ({
     new Set(),
   );
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
-
   const [transactionData, setTransactionData] = useState({
     transaction_amount: "",
     booking_date: "",
@@ -161,6 +160,7 @@ const EditPayment: React.FC<EditPaymentProps> = ({
         console.error("Token is not available.");
         return;
       }
+
       const displayDateObject = new Date(displayDate);
 
       if (isNaN(displayDateObject.getTime())) {
@@ -176,10 +176,9 @@ const EditPayment: React.FC<EditPaymentProps> = ({
 
       const originalPaymentData = paymentData || {};
 
-      const requestData = {
+      let requestData = {
         transaction_id: paymentId,
         booking_date: apiDate,
-        transaction_amount: transactionData.transaction_amount,
         creditor_name: transactionData.creditor_name,
         debtor_name: transactionData.debtor_name,
         creditor_account: transactionData.creditor_account,
@@ -198,6 +197,8 @@ const EditPayment: React.FC<EditPaymentProps> = ({
           delete requestData[key];
         }
       }
+
+      console.log("Data sent to API:", requestData);
 
       for (const file of selectedFiles) {
         await uploadPaymentAttachment(paymentId, file, token);
@@ -433,10 +434,7 @@ const EditPayment: React.FC<EditPaymentProps> = ({
                       value={transactionData.transaction_amount}
                       onChange={(e) => {
                         const inputValue = e.target.value;
-
-                        // Check if the input is a valid number or an empty string
                         if (/^-?\d*\.?\d*$|^$/.test(inputValue)) {
-                          // Set the input value in your state
                           setTransactionData({
                             ...transactionData,
                             transaction_amount: inputValue,
@@ -607,7 +605,7 @@ const EditPayment: React.FC<EditPaymentProps> = ({
                     <label className={styles.labelField}>
                       <input
                         type="checkbox"
-                        checked={false}
+                        checked={transactionData.hidden}
                         onChange={(e) =>
                           setTransactionData({
                             ...transactionData,
