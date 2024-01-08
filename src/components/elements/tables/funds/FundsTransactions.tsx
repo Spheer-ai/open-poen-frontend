@@ -415,14 +415,14 @@ const FundsTransactions: React.FC<{
               <th>BEDRAG</th>
             </tr>
           </thead>
-          {transactions.length === 0 && !loadingMore ? (
-            <tr>
-              <td colSpan={6} className={styles["no-transactions"]}>
-                Geen transacties gevonden
-              </td>
-            </tr>
-          ) : null}
           <tbody>
+            {transactions.length === 0 && !loadingMore ? (
+              <tr>
+                <td colSpan={6} className={styles["no-transactions"]}>
+                  Geen transacties gevonden
+                </td>
+              </tr>
+            ) : null}
             {transactions.map((transaction, index) => (
               <tr
                 className={styles["transaction-row"]}

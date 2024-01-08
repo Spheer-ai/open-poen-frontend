@@ -27,9 +27,6 @@ const ActivityMedia: React.FC<ActivityMediaProps> = ({
   useEffect(() => {
     async function fetchMedia() {
       try {
-        console.log("Initiative ID:", initiativeId);
-        console.log("Token:", authToken);
-
         const response = await fetchActivityMedia(
           initiativeId,
           activityId,
@@ -39,10 +36,8 @@ const ActivityMedia: React.FC<ActivityMediaProps> = ({
         );
 
         const attachments = response?.attachments || [];
-        console.log("Attachments in response:", attachments);
 
         setMediaData(attachments);
-        console.log("Fetched media data:", mediaData);
       } catch (error) {
         setError("Failed to fetch media. Please try again later.");
       } finally {
@@ -53,9 +48,7 @@ const ActivityMedia: React.FC<ActivityMediaProps> = ({
     fetchMedia();
   }, [initiativeId, activityId, authToken]);
 
-  useEffect(() => {
-    console.log("Updated media data:", mediaData);
-  }, [mediaData]);
+  useEffect(() => {}, [mediaData]);
 
   const isPdf = (url: string) => url.toLowerCase().includes(".pdf");
 

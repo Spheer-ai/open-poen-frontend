@@ -109,7 +109,7 @@ const LinkInitiativePaymentToActivity: React.FC<
   return (
     <div className={styles["customDropdown"]} style={{ marginTop: "10px" }}>
       <div className={styles["customContainer"]}>
-        {[paymentId] === null ? (
+        {paymentId === null ? (
           <div className={styles["disabled-dropdown"]}>
             <span className={styles["initiativeText"]}>
               {" "}

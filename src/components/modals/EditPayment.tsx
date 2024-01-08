@@ -66,25 +66,24 @@ const EditPayment: React.FC<EditPaymentProps> = ({
   const [modalIsOpen, setModalIsOpen] = useState(isOpen);
   const [displayDate, setDisplayDate] = useState("");
   const [apiDate, setApiDate] = useState("");
-  const [selectedFile, setSelectedFile] = useState(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [attachments, setAttachments] = useState<Attachment[]>([]);
   const [deletedAttachmentIds, setDeletedAttachmentIds] = useState<Set<number>>(
     new Set(),
   );
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
-
   const [transactionData, setTransactionData] = useState({
-    transaction_amount: "",
-    booking_date: "",
-    creditor_name: "",
-    debtor_name: "",
-    creditor_account: "",
-    debtor_account: "",
-    route: "inkomen",
-    short_user_description: "",
-    long_user_description: "",
-    hidden: false,
+    transaction_amount: paymentData?.transaction_amount || 0,
+    booking_date: paymentData?.booking_date || "",
+    creditor_name: paymentData?.creditor_name || "",
+    debtor_name: paymentData?.debtor_name || "",
+    creditor_account: paymentData?.creditor_account || "",
+    debtor_account: paymentData?.debtor_account || "",
+    route: paymentData?.route || "inkomen",
+    short_user_description: paymentData?.short_user_description || "",
+    long_user_description: paymentData?.long_user_description || "",
+    hidden: paymentData?.hidden || false,
   });
 
   const fetchAttachments = async () => {
@@ -102,7 +101,7 @@ const EditPayment: React.FC<EditPaymentProps> = ({
   };
 
   useEffect(() => {
-    if (isOpen || paymentData) {
+    if (isOpen && paymentData) {
       fetchAttachments();
     }
   }, [isOpen, paymentData, token, paymentId]);
@@ -122,7 +121,7 @@ const EditPayment: React.FC<EditPaymentProps> = ({
   useEffect(() => {
     if (paymentData) {
       setTransactionData({
-        transaction_amount: paymentData.transaction_amount.toString(),
+        transaction_amount: paymentData.transaction_amount,
         booking_date: paymentData.booking_date,
         creditor_name: paymentData.creditor_name,
         debtor_name: paymentData.debtor_name,
@@ -161,6 +160,7 @@ const EditPayment: React.FC<EditPaymentProps> = ({
         console.error("Token is not available.");
         return;
       }
+
       const displayDateObject = new Date(displayDate);
 
       if (isNaN(displayDateObject.getTime())) {
@@ -176,10 +176,9 @@ const EditPayment: React.FC<EditPaymentProps> = ({
 
       const originalPaymentData = paymentData || {};
 
-      const requestData = {
+      let requestData = {
         transaction_id: paymentId,
         booking_date: apiDate,
-        transaction_amount: transactionData.transaction_amount,
         creditor_name: transactionData.creditor_name,
         debtor_name: transactionData.debtor_name,
         creditor_account: transactionData.creditor_account,
@@ -188,6 +187,7 @@ const EditPayment: React.FC<EditPaymentProps> = ({
         short_user_description: transactionData.short_user_description,
         long_user_description: transactionData.long_user_description,
         hidden: transactionData.hidden,
+        transaction_amount: transactionData.transaction_amount,
       };
 
       for (const key in requestData) {
@@ -217,7 +217,7 @@ const EditPayment: React.FC<EditPaymentProps> = ({
 
   const resetState = () => {
     setTransactionData({
-      transaction_amount: "",
+      transaction_amount: 0,
       booking_date: "",
       creditor_name: "",
       debtor_name: "",
@@ -256,10 +256,8 @@ const EditPayment: React.FC<EditPaymentProps> = ({
         console.error("Payment ID is not available.");
         return;
       }
-
       await cancelPayment(paymentId, token);
       onPaymentEdited();
-      resetState();
       setIsLoading(false);
       handleClose();
     } catch (error) {
@@ -430,16 +428,13 @@ const EditPayment: React.FC<EditPaymentProps> = ({
                     <label className={styles.labelField}>Bedrag:</label>
                     <input
                       type="text"
-                      value={transactionData.transaction_amount}
+                      value={transactionData.transaction_amount.toString()}
                       onChange={(e) => {
                         const inputValue = e.target.value;
-
-                        // Check if the input is a valid number or an empty string
                         if (/^-?\d*\.?\d*$|^$/.test(inputValue)) {
-                          // Set the input value in your state
                           setTransactionData({
                             ...transactionData,
-                            transaction_amount: inputValue,
+                            transaction_amount: parseFloat(inputValue),
                           });
                         }
                       }}
@@ -607,7 +602,7 @@ const EditPayment: React.FC<EditPaymentProps> = ({
                     <label className={styles.labelField}>
                       <input
                         type="checkbox"
-                        checked={false}
+                        checked={transactionData.hidden}
                         onChange={(e) =>
                           setTransactionData({
                             ...transactionData,
