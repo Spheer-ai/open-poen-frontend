@@ -66,7 +66,7 @@ const EditPayment: React.FC<EditPaymentProps> = ({
   const [modalIsOpen, setModalIsOpen] = useState(isOpen);
   const [displayDate, setDisplayDate] = useState("");
   const [apiDate, setApiDate] = useState("");
-  const [selectedFile, setSelectedFile] = useState(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [attachments, setAttachments] = useState<Attachment[]>([]);
   const [deletedAttachmentIds, setDeletedAttachmentIds] = useState<Set<number>>(
@@ -74,25 +74,27 @@ const EditPayment: React.FC<EditPaymentProps> = ({
   );
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [transactionData, setTransactionData] = useState({
-    transaction_amount: "",
-    booking_date: "",
-    creditor_name: "",
-    debtor_name: "",
-    creditor_account: "",
-    debtor_account: "",
-    route: "inkomen",
-    short_user_description: "",
-    long_user_description: "",
-    hidden: false,
+    transaction_amount: paymentData?.transaction_amount || 0,
+    booking_date: paymentData?.booking_date || "",
+    creditor_name: paymentData?.creditor_name || "",
+    debtor_name: paymentData?.debtor_name || "",
+    creditor_account: paymentData?.creditor_account || "",
+    debtor_account: paymentData?.debtor_account || "",
+    route: paymentData?.route || "inkomen",
+    short_user_description: paymentData?.short_user_description || "",
+    long_user_description: paymentData?.long_user_description || "",
+    hidden: paymentData?.hidden || false,
   });
 
   const fetchAttachments = async () => {
     try {
       if (paymentId && token) {
+        console.log("Fetching attachments for payment ID:", paymentId);
         const fetchedAttachments = await fetchPaymentAttachments(
           paymentId,
           token,
         );
+        console.log("Fetched attachments:", fetchedAttachments);
         setAttachments(fetchedAttachments);
       }
     } catch (error) {
@@ -101,7 +103,7 @@ const EditPayment: React.FC<EditPaymentProps> = ({
   };
 
   useEffect(() => {
-    if (isOpen || paymentData) {
+    if (isOpen && paymentData) {
       fetchAttachments();
     }
   }, [isOpen, paymentData, token, paymentId]);
@@ -121,7 +123,7 @@ const EditPayment: React.FC<EditPaymentProps> = ({
   useEffect(() => {
     if (paymentData) {
       setTransactionData({
-        transaction_amount: paymentData.transaction_amount.toString(),
+        transaction_amount: paymentData.transaction_amount,
         booking_date: paymentData.booking_date,
         creditor_name: paymentData.creditor_name,
         debtor_name: paymentData.debtor_name,
@@ -187,6 +189,7 @@ const EditPayment: React.FC<EditPaymentProps> = ({
         short_user_description: transactionData.short_user_description,
         long_user_description: transactionData.long_user_description,
         hidden: transactionData.hidden,
+        transaction_amount: transactionData.transaction_amount,
       };
 
       for (const key in requestData) {
@@ -218,7 +221,7 @@ const EditPayment: React.FC<EditPaymentProps> = ({
 
   const resetState = () => {
     setTransactionData({
-      transaction_amount: "",
+      transaction_amount: 0,
       booking_date: "",
       creditor_name: "",
       debtor_name: "",
@@ -257,10 +260,10 @@ const EditPayment: React.FC<EditPaymentProps> = ({
         console.error("Payment ID is not available.");
         return;
       }
-
+      console.log("Deleting payment with ID:", paymentId);
       await cancelPayment(paymentId, token);
+      console.log("Payment deleted successfully.");
       onPaymentEdited();
-      resetState();
       setIsLoading(false);
       handleClose();
     } catch (error) {
@@ -431,14 +434,18 @@ const EditPayment: React.FC<EditPaymentProps> = ({
                     <label className={styles.labelField}>Bedrag:</label>
                     <input
                       type="text"
-                      value={transactionData.transaction_amount}
+                      value={transactionData.transaction_amount.toString()}
                       onChange={(e) => {
                         const inputValue = e.target.value;
                         if (/^-?\d*\.?\d*$|^$/.test(inputValue)) {
                           setTransactionData({
                             ...transactionData,
-                            transaction_amount: inputValue,
+                            transaction_amount: parseFloat(inputValue),
                           });
+                          console.log(
+                            "Transaction amount changed:",
+                            inputValue,
+                          );
                         }
                       }}
                       onKeyDown={handleEnterKeyPress}
