@@ -89,12 +89,10 @@ const EditPayment: React.FC<EditPaymentProps> = ({
   const fetchAttachments = async () => {
     try {
       if (paymentId && token) {
-        console.log("Fetching attachments for payment ID:", paymentId);
         const fetchedAttachments = await fetchPaymentAttachments(
           paymentId,
           token,
         );
-        console.log("Fetched attachments:", fetchedAttachments);
         setAttachments(fetchedAttachments);
       }
     } catch (error) {
@@ -201,8 +199,6 @@ const EditPayment: React.FC<EditPaymentProps> = ({
         }
       }
 
-      console.log("Data sent to API:", requestData);
-
       for (const file of selectedFiles) {
         await uploadPaymentAttachment(paymentId, file, token);
       }
@@ -260,9 +256,7 @@ const EditPayment: React.FC<EditPaymentProps> = ({
         console.error("Payment ID is not available.");
         return;
       }
-      console.log("Deleting payment with ID:", paymentId);
       await cancelPayment(paymentId, token);
-      console.log("Payment deleted successfully.");
       onPaymentEdited();
       setIsLoading(false);
       handleClose();
@@ -442,10 +436,6 @@ const EditPayment: React.FC<EditPaymentProps> = ({
                             ...transactionData,
                             transaction_amount: parseFloat(inputValue),
                           });
-                          console.log(
-                            "Transaction amount changed:",
-                            inputValue,
-                          );
                         }
                       }}
                       onKeyDown={handleEnterKeyPress}

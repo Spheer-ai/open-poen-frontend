@@ -1723,9 +1723,6 @@ export const cancelPayment = async (paymentId, token) => {
       },
     });
 
-    console.log("Payment deleted successfully.");
-
-    // If the deletion is successful, you can simply return null or undefined.
     return null;
   } catch (error) {
     console.error("Error canceling payment:", error);
