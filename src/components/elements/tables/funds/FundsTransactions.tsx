@@ -165,16 +165,6 @@ const FundsTransactions: React.FC<{
     }
   };
 
-  const handleClearFilter = () => {
-    setFilterCriteria({
-      startDate: "",
-      endDate: "",
-      minAmount: "",
-      maxAmount: "",
-      route: "",
-    });
-  };
-
   const handleLoadMore = () => {
     if (!loadingMore && hasMoreTransactions) {
       setCurrentPage((prevPage) => prevPage + 1);
@@ -198,6 +188,7 @@ const FundsTransactions: React.FC<{
 
     try {
       const userToken = user && user.token ? user.token : authToken;
+
       const userPermissions: string[] | undefined = await fetchPermissions(
         "Payment",
         transactionId,
@@ -533,6 +524,7 @@ const FundsTransactions: React.FC<{
           onClose={handleToggleFetchPaymentDetailsModal}
           isBlockingInteraction={isBlockingInteraction}
           paymentId={selectedTransactionId}
+          paymentData={editedTransaction}
         />
         <EditPayment
           isOpen={isEditPaymentModalOpen}
