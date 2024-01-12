@@ -15,7 +15,6 @@ interface GrantListProps {
   onDeleteGrantClick: (grantId: number) => void;
   onAddOfficerClick: (grantId: number) => void;
   onAddFundClick: (grantId: number) => void;
-  grantPermissions: Record<number, string[]>;
   regulationId?: number;
   funderId?: number;
 }
@@ -33,12 +32,11 @@ const GrantList: React.FC<GrantListProps> = ({
 }) => {
   const { user } = useAuth();
   const { fetchPermissions } = usePermissions();
-  const [permissionsFetched, setPermissionsFetched] = useState<boolean>(false);
-  const [grantPermissionsMap, setGrantPermissionsMap] = useState<
-    Record<number, string[]>
-  >({});
   const [initiativeCounts, setInitiativeCounts] = useState<
     Record<number, number>
+  >({});
+  const [grantPermissions, setGrantPermissions] = useState<
+    Record<number, string[]>
   >({});
 
   useEffect(() => {
@@ -70,6 +68,30 @@ const GrantList: React.FC<GrantListProps> = ({
     fetchInitiativeCounts();
   }, [grants, user?.token]);
 
+  useEffect(() => {
+    async function fetchUserPermissions() {
+      try {
+        if (user && user.token) {
+          const grantIds = grants.map((grant) => grant.id);
+          const permissions: Record<number, string[]> = {};
+
+          for (const grantId of grantIds) {
+            const userPermissions: string[] | undefined =
+              await fetchPermissions("Grant", grantId, user.token);
+
+            permissions[grantId] = userPermissions || [];
+          }
+
+          setGrantPermissions(permissions);
+        }
+      } catch (error) {
+        console.error("Failed to fetch user permissions:", error);
+      }
+    }
+
+    fetchUserPermissions();
+  }, [grants, user]);
+
   return (
     <>
       <div className={styles["grant-container"]}>
@@ -86,28 +108,34 @@ const GrantList: React.FC<GrantListProps> = ({
             key={`grant-${grant.id}-${grant.name}`}
             className={styles["grant-item"]}
           >
-            {grant.name} | {grant.reference} | € {grant.budget}
+            {grant.name} | {grant.reference} | €{" "}
+            {grant.budget.toLocaleString("nl-NL", {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })}
             <div className={styles["button-container"]}>
-              {grantPermissionsMap[grant.id]?.includes("edit") && (
-                <button
-                  className={styles["edit-button"]}
-                  onClick={() => onEditGrantClick(grant)}
-                >
-                  <img src={EditIcon} alt="Edit" className={styles["icon"]} />
-                </button>
-              )}
-              {grantPermissionsMap[grant.id]?.includes("delete") && (
-                <button
-                  className={styles["delete-button"]}
-                  onClick={() => onDeleteGrantClick(grant.id)}
-                >
-                  <img
-                    src={DeleteIcon}
-                    alt="Delete"
-                    className={styles["icon"]}
-                  />
-                </button>
-              )}
+              {grantPermissions[grant.id] &&
+                grantPermissions[grant.id].includes("edit") && (
+                  <button
+                    className={styles["edit-button"]}
+                    onClick={() => onEditGrantClick(grant)}
+                  >
+                    <img src={EditIcon} alt="Edit" className={styles["icon"]} />
+                  </button>
+                )}
+              {grantPermissions[grant.id] &&
+                grantPermissions[grant.id].includes("delete") && (
+                  <button
+                    className={styles["delete-button"]}
+                    onClick={() => onDeleteGrantClick(grant.id)}
+                  >
+                    <img
+                      src={DeleteIcon}
+                      alt="Delete"
+                      className={styles["icon"]}
+                    />
+                  </button>
+                )}
               {hasCreateGrantPermission && (
                 <button
                   className={styles["add-button"]}
