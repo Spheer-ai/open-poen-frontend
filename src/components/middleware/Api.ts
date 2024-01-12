@@ -1670,7 +1670,7 @@ export const createPayment = async (paymentData, token) => {
   }
 };
 
-export const fetchPaymentDetails = async (paymentId, token) => {
+export const fetchPaymentDetails = async (paymentId, token?) => {
   try {
     const response = await api.get(`/payment/${paymentId}`, {
       headers: {

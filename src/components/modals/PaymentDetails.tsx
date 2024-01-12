@@ -39,8 +39,8 @@ const FetchPayment: React.FC<FetchPaymentProps> = ({
   useEffect(() => {
     if (isOpen) {
       setModalIsOpen(true);
-      const token = localStorage.getItem("token") || "";
-      fetchPaymentDetails(paymentId, token)
+
+      fetchPaymentDetails(paymentId)
         .then((data) => {
           setPaymentData(data);
         })
