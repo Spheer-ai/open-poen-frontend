@@ -294,9 +294,11 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
                       <p>
                         {showFullDescription
                           ? fundDetails.description
-                          : `${fundDetails.description.slice(0, 150)}...`}
+                          : `${fundDetails.description.slice(0, 250)}${
+                              fundDetails.description.length > 250 ? "..." : ""
+                            }`}
                       </p>
-                      {fundDetails.description.length > 150 && (
+                      {fundDetails.description.length > 250 && (
                         <button
                           onClick={() =>
                             setShowFullDescription(!showFullDescription)

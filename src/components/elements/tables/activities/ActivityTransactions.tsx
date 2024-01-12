@@ -486,6 +486,7 @@ const ActivityTransactions: React.FC<{
           onClose={handleToggleFetchPaymentDetailsModal}
           isBlockingInteraction={isBlockingInteraction}
           paymentId={selectedTransactionId}
+          paymentData={editedTransaction}
         />
         <EditPayment
           isOpen={isEditPaymentModalOpen}

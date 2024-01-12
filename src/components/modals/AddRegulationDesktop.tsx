@@ -24,6 +24,7 @@ const AddRegulationDesktop: React.FC<AddRegulationDesktopProps> = ({
   const [nameError, setNameError] = useState(false);
   const [uniqueNameError, setUniqueNameError] = useState(false);
   const [descriptionError, setDescriptionError] = useState(false);
+  const [charCount, setCharCount] = useState(regulationDescription.length);
   const [maxNameLength] = useState(128);
 
   useEffect(() => {
@@ -35,6 +36,10 @@ const AddRegulationDesktop: React.FC<AddRegulationDesktopProps> = ({
       }, 300);
     }
   }, [isOpen]);
+
+  useEffect(() => {
+    setRegulationDescription(regulationDescription);
+  }, [regulationDescription]);
 
   const handleSave = async () => {
     if (regulationName.trim() === "" && regulationDescription.trim() === "") {
@@ -117,6 +122,17 @@ const AddRegulationDesktop: React.FC<AddRegulationDesktopProps> = ({
     }
   };
 
+  const handleDescriptionChange = (
+    e: React.ChangeEvent<HTMLTextAreaElement>,
+  ) => {
+    const description = e.target.value;
+    setRegulationDescription(description);
+    setCharCount(description.length);
+    setDescriptionError(false);
+  };
+
+  const isCharCountExceeded = charCount > 512;
+
   if (!isOpen && !modalIsOpen) {
     return null;
   }
@@ -163,21 +179,34 @@ const AddRegulationDesktop: React.FC<AddRegulationDesktopProps> = ({
         </div>
         <div className={styles.formGroup}>
           <label className={styles.label}>Beschrijving:</label>
-          <input
-            type="text"
+          <textarea
             placeholder="Voer de beschrijving in"
             value={regulationDescription}
-            onChange={(e) => {
-              setRegulationDescription(e.target.value);
-              setDescriptionError(false);
-            }}
-            onKeyPress={handleEnterKeyPress}
+            onChange={handleDescriptionChange}
           />
           {descriptionError && (
             <span style={{ color: "red", display: "block", marginTop: "5px" }}>
               Vul een beschrijving in.
             </span>
           )}
+          <div className={styles.characterCounter}>
+            <span
+              style={{
+                color: isCharCountExceeded ? "red" : "inherit",
+                fontSize: "14px",
+              }}
+            >{`${charCount} / 512`}</span>
+            {charCount > 512 && (
+              <span
+                style={{
+                  fontSize: "14px",
+                  color: isCharCountExceeded ? "red" : "inherit",
+                }}
+              >
+                Beschrijving mag maximaal 512 tekens bevatten.
+              </span>
+            )}
+          </div>
         </div>
         <div className={styles.buttonContainer}>
           <button onClick={handleClose} className={styles.cancelButton}>

@@ -298,9 +298,13 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
                       <p>
                         {showFullDescription
                           ? activityDetails.description
-                          : `${activityDetails.description.slice(0, 150)}...`}
+                          : `${activityDetails.description.slice(0, 250)}${
+                              activityDetails.description.length > 250
+                                ? "..."
+                                : ""
+                            }`}
                       </p>
-                      {activityDetails.description.length > 150 && (
+                      {activityDetails.description.length > 250 && (
                         <button
                           onClick={() =>
                             setShowFullDescription(!showFullDescription)

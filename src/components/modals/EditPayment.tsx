@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styles from "../../assets/scss/layout/AddFundDesktop.module.scss";
 import LoadingDot from "../animation/LoadingDot";
+import Select from "react-select";
 import LinkInitiativePaymentToActivity from "../elements/dropdown-menu/activities/LinkInitiativePaymentToActivity";
 import {
   cancelPayment,
@@ -74,7 +75,7 @@ const EditPayment: React.FC<EditPaymentProps> = ({
   );
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [transactionData, setTransactionData] = useState({
-    transaction_amount: paymentData?.transaction_amount || 0,
+    transaction_amount: paymentData?.transaction_amount?.toString() || "",
     booking_date: paymentData?.booking_date || "",
     creditor_name: paymentData?.creditor_name || "",
     debtor_name: paymentData?.debtor_name || "",
@@ -85,6 +86,10 @@ const EditPayment: React.FC<EditPaymentProps> = ({
     long_user_description: paymentData?.long_user_description || "",
     hidden: paymentData?.hidden || false,
   });
+  const routeOptions = [
+    { value: "inkomen", label: "Inkomen" },
+    { value: "uitgaven", label: "Uitgaven" },
+  ];
 
   const fetchAttachments = async () => {
     try {
@@ -121,7 +126,7 @@ const EditPayment: React.FC<EditPaymentProps> = ({
   useEffect(() => {
     if (paymentData) {
       setTransactionData({
-        transaction_amount: paymentData.transaction_amount,
+        transaction_amount: paymentData.transaction_amount.toString(),
         booking_date: paymentData.booking_date,
         creditor_name: paymentData.creditor_name,
         debtor_name: paymentData.debtor_name,
@@ -187,7 +192,7 @@ const EditPayment: React.FC<EditPaymentProps> = ({
         short_user_description: transactionData.short_user_description,
         long_user_description: transactionData.long_user_description,
         hidden: transactionData.hidden,
-        transaction_amount: transactionData.transaction_amount,
+        transaction_amount: parseFloat(transactionData.transaction_amount),
       };
 
       for (const key in requestData) {
@@ -217,7 +222,7 @@ const EditPayment: React.FC<EditPaymentProps> = ({
 
   const resetState = () => {
     setTransactionData({
-      transaction_amount: 0,
+      transaction_amount: "",
       booking_date: "",
       creditor_name: "",
       debtor_name: "",
@@ -421,27 +426,42 @@ const EditPayment: React.FC<EditPaymentProps> = ({
             </div>
             <div className={styles.formGroup}>
               <h3>Info</h3>
-              {fieldPermissions &&
-                fieldPermissions.fields &&
-                fieldPermissions.fields.includes("transaction_amount") && (
-                  <>
-                    <label className={styles.labelField}>Bedrag:</label>
-                    <input
-                      type="text"
-                      value={transactionData.transaction_amount.toString()}
-                      onChange={(e) => {
-                        const inputValue = e.target.value;
-                        if (/^-?\d*\.?\d*$|^$/.test(inputValue)) {
-                          setTransactionData({
-                            ...transactionData,
-                            transaction_amount: parseFloat(inputValue),
-                          });
-                        }
-                      }}
-                      onKeyDown={handleEnterKeyPress}
-                    />
-                  </>
-                )}
+              <label className={styles.labelField}>Bedrag:</label>
+              <input
+                type="text"
+                value={transactionData.transaction_amount}
+                onChange={(e) => {
+                  setTransactionData({
+                    ...transactionData,
+                    transaction_amount: e.target.value,
+                  });
+                }}
+                onKeyDown={(e) => {
+                  if (
+                    e.key === "-" &&
+                    !transactionData.transaction_amount.includes("-")
+                  ) {
+                    setTransactionData({
+                      ...transactionData,
+                      route: "uitgaven",
+                    });
+                  } else if (
+                    !transactionData.transaction_amount.startsWith("-")
+                  ) {
+                    setTransactionData({
+                      ...transactionData,
+                      route: "inkomen",
+                    });
+                  }
+                }}
+                disabled={
+                  !(
+                    fieldPermissions &&
+                    fieldPermissions.fields &&
+                    fieldPermissions.fields.includes("transaction_amount")
+                  )
+                }
+              />
             </div>
             <div className={styles.formGroup}>
               <label className={styles.labelField}>Activiteit:</label>
@@ -454,166 +474,193 @@ const EditPayment: React.FC<EditPaymentProps> = ({
                 linkedActivityId={null}
               />
             </div>
-            {fieldPermissions &&
-              fieldPermissions.fields &&
-              fieldPermissions.fields.includes("booking_date") && (
-                <div className={styles.formGroup}>
-                  <label className={styles.labelField}>Datum:</label>
-                  <input
-                    type="date"
-                    value={displayDate}
-                    onChange={handleDateChange}
-                    onKeyDown={handleEnterKeyPress}
-                  />
-                </div>
-              )}
-            {fieldPermissions &&
-              fieldPermissions.fields &&
-              fieldPermissions.fields.includes("debtor_name") && (
-                <div className={styles.formGroup}>
-                  <label className={styles.labelField}>Naam betaler:</label>
-                  <input
-                    type="text"
-                    value={transactionData.debtor_name}
-                    onChange={(e) =>
-                      setTransactionData({
-                        ...transactionData,
-                        debtor_name: e.target.value,
-                      })
-                    }
-                    onKeyDown={handleEnterKeyPress}
-                  />
-                </div>
-              )}
-            {fieldPermissions &&
-              fieldPermissions.fields &&
-              fieldPermissions.fields.includes("debtor_account") && (
-                <div className={styles.formGroup}>
-                  <label className={styles.labelField}>Betaal IBAN</label>
-                  <input
-                    type="text"
-                    value={transactionData.debtor_account}
-                    onChange={(e) =>
-                      setTransactionData({
-                        ...transactionData,
-                        debtor_account: e.target.value,
-                      })
-                    }
-                  />
-                </div>
-              )}
-            {fieldPermissions &&
-              fieldPermissions.fields &&
-              fieldPermissions.fields.includes("creditor_name") && (
-                <div className={styles.formGroup}>
-                  <label className={styles.labelField}>Naam ontvanger:</label>
-                  <input
-                    type="text"
-                    value={transactionData.creditor_name}
-                    onChange={(e) =>
-                      setTransactionData({
-                        ...transactionData,
-                        creditor_name: e.target.value,
-                      })
-                    }
-                    onKeyDown={handleEnterKeyPress}
-                  />
-                </div>
-              )}
-            {fieldPermissions &&
-              fieldPermissions.fields &&
-              fieldPermissions.fields.includes("creditor_account") && (
-                <div className={styles.formGroup}>
-                  <label className={styles.labelField}>Ontvanger IBAN</label>
-                  <input
-                    type="text"
-                    value={transactionData.creditor_account}
-                    onChange={(e) =>
-                      setTransactionData({
-                        ...transactionData,
-                        creditor_account: e.target.value,
-                      })
-                    }
-                  />
-                </div>
-              )}
-            {fieldPermissions &&
-              fieldPermissions.fields &&
-              fieldPermissions.fields.includes("route") && (
-                <div className={styles.formGroup}>
-                  <label className={styles.labelField}>Route:</label>
-                  <select
-                    value={transactionData.route}
-                    onChange={(e) =>
-                      setTransactionData({
-                        ...transactionData,
-                        route: e.target.value,
-                      })
-                    }
-                  >
-                    <option value="inkomen">Inkomen</option>
-                    <option value="uitgaven">Uitgaven</option>
-                  </select>
-                </div>
-              )}
-            {fieldPermissions &&
-              fieldPermissions.fields &&
-              fieldPermissions.fields.includes("short_user_description") && (
-                <div className={styles.formGroup}>
-                  <label className={styles.labelField}>
-                    Korte beschrijving
-                  </label>
-                  <input
-                    type="text"
-                    value={transactionData.short_user_description}
-                    onChange={(e) =>
-                      setTransactionData({
-                        ...transactionData,
-                        short_user_description: e.target.value,
-                      })
-                    }
-                  />
-                </div>
-              )}
-            {fieldPermissions &&
-              fieldPermissions.fields &&
-              fieldPermissions.fields.includes("long_user_description") && (
-                <div className={styles.formGroup}>
-                  <label className={styles.labelField}>
-                    lange beschrijving
-                  </label>
-                  <input
-                    type="text"
-                    value={transactionData.long_user_description}
-                    onChange={(e) =>
-                      setTransactionData({
-                        ...transactionData,
-                        long_user_description: e.target.value,
-                      })
-                    }
-                  />
-                </div>
-              )}
             <div className={styles.formGroup}>
-              {fieldPermissions &&
-                fieldPermissions.fields &&
-                fieldPermissions.fields.includes("hidden") && (
-                  <div className={styles.roleOptions}>
-                    <label className={styles.labelField}>
-                      <input
-                        type="checkbox"
-                        checked={transactionData.hidden}
-                        onChange={(e) =>
-                          setTransactionData({
-                            ...transactionData,
-                            hidden: e.target.checked,
-                          })
-                        }
-                      />
-                      Transactie verbergen
-                    </label>
-                  </div>
-                )}
+              <label className={styles.labelField}>Datum:</label>
+              <input
+                type="date"
+                value={displayDate}
+                onChange={handleDateChange}
+                onKeyDown={handleEnterKeyPress}
+                disabled={
+                  !(
+                    fieldPermissions &&
+                    fieldPermissions.fields &&
+                    fieldPermissions.fields.includes("booking_date")
+                  )
+                }
+              />
+            </div>
+            <div className={styles.formGroup}>
+              <label className={styles.labelField}>Naam betaler:</label>
+              <input
+                type="text"
+                value={transactionData.debtor_name}
+                onChange={(e) =>
+                  setTransactionData({
+                    ...transactionData,
+                    debtor_name: e.target.value,
+                  })
+                }
+                onKeyDown={handleEnterKeyPress}
+                disabled={
+                  !(
+                    fieldPermissions &&
+                    fieldPermissions.fields &&
+                    fieldPermissions.fields.includes("debtor_name")
+                  )
+                }
+              />
+            </div>
+            <div className={styles.formGroup}>
+              <label className={styles.labelField}>Betaal IBAN</label>
+              <input
+                type="text"
+                value={transactionData.debtor_account}
+                onChange={(e) =>
+                  setTransactionData({
+                    ...transactionData,
+                    debtor_account: e.target.value,
+                  })
+                }
+                onKeyDown={handleEnterKeyPress}
+                disabled={
+                  !(
+                    fieldPermissions &&
+                    fieldPermissions.fields &&
+                    fieldPermissions.fields.includes("debtor_account")
+                  )
+                }
+              />
+            </div>
+            <div className={styles.formGroup}>
+              <label className={styles.labelField}>Naam ontvanger:</label>
+              <input
+                type="text"
+                value={transactionData.creditor_name}
+                onChange={(e) =>
+                  setTransactionData({
+                    ...transactionData,
+                    creditor_name: e.target.value,
+                  })
+                }
+                onKeyDown={handleEnterKeyPress}
+                disabled={
+                  !(
+                    fieldPermissions &&
+                    fieldPermissions.fields &&
+                    fieldPermissions.fields.includes("creditor_name")
+                  )
+                }
+              />
+            </div>
+            <div className={styles.formGroup}>
+              <label className={styles.labelField}>Ontvanger IBAN</label>
+              <input
+                type="text"
+                value={transactionData.creditor_account}
+                onChange={(e) =>
+                  setTransactionData({
+                    ...transactionData,
+                    creditor_account: e.target.value,
+                  })
+                }
+                onKeyDown={handleEnterKeyPress}
+                disabled={
+                  !(
+                    fieldPermissions &&
+                    fieldPermissions.fields &&
+                    fieldPermissions.fields.includes("creditor_account")
+                  )
+                }
+              />
+            </div>
+            <div className={styles.formGroup}>
+              <label className={styles.labelField}>Route:</label>
+              <div style={{ marginTop: "10px" }}>
+                <Select
+                  options={routeOptions}
+                  value={routeOptions.find(
+                    (option) => option.value === transactionData.route,
+                  )}
+                  onChange={(selectedOption) =>
+                    setTransactionData({
+                      ...transactionData,
+                      route: selectedOption?.value || "",
+                    })
+                  }
+                  isDisabled={
+                    !(
+                      fieldPermissions &&
+                      fieldPermissions.fields &&
+                      fieldPermissions.fields.includes("route")
+                    )
+                  }
+                />
+              </div>
+            </div>
+            <div className={styles.formGroup}>
+              <label className={styles.labelField}>Korte beschrijving</label>
+              <input
+                type="text"
+                value={transactionData.short_user_description}
+                onChange={(e) =>
+                  setTransactionData({
+                    ...transactionData,
+                    short_user_description: e.target.value,
+                  })
+                }
+                disabled={
+                  !(
+                    fieldPermissions &&
+                    fieldPermissions.fields &&
+                    fieldPermissions.fields.includes("short_user_description")
+                  )
+                }
+              />
+            </div>
+            <div className={styles.formGroup}>
+              <label className={styles.labelField}>lange beschrijving</label>
+              <input
+                type="text"
+                value={transactionData.long_user_description}
+                onChange={(e) =>
+                  setTransactionData({
+                    ...transactionData,
+                    long_user_description: e.target.value,
+                  })
+                }
+                disabled={
+                  !(
+                    fieldPermissions &&
+                    fieldPermissions.fields &&
+                    fieldPermissions.fields.includes("long_user_description")
+                  )
+                }
+              />
+            </div>
+            <div className={styles.formGroup}>
+              <div className={styles.roleOptions}>
+                <label className={styles.labelField}>
+                  <input
+                    type="checkbox"
+                    checked={transactionData.hidden}
+                    onChange={(e) =>
+                      setTransactionData({
+                        ...transactionData,
+                        hidden: e.target.checked,
+                      })
+                    }
+                    disabled={
+                      !(
+                        fieldPermissions &&
+                        fieldPermissions.fields &&
+                        fieldPermissions.fields.includes("hidden")
+                      )
+                    }
+                  />
+                  Transactie verbergen
+                </label>
+              </div>
             </div>
           </>
         ) : null}

@@ -48,57 +48,61 @@ const AddOfficerDesktop: React.FC<AddOfficerDesktopProps> = ({
   }, [isOpen]);
 
   useEffect(() => {
-    async function fetchAndSetOverseers() {
-      try {
-        const token = localStorage.getItem("token");
-        if (!token) {
-          console.error("Token is not available in localStorage");
-          return;
+    if (isOpen) {
+      async function fetchAndSetOverseers() {
+        try {
+          const token = localStorage.getItem("token");
+          if (!token) {
+            console.error("Token is not available in localStorage");
+            return;
+          }
+
+          if (!sponsorId || !regulationId || !grantId) {
+            console.error("Required IDs are not available.");
+            return;
+          }
+
+          const overseers = await getGrantOverseers(
+            Number(sponsorId),
+            Number(regulationId),
+            Number(grantId),
+            token,
+          );
+
+          const overseerEmails = overseers.map((overseer) => ({
+            id: overseer.id,
+            email: overseer.email,
+          }));
+
+          setAddedOfficers(overseerEmails);
+        } catch (error) {
+          console.error("Error fetching overseers:", error);
         }
-
-        if (!sponsorId || !regulationId || !grantId) {
-          console.error("Required IDs are not available.");
-          return;
-        }
-
-        const overseers = await getGrantOverseers(
-          Number(sponsorId),
-          Number(regulationId),
-          Number(grantId),
-          token,
-        );
-
-        const overseerEmails = overseers.map((overseer) => ({
-          id: overseer.id,
-          email: overseer.email,
-        }));
-
-        setAddedOfficers(overseerEmails);
-      } catch (error) {
-        console.error("Error fetching overseers:", error);
       }
+      fetchAndSetOverseers();
     }
-    fetchAndSetOverseers();
-  }, [sponsorId, regulationId, grantId]);
+  }, [isOpen, sponsorId, regulationId, grantId]);
 
   useEffect(() => {
-    async function fetchAllUsers() {
-      try {
-        const token = localStorage.getItem("token");
-        if (!token) {
-          console.error("Token is not available in localStorage");
-          return;
+    if (isOpen) {
+      async function fetchAllUsers() {
+        try {
+          const token = localStorage.getItem("token");
+          if (!token) {
+            console.error("Token is not available in localStorage");
+            return;
+          }
+
+          const response = await getUsers(token);
+
+          setAllUsers(response.users);
+        } catch (error) {
+          console.error("Error fetching all users:", error);
         }
-
-        const response = await getUsers(token);
-
-        setAllUsers(response.users);
-      } catch (error) {
-        console.error("Error fetching all users:", error);
       }
+      fetchAllUsers();
     }
-    fetchAllUsers();
-  }, []);
+  }, [isOpen]);
 
   const handleOfficerSelect = (officer: Officer) => {
     if (!addedOfficers.some((added) => added.id === officer.id)) {
