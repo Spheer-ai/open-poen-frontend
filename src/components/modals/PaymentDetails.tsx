@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import styles from "../../assets/scss/layout/AddFundDesktop.module.scss";
 import { fetchPaymentDetails } from "../middleware/Api";
+import format from "date-fns/format";
+import nlLocale from "date-fns/locale/nl";
 
 export interface Transaction {
   id: number;
@@ -78,7 +80,13 @@ const FetchPayment: React.FC<FetchPaymentProps> = ({
           <h3>Info</h3>
           <label className={styles.labelField}>Bedrag:</label>
           {paymentData?.transaction_amount ? (
-            <span>{paymentData.transaction_amount}</span>
+            <span>
+              €{" "}
+              {paymentData.transaction_amount.toLocaleString("nl-NL", {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              })}
+            </span>
           ) : (
             <span className={styles.cursiveText}>Geen gegevens bekend</span>
           )}
@@ -87,7 +95,11 @@ const FetchPayment: React.FC<FetchPaymentProps> = ({
         <div className={`${styles.formGroup} ${styles.flexed}`}>
           <label className={styles.labelField}>Datum:</label>
           {paymentData?.booking_date ? (
-            <span>{paymentData.booking_date}</span>
+            <span>
+              {format(new Date(paymentData.booking_date), "dd-MM-yyyy", {
+                locale: nlLocale,
+              })}
+            </span>
           ) : (
             <span className={styles.cursiveText}>Geen gegevens bekend</span>
           )}
@@ -112,7 +124,7 @@ const FetchPayment: React.FC<FetchPaymentProps> = ({
         </div>
         <hr></hr>
         <div className={`${styles.formGroup} ${styles.flexed}`}>
-          <label className={styles.labelField}>Debtor Account:</label>
+          <label className={styles.labelField}>Naam betaler:</label>
           {paymentData?.debtor_account ? (
             <span>{paymentData.debtor_account}</span>
           ) : (
@@ -127,10 +139,6 @@ const FetchPayment: React.FC<FetchPaymentProps> = ({
           ) : (
             <span className={styles.cursiveText}>Geen gegevens bekend</span>
           )}
-        </div>
-        <hr></hr>
-        <div className={`${styles.formGroup} ${styles.flexed}`}>
-          <h3>Attachments</h3>
         </div>
         <hr></hr>
         <div className={styles.buttonContainer}>
