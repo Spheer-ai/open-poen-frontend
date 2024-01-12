@@ -33,18 +33,13 @@ export default function AppRoutes() {
 
   const handleLogin = () => {
     setIsAuthenticated(true);
-    navigate("/contacts");
-    setShowLoginModal(false);
-  };
-
-  const handleLogout = () => {
-    setIsAuthenticated(false);
     navigate("/funds");
+    setShowLoginModal(false);
   };
 
   return (
     <div className={styles["app-container"]}>
-      <SidebarMenu isAuthenticated={isAuthenticated} onLogout={handleLogout} />
+      <SidebarMenu />
       <div className={styles["page-content"]}>
         <Routes>
           <Route
@@ -434,16 +429,7 @@ export default function AppRoutes() {
               />
             </>
           )}
-          <Route
-            path="/login"
-            element={
-              isAuthenticated ? (
-                <Navigate to="/funds" />
-              ) : (
-                <Login onLogin={handleLogin} />
-              )
-            }
-          />
+          <Route path="/login" element={<Login onLogin={handleLogin} />} />
         </Routes>
       </div>
     </div>

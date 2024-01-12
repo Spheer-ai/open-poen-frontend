@@ -57,7 +57,7 @@ export default function Login({ onLogin }: { onLogin: () => void }) {
   };
 
   const handleBackdropClick = () => {
-    navigate("/contacts");
+    navigate("/funds");
   };
 
   const handleFormSubmit = () => {
