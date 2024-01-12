@@ -64,7 +64,6 @@ const RegulationDetail: React.FC<RegulationDetailProps> = ({
   const [isAddGrantModalOpen, setIsAddGrantModalOpen] = useState(false);
   const [isGrantModalOpen, setIsGrantModalOpen] = useState(false);
   const [isDeleteGrantModalOpen, setIsDeleteGrantModalOpen] = useState(false);
-  const [isEditSponsorModalOpen, setIsEditSponsorModalOpen] = useState(false);
   const [isAddEmployeeModalOpen, setIsAddEmployeeModalOpen] = useState(false);
   const [isAddFundModalOpen, setIsAddFundModalOpen] = useState(false);
   const [isDeleteRegulationModalOpen, setIsDeleteRegulationModalOpen] =
@@ -79,12 +78,6 @@ const RegulationDetail: React.FC<RegulationDetailProps> = ({
   const [hasDeletePermission, setHasDeletePermission] = useState(false);
   const [hasCreateGrantPermission, setHasCreateGrantPermission] =
     useState(false);
-  const [hasEditSponsorPermission, setHasEditSponsorPermission] =
-    useState(false);
-  const [grantPermissions, setGrantPermissions] = useState<
-    Record<number, string[]>
-  >({});
-  const [selectedGrant, setSelectedGrant] = useState<Grant | null>(null);
 
   useParams();
 
@@ -102,7 +95,6 @@ const RegulationDetail: React.FC<RegulationDetailProps> = ({
               parseInt(regulationId),
               user.token,
             );
-
           const funderPermissions: string[] | undefined =
             await fetchPermissions("Funder", parseInt(sponsorId), user.token);
 
@@ -122,10 +114,6 @@ const RegulationDetail: React.FC<RegulationDetailProps> = ({
             regulationPermissions.includes("create_grant")
           ) {
             setHasCreateGrantPermission(true);
-          }
-
-          if (funderPermissions && funderPermissions.includes("edit")) {
-            setHasEditSponsorPermission(true);
           }
 
           const details = await fetchRegulationDetails(
@@ -376,7 +364,6 @@ const RegulationDetail: React.FC<RegulationDetailProps> = ({
       <GrantList
         key={selectedRegulationId}
         grants={regulationDetails.grants}
-        grantPermissions={grantPermissions}
         hasCreateGrantPermission={hasCreateGrantPermission}
         onAddGrantClick={handleToggleAddGrantModal}
         onEditGrantClick={handleToggleEditGrantModal}
@@ -452,6 +439,7 @@ const RegulationDetail: React.FC<RegulationDetailProps> = ({
         currentName={currentGrant?.name || ""}
         currentReference={currentGrant?.reference || ""}
         currentBudget={currentGrant?.budget || 0}
+        grantId={selectedGrantId?.toString() || undefined}
       />
       <DeleteGrant
         isOpen={isDeleteGrantModalOpen}
@@ -461,6 +449,7 @@ const RegulationDetail: React.FC<RegulationDetailProps> = ({
         sponsorId={sponsorId}
         regulationId={regulationId}
         grant={currentGrant}
+        grantId={selectedGrantId?.toString() || undefined}
         currentName={currentGrant?.name || ""}
         currentReference={currentGrant?.reference || ""}
         currentBudget={currentGrant?.budget || 0}

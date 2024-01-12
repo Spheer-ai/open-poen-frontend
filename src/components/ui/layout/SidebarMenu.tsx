@@ -1,13 +1,13 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import styles from "../../../assets/scss/SidebarMenu.module.scss";
-import { logoutUser } from "../../middleware/Api";
-import { SidebarMenuProps } from "../../../types/SidebarMenuTypes";
+import { useAuth } from "../../../contexts/AuthContext";
 
-const SidebarMenu = ({ isAuthenticated, onLogout }: SidebarMenuProps) => {
+const SidebarMenu = () => {
   const location = useLocation();
+  const { user, logout } = useAuth();
 
-  const isLinkActive = (pathname: string) => {
+  const isLinkActive = (pathname) => {
     return location.pathname.startsWith(`/${pathname}`);
   };
 
@@ -21,18 +21,7 @@ const SidebarMenu = ({ isAuthenticated, onLogout }: SidebarMenuProps) => {
     { name: "Sponsors", icon: "sponsors.svg", tooltip: "Sponsors" },
   ];
 
-  const handleLogout = async () => {
-    if (isAuthenticated) {
-      try {
-        const token = localStorage.getItem("token") ?? "";
-        await logoutUser(token);
-        localStorage.removeItem("token");
-        onLogout();
-      } catch (error) {
-        console.error("Logout error:", error);
-      }
-    }
-  };
+  const isAuthenticated = !!user;
 
   return (
     <div className={styles["sidebar-menu"]}>
@@ -94,7 +83,7 @@ const SidebarMenu = ({ isAuthenticated, onLogout }: SidebarMenuProps) => {
             className={styles["hamburger-icon"]}
             src={isAuthenticated ? "/logout.svg" : "/login.svg"}
             alt={isAuthenticated ? "Logout Icon" : "Login Icon"}
-            onClick={handleLogout}
+            onClick={logout}
           />
         </Link>
       </div>
