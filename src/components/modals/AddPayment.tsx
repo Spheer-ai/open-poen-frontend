@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import styles from "../../assets/scss/layout/AddFundDesktop.module.scss";
+import Select from "react-select";
 import { createPayment } from "../middleware/Api";
 
 interface AddPaymentProps {
@@ -36,6 +37,10 @@ const AddPayment: React.FC<AddPaymentProps> = ({
   };
   const [modalIsOpen, setModalIsOpen] = useState(isOpen);
   const [paymentData, setPaymentData] = useState(initialPaymentData);
+  const routeOptions = [
+    { value: "inkomen", label: "Inkomen" },
+    { value: "uitgaven", label: "Uitgaven" },
+  ];
 
   useEffect(() => {
     if (isOpen) {
@@ -114,15 +119,27 @@ const AddPayment: React.FC<AddPaymentProps> = ({
             type="text"
             value={paymentData.transaction_amount}
             onChange={(e) => {
-              const inputValue = e.target.value;
-              if (/^-?\d*\.?\d*$/.test(inputValue)) {
+              setPaymentData({
+                ...paymentData,
+                transaction_amount: e.target.value,
+              });
+            }}
+            onKeyDown={(e) => {
+              if (
+                e.key === "-" &&
+                !paymentData.transaction_amount.includes("-")
+              ) {
                 setPaymentData({
                   ...paymentData,
-                  transaction_amount: inputValue,
+                  route: "uitgaven",
+                });
+              } else if (!paymentData.transaction_amount.startsWith("-")) {
+                setPaymentData({
+                  ...paymentData,
+                  route: "inkomen",
                 });
               }
             }}
-            onKeyDown={handleEnterKeyPress}
           />
         </div>
         <div className={styles.formGroup}>
@@ -143,6 +160,34 @@ const AddPayment: React.FC<AddPaymentProps> = ({
           <label className={styles.labelField}>Naam betaler:</label>
           <input
             type="text"
+            value={paymentData.debtor_name}
+            onChange={(e) =>
+              setPaymentData({
+                ...paymentData,
+                debtor_name: e.target.value,
+              })
+            }
+            onKeyDown={handleEnterKeyPress}
+          />
+        </div>
+        <div className={styles.formGroup}>
+          <label className={styles.labelField}>Betaal IBAN</label>
+          <input
+            type="text"
+            value={paymentData.debtor_account}
+            onChange={(e) =>
+              setPaymentData({
+                ...paymentData,
+                debtor_account: e.target.value,
+              })
+            }
+            onKeyDown={handleEnterKeyPress}
+          />
+        </div>
+        <div className={styles.formGroup}>
+          <label className={styles.labelField}>Naam ontvanger:</label>
+          <input
+            type="text"
             value={paymentData.creditor_name}
             onChange={(e) =>
               setPaymentData({
@@ -154,17 +199,60 @@ const AddPayment: React.FC<AddPaymentProps> = ({
           />
         </div>
         <div className={styles.formGroup}>
-          <label className={styles.labelField}>Naam ontvanger:</label>
+          <label className={styles.labelField}>Ontvanger IBAN</label>
           <input
             type="text"
-            value={paymentData.debtor_name}
+            value={paymentData.creditor_account}
             onChange={(e) =>
               setPaymentData({
                 ...paymentData,
-                debtor_name: e.target.value,
+                creditor_account: e.target.value,
               })
             }
             onKeyDown={handleEnterKeyPress}
+          />
+        </div>
+        <div className={styles.formGroup}>
+          <label className={styles.labelField}>Route:</label>
+          <div style={{ marginTop: "10px" }}>
+            <Select
+              options={routeOptions}
+              value={routeOptions.find(
+                (option) => option.value === paymentData.route,
+              )}
+              onChange={(selectedOption) =>
+                setPaymentData({
+                  ...paymentData,
+                  route: selectedOption?.value || "",
+                })
+              }
+            />
+          </div>
+        </div>
+        <div className={styles.formGroup}>
+          <label className={styles.labelField}>Korte beschrijving</label>
+          <input
+            type="text"
+            value={paymentData.short_user_description}
+            onChange={(e) =>
+              setPaymentData({
+                ...paymentData,
+                short_user_description: e.target.value,
+              })
+            }
+          />
+        </div>
+        <div className={styles.formGroup}>
+          <label className={styles.labelField}>lange beschrijving</label>
+          <input
+            type="text"
+            value={paymentData.long_user_description}
+            onChange={(e) =>
+              setPaymentData({
+                ...paymentData,
+                long_user_description: e.target.value,
+              })
+            }
           />
         </div>
         <div className={styles.buttonContainer}>
