@@ -24,11 +24,6 @@ const DeleteUserForm: React.FC<DeleteUserFormProps> = ({
     }
   }, [isOpen]);
 
-  if (!userId) {
-    console.error("userId is undefined or null");
-    return null;
-  }
-
   const handleDelete = async () => {
     try {
       const token = user?.token || "";
