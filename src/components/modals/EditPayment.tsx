@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styles from "../../assets/scss/layout/AddFundDesktop.module.scss";
 import LoadingDot from "../animation/LoadingDot";
+import Select from "react-select";
 import LinkInitiativePaymentToActivity from "../elements/dropdown-menu/activities/LinkInitiativePaymentToActivity";
 import {
   cancelPayment,
@@ -74,7 +75,7 @@ const EditPayment: React.FC<EditPaymentProps> = ({
   );
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [transactionData, setTransactionData] = useState({
-    transaction_amount: paymentData?.transaction_amount || 0,
+    transaction_amount: paymentData?.transaction_amount?.toString() || "",
     booking_date: paymentData?.booking_date || "",
     creditor_name: paymentData?.creditor_name || "",
     debtor_name: paymentData?.debtor_name || "",
@@ -85,6 +86,10 @@ const EditPayment: React.FC<EditPaymentProps> = ({
     long_user_description: paymentData?.long_user_description || "",
     hidden: paymentData?.hidden || false,
   });
+  const routeOptions = [
+    { value: "inkomen", label: "Inkomen" },
+    { value: "uitgaven", label: "Uitgaven" },
+  ];
 
   const fetchAttachments = async () => {
     try {
@@ -121,7 +126,7 @@ const EditPayment: React.FC<EditPaymentProps> = ({
   useEffect(() => {
     if (paymentData) {
       setTransactionData({
-        transaction_amount: paymentData.transaction_amount,
+        transaction_amount: paymentData.transaction_amount.toString(),
         booking_date: paymentData.booking_date,
         creditor_name: paymentData.creditor_name,
         debtor_name: paymentData.debtor_name,
@@ -187,7 +192,7 @@ const EditPayment: React.FC<EditPaymentProps> = ({
         short_user_description: transactionData.short_user_description,
         long_user_description: transactionData.long_user_description,
         hidden: transactionData.hidden,
-        transaction_amount: transactionData.transaction_amount,
+        transaction_amount: parseFloat(transactionData.transaction_amount),
       };
 
       for (const key in requestData) {
@@ -217,7 +222,7 @@ const EditPayment: React.FC<EditPaymentProps> = ({
 
   const resetState = () => {
     setTransactionData({
-      transaction_amount: 0,
+      transaction_amount: "",
       booking_date: "",
       creditor_name: "",
       debtor_name: "",
@@ -424,17 +429,31 @@ const EditPayment: React.FC<EditPaymentProps> = ({
               <label className={styles.labelField}>Bedrag:</label>
               <input
                 type="text"
-                value={transactionData.transaction_amount.toString()}
+                value={transactionData.transaction_amount}
                 onChange={(e) => {
-                  const inputValue = e.target.value;
-                  if (/^-?\d*\.?\d*$|^$/.test(inputValue)) {
+                  setTransactionData({
+                    ...transactionData,
+                    transaction_amount: e.target.value,
+                  });
+                }}
+                onKeyDown={(e) => {
+                  if (
+                    e.key === "-" &&
+                    !transactionData.transaction_amount.includes("-")
+                  ) {
                     setTransactionData({
                       ...transactionData,
-                      transaction_amount: parseFloat(inputValue),
+                      route: "uitgaven",
+                    });
+                  } else if (
+                    !transactionData.transaction_amount.startsWith("-")
+                  ) {
+                    setTransactionData({
+                      ...transactionData,
+                      route: "inkomen",
                     });
                   }
                 }}
-                onKeyDown={handleEnterKeyPress}
                 disabled={
                   !(
                     fieldPermissions &&
@@ -557,25 +576,27 @@ const EditPayment: React.FC<EditPaymentProps> = ({
             </div>
             <div className={styles.formGroup}>
               <label className={styles.labelField}>Route:</label>
-              <select
-                value={transactionData.route}
-                onChange={(e) =>
-                  setTransactionData({
-                    ...transactionData,
-                    route: e.target.value,
-                  })
-                }
-                disabled={
-                  !(
-                    fieldPermissions &&
-                    fieldPermissions.fields &&
-                    fieldPermissions.fields.includes("route")
-                  )
-                }
-              >
-                <option value="inkomen">Inkomen</option>
-                <option value="uitgaven">Uitgaven</option>
-              </select>
+              <div style={{ marginTop: "10px" }}>
+                <Select
+                  options={routeOptions}
+                  value={routeOptions.find(
+                    (option) => option.value === transactionData.route,
+                  )}
+                  onChange={(selectedOption) =>
+                    setTransactionData({
+                      ...transactionData,
+                      route: selectedOption?.value || "",
+                    })
+                  }
+                  isDisabled={
+                    !(
+                      fieldPermissions &&
+                      fieldPermissions.fields &&
+                      fieldPermissions.fields.includes("route")
+                    )
+                  }
+                />
+              </div>
             </div>
             <div className={styles.formGroup}>
               <label className={styles.labelField}>Korte beschrijving</label>
