@@ -10,7 +10,7 @@
     "start": "vite preview",
     "build-test": "cross-env VITE_API_URL=https://test.api.openpoen.nl vite build --mode development --debug",
     "build-acceptance": "cross-env VITE_API_URL=https://acceptance.api.openpoen.nl vite build --mode production --debug",
-    "build-production": "cross-env VITE_API_URL=https://api.openpoen.nl production vite build --mode production --debug",
+    "build-production": "cross-env VITE_API_URL=https://api.openpoen.nl vite build --mode production --debug",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "format": "prettier --write 'src/**/*.{ts,tsx,js,jsx,json,css,scss,md}'"
