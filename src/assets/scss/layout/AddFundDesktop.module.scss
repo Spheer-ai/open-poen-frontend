@@ -547,3 +547,8 @@ body {
     font-style: italic;
   }
 }
+
+.characterCounter {
+  display: flex;
+  justify-content: space-between;
+}

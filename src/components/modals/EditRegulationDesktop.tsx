@@ -30,6 +30,7 @@ const EditRegulationDesktop: React.FC<EditRegulationDesktopProps> = ({
     useState(currentDescription);
   const [nameError, setNameError] = useState(false);
   const [descriptionError, setDescriptionError] = useState(false);
+  const [charCount, setCharCount] = useState(currentDescription.length);
   const [apiError, setApiError] = useState("");
   const [maxNameLength] = useState(128);
 
@@ -121,6 +122,18 @@ const EditRegulationDesktop: React.FC<EditRegulationDesktopProps> = ({
     }
   };
 
+  const handleDescriptionChange = (
+    e: React.ChangeEvent<HTMLTextAreaElement>,
+  ) => {
+    const description = e.target.value;
+    setRegulationDescription(description);
+    setCharCount(description.length);
+    setDescriptionError(false);
+    setApiError("");
+  };
+
+  const isCharCountExceeded = charCount > 512;
+
   if (!isOpen && !modalIsOpen) {
     return null;
   }
@@ -170,17 +183,31 @@ const EditRegulationDesktop: React.FC<EditRegulationDesktopProps> = ({
           <textarea
             placeholder="Voer de beschrijving in"
             value={regulationDescription}
-            onChange={(e) => {
-              setRegulationDescription(e.target.value);
-              setDescriptionError(false);
-              setApiError("");
-            }}
+            onChange={handleDescriptionChange}
           />
           {descriptionError && (
             <span style={{ color: "red", display: "block", marginTop: "5px" }}>
               Vul een beschrijving in.
             </span>
           )}
+          <div className={styles.characterCounter}>
+            <span
+              style={{
+                color: isCharCountExceeded ? "red" : "inherit",
+                fontSize: "14px",
+              }}
+            >{`${charCount} / 512`}</span>
+            {charCount > 512 && (
+              <span
+                style={{
+                  fontSize: "14px",
+                  color: isCharCountExceeded ? "red" : "inherit",
+                }}
+              >
+                Beschrijving mag maximaal 512 tekens bevatten.
+              </span>
+            )}
+          </div>
         </div>
         <div className={styles.buttonContainer}>
           <button onClick={handleClose} className={styles.cancelButton}>
