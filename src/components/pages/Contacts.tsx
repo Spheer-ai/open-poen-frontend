@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Outlet, useNavigate, useParams } from "react-router-dom";
 import LoadingDot from "../animation/LoadingDot";
 import { getUserById, getUsersOrdered } from "../middleware/Api";
@@ -19,6 +19,7 @@ interface DecodedToken {
 export default function Contacts() {
   const token = localStorage.getItem("token");
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [error, setError] = useState<Error | null>(null);
   const [loggedInUserId, setLoggedInUserId] = useState<string | null>(null);
@@ -40,6 +41,25 @@ export default function Contacts() {
   const [initialUserList, setInitialUserList] = useState<UserData[]>([]);
   const [noResultsFound, setNoResultsFound] = useState(false);
 
+  const [isAtBottom, setIsAtBottom] = useState(false);
+  const sidePanelRef = useRef<HTMLDivElement | null>(null);
+
+  const checkBottom = () => {
+    const sidePanel = sidePanelRef.current;
+
+    if (sidePanel) {
+      const scrollY = sidePanel.scrollTop;
+      const panelHeight = sidePanel.clientHeight;
+      const contentHeight = sidePanel.scrollHeight;
+
+      if (scrollY + panelHeight >= contentHeight) {
+        setIsAtBottom(true);
+      } else {
+        setIsAtBottom(false);
+      }
+    }
+  };
+
   useEffect(() => {
     if (user && user.token && !permissionsFetched) {
       fetchPermissions("User", undefined, user.token)
@@ -54,13 +74,9 @@ export default function Contacts() {
     }
   }, [user, fetchPermissions, permissionsFetched]);
 
-  const navigate = useNavigate();
-  const { userId } = useParams();
-
   useEffect(() => {
     async function fetchData() {
       try {
-        setIsLoading(true);
         let loggedIn = false;
         let userId: string | null = null;
 
@@ -75,7 +91,7 @@ export default function Contacts() {
         const usersResponse = await getUsersOrdered(
           token || "",
           currentPage,
-          20,
+          5,
           searchQuery,
         );
 
@@ -114,20 +130,18 @@ export default function Contacts() {
             setInitialUserList(filteredUsers);
           }
 
-          setUserList((prevUserList) => [
-            ...prevUserList,
-            ...filteredUsers.filter((user) =>
-              prevUserList.every((prevUser) => prevUser.id !== user.id),
-            ),
-          ]);
+          if (currentPage > 0) {
+            setUserList((prevUserList) => [
+              ...prevUserList,
+              ...filteredUsers.filter((user) =>
+                prevUserList.every((prevUser) => prevUser.id !== user.id),
+              ),
+            ]);
+          }
         }
 
         setUserListLoaded(true);
 
-        if (filteredUsers.length > 0) {
-          setActiveUserId(filteredUsers[0].id);
-          navigate(`/contacts/${filteredUsers[0].id}`);
-        }
         setIsLoading(false);
       } catch (error) {
         setError(error);
@@ -174,6 +188,25 @@ export default function Contacts() {
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
+    if (query === "") {
+      setUserList(initialUserList);
+    } else {
+      const filteredUsers = userListLoaded
+        ? userList.filter((user) => {
+            const fullName = `${user.first_name || ""} ${user.last_name || ""}`;
+            const email = user.email || "";
+            const keywords = query.toLowerCase().split(" ");
+
+            return keywords.every(
+              (keyword) =>
+                fullName.toLowerCase().includes(keyword) ||
+                email.toLowerCase().includes(keyword),
+            );
+          })
+        : [];
+
+      setUserList(filteredUsers);
+    }
   };
 
   const handleToggleAddUserModal = () => {
@@ -210,15 +243,44 @@ export default function Contacts() {
     setRefreshTrigger((prev) => prev + 1);
   };
 
-  const handleLoadMore = () => {
-    setCurrentPage(currentPage + 1);
+  const handleLoadMore = async () => {
+    if (!isLoading) {
+      setCurrentPage(currentPage + 1);
+      setIsLoading(true);
+
+      try {
+        setIsLoading(false);
+      } catch (error) {
+        setError(error);
+        setIsLoading(false);
+      }
+    }
   };
+
+  useEffect(() => {
+    const sidePanel = sidePanelRef.current;
+
+    if (sidePanel) {
+      sidePanel.addEventListener("scroll", checkBottom);
+
+      return () => {
+        sidePanel.removeEventListener("scroll", checkBottom);
+      };
+    }
+  }, []);
+
+  useEffect(() => {
+    if (isAtBottom) {
+      console.log("User reached the bottom of the side panel");
+      handleLoadMore();
+    }
+  }, [isAtBottom]);
 
   return (
     <div className={styles["container"]}>
-      <div className={styles["side-panel"]}>
+      <div className={styles["side-panel"]} ref={sidePanelRef}>
         <TopNavigationBar
-          title={`Gebruikers ${userList.length}`}
+          title={`Gebruikers`}
           showSettings={false}
           showCta={isLoggedIn}
           onSettingsClick={() => {}}

@@ -39,7 +39,7 @@ export default function Funds() {
   const [displayedInitiativesCount, setDisplayedInitiativesCount] = useState(0);
   const [initialFetchDone, setInitialFetchDone] = useState(false);
   const [offset, setOffset] = useState(0);
-  const [limit, setLimit] = useState(20);
+  const [limit, setLimit] = useState(3);
   const [totalInitiatives, setTotalInitiatives] = useState(0);
 
   const [allFetchedInitiatives, setAllFetchedInitiatives] = useState<
@@ -49,6 +49,25 @@ export default function Funds() {
     useState(false);
   const [allInitiativesFetched, setAllInitiativesFetched] = useState(false);
   const initialFetchDoneRef = useRef(false);
+
+  const [isAtBottom, setIsAtBottom] = useState(false);
+  const sidePanelRef = useRef<HTMLDivElement | null>(null);
+
+  const checkBottom = () => {
+    const sidePanel = sidePanelRef.current;
+
+    if (sidePanel) {
+      const scrollY = sidePanel.scrollTop;
+      const panelHeight = sidePanel.clientHeight;
+      const contentHeight = sidePanel.scrollHeight;
+
+      if (scrollY + panelHeight >= contentHeight) {
+        setIsAtBottom(true);
+      } else {
+        setIsAtBottom(false);
+      }
+    }
+  };
 
   useEffect(() => {
     if (user?.token) {
@@ -139,6 +158,25 @@ export default function Funds() {
     fetchAndDisplayInitiatives(user?.token, onlyMine, newOffset, limit);
   };
 
+  useEffect(() => {
+    const sidePanel = sidePanelRef.current;
+
+    if (sidePanel) {
+      sidePanel.addEventListener("scroll", checkBottom);
+
+      return () => {
+        sidePanel.removeEventListener("scroll", checkBottom);
+      };
+    }
+  }, []);
+
+  useEffect(() => {
+    if (isAtBottom) {
+      console.log("User reached the bottom of the side panel");
+      handleLoadMoreClick();
+    }
+  }, [isAtBottom]);
+
   const handleSearch = (query) => {};
 
   const navigateToActivities = (initiativeId, initiativeName) => {
@@ -162,9 +200,10 @@ export default function Funds() {
       expensesWidth,
     };
   };
+
   return (
     <div className={styles["container"]}>
-      <div className={styles["side-panel"]}>
+      <div className={styles["side-panel"]} ref={sidePanelRef}>
         <TopNavigationBar
           title={`Initiatieven`}
           showSettings={false}
@@ -184,12 +223,12 @@ export default function Funds() {
               onClick={() => {
                 setOnlyMine(false);
                 setOffset(0);
-                setLimit(20);
+                setLimit(3);
                 setIsFetchingInitiatives(true);
                 setInitiatives([]);
                 setAllInitiatives([]);
                 setMyInitiatives([]);
-                fetchAndDisplayInitiatives(user?.token, false, 0, 20);
+                fetchAndDisplayInitiatives(user?.token, false, 0, 3);
               }}
             >
               Alle Initiatieven
@@ -206,7 +245,7 @@ export default function Funds() {
                 setInitiatives([]);
                 setAllInitiatives([]);
                 setMyInitiatives([]);
-                fetchAndDisplayInitiatives(user?.token, true, 0, 20);
+                fetchAndDisplayInitiatives(user?.token, true, 0, 3);
               }}
             >
               Mijn Initiatieven
@@ -324,9 +363,7 @@ export default function Funds() {
               <LoadingDot delay={0.2} />
             </div>
           ) : (
-            <button onClick={handleLoadMoreClick}>
-              Meer initiatieven laden..
-            </button>
+            <></>
           )}
         </ul>
       </div>

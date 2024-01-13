@@ -210,7 +210,7 @@ export const getUserById = async (userId: string, token: string) => {
 export const getUsersOrdered = async (
   token: string,
   page: number = 0,
-  limit: number = 20,
+  limit: number = 5,
   email: string = "",
 ) => {
   try {
@@ -235,7 +235,7 @@ export const fetchInitiatives = async (
   token: string,
   onlyMine: boolean,
   offset: number = 0,
-  limit: number = 20,
+  limit: number = 3,
 ) => {
   try {
     const response = await api.get(`/initiatives`, {
