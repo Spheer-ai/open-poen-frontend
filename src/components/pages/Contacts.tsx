@@ -36,6 +36,7 @@ export default function Contacts() {
   const [activeUserId, setActiveUserId] = useState<string | null>(null);
   const [userItemId, setUserItemId] = useState<string | null>(null);
   const [isActiveProfile, setIsActiveProfile] = useState(false);
+  const abortControllerRef = useRef<AbortController | null>(null);
 
   const checkBottom = () => {
     const sidePanel = sidePanelRef.current;
@@ -60,6 +61,8 @@ export default function Contacts() {
   }, [user, fetchPermissions, entityPermissions]);
 
   useEffect(() => {
+    abortControllerRef.current = new AbortController();
+    const abortSignal = abortControllerRef.current.signal;
     async function fetchData() {
       try {
         const usersResponse = await getUsersOrdered(
@@ -93,11 +96,21 @@ export default function Contacts() {
 
         setIsLoading(false);
       } catch (error) {
-        setError(error);
+        if (error.name === "AbortError") {
+          console.log("Fetch aborted:", error.message);
+        } else {
+          setError(error);
+        }
       }
     }
 
     fetchData();
+
+    return () => {
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+    };
   }, [refreshTrigger, user, currentPage, searchQuery]);
 
   useEffect(() => {
@@ -112,10 +125,15 @@ export default function Contacts() {
     setIsModalOpen(true);
   };
 
-  const handleUserClick = (clickedUserId: string, isProfile: boolean) => {
+  useEffect(() => {
+    handleUserClick(user?.id || "", true);
+  }, []);
+
+  const handleUserClickLogic = (clickedUserId: string, isProfile: boolean) => {
     if (isProfile) {
       setIsActiveProfile(true);
       setActiveUserId(clickedUserId);
+      setUserItemId(clickedUserId);
     } else {
       const updatedUserList = userList.map((userItem) => ({
         ...userItem,
@@ -125,8 +143,16 @@ export default function Contacts() {
 
       setIsActiveProfile(false);
       setActiveUserId(clickedUserId);
-      setUserItemId(clickedUserId); // Set userItemId for user item click
+      setUserItemId(clickedUserId);
     }
+  };
+
+  useEffect(() => {
+    handleUserClickLogic(user?.id || "", true);
+  }, []);
+
+  const handleUserClick = (clickedUserId: string, isProfile: boolean) => {
+    handleUserClickLogic(clickedUserId, isProfile);
   };
 
   useEffect(() => {
@@ -329,14 +355,14 @@ export default function Contacts() {
           onUserAdded={handleUserAdded}
         />
       </div>
-      {user && (
+      {(user && isActiveProfile) || activeUserId ? (
         <UserDetailsPage
           onUserDeleted={handleUserDeleted}
           onUserEdited={handleUserEdited}
           onUserProfileEdited={handleUserProfileEdited}
           onPasswordChanged={handlePasswordChanged}
         />
-      )}
+      ) : null}
     </div>
   );
 }

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styles from "../../../assets/scss/Contacts.module.scss";
 import ProfileIcon from "../../../assets/profile-icon.svg";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import jwtDecode from "jwt-decode";
 import { getUserById } from "../../middleware/Api";
 
@@ -32,6 +32,7 @@ const MyProfile: React.FC<MyProfileProps> = ({
 }) => {
   const [myProfileData, setMyProfileData] = useState<UserProfile | null>(null);
   const [userItemId, setUserItemId] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     console.log("MyProfile - isActive:", isActive);
@@ -50,6 +51,10 @@ const MyProfile: React.FC<MyProfileProps> = ({
           try {
             const userData: UserProfile = await getUserById(userId, token);
             setMyProfileData(userData);
+
+            if (isActive) {
+              navigate(`/contacts/${userId}`);
+            }
           } catch (error) {
             console.error("Error fetching user data:", error);
           }
@@ -60,7 +65,7 @@ const MyProfile: React.FC<MyProfileProps> = ({
         console.error("Error decoding token:", error);
       }
     }
-  }, [user]);
+  }, [user, isActive]);
 
   if (!myProfileData) {
     return null;
