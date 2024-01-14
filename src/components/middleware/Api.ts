@@ -210,7 +210,7 @@ export const getUserById = async (userId: string, token: string) => {
 export const getUsersOrdered = async (
   token: string,
   page: number = 0,
-  limit: number = 5,
+  limit: number = 10,
   email: string = "",
 ) => {
   try {

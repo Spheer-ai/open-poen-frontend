@@ -39,7 +39,7 @@ export default function Funds() {
   const [displayedInitiativesCount, setDisplayedInitiativesCount] = useState(0);
   const [initialFetchDone, setInitialFetchDone] = useState(false);
   const [offset, setOffset] = useState(0);
-  const [limit, setLimit] = useState(3);
+  const [limit, setLimit] = useState(10);
   const [totalInitiatives, setTotalInitiatives] = useState(0);
 
   const [allFetchedInitiatives, setAllFetchedInitiatives] = useState<
