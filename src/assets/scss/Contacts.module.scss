@@ -53,6 +53,14 @@ ul {
   overflow: hidden;
 }
 
+.profile {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px;
+  overflow: hidden;
+}
+
 .user-link {
   text-decoration: none;
   display: flex;
@@ -215,4 +223,8 @@ li {
 .load-more-button {
   text-align: center;
   width: 100%;
+}
+
+.user-list-profile {
+  padding: 0px 20px;
 }

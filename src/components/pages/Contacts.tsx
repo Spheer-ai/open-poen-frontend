@@ -10,6 +10,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import UserItem from "../elements/users/UserItem";
 import AddUser from "../modals/AddUser";
 import UserDetailsPage from "./UserDetailPage";
+import MyProfile from "../elements/users/MyProfile";
 
 const PAGE_SIZE = 10;
 const SEARCH_DELAY = 300;
@@ -32,6 +33,9 @@ export default function Contacts() {
   const [isAtBottom, setIsAtBottom] = useState(false);
   const sidePanelRef = useRef<HTMLDivElement | null>(null);
   const [isBlockingInteraction, setIsBlockingInteraction] = useState(false);
+  const [activeUserId, setActiveUserId] = useState<string | null>(null);
+  const [userItemId, setUserItemId] = useState<string | null>(null);
+  const [isActiveProfile, setIsActiveProfile] = useState(false);
 
   const checkBottom = () => {
     const sidePanel = sidePanelRef.current;
@@ -108,14 +112,21 @@ export default function Contacts() {
     setIsModalOpen(true);
   };
 
-  const handleUserClick = (clickedUserId: string) => {
-    const updatedUserList = userList.map((user) => ({
-      ...user,
-      isActive: user.id === clickedUserId,
-    }));
+  const handleUserClick = (clickedUserId: string, isProfile: boolean) => {
+    if (isProfile) {
+      setIsActiveProfile(true);
+      setActiveUserId(clickedUserId);
+    } else {
+      const updatedUserList = userList.map((userItem) => ({
+        ...userItem,
+        isActive: userItem.id === clickedUserId,
+      }));
+      setUserList(updatedUserList);
 
-    setUserList(updatedUserList);
-    navigate(`/contacts/${clickedUserId}`);
+      setIsActiveProfile(false);
+      setActiveUserId(clickedUserId);
+      setUserItemId(clickedUserId); // Set userItemId for user item click
+    }
   };
 
   useEffect(() => {
@@ -258,6 +269,12 @@ export default function Contacts() {
           hasPermission={hasPermission}
           showSearch={true}
         />
+        <MyProfile
+          user={user}
+          isActive={isActiveProfile}
+          userItemId={userItemId}
+          handleUserClick={handleUserClick}
+        />
         {error ? (
           <p>Error: {error.message}</p>
         ) : isLoading ? (
@@ -286,7 +303,7 @@ export default function Contacts() {
                     <UserItem
                       key={`${user.id}-${index}`}
                       user={user}
-                      isActive={user.isActive}
+                      isActive={user.id === activeUserId}
                       handleUserClick={handleUserClick}
                     />
                   </li>
