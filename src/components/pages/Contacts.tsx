@@ -12,6 +12,7 @@ import AddUser from "../modals/AddUser";
 import UserDetailsPage from "./UserDetailPage";
 
 const PAGE_SIZE = 10;
+const SEARCH_DELAY = 300;
 
 export default function Contacts() {
   const { user } = useAuth();
@@ -92,9 +93,7 @@ export default function Contacts() {
       }
     }
 
-    if (user && user.token) {
-      fetchData();
-    }
+    fetchData();
   }, [refreshTrigger, user, currentPage, searchQuery]);
 
   useEffect(() => {
@@ -118,6 +117,16 @@ export default function Contacts() {
     setUserList(updatedUserList);
     navigate(`/contacts/${clickedUserId}`);
   };
+
+  useEffect(() => {
+    const searchTimeout = setTimeout(() => {
+      handleSearch(searchQuery);
+    }, SEARCH_DELAY);
+
+    return () => {
+      clearTimeout(searchTimeout);
+    };
+  }, [searchQuery]);
 
   const handleSearch = async (query: string) => {
     setSearchQuery(query);
