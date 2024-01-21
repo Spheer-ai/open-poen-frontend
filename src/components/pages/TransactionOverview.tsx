@@ -15,9 +15,10 @@ const TransactionOverview = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [offset, setOffset] = useState(0);
-  const [limit, setLimit] = useState(20);
+  const [limit, setLimit] = useState(1);
   const [totalTransactionsCount, setTotalTransactionsCount] = useState(0);
   const [isLoadingMore, setIsLoadingMore] = useState<boolean>(false);
+
   const [allTransactions, setAllTransactions] = useState<any[]>([]);
   const [linkingStatus, setLinkingStatus] = useState<
     Record<number, { initiativeId: number | null; activityId: number | null }>
@@ -94,9 +95,11 @@ const TransactionOverview = () => {
           user.userId,
           user.token,
           0,
-          20,
+          1,
           searchQuery,
         );
+
+        console.log("Fetched transactions:", data.payments);
         const updatedLinkingStatus = { ...linkingStatus };
 
         data.payments.forEach((transaction) => {
@@ -113,7 +116,7 @@ const TransactionOverview = () => {
         setAllTransactions(data.payments);
         setIsLoading(false);
         setIsLoadingMore(false);
-        setOffset(20);
+        setOffset(0);
       } catch (error) {
         setIsLoading(false);
         setIsLoadingMore(false);
@@ -145,14 +148,14 @@ const TransactionOverview = () => {
   }, [allTransactions, limit, searchQuery]);
 
   const handleLoadMore = async () => {
-    const newOffset = offset + limit;
+    const newOffset = offset + 1;
     setIsLoadingMore(true);
     await fetchTransactions(newOffset);
+    setIsLoadingMore(false);
   };
 
   const fetchTransactions = async (newOffset: number) => {
     if (user && user.userId && user.token) {
-      setIsLoading(true);
       try {
         const data = await fetchPayments(
           user.userId,
@@ -161,6 +164,9 @@ const TransactionOverview = () => {
           limit,
           searchQuery,
         );
+
+        console.log("Fetched transactions:", data.payments);
+
         const updatedLinkingStatus = { ...linkingStatus };
 
         data.payments.forEach((transaction) => {
@@ -178,12 +184,11 @@ const TransactionOverview = () => {
           ...prevAllTransactions,
           ...data.payments,
         ]);
-        setIsLoading(false);
-        setIsLoadingMore(false);
+
         setOffset(newOffset);
       } catch (error) {
+      } finally {
         setIsLoading(false);
-        setIsLoadingMore(false);
       }
     }
   };
