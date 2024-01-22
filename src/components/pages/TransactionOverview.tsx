@@ -15,7 +15,7 @@ const TransactionOverview = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [offset, setOffset] = useState(0);
-  const [limit, setLimit] = useState(1);
+  const [limit, setLimit] = useState(20);
   const [totalTransactionsCount, setTotalTransactionsCount] = useState(0);
   const [isLoadingMore, setIsLoadingMore] = useState<boolean>(false);
 
@@ -33,6 +33,22 @@ const TransactionOverview = () => {
     const month = (date.getMonth() + 1).toString().padStart(2, "0");
     const year = date.getFullYear().toString();
     return `${day}-${month}-${year}`;
+  };
+  const [isAtBottom, setIsAtBottom] = useState(false);
+  const sidePanelRef = useRef<HTMLDivElement | null>(null);
+
+  const checkBottom = () => {
+    const sidePanel = sidePanelRef.current;
+
+    if (sidePanel) {
+      const scrollY = sidePanel.scrollTop;
+      const panelHeight = sidePanel.clientHeight;
+      const contentHeight = sidePanel.scrollHeight;
+
+      const threshold = 20;
+
+      setIsAtBottom(contentHeight - (scrollY + panelHeight) < threshold);
+    }
   };
 
   const handleFilterChange = ({ iban, initiative, activity }) => {
@@ -95,7 +111,7 @@ const TransactionOverview = () => {
           user.userId,
           user.token,
           0,
-          1,
+          20,
           searchQuery,
         );
 
@@ -148,7 +164,7 @@ const TransactionOverview = () => {
   }, [allTransactions, limit, searchQuery]);
 
   const handleLoadMore = async () => {
-    const newOffset = offset + 1;
+    const newOffset = offset + 20;
     setIsLoadingMore(true);
     await fetchTransactions(newOffset);
     setIsLoadingMore(false);
@@ -240,6 +256,25 @@ const TransactionOverview = () => {
     });
   };
 
+  useEffect(() => {
+    const sidePanel = sidePanelRef.current;
+
+    if (sidePanel) {
+      sidePanel.addEventListener("scroll", checkBottom);
+
+      return () => {
+        sidePanel.removeEventListener("scroll", checkBottom);
+      };
+    }
+  }, []);
+
+  useEffect(() => {
+    if (isAtBottom) {
+      console.log("User reached the bottom of the side panel");
+      handleLoadMore();
+    }
+  }, [isAtBottom]);
+
   return (
     <div className={styles.transactionOverview}>
       <div className={styles.transactionOptions}>
@@ -255,7 +290,7 @@ const TransactionOverview = () => {
           setActivityFilter={setActivityFilter}
         />
       </div>
-      <div className={styles["transaction-table-container"]}>
+      <div className={styles["transaction-table-container"]} ref={sidePanelRef}>
         {isLoading ? (
           <div className={styles["loading-container"]}>
             <LoadingDot delay={0} />
