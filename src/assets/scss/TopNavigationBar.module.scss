@@ -89,8 +89,39 @@ h2 {
   padding: unset;
 }
 
-.cta-button:hover {
-  background-color: #1d4ca6;
+@media (max-width: 768px) {
+  .cta-button {
+    background-color: transparent;
+    color: #383838;
+    width: auto;
+    height: auto;
+    font-size: 36px;
+  }
+
+  .back-arrow-section {
+    display: flex;
+
+    h2 {
+      font-size: 18px;
+      font-weight: 500;
+    }
+  }
+
+  .cta-button:hover {
+    background-color: transparent;
+  }
+
+  .logo {
+    height: 40px;
+  }
+
+  .titleWithArrow {
+    margin-left: 10px !important;
+
+    .subtitle {
+      font-size: 12px;
+    }
+  }
 }
 
 .svg-logo {

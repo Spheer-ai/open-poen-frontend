@@ -13,6 +13,12 @@
   overflow-x: hidden;
 }
 
+@media (max-width: 768px) {
+  .container {
+    display: block;
+  }
+}
+
 .top-right-button-container {
   display: flex;
   align-items: center;

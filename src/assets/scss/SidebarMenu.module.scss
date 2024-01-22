@@ -108,7 +108,7 @@
   .sidebar-menu {
     flex-direction: row;
     bottom: 0;
-    position: absolute;
+    position: fixed;
     width: 100%;
     height: fit-content;
     z-index: 2;
