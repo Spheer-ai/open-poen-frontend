@@ -129,7 +129,7 @@ const TransactionOverview = () => {
           user.userId,
           user.token,
           0,
-          7,
+          limit,
           searchQuery,
         );
 
@@ -148,12 +148,10 @@ const TransactionOverview = () => {
         setTotalTransactionsCount(data.totalCount || 0);
 
         setAllTransactions(data.payments);
+        setOffset(limit);
         setIsLoading(false);
-        setIsLoadingMore(false);
-        setOffset(0);
       } catch (error) {
         setIsLoading(false);
-        setIsLoadingMore(false);
       }
     }
   };
@@ -186,13 +184,12 @@ const TransactionOverview = () => {
       return;
     }
 
-    const newOffset = offset + 7;
+    const newOffset = offset + limit;
     setIsLoadingMore(true);
     setIsLastLoadMoreComplete(false);
 
     try {
       await fetchTransactions(newOffset);
-
       setLoadMoreDelayActive(true);
     } finally {
       setIsLastLoadMoreComplete(true);
@@ -211,7 +208,7 @@ const TransactionOverview = () => {
           searchQuery,
         );
 
-        console.log("Fetched transactions:", data.payments);
+        console.log("Fetched additional transactions:", data.payments);
 
         const updatedLinkingStatus = { ...linkingStatus };
 
@@ -233,6 +230,7 @@ const TransactionOverview = () => {
 
         setOffset(newOffset);
       } catch (error) {
+        // Handle error
       } finally {
         setIsLoading(false);
       }
@@ -434,7 +432,7 @@ const TransactionOverview = () => {
           <div
             style={{
               display: "block",
-              height: "100px",
+              width: "50px",
             }}
           ></div>
         )}
