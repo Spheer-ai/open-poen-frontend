@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { getPaymentsByInitiative } from "../../../middleware/Api";
 import styles from "../../../../assets/scss/TransactionOverview.module.scss";
 import PaymentDetails from "../../../modals/PaymentDetails";
@@ -97,6 +97,22 @@ const FundsTransactions: React.FC<{
     maxAmount: "",
     route: "",
   });
+  const [isAtBottom, setIsAtBottom] = useState(false);
+  const sidePanelRef = useRef<HTMLDivElement | null>(null);
+
+  const checkBottom = () => {
+    const sidePanel = sidePanelRef.current;
+
+    if (sidePanel) {
+      const scrollY = sidePanel.scrollTop;
+      const panelHeight = sidePanel.clientHeight;
+      const contentHeight = sidePanel.scrollHeight;
+
+      const threshold = 20;
+
+      setIsAtBottom(contentHeight - (scrollY + panelHeight) < threshold);
+    }
+  };
 
   const fetchTransactions = async () => {
     try {
@@ -359,6 +375,25 @@ const FundsTransactions: React.FC<{
     fetchTransactions();
   };
 
+  useEffect(() => {
+    const sidePanel = sidePanelRef.current;
+
+    if (sidePanel) {
+      sidePanel.addEventListener("scroll", checkBottom);
+
+      return () => {
+        sidePanel.removeEventListener("scroll", checkBottom);
+      };
+    }
+  }, []);
+
+  useEffect(() => {
+    if (isAtBottom) {
+      console.log("User reached the bottom of the side panel");
+      handleLoadMore();
+    }
+  }, [isAtBottom]);
+
   return (
     <>
       {" "}
@@ -394,7 +429,7 @@ const FundsTransactions: React.FC<{
           </button>
         </div>
       ) : null}
-      <div className={styles.fundTransactionOverview}>
+      <div className={styles.fundTransactionOverview} ref={sidePanelRef}>
         <table key={refreshTrigger} className={styles.fundTransactionTable}>
           <thead>
             <tr>
@@ -514,7 +549,7 @@ const FundsTransactions: React.FC<{
                   <LoadingDot delay={0.2} />
                 </div>
               ) : (
-                "Meer transacties laden"
+                <></>
               )}
             </button>
           </div>

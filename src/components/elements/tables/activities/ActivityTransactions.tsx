@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { getPaymentsByActivity } from "../../../middleware/Api";
 import styles from "../../../../assets/scss/TransactionOverview.module.scss";
 import PaymentDetails from "../../../modals/PaymentDetails";
@@ -99,6 +99,22 @@ const ActivityTransactions: React.FC<{
   const [maxAmount, setMaxAmount] = useState<string>("");
   const [route, setRoute] = useState<string>("");
   const [pageSize] = useState(20);
+  const [isAtBottom, setIsAtBottom] = useState(false);
+  const sidePanelRef = useRef<HTMLDivElement | null>(null);
+
+  const checkBottom = () => {
+    const sidePanel = sidePanelRef.current;
+
+    if (sidePanel) {
+      const scrollY = sidePanel.scrollTop;
+      const panelHeight = sidePanel.clientHeight;
+      const contentHeight = sidePanel.scrollHeight;
+
+      const threshold = 20;
+
+      setIsAtBottom(contentHeight - (scrollY + panelHeight) < threshold);
+    }
+  };
 
   useEffect(() => {
     fetchTransactions();
@@ -351,6 +367,25 @@ const ActivityTransactions: React.FC<{
     fetchTransactions();
   };
 
+  useEffect(() => {
+    const sidePanel = sidePanelRef.current;
+
+    if (sidePanel) {
+      sidePanel.addEventListener("scroll", checkBottom);
+
+      return () => {
+        sidePanel.removeEventListener("scroll", checkBottom);
+      };
+    }
+  }, []);
+
+  useEffect(() => {
+    if (isAtBottom) {
+      console.log("User reached the bottom of the side panel");
+      handleLoadMore();
+    }
+  }, [isAtBottom]);
+
   return (
     <>
       {" "}
@@ -386,7 +421,7 @@ const ActivityTransactions: React.FC<{
           </button>
         </div>
       ) : null}
-      <div className={styles.fundTransactionOverview}>
+      <div className={styles.fundTransactionOverview} ref={sidePanelRef}>
         <table key={refreshTrigger} className={styles.fundTransactionTable}>
           <thead>
             <tr>
@@ -468,7 +503,7 @@ const ActivityTransactions: React.FC<{
               disabled={loadingMore}
             >
               {loadingMore ? (
-                <div className={styles["loading-dots"]}>
+                <div className={styles["loading-container"]}>
                   <LoadingDot delay={0} />
                   <LoadingDot delay={0.1} />
                   <LoadingDot delay={0.1} />
@@ -476,7 +511,7 @@ const ActivityTransactions: React.FC<{
                   <LoadingDot delay={0.2} />
                 </div>
               ) : (
-                "Meer transacties laden"
+                <></>
               )}
             </button>
           </div>

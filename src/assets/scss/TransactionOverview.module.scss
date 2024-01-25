@@ -134,8 +134,9 @@
 
 .fundTransactionOverview {
   background: #fff;
-  overflow: hidden;
+  overflow: scroll;
   margin-top: 15px;
+  max-height: 40vh;
 
   .transaction-table-container {
     display: block;
