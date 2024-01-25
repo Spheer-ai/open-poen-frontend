@@ -12,7 +12,7 @@ import AddUser from "../modals/AddUser";
 import UserDetailsPage from "./UserDetailPage";
 import MyProfile from "../elements/users/MyProfile";
 
-const PAGE_SIZE = 10;
+const PAGE_SIZE = 7;
 const SEARCH_DELAY = 300;
 
 export default function Contacts() {

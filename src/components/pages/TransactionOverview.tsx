@@ -15,10 +15,11 @@ const TransactionOverview = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [offset, setOffset] = useState(0);
-  const [limit, setLimit] = useState(20);
+  const [limit, setLimit] = useState(7);
   const [totalTransactionsCount, setTotalTransactionsCount] = useState(0);
   const [isLoadingMore, setIsLoadingMore] = useState<boolean>(false);
-
+  const [isLastLoadMoreComplete, setIsLastLoadMoreComplete] =
+    useState<boolean>(true);
   const [allTransactions, setAllTransactions] = useState<any[]>([]);
   const [linkingStatus, setLinkingStatus] = useState<
     Record<number, { initiativeId: number | null; activityId: number | null }>
@@ -36,6 +37,9 @@ const TransactionOverview = () => {
   };
   const [isAtBottom, setIsAtBottom] = useState(false);
   const sidePanelRef = useRef<HTMLDivElement | null>(null);
+  const [loadMoreDelayActive, setLoadMoreDelayActive] =
+    useState<boolean>(false);
+  const loadMoreDelayDuration = 300;
 
   const checkBottom = () => {
     const sidePanel = sidePanelRef.current;
@@ -56,6 +60,20 @@ const TransactionOverview = () => {
     setInitiativeFilter(initiative);
     setActivityFilter(activity);
   };
+
+  useEffect(() => {
+    let delayTimer: NodeJS.Timeout;
+
+    if (loadMoreDelayActive) {
+      delayTimer = setTimeout(() => {
+        setLoadMoreDelayActive(false);
+      }, loadMoreDelayDuration);
+    }
+
+    return () => {
+      clearTimeout(delayTimer);
+    };
+  }, [loadMoreDelayActive]);
 
   useEffect(() => {
     fetchInitialTransactions();
@@ -111,7 +129,7 @@ const TransactionOverview = () => {
           user.userId,
           user.token,
           0,
-          20,
+          7,
           searchQuery,
         );
 
@@ -164,10 +182,22 @@ const TransactionOverview = () => {
   }, [allTransactions, limit, searchQuery]);
 
   const handleLoadMore = async () => {
-    const newOffset = offset + 20;
+    if (!isLastLoadMoreComplete || loadMoreDelayActive) {
+      return;
+    }
+
+    const newOffset = offset + 7;
     setIsLoadingMore(true);
-    await fetchTransactions(newOffset);
-    setIsLoadingMore(false);
+    setIsLastLoadMoreComplete(false);
+
+    try {
+      await fetchTransactions(newOffset);
+
+      setLoadMoreDelayActive(true);
+    } finally {
+      setIsLastLoadMoreComplete(true);
+      setIsLoadingMore(false);
+    }
   };
 
   const fetchTransactions = async (newOffset: number) => {
@@ -269,11 +299,11 @@ const TransactionOverview = () => {
   }, []);
 
   useEffect(() => {
-    if (isAtBottom) {
+    if (isAtBottom && isLastLoadMoreComplete) {
       console.log("User reached the bottom of the side panel");
       handleLoadMore();
     }
-  }, [isAtBottom]);
+  }, [isAtBottom, isLastLoadMoreComplete]);
 
   return (
     <div className={styles.transactionOverview}>
@@ -401,7 +431,12 @@ const TransactionOverview = () => {
             <LoadingDot delay={0.2} />
           </div>
         ) : (
-          <button onClick={handleLoadMore}>Meer transacties laden</button>
+          <div
+            style={{
+              display: "block",
+              height: "100px",
+            }}
+          ></div>
         )}
       </div>
     </div>
