@@ -476,8 +476,8 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
             authToken={user?.token || ""}
             activityId={activityId}
             onRefreshTrigger={handleRefreshTrigger}
-            activity_name={""}
             entityPermissions={entityPermissions}
+            activity_name={activityDetails?.name || ""}
           />
         )}
         {activeTab === "details" && (

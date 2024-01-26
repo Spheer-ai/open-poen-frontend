@@ -49,6 +49,7 @@ interface EditPaymentProps {
   fields: string[];
   hasDeletePermission;
   initiativeId?: string | null;
+  activityName: string;
 }
 
 const EditPayment: React.FC<EditPaymentProps> = ({
@@ -62,6 +63,7 @@ const EditPayment: React.FC<EditPaymentProps> = ({
   fieldPermissions,
   hasDeletePermission,
   initiativeId,
+  activityName,
   fields,
 }) => {
   const [modalIsOpen, setModalIsOpen] = useState(isOpen);
@@ -85,6 +87,7 @@ const EditPayment: React.FC<EditPaymentProps> = ({
     short_user_description: paymentData?.short_user_description || "",
     long_user_description: paymentData?.long_user_description || "",
     hidden: paymentData?.hidden || false,
+    activity_name: paymentData?.activity_name || "",
   });
   const routeOptions = [
     { value: "inkomen", label: "Inkomen" },
@@ -135,11 +138,13 @@ const EditPayment: React.FC<EditPaymentProps> = ({
         route: paymentData.route || "inkomen",
         short_user_description: paymentData.short_user_description,
         long_user_description: paymentData.long_user_description,
+        activity_name: paymentData.activity_name,
         hidden: paymentData.hidden || false,
       });
 
       setDisplayDate(formatDateForInput(new Date(paymentData.booking_date)));
       setApiDate(paymentData.booking_date);
+      console.log("Activity Name:", paymentData.activity_name);
     }
   }, [paymentData]);
 
@@ -232,6 +237,7 @@ const EditPayment: React.FC<EditPaymentProps> = ({
       short_user_description: "",
       long_user_description: "",
       hidden: false,
+      activity_name: "",
     });
     setDisplayDate("");
     setApiDate("");
@@ -469,7 +475,7 @@ const EditPayment: React.FC<EditPaymentProps> = ({
                 token={token !== null ? token : undefined}
                 paymentId={parseNumberOrReturnNull(paymentId)}
                 initiativeId={parseNumberOrReturnNull(initiativeId)}
-                activityName={""}
+                activityName={activityName}
                 isInitiativeLinked={true}
                 linkedActivityId={null}
               />

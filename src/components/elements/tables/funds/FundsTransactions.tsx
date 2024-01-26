@@ -257,6 +257,7 @@ const FundsTransactions: React.FC<{
         setEditedTransaction({
           ...selectedTransaction,
           booking_date: isoDate,
+          activity_name: selectedTransaction.activity_name,
         });
         setIsEditPaymentModalOpen(true);
       } else {
@@ -573,6 +574,9 @@ const FundsTransactions: React.FC<{
           fields={[]}
           hasDeletePermission={hasDeletePermission}
           initiativeId={initiativeId}
+          activityName={
+            editedTransaction ? editedTransaction.activity_name : null
+          }
         />
       </div>
     </>
