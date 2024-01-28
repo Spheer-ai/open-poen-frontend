@@ -129,19 +129,21 @@ export default function UserDetailsPage({
 
   useEffect(() => {
     const fetchUserData = async () => {
-      if (userId && token) {
-        try {
-          const userResponse = await fetchUserDetails(userId, token);
+      try {
+        if (userId) {
+          const userResponse = await fetchUserDetails(
+            userId,
+            user?.token || "",
+          );
+
           setUserDetails(userResponse);
-        } catch (error) {
-          console.error("Error fetching user details:", error);
         }
+      } catch (error) {
+        console.error("Error fetching user details:", error);
       }
     };
 
-    if (userId) {
-      fetchUserData();
-    }
+    fetchUserData();
   }, [userId, token, refreshTrigger]);
 
   const handleToggleDeleteUserModal = () => {

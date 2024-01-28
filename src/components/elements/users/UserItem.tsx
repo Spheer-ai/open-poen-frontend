@@ -10,9 +10,7 @@ const UserItem = ({ user, isActive, handleUserClick }) => {
   const isUserHidden = user.hidden === true;
   const isUserInactive = user.is_active === false;
 
-  const fullName = `${user.first_name || "Voornaam"} ${
-    user.last_name || "Achternaam"
-  }`;
+  const fullName = `${user.first_name || "Voornaam"} ${user.last_name || ""}`;
 
   return (
     <div
