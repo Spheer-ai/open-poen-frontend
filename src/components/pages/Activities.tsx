@@ -208,13 +208,7 @@ export default function ActivitiesPage() {
                     </span>
                   </div>
                   <div className={styles["shared-values"]}>
-                    <label
-                      className={
-                        activity.income
-                          ? styles["value-income"]
-                          : styles["value-expenses"]
-                      }
-                    >
+                    <label className={styles["value-income"]}>
                       Beschikbaar:
                     </label>
                     <span>
@@ -226,15 +220,7 @@ export default function ActivitiesPage() {
                     </span>
                   </div>
                   <div className={styles["shared-values"]}>
-                    <label
-                      className={
-                        activity.expenses
-                          ? styles["value-expenses"]
-                          : styles["value-income"]
-                      }
-                    >
-                      Besteed:
-                    </label>
+                    <label className={styles["value-expenses"]}>Besteed:</label>
                     <span>
                       €
                       {activity.expenses.toLocaleString("nl-NL", {

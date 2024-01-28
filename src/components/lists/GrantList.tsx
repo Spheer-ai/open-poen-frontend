@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import EditIcon from "/edit-icon.svg";
 import DeleteIcon from "/delete-icon.svg";
 import { Grant } from "../../types/GranListType";
@@ -38,11 +39,19 @@ const GrantList: React.FC<GrantListProps> = ({
   const [grantPermissions, setGrantPermissions] = useState<
     Record<number, string[]>
   >({});
+  const [firstInitiativeIdMap, setFirstInitiativeIdMap] = useState<
+    Record<number, number | null>
+  >({});
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    console.log("Grants:", grants);
+  }, [grants]);
 
   useEffect(() => {
     async function fetchInitiativeCounts() {
       try {
-        const counts = await Promise.all(
+        const countsAndInitiatives = await Promise.all(
           grants.map(async (grant) => {
             const response = await fetchGrantDetails(
               user?.token || "",
@@ -50,16 +59,34 @@ const GrantList: React.FC<GrantListProps> = ({
               regulationId,
               grant.id,
             );
-            return response.initiatives.length;
+
+            const count = response.initiatives.length;
+            const firstInitiativeId =
+              response.initiatives.length > 0
+                ? response.initiatives[0].id
+                : null;
+
+            console.log(
+              `Grant ${grant.id} - First Initiative ID:`,
+              firstInitiativeId,
+            );
+
+            return { grantId: grant.id, count, firstInitiativeId };
           }),
         );
 
         const countMap: Record<number, number> = {};
-        grants.forEach((grant, index) => {
-          countMap[grant.id] = counts[index];
-        });
+        const tempFirstInitiativeIdMap: Record<number, number | null> = {};
+
+        countsAndInitiatives.forEach(
+          ({ grantId, count, firstInitiativeId }) => {
+            countMap[grantId] = count;
+            tempFirstInitiativeIdMap[grantId] = firstInitiativeId;
+          },
+        );
 
         setInitiativeCounts(countMap);
+        setFirstInitiativeIdMap(tempFirstInitiativeIdMap);
       } catch (error) {
         console.error("Failed to fetch initiative counts:", error);
       }
@@ -108,11 +135,27 @@ const GrantList: React.FC<GrantListProps> = ({
             key={`grant-${grant.id}-${grant.name}`}
             className={styles["grant-item"]}
           >
-            {grant.name} | {grant.reference} | €{" "}
-            {grant.budget.toLocaleString("nl-NL", {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-            })}
+            <span
+              className={styles["grant-name"]}
+              style={{
+                cursor:
+                  firstInitiativeIdMap[grant.id] !== null ? "pointer" : "auto",
+              }}
+              onClick={() => {
+                const firstInitiativeId = firstInitiativeIdMap[grant.id];
+                if (firstInitiativeId !== null) {
+                  navigate(`/funds/${firstInitiativeId}/activities`);
+                }
+              }}
+            >
+              {grant.name}
+              {" | "}
+              {grant.reference} | €{" "}
+              {grant.budget.toLocaleString("nl-NL", {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              })}
+            </span>
             <div className={styles["button-container"]}>
               {grantPermissions[grant.id] &&
                 grantPermissions[grant.id].includes("edit") && (

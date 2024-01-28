@@ -199,6 +199,17 @@ export default function Funds() {
     };
   };
 
+  const getColorStyle = (label) => {
+    switch (label) {
+      case "Beschikbaar":
+        return { backgroundColor: "#265ed4" };
+      case "Besteed":
+        return { backgroundColor: "#b82466" };
+      default:
+        return {};
+    }
+  };
+
   return (
     <div className={styles["container"]}>
       <div className={styles["side-panel"]} ref={sidePanelRef}>
@@ -310,13 +321,7 @@ export default function Funds() {
                     </span>
                   </div>
                   <div className={styles["shared-values"]}>
-                    <label
-                      className={
-                        initiative?.income
-                          ? styles["value-income"]
-                          : styles["value-expenses"]
-                      }
-                    >
+                    <label className={styles["value-income"]}>
                       Beschikbaar:
                     </label>
                     <span>
@@ -328,15 +333,7 @@ export default function Funds() {
                     </span>
                   </div>
                   <div className={styles["shared-values"]}>
-                    <label
-                      className={
-                        initiative?.expenses
-                          ? styles["value-expenses"]
-                          : styles["value-income"]
-                      }
-                    >
-                      Besteed:
-                    </label>
+                    <label className={styles["value-expenses"]}>Besteed:</label>
                     <span>
                       €
                       {initiative?.expenses.toLocaleString("nl-NL", {
