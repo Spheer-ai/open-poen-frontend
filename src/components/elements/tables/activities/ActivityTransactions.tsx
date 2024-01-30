@@ -290,11 +290,11 @@ const ActivityTransactions: React.FC<{
       setTimeout(() => {
         setIsBlockingInteraction(false);
         setIsFetchPaymentDetailsModalOpen(false);
-        navigate(`/funds/${initiativeId}/activities`);
+        navigate(`/funds/${initiativeId}/activities/${activityId}`);
       }, 300);
     } else {
       setIsFetchPaymentDetailsModalOpen(true);
-      navigate(`/funds/${initiativeId}/activities/${initiativeId}/details`);
+      navigate(`/funds/${initiativeId}/activities/${activityId}/details`);
     }
   };
 
@@ -350,11 +350,13 @@ const ActivityTransactions: React.FC<{
       setTimeout(() => {
         setIsBlockingInteraction(false);
         setIsFilterPaymentModalOpen(false);
-        navigate(`/funds/${initiativeId}/activities`);
+        navigate(`/funds/${initiativeId}/activities/${activityId}`);
       }, 300);
     } else {
       setIsFilterPaymentModalOpen(true);
-      navigate(`/funds/${initiativeId}/activities/filter-payment`);
+      navigate(
+        `/funds/${initiativeId}/activities/${activityId}/filter-payment`,
+      );
     }
   };
 

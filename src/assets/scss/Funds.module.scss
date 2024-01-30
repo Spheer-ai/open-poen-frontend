@@ -9,20 +9,26 @@
   max-width: 400px;
 }
 
-@media (max-width: 768px) {
-  .side-panel {
-    display: block;
-    width: 100%;
-    max-width: 100%;
-  }
-}
-
 .detail-panel {
   flex: 2;
   width: 60%;
   padding: 20px;
   background: #ffffff;
   height: 100vh;
+}
+
+@media (max-width: 768px) {
+  .side-panel {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .detail-panel {
+    width: 100%;
+    overflow: hidden;
+    height: 100%;
+  }
 }
 
 .container {
@@ -34,6 +40,10 @@
 @media (max-width: 768px) {
   .container {
     display: block;
+  }
+
+  .side-panel {
+    display: none;
   }
 }
 

@@ -298,11 +298,11 @@ const FundsTransactions: React.FC<{
       setTimeout(() => {
         setIsBlockingInteraction(false);
         setIsFetchPaymentDetailsModalOpen(false);
-        navigate(`/funds/${initiativeId}/activities`);
+        navigate(`/funds/${initiativeId}`);
       }, 300);
     } else {
       setIsFetchPaymentDetailsModalOpen(true);
-      navigate(`/funds/${initiativeId}/activities/${initiativeId}/details`);
+      navigate(`/funds/${initiativeId}/${initiativeId}/details`);
     }
   };
 
@@ -312,13 +312,11 @@ const FundsTransactions: React.FC<{
       setTimeout(() => {
         setIsBlockingInteraction(false);
         setIsEditPaymentModalOpen(false);
-        navigate(`/funds/${initiativeId}/activities`);
+        navigate(`/funds/${initiativeId}`);
       }, 300);
     } else {
       setIsEditPaymentModalOpen(true);
-      navigate(
-        `/funds/${initiativeId}/activities/${selectedTransactionId}/details`,
-      );
+      navigate(`/funds/${initiativeId}/${selectedTransactionId}/details`);
     }
   };
 
@@ -328,11 +326,11 @@ const FundsTransactions: React.FC<{
       setTimeout(() => {
         setIsBlockingInteraction(false);
         setIsAddPaymentModalOpen(false);
-        navigate(`/funds/${initiativeId}/activities`);
+        navigate(`/funds/${initiativeId}`);
       }, 300);
     } else {
       setIsAddPaymentModalOpen(true);
-      navigate(`/funds/${initiativeId}/activities/add-payment`);
+      navigate(`/funds/${initiativeId}/add-payment`);
     }
   };
 
@@ -358,11 +356,11 @@ const FundsTransactions: React.FC<{
       setTimeout(() => {
         setIsBlockingInteraction(false);
         setIsFilterPaymentModalOpen(false);
-        navigate(`/funds/${initiativeId}/activities`);
+        navigate(`/funds/${initiativeId}`);
       }, 300);
     } else {
       setIsFilterPaymentModalOpen(true);
-      navigate(`/funds/${initiativeId}/activities/filter-payment`);
+      navigate(`/funds/${initiativeId}/filter-payment`);
     }
   };
 

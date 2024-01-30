@@ -28,3 +28,10 @@ button {
   color: #265ed4;
   border-bottom: solid 4px;
 }
+
+@media (max-width: 768px) {
+  .tab-fund-container {
+    max-width: calc(100%);
+    overflow-x: auto;
+  }
+}

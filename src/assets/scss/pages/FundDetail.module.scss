@@ -95,6 +95,17 @@
       margin-top: 5px;
     }
   }
+
+  @media (max-width: 768px) {
+    flex-wrap: wrap;
+
+    .fund-budget,
+    .fund-income,
+    .fund-expenses,
+    .fund-available-budget {
+      flex-basis: calc(50% - 20px);
+    }
+  }
 }
 
 .read-more-button {
@@ -123,4 +134,26 @@
   justify-content: space-between;
   padding: 0px 50px;
   margin-top: 20px;
+}
+
+@media (max-width: 768px) {
+  .fund-detail-container {
+    padding: 0;
+  }
+
+  .topContainer {
+    padding: 0;
+  }
+
+  .content-container {
+    display: block;
+    width: 100%;
+    overflow: hidden;
+
+    .fund-image {
+      display: block;
+      width: 100%;
+      padding-left: 0;
+    }
+  }
 }

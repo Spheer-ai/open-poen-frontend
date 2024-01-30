@@ -178,7 +178,7 @@ export default function Funds() {
   const handleSearch = (query) => {};
 
   const navigateToActivities = (initiativeId, initiativeName) => {
-    navigate(`/funds/${initiativeId}/activities/${initiativeName}`, {
+    navigate(`/funds/${initiativeId}/${initiativeName}`, {
       state: { initiativeName },
     });
   };
@@ -197,17 +197,6 @@ export default function Funds() {
       incomeWidth,
       expensesWidth,
     };
-  };
-
-  const getColorStyle = (label) => {
-    switch (label) {
-      case "Beschikbaar":
-        return { backgroundColor: "#265ed4" };
-      case "Besteed":
-        return { backgroundColor: "#b82466" };
-      default:
-        return {};
-    }
   };
 
   return (

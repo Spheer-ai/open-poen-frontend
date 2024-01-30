@@ -27,11 +27,11 @@ const FundsUsers: React.FC<{
       setTimeout(() => {
         setIsBlockingInteraction(false);
         setIsLinkFundOwnerModalOpen(false);
-        navigate(`/funds/${initiativeId}/activities/gebruikers`);
+        navigate(`/funds/${initiativeId}/gebruikers`);
       }, 300);
     } else {
       setIsLinkFundOwnerModalOpen(true);
-      navigate(`/funds/${initiativeId}/activities/gebruikers/link-owners`);
+      navigate(`/funds/${initiativeId}/gebruikers/link-owners`);
     }
   };
 

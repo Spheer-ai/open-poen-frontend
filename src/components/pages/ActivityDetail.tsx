@@ -186,25 +186,27 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
       setTimeout(() => {
         setIsBlockingInteraction(false);
         setIsEditActivityModalOpen(false);
-        navigate(`/funds/${initiativeId}/activities`);
+        navigate(`/funds/${initiativeId}/activities/${activityId}`);
       }, 300);
     } else {
       setIsEditActivityModalOpen(true);
-      navigate(`/funds/${initiativeId}/activities/edit-activity`);
+      navigate(`/funds/${initiativeId}/activities/${activityId}/edit-activity`);
     }
   };
 
   const handleToggleDeleteActivitydModal = () => {
-    if (isEditActivityModalOpen) {
+    if (isDeleteActivityModalOpen) {
       setIsBlockingInteraction(true);
       setTimeout(() => {
         setIsBlockingInteraction(false);
         setIsDeleteActivityModalOpen(false);
-        navigate(`/funds/${initiativeId}/activities`);
+        navigate(`/funds/${initiativeId}/activities/${activityId}`);
       }, 300);
     } else {
       setIsDeleteActivityModalOpen(true);
-      navigate(`/funds/${initiativeId}/activities/delete-activity`);
+      navigate(
+        `/funds/${initiativeId}/activities/${activityId}/delete-activity`,
+      );
     }
   };
 
