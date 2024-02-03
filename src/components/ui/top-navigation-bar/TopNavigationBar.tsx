@@ -17,6 +17,8 @@ const TopNavigationBar: React.FC<TopNavigationBarProps> = ({
   onBackArrowClick,
   showSearch = true,
   onTitleClick = () => {},
+  showHomeLink = true,
+  showTitleOnSmallScreen = true,
 }) => {
   const hasBackArrow = Boolean(onBackArrowClick);
   const handleTitleClick = () => {
@@ -24,8 +26,6 @@ const TopNavigationBar: React.FC<TopNavigationBarProps> = ({
       onTitleClick();
     }
   };
-
-  // Responsive behavior: Logo for screens below 768px
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
   useEffect(() => {
@@ -45,38 +45,44 @@ const TopNavigationBar: React.FC<TopNavigationBarProps> = ({
       {windowWidth <= 768 && (
         <div className={styles["top-section"]}>
           <div className={styles["bar-items"]}>
-            <Link to="/funds">
-              <img
-                className={styles["logo"]}
-                src="/open-poen-logo-blue-mobile.svg"
-                alt="Home Logo"
-              />
-            </Link>
+            {showHomeLink && (
+              <Link to="/funds">
+                <img
+                  className={styles["logo"]}
+                  src="/open-poen-logo-blue-mobile.svg"
+                  alt="Home Logo"
+                />
+              </Link>
+            )}
+            <div className={styles["back-arrow-section"]}>
+              {onBackArrowClick && (
+                <button onClick={onBackArrowClick} className={styles.backArrow}>
+                  <img src="/arrow-left.svg" alt="Terug" />
+                </button>
+              )}
+              {showTitleOnSmallScreen && (
+                <div
+                  className={
+                    hasBackArrow
+                      ? styles.titleWithArrow
+                      : styles.titleWithoutArrow
+                  }
+                  onClick={handleTitleClick}
+                >
+                  <h2>{title}</h2>
+                  {subtitle && (
+                    <div className={styles.subtitle} style={subtitleStyle}>
+                      {subtitle}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
             {showCta && hasPermission && (
               <div className={styles["cta-button"]} onClick={onCtaClick}>
                 <button className={styles["cta-button"]}>+</button>
               </div>
             )}
-          </div>
-          <div className={styles["back-arrow-section"]}>
-            {onBackArrowClick && (
-              <button onClick={onBackArrowClick} className={styles.backArrow}>
-                <img src="/arrow-left.png" alt="Terug" />
-              </button>
-            )}
-            <div
-              className={
-                hasBackArrow ? styles.titleWithArrow : styles.titleWithoutArrow
-              }
-              onClick={handleTitleClick}
-            >
-              <h2>{title}</h2>
-              {subtitle && (
-                <div className={styles.subtitle} style={subtitleStyle}>
-                  {subtitle}
-                </div>
-              )}
-            </div>
           </div>
         </div>
       )}
@@ -84,7 +90,7 @@ const TopNavigationBar: React.FC<TopNavigationBarProps> = ({
         <div className={styles["bar-items"]}>
           {onBackArrowClick && (
             <button onClick={onBackArrowClick} className={styles.backArrow}>
-              <img src="/arrow-left.png" alt="Terug" />
+              <img src="/arrow-left.svg" alt="Terug" />
             </button>
           )}
           <div

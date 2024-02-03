@@ -7,6 +7,7 @@ import LinkInitiativeToPayment from "../elements/dropdown-menu/initiatives/LinkI
 import LinkActivityToPayment from "../elements/dropdown-menu/activities/LinkActivityToPayment";
 import LoadingDot from "../animation/LoadingDot";
 import TransactionFilters from "../elements/dropdown-menu/transactions/TransactionFilters";
+import TopNavigationBar from "../ui/top-navigation-bar/TopNavigationBar";
 
 const TransactionOverview = () => {
   const { user } = useAuth();
@@ -40,6 +41,7 @@ const TransactionOverview = () => {
   const [loadMoreDelayActive, setLoadMoreDelayActive] =
     useState<boolean>(false);
   const loadMoreDelayDuration = 300;
+  const isMobile = window.innerWidth <= 768;
 
   const checkBottom = () => {
     const sidePanel = sidePanelRef.current;
@@ -305,19 +307,21 @@ const TransactionOverview = () => {
 
   return (
     <div className={styles.transactionOverview}>
-      <div className={styles.transactionOptions}>
-        <TransactionSearchInput onSearch={handleSearch} />
-        <TransactionFilters
-          transactions={allTransactions}
-          onFilter={handleFilterChange}
-          ibanFilter={ibanFilter}
-          setIbanFilter={setIbanFilter}
-          initiativeFilter={initiativeFilter}
-          setInitiativeFilter={setInitiativeFilter}
-          activityFilter={activityFilter}
-          setActivityFilter={setActivityFilter}
-        />
-      </div>
+      {!isMobile && (
+        <div className={styles.transactionOptions}>
+          <TransactionSearchInput onSearch={handleSearch} />
+          <TransactionFilters
+            transactions={allTransactions}
+            onFilter={handleFilterChange}
+            ibanFilter={ibanFilter}
+            setIbanFilter={setIbanFilter}
+            initiativeFilter={initiativeFilter}
+            setInitiativeFilter={setInitiativeFilter}
+            activityFilter={activityFilter}
+            setActivityFilter={setActivityFilter}
+          />
+        </div>
+      )}
       <div className={styles["transaction-table-container"]} ref={sidePanelRef}>
         {isLoading ? (
           <div className={styles["loading-container"]}>
@@ -357,42 +361,51 @@ const TransactionOverview = () => {
                       }}
                     >
                       <td>{formatDate(transaction.booking_date)}</td>
-                      <td>
-                        <LinkInitiativeToPayment
-                          token={user?.token || ""}
-                          paymentId={transaction.id}
-                          initiativeName={transaction.initiative_name || ""}
-                          initiativeId={transaction.initiative_id || null}
-                          onInitiativeLinked={(initiativeId) =>
-                            handleInitiativeLinked(transaction.id, initiativeId)
-                          }
-                          isActivityLinked={
-                            linkingStatus[transaction.id]?.activityId !== null
-                          }
-                          linkingStatus={linkingStatus}
-                        />
-                      </td>
-                      <td>
-                        <LinkActivityToPayment
-                          token={user?.token || ""}
-                          paymentId={transaction.id}
-                          initiativeId={transaction.initiative_id || null}
-                          activityName={transaction.activity_name || ""}
-                          onActivityLinked={(transactionId, activityId) =>
-                            handleActivityLinked(
-                              transactionId,
-                              activityId as number | null,
-                            )
-                          }
-                          linkedActivityId={
-                            linkingStatus[transaction.id]?.activityId || null
-                          }
-                          isInitiativeLinked={isInitiativeLinked}
-                          linkingStatus={linkingStatus}
-                        />
-                      </td>
+                      {!isMobile && (
+                        <td>
+                          <LinkInitiativeToPayment
+                            token={user?.token || ""}
+                            paymentId={transaction.id}
+                            initiativeName={transaction.initiative_name || ""}
+                            initiativeId={transaction.initiative_id || null}
+                            onInitiativeLinked={(initiativeId) =>
+                              handleInitiativeLinked(
+                                transaction.id,
+                                initiativeId,
+                              )
+                            }
+                            isActivityLinked={
+                              linkingStatus[transaction.id]?.activityId !== null
+                            }
+                            linkingStatus={linkingStatus}
+                          />
+                        </td>
+                      )}
+                      {!isMobile && (
+                        <td>
+                          <LinkActivityToPayment
+                            token={user?.token || ""}
+                            paymentId={transaction.id}
+                            initiativeId={transaction.initiative_id || null}
+                            activityName={transaction.activity_name || ""}
+                            onActivityLinked={(transactionId, activityId) =>
+                              handleActivityLinked(
+                                transactionId,
+                                activityId as number | null,
+                              )
+                            }
+                            linkedActivityId={
+                              linkingStatus[transaction.id]?.activityId || null
+                            }
+                            isInitiativeLinked={isInitiativeLinked}
+                            linkingStatus={linkingStatus}
+                          />
+                        </td>
+                      )}
                       <td>{transaction.creditor_name}</td>
-                      <td>{transaction.short_user_description}</td>
+                      {!isMobile && (
+                        <td>{transaction.short_user_description}</td>
+                      )}
                       <td>{transaction.iban}</td>
                       <td>
                         <span

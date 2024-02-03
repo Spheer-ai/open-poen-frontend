@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import LoadingDot from "../animation/LoadingDot";
 import { getUsersOrdered } from "../middleware/Api";
 import TopNavigationBar from "../ui/top-navigation-bar/TopNavigationBar";
@@ -37,6 +37,24 @@ export default function Contacts() {
   const [userItemId, setUserItemId] = useState<string | null>(null);
   const [isActiveProfile, setIsActiveProfile] = useState(false);
   const abortControllerRef = useRef<AbortController | null>(null);
+  const isMobile = window.innerWidth <= 768;
+  const { pathname } = useLocation();
+  const [isSidePanelCollapsed, setIsSidePanelCollapsed] = useState(false);
+  const toggleSidePanel = () => {
+    setIsSidePanelCollapsed((prev) => !prev);
+  };
+
+  const sidePanelStyles = isSidePanelCollapsed
+    ? { flex: 0, minWidth: 0, width: 0 }
+    : { flex: 1, minWidth: "30%", maxWidth: "400px" };
+
+  const symbol = isSidePanelCollapsed ? ">>" : "<<";
+
+  useEffect(() => {
+    if (pathname === "/contacts" && userItemId) {
+      setUserItemId(null);
+    }
+  }, [pathname, userItemId]);
 
   const checkBottom = () => {
     const sidePanel = sidePanelRef.current;
@@ -126,7 +144,9 @@ export default function Contacts() {
   };
 
   useEffect(() => {
-    handleUserClick(user?.id || "", true);
+    if (window.innerWidth >= 768) {
+      handleUserClick(user?.id || "", true);
+    }
   }, []);
 
   const handleUserClickLogic = (clickedUserId: string, isProfile: boolean) => {
@@ -148,7 +168,9 @@ export default function Contacts() {
   };
 
   useEffect(() => {
-    handleUserClickLogic(user?.id || "", true);
+    if (window.innerWidth >= 768) {
+      handleUserClickLogic(user?.id || "", true);
+    }
   }, []);
 
   const handleUserClick = (clickedUserId: string, isProfile: boolean) => {
@@ -282,86 +304,111 @@ export default function Contacts() {
     }
   };
 
+  const handleBackClick = () => {
+    navigate("/contacts");
+  };
+
   return (
     <div className={styles["container"]}>
-      <div className={styles["side-panel"]} ref={sidePanelRef}>
-        <TopNavigationBar
-          title={`Gebruikers`}
-          showSettings={false}
-          showCta={user ? true : false}
-          onSettingsClick={() => {}}
-          onCtaClick={handleCtaClick}
-          onSearch={handleSearch}
-          hasPermission={hasPermission}
-          showSearch={true}
-        />
-        <MyProfile
-          user={user}
-          isActive={isActiveProfile}
-          userItemId={userItemId}
-          handleUserClick={handleUserClick}
-        />
-        {error ? (
-          <p>Error: {error.message}</p>
-        ) : isLoading ? (
-          <div className={styles["loading-container"]}>
-            <LoadingDot delay={0} />
-            <LoadingDot delay={0.1} />
-            <LoadingDot delay={0.1} />
-            <LoadingDot delay={0.2} />
-            <LoadingDot delay={0.2} />
-          </div>
-        ) : (
-          <div>
-            {userList.length === 0 ? (
-              <p className={styles["no-users"]}>Geen gegevens gevonden</p>
-            ) : (
-              <ul>
-                {userList.map((user, index) => (
-                  <li
-                    key={user.id}
-                    className={`${styles["user-fade-in"]}`}
-                    style={{
-                      animationDelay: `${index * 0.05}s`,
-                      padding: "0",
-                    }}
-                  >
-                    <UserItem
-                      key={`${user.id}-${index}`}
-                      user={user}
-                      isActive={user.id === activeUserId}
-                      handleUserClick={handleUserClick}
-                    />
-                  </li>
-                ))}
-              </ul>
-            )}
-            {isFetchingMoreUsers ? (
-              <div className={styles["loading-container-load-more"]}>
-                <LoadingDot delay={0} />
-                <LoadingDot delay={0.1} />
-                <LoadingDot delay={0.1} />
-                <LoadingDot delay={0.2} />
-                <LoadingDot delay={0.3} />
-              </div>
-            ) : null}
-            <Outlet />
-          </div>
-        )}
-        <AddUser
-          isOpen={isModalOpen}
-          onClose={handleToggleAddUserModal}
-          isBlockingInteraction={isBlockingInteraction}
-          onUserAdded={handleUserAdded}
-        />
-      </div>
-      {(user && isActiveProfile) || activeUserId ? (
-        <UserDetailsPage
-          onUserDeleted={handleUserDeleted}
-          onUserEdited={handleUserEdited}
-          onUserProfileEdited={handleUserProfileEdited}
-          onPasswordChanged={handlePasswordChanged}
-        />
+      {(!isMobile || !userItemId) && (
+        <div className={styles["side-panel"]} ref={sidePanelRef}>
+          <TopNavigationBar
+            title={`Gebruikers`}
+            showSettings={false}
+            showCta={user ? true : false}
+            onSettingsClick={() => {}}
+            onCtaClick={handleCtaClick}
+            onSearch={handleSearch}
+            hasPermission={hasPermission}
+            showSearch={true}
+            showHomeLink={true}
+            showTitleOnSmallScreen={false}
+          />
+          <MyProfile
+            user={user}
+            isActive={isActiveProfile}
+            userItemId={userItemId}
+            handleUserClick={handleUserClick}
+          />
+          {error ? (
+            <p>Error: {error.message}</p>
+          ) : isLoading ? (
+            <div className={styles["loading-container"]}>
+              <LoadingDot delay={0} />
+              <LoadingDot delay={0.1} />
+              <LoadingDot delay={0.1} />
+              <LoadingDot delay={0.2} />
+              <LoadingDot delay={0.2} />
+            </div>
+          ) : (
+            <div>
+              {userList.length === 0 ? (
+                <p className={styles["no-users"]}>Geen gegevens gevonden</p>
+              ) : (
+                <ul>
+                  {userList.map((user, index) => (
+                    <li
+                      key={user.id}
+                      className={`${styles["user-fade-in"]}`}
+                      style={{
+                        animationDelay: `${index * 0.05}s`,
+                        padding: "0",
+                      }}
+                    >
+                      <UserItem
+                        key={`${user.id}-${index}`}
+                        user={user}
+                        isActive={user.id === activeUserId}
+                        handleUserClick={handleUserClick}
+                      />
+                    </li>
+                  ))}
+                </ul>
+              )}
+              {isFetchingMoreUsers ? (
+                <div className={styles["loading-container-load-more"]}>
+                  <LoadingDot delay={0} />
+                  <LoadingDot delay={0.1} />
+                  <LoadingDot delay={0.1} />
+                  <LoadingDot delay={0.2} />
+                  <LoadingDot delay={0.3} />
+                </div>
+              ) : null}
+              <Outlet />
+            </div>
+          )}
+          <AddUser
+            isOpen={isModalOpen}
+            onClose={handleToggleAddUserModal}
+            isBlockingInteraction={isBlockingInteraction}
+            onUserAdded={handleUserAdded}
+          />
+        </div>
+      )}
+      {(!isMobile && user && isActiveProfile) || activeUserId ? (
+        <>
+          {isMobile && (
+            <TopNavigationBar
+              title={`Gebruikers`}
+              onBackArrowClick={handleBackClick}
+              showSettings={false}
+              showCta={false}
+              onSettingsClick={() => {}}
+              onCtaClick={handleCtaClick}
+              onSearch={handleSearch}
+              hasPermission={hasPermission}
+              showSearch={false}
+              showHomeLink={false}
+              showTitleOnSmallScreen={true}
+            />
+          )}
+          <UserDetailsPage
+            onUserDeleted={handleUserDeleted}
+            onUserEdited={handleUserEdited}
+            onUserProfileEdited={handleUserProfileEdited}
+            onPasswordChanged={handlePasswordChanged}
+          />
+        </>
       ) : null}
     </div>
   );

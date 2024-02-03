@@ -211,6 +211,8 @@ export default function Funds() {
           onSearch={handleSearch}
           hasPermission={hasPermission}
           showSearch={false}
+          showHomeLink={true}
+          showTitleOnSmallScreen={false}
         />
         {user && (
           <div className={styles["filter-buttons"]}>

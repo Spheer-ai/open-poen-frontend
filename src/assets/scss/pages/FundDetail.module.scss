@@ -43,7 +43,9 @@
   .fund-info {
     flex: 1;
     width: 50%;
+    max-width: 50%;
     padding-right: 30px;
+    overflow-wrap: break-word;
 
     h1 {
       font-weight: 500;
@@ -52,16 +54,13 @@
 
   .fund-image {
     width: 50%;
+    max-width: 50%;
     padding-left: 30px;
     margin-top: 30px;
     align-items: start;
     display: flex;
     justify-content: right;
-
-    .fund-image {
-      width: 50%;
-      overflow: hidden;
-    }
+    order: 2;
 
     img {
       max-height: 250px;
@@ -137,23 +136,53 @@
 }
 
 @media (max-width: 768px) {
+  .top-right-button-container {
+    button {
+      padding: 10px;
+
+      img {
+        width: 18px;
+        height: 18px;
+      }
+
+      span {
+        display: none;
+      }
+    }
+  }
+
   .fund-detail-container {
     padding: 0;
   }
 
   .topContainer {
     padding: 0;
+    margin-top: 0px;
   }
 
   .content-container {
     display: block;
     width: 100%;
-    overflow: hidden;
+
+    .fund-info {
+      width: 100%;
+      max-width: 100%;
+      padding-right: 0;
+    }
 
     .fund-image {
       display: block;
       width: 100%;
+      max-width: 100%;
       padding-left: 0;
+      margin-top: 10px;
+
+      img {
+        max-height: 100%;
+        width: calc(100% + 40px);
+        max-width: unset;
+        margin-left: -20px;
+      }
     }
   }
 }

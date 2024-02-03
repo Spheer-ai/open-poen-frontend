@@ -268,7 +268,7 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
               onClick={handleToggleEditActivitydModal}
             >
               <img src={EditIcon} alt="Edit" className={styles["icon"]} />
-              Beheer activiteit
+              <span>Beheer activiteit</span>
             </button>
           )}
           {hasDeletePermission && (
@@ -277,7 +277,7 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
               onClick={handleToggleDeleteActivitydModal}
             >
               <img src={DeleteIcon} alt="Delete" className={styles["icon"]} />
-              Verwijder activiteit
+              <span>Verwijder activiteit</span>
             </button>
           )}
         </div>
@@ -286,6 +286,19 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
         {activityDetails ? (
           <>
             <div className={styles["content-container"]}>
+              <div className={styles["fund-image"]}>
+                {activityDetails.profile_picture ? (
+                  <img
+                    src={
+                      activityDetails.profile_picture
+                        .attachment_thumbnail_url_512
+                    }
+                    alt="Fund Image"
+                  />
+                ) : (
+                  <img src="/media-placeholder.jpeg" />
+                )}
+              </div>
               <div className={styles["fund-info"]}>
                 <div className={styles["fund-name"]}>
                   {activityDetails.name ? (
@@ -321,19 +334,6 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
                     <p>Geen beschrijving gevonden</p>
                   )}
                 </div>
-              </div>
-              <div className={styles["fund-image"]}>
-                {activityDetails.profile_picture ? (
-                  <img
-                    src={
-                      activityDetails.profile_picture
-                        .attachment_thumbnail_url_512
-                    }
-                    alt="Fund Image"
-                  />
-                ) : (
-                  <p>Geen afbeelding gevonden</p>
-                )}
               </div>
             </div>
             <div className={styles["statistics-container"]}>

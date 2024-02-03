@@ -238,6 +238,57 @@ export default function UserDetailsPage({
   return (
     <>
       <div className={styles["user-details-container"]}>
+        <div className={styles["top-right-button-container"]}>
+          {hasEditPermission && (
+            <div
+              className={styles["top-right-button"]}
+              onClick={handleToggleEditUserProfileModal}
+            >
+              <img src={EditIcon} alt="Profiel" className={styles["icon"]} />
+              <span>Profiel</span>
+            </div>
+          )}
+          {hasEditPermission && (
+            <div
+              className={styles["top-right-button"]}
+              onClick={handleToggleEditUserModal}
+            >
+              <img
+                src={SettingsIcon}
+                alt="Instellingen"
+                className={styles["icon"]}
+              />
+              <span>Instellingen</span>
+            </div>
+          )}
+
+          {loggedInUserId === userId && (
+            <div
+              className={styles["top-right-button"]}
+              onClick={handleToggleChangePasswordModal}
+            >
+              <img
+                src={ChangePasswordIcon}
+                alt="Change Password"
+                className={styles["icon"]}
+              />
+              <span>Wachtwoord</span>
+            </div>
+          )}
+          {hasDeletePermission && (
+            <div
+              className={styles["top-right-button"]}
+              onClick={handleToggleDeleteUserModal}
+            >
+              <img
+                alt="Delete User"
+                className={styles["icon"]}
+                src={DeleteIcon}
+              />
+              <span>Verwijderen</span>
+            </div>
+          )}
+        </div>
         <div className={styles["user-details-content"]}>
           {userDetails ? (
             <div className={styles["user-details"]}>
@@ -283,61 +334,6 @@ export default function UserDetailsPage({
                     <p className={styles["user-role"]}>
                       {roleLabels.superuser}
                     </p>
-                  )}
-                </div>
-                <div className={styles["top-right-button-container"]}>
-                  {hasEditPermission && (
-                    <div
-                      className={styles["top-right-button"]}
-                      onClick={handleToggleEditUserProfileModal}
-                    >
-                      <img
-                        src={EditIcon}
-                        alt="Profiel"
-                        className={styles["icon"]}
-                      />
-                      Profiel
-                    </div>
-                  )}
-                  {hasEditPermission && (
-                    <div
-                      className={styles["top-right-button"]}
-                      onClick={handleToggleEditUserModal}
-                    >
-                      <img
-                        src={SettingsIcon}
-                        alt="Instellingen"
-                        className={styles["icon"]}
-                      />
-                      Instellingen
-                    </div>
-                  )}
-
-                  {loggedInUserId === userId && (
-                    <div
-                      className={styles["top-right-button"]}
-                      onClick={handleToggleChangePasswordModal}
-                    >
-                      <img
-                        src={ChangePasswordIcon}
-                        alt="Change Password"
-                        className={styles["icon"]}
-                      />
-                      Wachtwoord
-                    </div>
-                  )}
-                  {hasDeletePermission && (
-                    <div
-                      className={styles["top-right-button"]}
-                      onClick={handleToggleDeleteUserModal}
-                    >
-                      <img
-                        alt="Delete User"
-                        className={styles["icon"]}
-                        src={DeleteIcon}
-                      />
-                      Verwijderen
-                    </div>
                   )}
                 </div>
               </div>

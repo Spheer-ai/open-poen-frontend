@@ -28,6 +28,7 @@
     width: 100%;
     overflow: hidden;
     height: 100%;
+    padding-top: 10px;
   }
 }
 
@@ -40,10 +41,6 @@
 @media (max-width: 768px) {
   .container {
     display: block;
-  }
-
-  .side-panel {
-    display: none;
   }
 }
 
@@ -301,4 +298,22 @@
   border-radius: 9.999px;
   margin-right: 10px;
   white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+  .shared-container {
+    .shared-styling {
+      padding: 10px 0px;
+      border-right: none;
+
+      .shared-list {
+        padding: 5px;
+        justify-content: center;
+      }
+    }
+  }
+
+  .shared-unordered-list {
+    margin-bottom: 100px;
+  }
 }

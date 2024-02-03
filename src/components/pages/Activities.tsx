@@ -170,115 +170,123 @@ export default function ActivitiesPage() {
 
   return (
     <div className={styles["container"]}>
-      {!isMobile && (
-        <div className={styles["side-panel"]}>
-          <TopNavigationBar
-            title={`Activiteiten`}
-            subtitle={`${initiativeName}`}
-            onTitleClick={handleTitleClick}
-            showSettings={false}
-            showCta={true}
-            onBackArrowClick={handleBackClick}
-            onSettingsClick={() => {}}
-            onCtaClick={handleToggleAddActivityModal}
-            onSearch={handleSearch}
-            hasPermission={hasPermission}
-            showSearch={false}
-          />
-          {isLoading ? (
-            <div className={styles["loading-container"]}>
-              <LoadingDot delay={0} />
-              <LoadingDot delay={0.1} />
-              <LoadingDot delay={0.1} />
-              <LoadingDot delay={0.2} />
-              <LoadingDot delay={0.2} />
-            </div>
-          ) : Array.isArray(activities) && activities.length === 0 ? (
-            <p className={styles["no-activities"]}>
-              Geen activiteiten gevonden
-            </p>
-          ) : (
-            <ul className={styles["shared-unordered-list"]}>
-              {activities.map((activity, index) => (
-                <div
-                  className={`${styles["shared-styling"]} ${styles["initiative-fade-in"]}`}
-                  key={`${activity?.id}-${index}`}
-                  style={{
-                    animationDelay: `${index * 0.2}s`,
-                  }}
-                  onClick={() => handleActivityClick(activity.id)}
-                >
-                  <li className={styles["shared-name"]}>
-                    <strong>{activity.name}</strong>
-                  </li>
-                  <div className={styles["values-bar"]}>
-                    <div
-                      key={`income-${activity.id}`}
-                      className={styles["income-bar"]}
-                      style={{
-                        width: calculateBarWidth(
-                          activity.income,
-                          activity.expenses,
-                        ).incomeWidth,
-                      }}
-                    ></div>
-                    <div
-                      key={`expenses-${activity.id}`}
-                      className={styles["expenses-bar"]}
-                      style={{
-                        width: calculateBarWidth(
-                          activity.income,
-                          activity.expenses,
-                        ).expensesWidth,
-                      }}
-                    ></div>
+      <div
+        className={styles["side-panel"]}
+        style={{
+          height: "auto",
+        }}
+      >
+        <TopNavigationBar
+          title={`Activiteiten`}
+          subtitle={`${initiativeName}`}
+          onTitleClick={handleTitleClick}
+          showSettings={false}
+          showCta={true}
+          onBackArrowClick={handleBackClick}
+          onSettingsClick={() => {}}
+          onCtaClick={handleToggleAddActivityModal}
+          onSearch={handleSearch}
+          hasPermission={hasPermission}
+          showSearch={false}
+          showHomeLink={false}
+          showTitleOnSmallScreen={true}
+        />
+        {!isMobile && (
+          <>
+            {isLoading ? (
+              <div className={styles["loading-container"]}>
+                <LoadingDot delay={0} />
+                <LoadingDot delay={0.1} />
+                <LoadingDot delay={0.1} />
+                <LoadingDot delay={0.2} />
+                <LoadingDot delay={0.2} />
+              </div>
+            ) : Array.isArray(activities) && activities.length === 0 ? (
+              <p className={styles["no-activities"]}>
+                Geen activiteiten gevonden
+              </p>
+            ) : (
+              <ul className={styles["shared-unordered-list"]}>
+                {activities.map((activity, index) => (
+                  <div
+                    className={`${styles["shared-styling"]} ${styles["initiative-fade-in"]}`}
+                    key={`${activity?.id}-${index}`}
+                    style={{
+                      animationDelay: `${index * 0.2}s`,
+                    }}
+                    onClick={() => handleActivityClick(activity.id)}
+                  >
+                    <li className={styles["shared-name"]}>
+                      <strong>{activity.name}</strong>
+                    </li>
+                    <div className={styles["values-bar"]}>
+                      <div
+                        key={`income-${activity.id}`}
+                        className={styles["income-bar"]}
+                        style={{
+                          width: calculateBarWidth(
+                            activity.income,
+                            activity.expenses,
+                          ).incomeWidth,
+                        }}
+                      ></div>
+                      <div
+                        key={`expenses-${activity.id}`}
+                        className={styles["expenses-bar"]}
+                        style={{
+                          width: calculateBarWidth(
+                            activity.income,
+                            activity.expenses,
+                          ).expensesWidth,
+                        }}
+                      ></div>
+                    </div>
+                    <li key={activity.id} className={styles["shared-list"]}>
+                      <div className={styles["shared-values"]}>
+                        <label>Begroting:</label>
+                        <span>
+                          €
+                          {activity.budget.toLocaleString("nl-NL", {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          })}
+                        </span>
+                      </div>
+                      <div className={styles["shared-values"]}>
+                        <label className={styles["value-income"]}>
+                          Beschikbaar:
+                        </label>
+                        <span>
+                          €
+                          {activity.income.toLocaleString("nl-NL", {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          })}
+                        </span>
+                      </div>
+                      <div className={styles["shared-values"]}>
+                        <label className={styles["value-expenses"]}>
+                          Besteed:
+                        </label>
+                        <span>
+                          €
+                          {activity.expenses.toLocaleString("nl-NL", {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          })}
+                        </span>
+                      </div>
+                    </li>
+                    {activity?.hidden && (
+                      <span className={styles["hidden-label"]}>Verborgen</span>
+                    )}
                   </div>
-                  <li key={activity.id} className={styles["shared-list"]}>
-                    <div className={styles["shared-values"]}>
-                      <label>Begroting:</label>
-                      <span>
-                        €
-                        {activity.budget.toLocaleString("nl-NL", {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                        })}
-                      </span>
-                    </div>
-                    <div className={styles["shared-values"]}>
-                      <label className={styles["value-income"]}>
-                        Beschikbaar:
-                      </label>
-                      <span>
-                        €
-                        {activity.income.toLocaleString("nl-NL", {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                        })}
-                      </span>
-                    </div>
-                    <div className={styles["shared-values"]}>
-                      <label className={styles["value-expenses"]}>
-                        Besteed:
-                      </label>
-                      <span>
-                        €
-                        {activity.expenses.toLocaleString("nl-NL", {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                        })}
-                      </span>
-                    </div>
-                  </li>
-                  {activity?.hidden && (
-                    <span className={styles["hidden-label"]}>Verborgen</span>
-                  )}
-                </div>
-              ))}
-            </ul>
-          )}
-        </div>
-      )}
-
+                ))}
+              </ul>
+            )}
+          </>
+        )}
+      </div>
       <AddActivity
         isOpen={isModalOpen}
         onClose={handleToggleAddActivityModal}

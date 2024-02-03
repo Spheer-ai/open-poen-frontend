@@ -55,7 +55,7 @@ const FundsUsers: React.FC<{
   };
 
   return (
-    <div>
+    <div className={styles["users-container"]}>
       <LinkFundOwners
         isOpen={isLinkFundOwnerModalOpen}
         onClose={handleToggleLinkFundOwnerModal}

@@ -122,15 +122,19 @@
 
   .middle-section li.active {
     border: none;
-    border-radius: none;
+    border-radius: 0px;
   }
 
   .middle-section li {
     border: none;
-    border-radius: none;
+    border-radius: 0px;
     width: auto;
     height: auto;
     padding: 0;
+    margin: 15px 0px;
+    flex: 1;
+    flex-basis: 0;
+    min-width: 0;
 
     span {
       color: #3d3f40;

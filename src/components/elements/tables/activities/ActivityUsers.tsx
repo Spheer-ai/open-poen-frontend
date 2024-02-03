@@ -57,7 +57,7 @@ const ActivityUsers: React.FC<{
   };
 
   return (
-    <div>
+    <div className={styles["users-container"]}>
       <LinkActivityOwners
         isOpen={isLinkActivityOwnerModalOpen}
         onClose={handleToggleLinkActivityOwnerModal}

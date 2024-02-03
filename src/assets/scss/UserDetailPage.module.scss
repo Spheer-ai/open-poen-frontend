@@ -29,7 +29,7 @@
 .user-details {
   display: block;
   width: 100%;
-  padding: 75px;
+  padding: 50px 75px;
   position: relative;
 }
 
@@ -138,12 +138,12 @@
 }
 
 .top-right-button-container {
-  position: absolute;
-  top: 20px;
-  right: 40px;
+  margin-top: 20px;
+  margin-right: 40px;
   display: flex;
   flex-direction: row-reverse;
   align-items: center;
+  z-index: 3;
 }
 
 .top-right-button {
@@ -185,5 +185,47 @@
     &:hover {
       text-decoration: underline;
     }
+  }
+}
+
+@media (max-width: 768px) {
+  .user-profile {
+    display: inline-flex;
+    align-items: center;
+    gap: 20px;
+    flex-direction: column;
+    justify-content: center;
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  .user-details {
+    padding: 30px 20px;
+  }
+
+  .user-info {
+    justify-content: center;
+    gap: unset;
+    flex-direction: column;
+    display: flex;
+  }
+
+  .user-description {
+    margin-top: 20px;
+  }
+
+  .top-right-button {
+    .icon {
+      width: 18px;
+      height: 18px;
+    }
+
+    span {
+      display: none;
+    }
+  }
+
+  .user-details-container::before {
+    display: none;
   }
 }

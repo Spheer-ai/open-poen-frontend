@@ -257,7 +257,7 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
                 onClick={handleToggleEditFundModal}
               >
                 <img src={EditIcon} alt="Edit" className={styles["icon"]} />
-                Beheer initiatief
+                <span>Beheer initiatief</span>
               </button>
             )}
             {hasDeletePermission && (
@@ -266,7 +266,7 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
                 onClick={handleToggleDeleteFundModal}
               >
                 <img src={DeleteIcon} alt="Delete" className={styles["icon"]} />
-                Verwijder initiatief
+                <span>Verwijder initiatief</span>
               </button>
             )}
           </div>
@@ -276,6 +276,18 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
         {fundDetails ? (
           <>
             <div className={styles["content-container"]}>
+              <div className={styles["fund-image"]}>
+                {fundDetails.profile_picture ? (
+                  <img
+                    src={
+                      fundDetails.profile_picture.attachment_thumbnail_url_512
+                    }
+                    alt="Fund Image"
+                  />
+                ) : (
+                  <img src="/media-placeholder.jpeg" />
+                )}
+              </div>
               <div className={styles["fund-info"]}>
                 <div className={styles["fund-name"]}>
                   {fundDetails.name ? (
@@ -309,18 +321,6 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
                     <p>Geen beschrijving gevonden</p>
                   )}
                 </div>
-              </div>
-              <div className={styles["fund-image"]}>
-                {fundDetails.profile_picture ? (
-                  <img
-                    src={
-                      fundDetails.profile_picture.attachment_thumbnail_url_512
-                    }
-                    alt="Fund Image"
-                  />
-                ) : (
-                  <p>Geen afbeelding gevonden</p>
-                )}
               </div>
             </div>
             <div className={styles["statistics-container"]}>
