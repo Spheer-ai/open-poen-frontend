@@ -7,7 +7,6 @@ import LinkInitiativeToPayment from "../elements/dropdown-menu/initiatives/LinkI
 import LinkActivityToPayment from "../elements/dropdown-menu/activities/LinkActivityToPayment";
 import LoadingDot from "../animation/LoadingDot";
 import TransactionFilters from "../elements/dropdown-menu/transactions/TransactionFilters";
-import TopNavigationBar from "../ui/top-navigation-bar/TopNavigationBar";
 
 const TransactionOverview = () => {
   const { user } = useAuth();
@@ -16,7 +15,7 @@ const TransactionOverview = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [offset, setOffset] = useState(0);
-  const [limit, setLimit] = useState(7);
+  const [limit, setLimit] = useState(20);
   const [totalTransactionsCount, setTotalTransactionsCount] = useState(0);
   const [isLoadingMore, setIsLoadingMore] = useState<boolean>(false);
   const [isLastLoadMoreComplete, setIsLastLoadMoreComplete] =
@@ -135,7 +134,6 @@ const TransactionOverview = () => {
           searchQuery,
         );
 
-        console.log("Fetched transactions:", data.payments);
         const updatedLinkingStatus = { ...linkingStatus };
 
         data.payments.forEach((transaction) => {
@@ -209,8 +207,6 @@ const TransactionOverview = () => {
           limit,
           searchQuery,
         );
-
-        console.log("Fetched additional transactions:", data.payments);
 
         const updatedLinkingStatus = { ...linkingStatus };
 
@@ -300,7 +296,6 @@ const TransactionOverview = () => {
 
   useEffect(() => {
     if (isAtBottom && isLastLoadMoreComplete) {
-      console.log("User reached the bottom of the side panel");
       handleLoadMore();
     }
   }, [isAtBottom, isLastLoadMoreComplete]);

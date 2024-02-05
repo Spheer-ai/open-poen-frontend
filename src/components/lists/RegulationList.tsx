@@ -145,6 +145,8 @@ const RegulationList = () => {
           onCtaClick={handleToggleAddRegulationModal}
           hasPermission={hasPermission}
           showSearch={false}
+          showHomeLink={false}
+          showTitleOnSmallScreen={false}
         />
 
         {isLoading ? (

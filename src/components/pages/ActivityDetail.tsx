@@ -200,7 +200,7 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
       setTimeout(() => {
         setIsBlockingInteraction(false);
         setIsDeleteActivityModalOpen(false);
-        navigate(`/funds/${initiativeId}/activities/${activityId}`);
+        navigate(`/funds`);
       }, 300);
     } else {
       setIsDeleteActivityModalOpen(true);
@@ -296,7 +296,7 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
                     alt="Fund Image"
                   />
                 ) : (
-                  <img src="/media-placeholder.jpeg" />
+                  <p>Geen afbeelding gevonden</p>
                 )}
               </div>
               <div className={styles["fund-info"]}>

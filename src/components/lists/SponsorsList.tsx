@@ -204,6 +204,8 @@ const SponsorList = () => {
           onSearch={handleSearch}
           hasPermission={hasPermission}
           showSearch={false}
+          showHomeLink={false}
+          showTitleOnSmallScreen={false}
         />
         <div>
           {isLoading ? (

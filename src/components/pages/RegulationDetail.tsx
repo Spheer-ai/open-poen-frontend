@@ -162,7 +162,7 @@ const RegulationDetail: React.FC<RegulationDetailProps> = ({
       setTimeout(() => {
         setIsBlockingInteraction(false);
         setIsDeleteRegulationModalOpen(false);
-        navigate(`/sponsors/${sponsorId}/regulations`);
+        navigate(`/sponsors/${sponsorId}`);
       }, 300);
     } else {
       setIsDeleteRegulationModalOpen(true);
