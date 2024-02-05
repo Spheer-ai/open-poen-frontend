@@ -61,7 +61,9 @@ const RegulationDetail: React.FC<RegulationDetailProps> = ({
   >(null);
   const [isBlockingInteraction, setIsBlockingInteraction] = useState(false);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
-  const [isAddGrantModalOpen, setIsAddGrantModalOpen] = useState(false);
+  const [isAddGrantModalOpen, setIsAddGrantModalOpen] = useState(
+    action === "add-grant",
+  );
   const [isGrantModalOpen, setIsGrantModalOpen] = useState(false);
   const [isDeleteGrantModalOpen, setIsDeleteGrantModalOpen] = useState(false);
   const [isAddEmployeeModalOpen, setIsAddEmployeeModalOpen] = useState(false);
@@ -185,6 +187,12 @@ const RegulationDetail: React.FC<RegulationDetailProps> = ({
       );
     }
   };
+
+  useEffect(() => {
+    if (action === "add-grant") {
+      setIsAddGrantModalOpen(true);
+    }
+  }, [action]);
 
   const handleToggleAddGrantModal = () => {
     if (isAddGrantModalOpen) {

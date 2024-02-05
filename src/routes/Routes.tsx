@@ -95,7 +95,7 @@ export default function AppRoutes() {
             }
           />
           <Route
-            path="/funds/:initiativeId/activities"
+            path="/funds/:initiativeId/activiteiten"
             element={
               <InlineModalLayout navigate={navigate}>
                 <Activities />
@@ -103,7 +103,7 @@ export default function AppRoutes() {
             }
           />
           <Route
-            path="/funds/:initiativeId/activities/:initiativeName"
+            path="/funds/:initiativeId"
             element={
               <InlineModalLayout navigate={navigate}>
                 <Activities />
@@ -112,7 +112,16 @@ export default function AppRoutes() {
           />
 
           <Route
-            path="/funds/:initiativeId/activities/:activityId/add-activity"
+            path="/funds/:initiativeId/:initiativeName"
+            element={
+              <InlineModalLayout navigate={navigate}>
+                <Activities />
+              </InlineModalLayout>
+            }
+          />
+
+          <Route
+            path="/funds/:initiativeId/add-activity"
             element={
               <InlineModalLayout navigate={navigate}>
                 <Activities />
@@ -120,7 +129,7 @@ export default function AppRoutes() {
             }
           />
           <Route
-            path="/funds/:initiativeId/activities/edit-fund"
+            path="/funds/:initiativeId/edit-fund"
             element={
               <InlineModalLayout navigate={navigate}>
                 <Activities />
@@ -128,7 +137,7 @@ export default function AppRoutes() {
             }
           />
           <Route
-            path="/funds/:initiativeId/activities/delete-fund"
+            path="/funds/:initiativeId/delete-fund"
             element={
               <InlineModalLayout navigate={navigate}>
                 <Activities />
@@ -136,7 +145,7 @@ export default function AppRoutes() {
             }
           />
           <Route
-            path="/funds/:initiativeId/activities/edit-activity"
+            path="/funds/:initiativeId/activities/:activityId/edit-activity"
             element={
               <InlineModalLayout navigate={navigate}>
                 <Activities />
@@ -144,7 +153,7 @@ export default function AppRoutes() {
             }
           />
           <Route
-            path="/funds/:initiativeId/activities/delete-activity"
+            path="/funds/:initiativeId/activities/:activityId/delete-activity"
             element={
               <InlineModalLayout navigate={navigate}>
                 <Activities />
@@ -176,7 +185,23 @@ export default function AppRoutes() {
             }
           />
           <Route
+            path="/funds/:initiativeId/activities/:activityId/filter-payment"
+            element={
+              <InlineModalLayout navigate={navigate}>
+                <Activities />
+              </InlineModalLayout>
+            }
+          />
+          <Route
             path="/funds/:initiativeId/activities/:activityId/transactieoverzicht"
+            element={
+              <InlineModalLayout navigate={navigate}>
+                <Activities />
+              </InlineModalLayout>
+            }
+          />
+          <Route
+            path="/funds/:initiativeId/transactieoverzicht"
             element={
               <InlineModalLayout navigate={navigate}>
                 <Activities />
@@ -232,7 +257,7 @@ export default function AppRoutes() {
             }
           />
           <Route
-            path="/funds/:initiativeId/activities/gebruikers/link-owners"
+            path="/funds/:initiativeId/gebruikers/link-owners"
             element={
               <InlineModalLayout navigate={navigate}>
                 <Activities />

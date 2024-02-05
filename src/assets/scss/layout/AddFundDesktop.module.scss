@@ -210,6 +210,27 @@ textarea {
   }
 }
 
+@media (max-width: 768px) {
+  .modal {
+    right: 0%;
+    height: 90vh;
+    border-top-right-radius: 15px;
+    border-top-left-radius: 15px;
+    top: unset;
+    bottom: -100%;
+    max-width: 100%;
+    transition: bottom 0.3s ease-in-out;
+
+    &.open {
+      bottom: 0;
+    }
+  }
+
+  .formGroup {
+    margin: 10px;
+  }
+}
+
 .roleOptions {
   display: flex;
   flex-direction: column;

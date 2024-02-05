@@ -6,7 +6,7 @@
   .transaction-table-container {
     display: block;
     overflow: scroll;
-    height: 70vh;
+    height: 60vh;
   }
 
   .transaction-search-input {
@@ -88,7 +88,7 @@
 @media screen and (max-width: 768px) {
   .transactionOverview {
     padding: 10px;
-    margin: 10px;
+    margin: 0px;
     height: 100vh;
 
     .transactionTable {
@@ -134,8 +134,9 @@
 
 .fundTransactionOverview {
   background: #fff;
-  overflow: hidden;
+  overflow: scroll;
   margin-top: 15px;
+  max-height: 40vh;
 
   .transaction-table-container {
     display: block;
@@ -336,9 +337,13 @@
 }
 
 @media screen and (max-width: 768px) {
+  .fundTransactionOverview {
+    margin-bottom: 50px;
+  }
+
   .transactionOverview {
-    padding: 10px;
-    margin: 10px;
+    padding: 0px;
+    margin: 0px;
 
     .transactionTable {
       thead {
@@ -350,6 +355,10 @@
       td {
         display: block;
         width: 100%;
+      }
+
+      tbody {
+        margin-top: 0;
       }
 
       tr {
@@ -371,6 +380,9 @@
           }
         }
       }
+    }
+    .transaction-table-container {
+      height: 80vh;
     }
   }
 }

@@ -62,3 +62,19 @@
   justify-content: center;
   align-items: center;
 }
+
+@media (max-width: 768px) {
+  .user-list-container {
+    display: block;
+  }
+
+  .user-container {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+}
+
+.users-container {
+  overflow: scroll;
+  max-height: 300px;
+}

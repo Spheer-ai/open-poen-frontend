@@ -27,11 +27,11 @@ const FundsUsers: React.FC<{
       setTimeout(() => {
         setIsBlockingInteraction(false);
         setIsLinkFundOwnerModalOpen(false);
-        navigate(`/funds/${initiativeId}/activities/gebruikers`);
+        navigate(`/funds/${initiativeId}/gebruikers`);
       }, 300);
     } else {
       setIsLinkFundOwnerModalOpen(true);
-      navigate(`/funds/${initiativeId}/activities/gebruikers/link-owners`);
+      navigate(`/funds/${initiativeId}/gebruikers/link-owners`);
     }
   };
 
@@ -55,7 +55,7 @@ const FundsUsers: React.FC<{
   };
 
   return (
-    <div>
+    <div className={styles["users-container"]}>
       <LinkFundOwners
         isOpen={isLinkFundOwnerModalOpen}
         onClose={handleToggleLinkFundOwnerModal}

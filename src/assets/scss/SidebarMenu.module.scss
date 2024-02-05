@@ -99,3 +99,51 @@
   cursor: pointer;
   outline: none;
 }
+
+@media (max-width: 768px) {
+  .middle-section li:hover::after {
+    display: none;
+  }
+
+  .sidebar-menu {
+    flex-direction: row;
+    bottom: 0;
+    position: fixed;
+    width: 100%;
+    height: fit-content;
+    z-index: 2;
+    border-top: 1px solid #dee2e6;
+  }
+
+  .middle-section ul {
+    display: flex;
+    gap: 30px;
+  }
+
+  .middle-section li.active {
+    border: none;
+    border-radius: 0px;
+  }
+
+  .middle-section li {
+    border: none;
+    border-radius: 0px;
+    width: auto;
+    height: auto;
+    padding: 0;
+    margin: 15px 0px;
+    flex: 1;
+    flex-basis: 0;
+    min-width: 0;
+
+    span {
+      color: #3d3f40;
+      font-size: 13px;
+    }
+  }
+
+  .middle-section a img {
+    border: 2px solid transparent;
+    border-radius: 0%;
+  }
+}

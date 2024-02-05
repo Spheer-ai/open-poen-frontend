@@ -9,6 +9,14 @@
   overflow-x: hidden;
 }
 
+@media (max-width: 768px) {
+  .side-panel {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+  }
+}
+
 .sponsor-list {
   list-style-type: none;
   padding: 20px;

@@ -39,7 +39,7 @@ export default function Funds() {
   const [displayedInitiativesCount, setDisplayedInitiativesCount] = useState(0);
   const [initialFetchDone, setInitialFetchDone] = useState(false);
   const [offset, setOffset] = useState(0);
-  const [limit, setLimit] = useState(20);
+  const [limit, setLimit] = useState(7);
   const [totalInitiatives, setTotalInitiatives] = useState(0);
 
   const [allFetchedInitiatives, setAllFetchedInitiatives] = useState<
@@ -49,6 +49,23 @@ export default function Funds() {
     useState(false);
   const [allInitiativesFetched, setAllInitiativesFetched] = useState(false);
   const initialFetchDoneRef = useRef(false);
+
+  const [isAtBottom, setIsAtBottom] = useState(false);
+  const sidePanelRef = useRef<HTMLDivElement | null>(null);
+
+  const checkBottom = () => {
+    const sidePanel = sidePanelRef.current;
+
+    if (sidePanel) {
+      const scrollY = sidePanel.scrollTop;
+      const panelHeight = sidePanel.clientHeight;
+      const contentHeight = sidePanel.scrollHeight;
+
+      const threshold = 50;
+
+      setIsAtBottom(contentHeight - (scrollY + panelHeight) < threshold);
+    }
+  };
 
   useEffect(() => {
     if (user?.token) {
@@ -139,10 +156,29 @@ export default function Funds() {
     fetchAndDisplayInitiatives(user?.token, onlyMine, newOffset, limit);
   };
 
+  useEffect(() => {
+    const sidePanel = sidePanelRef.current;
+
+    if (sidePanel) {
+      sidePanel.addEventListener("scroll", checkBottom);
+
+      return () => {
+        sidePanel.removeEventListener("scroll", checkBottom);
+      };
+    }
+  }, []);
+
+  useEffect(() => {
+    if (isAtBottom) {
+      console.log("User reached the bottom of the side panel");
+      handleLoadMoreClick();
+    }
+  }, [isAtBottom]);
+
   const handleSearch = (query) => {};
 
   const navigateToActivities = (initiativeId, initiativeName) => {
-    navigate(`/funds/${initiativeId}/activities/${initiativeName}`, {
+    navigate(`/funds/${initiativeId}/${initiativeName}`, {
       state: { initiativeName },
     });
   };
@@ -162,9 +198,10 @@ export default function Funds() {
       expensesWidth,
     };
   };
+
   return (
     <div className={styles["container"]}>
-      <div className={styles["side-panel"]}>
+      <div className={styles["side-panel"]} ref={sidePanelRef}>
         <TopNavigationBar
           title={`Initiatieven`}
           showSettings={false}
@@ -174,6 +211,8 @@ export default function Funds() {
           onSearch={handleSearch}
           hasPermission={hasPermission}
           showSearch={false}
+          showHomeLink={true}
+          showTitleOnSmallScreen={false}
         />
         {user && (
           <div className={styles["filter-buttons"]}>
@@ -184,12 +223,12 @@ export default function Funds() {
               onClick={() => {
                 setOnlyMine(false);
                 setOffset(0);
-                setLimit(20);
+                setLimit(7);
                 setIsFetchingInitiatives(true);
                 setInitiatives([]);
                 setAllInitiatives([]);
                 setMyInitiatives([]);
-                fetchAndDisplayInitiatives(user?.token, false, 0, 20);
+                fetchAndDisplayInitiatives(user?.token, false, 0, 7);
               }}
             >
               Alle Initiatieven
@@ -201,12 +240,12 @@ export default function Funds() {
               onClick={() => {
                 setOnlyMine(true);
                 setOffset(0);
-                setLimit(3);
+                setLimit(7);
                 setIsFetchingInitiatives(true);
                 setInitiatives([]);
                 setAllInitiatives([]);
                 setMyInitiatives([]);
-                fetchAndDisplayInitiatives(user?.token, true, 0, 20);
+                fetchAndDisplayInitiatives(user?.token, true, 0, 7);
               }}
             >
               Mijn Initiatieven
@@ -273,13 +312,7 @@ export default function Funds() {
                     </span>
                   </div>
                   <div className={styles["shared-values"]}>
-                    <label
-                      className={
-                        initiative?.income
-                          ? styles["value-income"]
-                          : styles["value-expenses"]
-                      }
-                    >
+                    <label className={styles["value-income"]}>
                       Beschikbaar:
                     </label>
                     <span>
@@ -291,15 +324,7 @@ export default function Funds() {
                     </span>
                   </div>
                   <div className={styles["shared-values"]}>
-                    <label
-                      className={
-                        initiative?.expenses
-                          ? styles["value-expenses"]
-                          : styles["value-income"]
-                      }
-                    >
-                      Besteed:
-                    </label>
+                    <label className={styles["value-expenses"]}>Besteed:</label>
                     <span>
                       €
                       {initiative?.expenses.toLocaleString("nl-NL", {
@@ -324,9 +349,7 @@ export default function Funds() {
               <LoadingDot delay={0.2} />
             </div>
           ) : (
-            <button onClick={handleLoadMoreClick}>
-              Meer initiatieven laden..
-            </button>
+            <></>
           )}
         </ul>
       </div>

@@ -74,7 +74,7 @@ const EditFund: React.FC<EditFundProps> = ({
 
   const handleSave = async () => {
     setIsSaveClicked(true);
-    if (charCount > 64) {
+    if (!formData?.name || formData?.name.trim().length > 64) {
       setNameError("Naam mag maximaal 64 tekens bevatten");
       return;
     }
@@ -171,7 +171,6 @@ const EditFund: React.FC<EditFundProps> = ({
                   if (newName.length <= 64) {
                     setFormData({ ...formData, name: newName });
                   }
-                  setCharCount(newName.length);
                 }}
               />
               {isSaveClicked && nameError && (

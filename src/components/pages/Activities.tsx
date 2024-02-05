@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import TopNavigationBar from "../ui/top-navigation-bar/TopNavigationBar";
 import styles from "../../assets/scss/Funds.module.scss";
 import { usePermissions } from "../../contexts/PermissionContext";
@@ -22,7 +22,7 @@ interface Activities {
 
 export default function ActivitiesPage() {
   const navigate = useNavigate();
-  const { action } = useParams();
+
   const { user } = useAuth();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isBlockingInteraction, setIsBlockingInteraction] = useState(false);
@@ -33,29 +33,12 @@ export default function ActivitiesPage() {
   const hasPermission = entityPermissions.includes("create_activity");
   const [activities, setActivities] = useState<Activities[]>([]);
   const [initiativeName, setInitiativeName] = useState("");
-  const initiativeId = useParams()?.initiativeId || "";
   const [selectedActivity, setSelectedActivity] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    if (!initiativeId) {
-      console.error("initiativeId is not defined.");
-      return;
-    }
-
-    if (user?.token && !permissionsFetched) {
-      fetchPermissions("Initiative", parseInt(initiativeId), user.token)
-        .then((permissions) => {
-          setEntityPermissions(permissions || []);
-          setPermissionsFetched(true);
-        })
-        .catch((error) => {
-          console.error("Failed to fetch permissions:", error);
-          setPermissionsFetched(true);
-        });
-    } else {
-    }
-  }, [action, user, fetchPermissions, permissionsFetched, initiativeId]);
+  const [isActivitiesLoaded, setIsActivitiesLoaded] = useState(false);
+  const { initiativeId, activityId } = useParams();
+  const location = useLocation();
+  const isMobile = window.innerWidth <= 768;
 
   useEffect(() => {
     setIsLoading(true);
@@ -78,12 +61,58 @@ export default function ActivitiesPage() {
         );
         setActivities(activitiesWithInitiativeNames);
         setIsLoading(false);
+        setIsActivitiesLoaded(true);
       })
       .catch((error) => {
         console.error("Error fetching activities:", error);
         setIsLoading(false);
       });
   }, [initiativeId, user?.token, refreshTrigger]);
+
+  useEffect(() => {
+    if (activityId) {
+      console.log("Setting selectedActivity on mount:", activityId);
+      setSelectedActivity(activityId);
+    }
+  }, [activityId]);
+
+  useEffect(() => {
+    console.log("initiativeId:", initiativeId);
+    console.log("activityId:", activityId);
+
+    if (initiativeId) {
+      if (user?.token && !permissionsFetched) {
+        fetchPermissions("Initiative", parseInt(initiativeId), user.token)
+          .then((permissions) => {
+            setEntityPermissions(permissions || []);
+            setPermissionsFetched(true);
+          })
+          .catch((error) => {
+            console.error("Failed to fetch permissions:", error);
+            setPermissionsFetched(true);
+          });
+      }
+    }
+  }, [user, fetchPermissions, permissionsFetched, initiativeId]);
+
+  useEffect(() => {
+    if (activityId) {
+      setSelectedActivity(activityId);
+    } else if (
+      location.pathname.includes("/funds/") &&
+      location.pathname.includes("/activities/")
+    ) {
+      const activityIdFromPath = location.pathname.split("/").pop();
+      console.log(
+        "Setting selectedActivity from location:",
+        activityIdFromPath,
+      );
+
+      if (activityIdFromPath) {
+        setSelectedActivity(activityIdFromPath);
+      }
+    }
+  }, [activityId, location]);
 
   const calculateBarWidth = (income, expenses) => {
     const total = Math.abs(income) + Math.abs(expenses);
@@ -108,9 +137,8 @@ export default function ActivitiesPage() {
   };
 
   const handleTitleClick = () => {
-    const newUrl = `/funds/${initiativeId}/activities/${initiativeName}`;
-    window.location.assign(newUrl);
-    window.location.reload();
+    setSelectedActivity(null);
+    navigate(`/funds/${initiativeId}`);
   };
 
   const handleToggleAddActivityModal = () => {
@@ -119,10 +147,11 @@ export default function ActivitiesPage() {
       setTimeout(() => {
         setIsBlockingInteraction(false);
         setIsModalOpen(false);
-        navigate(`/funds/${initiativeId}/activities`);
+        navigate(`/funds/${initiativeId}`);
       }, 300);
     } else {
       setIsModalOpen(true);
+      navigate(`/funds/${initiativeId}/add-activity`);
     }
   };
 
@@ -131,12 +160,22 @@ export default function ActivitiesPage() {
   };
 
   const handleActivityClick = (activityId) => {
+    console.log("Setting selectedActivity:", activityId);
     setSelectedActivity(activityId);
     navigate(`/funds/${initiativeId}/activities/${activityId}`);
   };
+
+  console.log("initiativeId before rendering detail:", initiativeId);
+  console.log("selectedActivity before rendering detail:", selectedActivity);
+
   return (
     <div className={styles["container"]}>
-      <div className={styles["side-panel"]}>
+      <div
+        className={styles["side-panel"]}
+        style={{
+          height: "auto",
+        }}
+      >
         <TopNavigationBar
           title={`Activiteiten`}
           subtitle={`${initiativeName}`}
@@ -149,107 +188,103 @@ export default function ActivitiesPage() {
           onSearch={handleSearch}
           hasPermission={hasPermission}
           showSearch={false}
+          showHomeLink={false}
+          showTitleOnSmallScreen={true}
         />
-        {isLoading ? (
-          <div className={styles["loading-container"]}>
-            <LoadingDot delay={0} />
-            <LoadingDot delay={0.1} />
-            <LoadingDot delay={0.1} />
-            <LoadingDot delay={0.2} />
-            <LoadingDot delay={0.2} />
-          </div>
-        ) : Array.isArray(activities) && activities.length === 0 ? (
-          <p className={styles["no-activities"]}>Geen activiteiten gevonden</p>
-        ) : (
-          <ul className={styles["shared-unordered-list"]}>
-            {activities.map((activity, index) => (
-              <div
-                className={`${styles["shared-styling"]} ${styles["initiative-fade-in"]}`}
-                key={`${activity?.id}-${index}`}
-                style={{
-                  animationDelay: `${index * 0.2}s`,
-                }}
-                onClick={() => handleActivityClick(activity.id)}
-              >
-                <li className={styles["shared-name"]}>
-                  <strong>{activity.name}</strong>
-                </li>
-                <div className={styles["values-bar"]}>
-                  <div
-                    key={`income-${activity.id}`}
-                    className={styles["income-bar"]}
-                    style={{
-                      width: calculateBarWidth(
-                        activity.income,
-                        activity.expenses,
-                      ).incomeWidth,
-                    }}
-                  ></div>
-                  <div
-                    key={`expenses-${activity.id}`}
-                    className={styles["expenses-bar"]}
-                    style={{
-                      width: calculateBarWidth(
-                        activity.income,
-                        activity.expenses,
-                      ).expensesWidth,
-                    }}
-                  ></div>
-                </div>
-                <li key={activity.id} className={styles["shared-list"]}>
-                  <div className={styles["shared-values"]}>
-                    <label>Begroting:</label>
-                    <span>
-                      €
-                      {activity.budget.toLocaleString("nl-NL", {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })}
-                    </span>
-                  </div>
-                  <div className={styles["shared-values"]}>
-                    <label
-                      className={
-                        activity.income
-                          ? styles["value-income"]
-                          : styles["value-expenses"]
-                      }
-                    >
-                      Beschikbaar:
-                    </label>
-                    <span>
-                      €
-                      {activity.income.toLocaleString("nl-NL", {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })}
-                    </span>
-                  </div>
-                  <div className={styles["shared-values"]}>
-                    <label
-                      className={
-                        activity.expenses
-                          ? styles["value-expenses"]
-                          : styles["value-income"]
-                      }
-                    >
-                      Besteed:
-                    </label>
-                    <span>
-                      €
-                      {activity.expenses.toLocaleString("nl-NL", {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })}
-                    </span>
-                  </div>
-                </li>
-                {activity?.hidden && (
-                  <span className={styles["hidden-label"]}>Verborgen</span>
-                )}
+        {!isMobile && (
+          <>
+            {isLoading ? (
+              <div className={styles["loading-container"]}>
+                <LoadingDot delay={0} />
+                <LoadingDot delay={0.1} />
+                <LoadingDot delay={0.1} />
+                <LoadingDot delay={0.2} />
+                <LoadingDot delay={0.2} />
               </div>
-            ))}
-          </ul>
+            ) : Array.isArray(activities) && activities.length === 0 ? (
+              <p className={styles["no-activities"]}>
+                Geen activiteiten gevonden
+              </p>
+            ) : (
+              <ul className={styles["shared-unordered-list"]}>
+                {activities.map((activity, index) => (
+                  <div
+                    className={`${styles["shared-styling"]} ${styles["initiative-fade-in"]}`}
+                    key={`${activity?.id}-${index}`}
+                    style={{
+                      animationDelay: `${index * 0.2}s`,
+                    }}
+                    onClick={() => handleActivityClick(activity.id)}
+                  >
+                    <li className={styles["shared-name"]}>
+                      <strong>{activity.name}</strong>
+                    </li>
+                    <div className={styles["values-bar"]}>
+                      <div
+                        key={`income-${activity.id}`}
+                        className={styles["income-bar"]}
+                        style={{
+                          width: calculateBarWidth(
+                            activity.income,
+                            activity.expenses,
+                          ).incomeWidth,
+                        }}
+                      ></div>
+                      <div
+                        key={`expenses-${activity.id}`}
+                        className={styles["expenses-bar"]}
+                        style={{
+                          width: calculateBarWidth(
+                            activity.income,
+                            activity.expenses,
+                          ).expensesWidth,
+                        }}
+                      ></div>
+                    </div>
+                    <li key={activity.id} className={styles["shared-list"]}>
+                      <div className={styles["shared-values"]}>
+                        <label>Begroting:</label>
+                        <span>
+                          €
+                          {activity.budget.toLocaleString("nl-NL", {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          })}
+                        </span>
+                      </div>
+                      <div className={styles["shared-values"]}>
+                        <label className={styles["value-income"]}>
+                          Beschikbaar:
+                        </label>
+                        <span>
+                          €
+                          {activity.income.toLocaleString("nl-NL", {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          })}
+                        </span>
+                      </div>
+                      <div className={styles["shared-values"]}>
+                        <label className={styles["value-expenses"]}>
+                          Besteed:
+                        </label>
+                        <span>
+                          €
+                          {activity.expenses.toLocaleString("nl-NL", {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          })}
+                        </span>
+                      </div>
+                    </li>
+                    {activity?.hidden && (
+                      <span className={styles["hidden-label"]}>Verborgen</span>
+                    )}
+                  </div>
+                ))}
+              </ul>
+            )}
+          </>
         )}
       </div>
       <AddActivity
@@ -265,12 +300,12 @@ export default function ActivitiesPage() {
           <ActivityDetail
             activityId={selectedActivity}
             authToken={user?.token || ""}
-            initiativeId={initiativeId}
+            initiativeId={initiativeId || ""}
             onActivityEdited={() => {}}
           />
         ) : initiativeId !== null ? (
           <FundDetail
-            initiativeId={initiativeId}
+            initiativeId={initiativeId || ""}
             authToken={user?.token || ""}
             onFundEdited={() => {}}
           />

@@ -86,12 +86,14 @@ const EditRegulationDesktop: React.FC<EditRegulationDesktopProps> = ({
         return;
       }
 
+      const sanitizedDescription = regulationDescription.replace(/\n/g, "\n");
+
       await updateRegulationDetails(
         token,
         Number(sponsorId),
         Number(regulationId),
         regulationName,
-        regulationDescription,
+        sanitizedDescription,
       );
 
       setNameError(false);

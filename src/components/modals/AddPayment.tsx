@@ -119,9 +119,12 @@ const AddPayment: React.FC<AddPaymentProps> = ({
             type="text"
             value={paymentData.transaction_amount}
             onChange={(e) => {
+              const userInput = e.target.value;
+              const formattedValue = userInput.replace(",", ".");
+
               setPaymentData({
                 ...paymentData,
-                transaction_amount: e.target.value,
+                transaction_amount: formattedValue,
               });
             }}
             onKeyDown={(e) => {

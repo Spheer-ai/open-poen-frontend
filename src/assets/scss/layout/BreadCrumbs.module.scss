@@ -36,3 +36,22 @@
 .breadcrumbItem:first-child::after {
   display: none;
 }
+
+@media (max-width: 768px) {
+  .breadcrumbItem {
+    display: flex;
+    align-items: center;
+    padding: 5px 5px;
+    font-size: 14px;
+  }
+
+  .breadcrumbItem a {
+    margin-right: 0px;
+  }
+
+  .breadcrumbItem:not(:last-child)::after {
+    width: 18px;
+    height: 18px;
+    margin: 0 3px;
+  }
+}
