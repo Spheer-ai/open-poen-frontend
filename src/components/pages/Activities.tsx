@@ -71,15 +71,11 @@ export default function ActivitiesPage() {
 
   useEffect(() => {
     if (activityId) {
-      console.log("Setting selectedActivity on mount:", activityId);
       setSelectedActivity(activityId);
     }
   }, [activityId]);
 
   useEffect(() => {
-    console.log("initiativeId:", initiativeId);
-    console.log("activityId:", activityId);
-
     if (initiativeId) {
       if (user?.token && !permissionsFetched) {
         fetchPermissions("Initiative", parseInt(initiativeId), user.token)
@@ -103,10 +99,6 @@ export default function ActivitiesPage() {
       location.pathname.includes("/activities/")
     ) {
       const activityIdFromPath = location.pathname.split("/").pop();
-      console.log(
-        "Setting selectedActivity from location:",
-        activityIdFromPath,
-      );
 
       if (activityIdFromPath) {
         setSelectedActivity(activityIdFromPath);
@@ -160,13 +152,9 @@ export default function ActivitiesPage() {
   };
 
   const handleActivityClick = (activityId) => {
-    console.log("Setting selectedActivity:", activityId);
     setSelectedActivity(activityId);
     navigate(`/funds/${initiativeId}/activities/${activityId}`);
   };
-
-  console.log("initiativeId before rendering detail:", initiativeId);
-  console.log("selectedActivity before rendering detail:", selectedActivity);
 
   return (
     <div className={styles["container"]}>

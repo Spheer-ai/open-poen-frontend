@@ -35,10 +35,6 @@ const MyProfile: React.FC<MyProfileProps> = ({
   const navigate = useNavigate();
 
   useEffect(() => {
-    console.log("MyProfile - isActive:", isActive);
-  }, [isActive]);
-
-  useEffect(() => {
     if (user && user.token) {
       try {
         const token = user.token;
@@ -70,8 +66,6 @@ const MyProfile: React.FC<MyProfileProps> = ({
   if (!myProfileData) {
     return null;
   }
-
-  console.log("isActive:", isActive);
 
   const fullName = `${myProfileData.first_name} ${myProfileData.last_name}`;
 

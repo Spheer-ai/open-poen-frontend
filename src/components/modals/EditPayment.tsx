@@ -49,7 +49,7 @@ interface EditPaymentProps {
   fields: string[];
   hasDeletePermission;
   initiativeId?: string | null;
-  activityName: string;
+  activityName: string | null;
 }
 
 const EditPayment: React.FC<EditPaymentProps> = ({
@@ -138,13 +138,12 @@ const EditPayment: React.FC<EditPaymentProps> = ({
         route: paymentData.route || "inkomen",
         short_user_description: paymentData.short_user_description,
         long_user_description: paymentData.long_user_description,
-        activity_name: paymentData.activity_name,
+        activity_name: paymentData.activity_name || "",
         hidden: paymentData.hidden || false,
       });
 
       setDisplayDate(formatDateForInput(new Date(paymentData.booking_date)));
       setApiDate(paymentData.booking_date);
-      console.log("Activity Name:", paymentData.activity_name);
     }
   }, [paymentData]);
 

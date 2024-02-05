@@ -12,7 +12,7 @@ import AddUser from "../modals/AddUser";
 import UserDetailsPage from "./UserDetailPage";
 import MyProfile from "../elements/users/MyProfile";
 
-const PAGE_SIZE = 7;
+const PAGE_SIZE = 20;
 const SEARCH_DELAY = 300;
 
 export default function Contacts() {
@@ -266,7 +266,6 @@ export default function Contacts() {
 
   useEffect(() => {
     if (isAtBottom) {
-      console.log("User reached the bottom of the side panel");
       handleLoadMore();
     }
   }, [isAtBottom]);

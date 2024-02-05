@@ -823,7 +823,7 @@ export const fetchPayments = async (
   userId: number,
   token: string,
   offset: number = 0,
-  limit: number = 3,
+  limit: number = 20,
   initiativeName: string = "",
   activityName: string = "",
 ) => {
@@ -1410,12 +1410,20 @@ export const deleteInitiative = async (token, initiativeId) => {
       },
     });
 
-    if (response.status === 200) {
+    if (response.status === 204) {
+      // Successful deletion with no content
+      return;
+    } else if (response.status === 200) {
+      // Successful deletion with content
       return response.data;
     } else if (response.status === 422) {
-      throw new Error("Validation Error");
+      throw new Error(`Validation Error: ${response.data.message}`);
     } else {
-      throw new Error("Failed to delete initiative");
+      throw new Error(
+        `Failed to delete initiative. Status: ${
+          response.status
+        }, Data: ${JSON.stringify(response.data)}`,
+      );
     }
   } catch (error) {
     console.error("Error deleting initiative:", error);
@@ -1435,7 +1443,11 @@ export const deleteActivity = async (token, initiativeId, activityId) => {
       },
     );
 
-    if (response.status === 200) {
+    if (response.status === 204) {
+      // Successful deletion with no content
+      return;
+    } else if (response.status === 200) {
+      // Successful deletion with content
       return response.data;
     } else if (response.status === 422) {
       throw new Error("Validation Error: " + JSON.stringify(response.data));
