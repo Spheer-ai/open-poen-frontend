@@ -9,6 +9,14 @@
   overflow-x: hidden;
 }
 
+@media (max-width: 768px) {
+  .side-panel {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+  }
+}
+
 .regulation-list {
   list-style-type: none;
   padding: 20px;
@@ -88,6 +96,12 @@
   width: 100%;
   position: relative;
   background: #ffffff;
+}
+
+@media (max-width: 768px) {
+  .container {
+    display: block;
+  }
 }
 
 .side-panel {

@@ -82,11 +82,13 @@ const AddRegulationDesktop: React.FC<AddRegulationDesktopProps> = ({
         return;
       }
 
+      const sanitizedDescription = regulationDescription.replace(/\n/g, "\n");
+
       await addRegulation(
         token,
         Number(sponsorId),
         regulationName,
-        regulationDescription,
+        sanitizedDescription,
       );
 
       setNameError(false);

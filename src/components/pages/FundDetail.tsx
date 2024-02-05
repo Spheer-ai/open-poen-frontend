@@ -88,11 +88,7 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
   }, [initiativeId, authToken, refreshTrigger]);
 
   useEffect(() => {
-    if (
-      location.pathname.includes(
-        "/funds/${initiativeId}/activities/:activityId",
-      )
-    ) {
+    if (location.pathname.includes("/funds/${initiativeId}")) {
       setActiveTab("transactieoverzicht");
     }
   }, [location.pathname]);
@@ -101,22 +97,22 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
     setActiveTab(tabName);
 
     if (tabName === "transactieoverzicht") {
-      navigate(`/funds/${initiativeId}/activities/transactieoverzicht`);
+      navigate(`/funds/${initiativeId}/transactieoverzicht`);
     }
     if (tabName === "activiteiten") {
-      navigate(`/funds/${initiativeId}/activities/activiteiten`);
+      navigate(`/funds/${initiativeId}/activiteiten`);
     }
     if (tabName === "details") {
-      navigate(`/funds/${initiativeId}/activities/details`);
+      navigate(`/funds/${initiativeId}/details`);
     }
     if (tabName === "sponsoren") {
-      navigate(`/funds/${initiativeId}/activities/sponsors`);
+      navigate(`/funds/${initiativeId}/sponsors`);
     }
     if (tabName === "media") {
-      navigate(`/funds/${initiativeId}/activities/media`);
+      navigate(`/funds/${initiativeId}/media`);
     }
     if (tabName === "gebruikers") {
-      navigate(`/funds/${initiativeId}/activities/gebruikers`);
+      navigate(`/funds/${initiativeId}/gebruikers`);
     }
   };
 
@@ -195,11 +191,11 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
       setTimeout(() => {
         setIsBlockingInteraction(false);
         setIsEditFundModalOpen(false);
-        navigate(`/funds/${initiativeId}/activities`);
+        navigate(`/funds/${initiativeId}`);
       }, 300);
     } else {
       setIsEditFundModalOpen(true);
-      navigate(`/funds/${initiativeId}/activities/edit-fund`);
+      navigate(`/funds/${initiativeId}/edit-fund`);
     }
   };
 
@@ -213,11 +209,11 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
       setTimeout(() => {
         setIsBlockingInteraction(false);
         setIsDeleteFundModalOpen(false);
-        navigate(`/funds/${initiativeId}/activities`);
+        navigate(`/funds/${initiativeId}`);
       }, 300);
     } else {
       setIsDeleteFundModalOpen(true);
-      navigate(`/funds/${initiativeId}/activities/delete-fund`);
+      navigate(`/funds/${initiativeId}/delete-fund`);
     }
   };
 
@@ -247,7 +243,7 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
               <Link key="funds" to={`/funds`}>
                 Initiatieven
               </Link>,
-              <Link key="funds" to={`/funds/${initiativeId}/activities`}>
+              <Link key="funds" to={`/funds/${initiativeId}`}>
                 {fundDetails?.name}
               </Link>,
             ]}
@@ -261,7 +257,7 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
                 onClick={handleToggleEditFundModal}
               >
                 <img src={EditIcon} alt="Edit" className={styles["icon"]} />
-                Beheer initiatief
+                <span>Beheer initiatief</span>
               </button>
             )}
             {hasDeletePermission && (
@@ -270,7 +266,7 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
                 onClick={handleToggleDeleteFundModal}
               >
                 <img src={DeleteIcon} alt="Delete" className={styles["icon"]} />
-                Verwijder initiatief
+                <span>Verwijder initiatief</span>
               </button>
             )}
           </div>
@@ -280,6 +276,18 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
         {fundDetails ? (
           <>
             <div className={styles["content-container"]}>
+              <div className={styles["fund-image"]}>
+                {fundDetails.profile_picture ? (
+                  <img
+                    src={
+                      fundDetails.profile_picture.attachment_thumbnail_url_512
+                    }
+                    alt="Fund Image"
+                  />
+                ) : (
+                  <img src="/media-placeholder.jpeg" />
+                )}
+              </div>
               <div className={styles["fund-info"]}>
                 <div className={styles["fund-name"]}>
                   {fundDetails.name ? (
@@ -313,18 +321,6 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
                     <p>Geen beschrijving gevonden</p>
                   )}
                 </div>
-              </div>
-              <div className={styles["fund-image"]}>
-                {fundDetails.profile_picture ? (
-                  <img
-                    src={
-                      fundDetails.profile_picture.attachment_thumbnail_url_512
-                    }
-                    alt="Fund Image"
-                  />
-                ) : (
-                  <p>Geen afbeelding gevonden</p>
-                )}
               </div>
             </div>
             <div className={styles["statistics-container"]}>

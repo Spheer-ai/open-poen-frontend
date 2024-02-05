@@ -7,6 +7,7 @@ import LinkInitiativeToPayment from "../elements/dropdown-menu/initiatives/LinkI
 import LinkActivityToPayment from "../elements/dropdown-menu/activities/LinkActivityToPayment";
 import LoadingDot from "../animation/LoadingDot";
 import TransactionFilters from "../elements/dropdown-menu/transactions/TransactionFilters";
+import TopNavigationBar from "../ui/top-navigation-bar/TopNavigationBar";
 
 const TransactionOverview = () => {
   const { user } = useAuth();
@@ -15,9 +16,11 @@ const TransactionOverview = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [offset, setOffset] = useState(0);
-  const [limit, setLimit] = useState(20);
+  const [limit, setLimit] = useState(7);
   const [totalTransactionsCount, setTotalTransactionsCount] = useState(0);
   const [isLoadingMore, setIsLoadingMore] = useState<boolean>(false);
+  const [isLastLoadMoreComplete, setIsLastLoadMoreComplete] =
+    useState<boolean>(true);
   const [allTransactions, setAllTransactions] = useState<any[]>([]);
   const [linkingStatus, setLinkingStatus] = useState<
     Record<number, { initiativeId: number | null; activityId: number | null }>
@@ -33,12 +36,46 @@ const TransactionOverview = () => {
     const year = date.getFullYear().toString();
     return `${day}-${month}-${year}`;
   };
+  const [isAtBottom, setIsAtBottom] = useState(false);
+  const sidePanelRef = useRef<HTMLDivElement | null>(null);
+  const [loadMoreDelayActive, setLoadMoreDelayActive] =
+    useState<boolean>(false);
+  const loadMoreDelayDuration = 300;
+  const isMobile = window.innerWidth <= 768;
+
+  const checkBottom = () => {
+    const sidePanel = sidePanelRef.current;
+
+    if (sidePanel) {
+      const scrollY = sidePanel.scrollTop;
+      const panelHeight = sidePanel.clientHeight;
+      const contentHeight = sidePanel.scrollHeight;
+
+      const threshold = 20;
+
+      setIsAtBottom(contentHeight - (scrollY + panelHeight) < threshold);
+    }
+  };
 
   const handleFilterChange = ({ iban, initiative, activity }) => {
     setIbanFilter(iban);
     setInitiativeFilter(initiative);
     setActivityFilter(activity);
   };
+
+  useEffect(() => {
+    let delayTimer: NodeJS.Timeout;
+
+    if (loadMoreDelayActive) {
+      delayTimer = setTimeout(() => {
+        setLoadMoreDelayActive(false);
+      }, loadMoreDelayDuration);
+    }
+
+    return () => {
+      clearTimeout(delayTimer);
+    };
+  }, [loadMoreDelayActive]);
 
   useEffect(() => {
     fetchInitialTransactions();
@@ -94,9 +131,11 @@ const TransactionOverview = () => {
           user.userId,
           user.token,
           0,
-          20,
+          limit,
           searchQuery,
         );
+
+        console.log("Fetched transactions:", data.payments);
         const updatedLinkingStatus = { ...linkingStatus };
 
         data.payments.forEach((transaction) => {
@@ -111,12 +150,10 @@ const TransactionOverview = () => {
         setTotalTransactionsCount(data.totalCount || 0);
 
         setAllTransactions(data.payments);
+        setOffset(limit);
         setIsLoading(false);
-        setIsLoadingMore(false);
-        setOffset(20);
       } catch (error) {
         setIsLoading(false);
-        setIsLoadingMore(false);
       }
     }
   };
@@ -145,14 +182,25 @@ const TransactionOverview = () => {
   }, [allTransactions, limit, searchQuery]);
 
   const handleLoadMore = async () => {
+    if (!isLastLoadMoreComplete || loadMoreDelayActive) {
+      return;
+    }
+
     const newOffset = offset + limit;
     setIsLoadingMore(true);
-    await fetchTransactions(newOffset);
+    setIsLastLoadMoreComplete(false);
+
+    try {
+      await fetchTransactions(newOffset);
+      setLoadMoreDelayActive(true);
+    } finally {
+      setIsLastLoadMoreComplete(true);
+      setIsLoadingMore(false);
+    }
   };
 
   const fetchTransactions = async (newOffset: number) => {
     if (user && user.userId && user.token) {
-      setIsLoading(true);
       try {
         const data = await fetchPayments(
           user.userId,
@@ -161,6 +209,9 @@ const TransactionOverview = () => {
           limit,
           searchQuery,
         );
+
+        console.log("Fetched additional transactions:", data.payments);
+
         const updatedLinkingStatus = { ...linkingStatus };
 
         data.payments.forEach((transaction) => {
@@ -178,12 +229,12 @@ const TransactionOverview = () => {
           ...prevAllTransactions,
           ...data.payments,
         ]);
-        setIsLoading(false);
-        setIsLoadingMore(false);
+
         setOffset(newOffset);
       } catch (error) {
+        // Handle error
+      } finally {
         setIsLoading(false);
-        setIsLoadingMore(false);
       }
     }
   };
@@ -235,22 +286,43 @@ const TransactionOverview = () => {
     });
   };
 
+  useEffect(() => {
+    const sidePanel = sidePanelRef.current;
+
+    if (sidePanel) {
+      sidePanel.addEventListener("scroll", checkBottom);
+
+      return () => {
+        sidePanel.removeEventListener("scroll", checkBottom);
+      };
+    }
+  }, []);
+
+  useEffect(() => {
+    if (isAtBottom && isLastLoadMoreComplete) {
+      console.log("User reached the bottom of the side panel");
+      handleLoadMore();
+    }
+  }, [isAtBottom, isLastLoadMoreComplete]);
+
   return (
     <div className={styles.transactionOverview}>
-      <div className={styles.transactionOptions}>
-        <TransactionSearchInput onSearch={handleSearch} />
-        <TransactionFilters
-          transactions={allTransactions}
-          onFilter={handleFilterChange}
-          ibanFilter={ibanFilter}
-          setIbanFilter={setIbanFilter}
-          initiativeFilter={initiativeFilter}
-          setInitiativeFilter={setInitiativeFilter}
-          activityFilter={activityFilter}
-          setActivityFilter={setActivityFilter}
-        />
-      </div>
-      <div className={styles["transaction-table-container"]}>
+      {!isMobile && (
+        <div className={styles.transactionOptions}>
+          <TransactionSearchInput onSearch={handleSearch} />
+          <TransactionFilters
+            transactions={allTransactions}
+            onFilter={handleFilterChange}
+            ibanFilter={ibanFilter}
+            setIbanFilter={setIbanFilter}
+            initiativeFilter={initiativeFilter}
+            setInitiativeFilter={setInitiativeFilter}
+            activityFilter={activityFilter}
+            setActivityFilter={setActivityFilter}
+          />
+        </div>
+      )}
+      <div className={styles["transaction-table-container"]} ref={sidePanelRef}>
         {isLoading ? (
           <div className={styles["loading-container"]}>
             <LoadingDot delay={0} />
@@ -289,42 +361,51 @@ const TransactionOverview = () => {
                       }}
                     >
                       <td>{formatDate(transaction.booking_date)}</td>
-                      <td>
-                        <LinkInitiativeToPayment
-                          token={user?.token || ""}
-                          paymentId={transaction.id}
-                          initiativeName={transaction.initiative_name || ""}
-                          initiativeId={transaction.initiative_id || null}
-                          onInitiativeLinked={(initiativeId) =>
-                            handleInitiativeLinked(transaction.id, initiativeId)
-                          }
-                          isActivityLinked={
-                            linkingStatus[transaction.id]?.activityId !== null
-                          }
-                          linkingStatus={linkingStatus}
-                        />
-                      </td>
-                      <td>
-                        <LinkActivityToPayment
-                          token={user?.token || ""}
-                          paymentId={transaction.id}
-                          initiativeId={transaction.initiative_id || null}
-                          activityName={transaction.activity_name || ""}
-                          onActivityLinked={(transactionId, activityId) =>
-                            handleActivityLinked(
-                              transactionId,
-                              activityId as number | null,
-                            )
-                          }
-                          linkedActivityId={
-                            linkingStatus[transaction.id]?.activityId || null
-                          }
-                          isInitiativeLinked={isInitiativeLinked}
-                          linkingStatus={linkingStatus}
-                        />
-                      </td>
+                      {!isMobile && (
+                        <td>
+                          <LinkInitiativeToPayment
+                            token={user?.token || ""}
+                            paymentId={transaction.id}
+                            initiativeName={transaction.initiative_name || ""}
+                            initiativeId={transaction.initiative_id || null}
+                            onInitiativeLinked={(initiativeId) =>
+                              handleInitiativeLinked(
+                                transaction.id,
+                                initiativeId,
+                              )
+                            }
+                            isActivityLinked={
+                              linkingStatus[transaction.id]?.activityId !== null
+                            }
+                            linkingStatus={linkingStatus}
+                          />
+                        </td>
+                      )}
+                      {!isMobile && (
+                        <td>
+                          <LinkActivityToPayment
+                            token={user?.token || ""}
+                            paymentId={transaction.id}
+                            initiativeId={transaction.initiative_id || null}
+                            activityName={transaction.activity_name || ""}
+                            onActivityLinked={(transactionId, activityId) =>
+                              handleActivityLinked(
+                                transactionId,
+                                activityId as number | null,
+                              )
+                            }
+                            linkedActivityId={
+                              linkingStatus[transaction.id]?.activityId || null
+                            }
+                            isInitiativeLinked={isInitiativeLinked}
+                            linkingStatus={linkingStatus}
+                          />
+                        </td>
+                      )}
                       <td>{transaction.creditor_name}</td>
-                      <td>{transaction.short_user_description}</td>
+                      {!isMobile && (
+                        <td>{transaction.short_user_description}</td>
+                      )}
                       <td>{transaction.iban}</td>
                       <td>
                         <span
@@ -361,7 +442,12 @@ const TransactionOverview = () => {
             <LoadingDot delay={0.2} />
           </div>
         ) : (
-          <button onClick={handleLoadMore}>Meer transacties laden</button>
+          <div
+            style={{
+              display: "block",
+              width: "50px",
+            }}
+          ></div>
         )}
       </div>
     </div>

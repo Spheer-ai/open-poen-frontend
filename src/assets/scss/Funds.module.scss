@@ -14,14 +14,34 @@
   width: 60%;
   padding: 20px;
   background: #ffffff;
-  overflow: scroll;
   height: 100vh;
+}
+
+@media (max-width: 768px) {
+  .side-panel {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .detail-panel {
+    width: 100%;
+    overflow: hidden;
+    height: 100%;
+    padding-top: 10px;
+  }
 }
 
 .container {
   display: flex;
   width: 100%;
   position: relative;
+}
+
+@media (max-width: 768px) {
+  .container {
+    display: block;
+  }
 }
 
 .side-panel {
@@ -259,7 +279,7 @@
 }
 
 .loading-container {
-  height: 200px;
+  height: 100vh;
   width: 100%;
   display: flex;
   justify-content: center;
@@ -278,4 +298,22 @@
   border-radius: 9.999px;
   margin-right: 10px;
   white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+  .shared-container {
+    .shared-styling {
+      padding: 10px 0px;
+      border-right: none;
+
+      .shared-list {
+        padding: 5px;
+        justify-content: center;
+      }
+    }
+  }
+
+  .shared-unordered-list {
+    margin-bottom: 100px;
+  }
 }
