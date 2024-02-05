@@ -388,7 +388,6 @@ const FundsTransactions: React.FC<{
 
   useEffect(() => {
     if (isAtBottom) {
-      console.log("User reached the bottom of the side panel");
       handleLoadMore();
     }
   }, [isAtBottom]);

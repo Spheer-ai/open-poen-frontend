@@ -172,19 +172,6 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
     fetchFieldPermissionsOnMount();
   }, [user, initiativeId, fetchFieldPermissions]);
 
-  useEffect(() => {
-    if (initiativeId && authToken) {
-      fetchFundDetails(authToken, initiativeId)
-        .then((data) => {
-          setFundDetails(data);
-          setCurrentFundData(data);
-        })
-        .catch((error) => {
-          console.error("Error fetching fund details:", error);
-        });
-    }
-  }, [initiativeId, authToken, refreshTrigger]);
-
   const handleToggleEditFundModal = () => {
     if (isEditFundModalOpen) {
       setIsBlockingInteraction(true);
@@ -200,7 +187,7 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
   };
 
   const handleFundEdited = () => {
-    setRefreshTrigger((prev) => prev + 1);
+    setRefreshTrigger((prev) => prev);
   };
 
   const handleToggleDeleteFundModal = () => {
@@ -209,7 +196,7 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
       setTimeout(() => {
         setIsBlockingInteraction(false);
         setIsDeleteFundModalOpen(false);
-        navigate(`/funds/${initiativeId}`);
+        navigate(`/funds`);
       }, 300);
     } else {
       setIsDeleteFundModalOpen(true);
@@ -218,7 +205,7 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
   };
 
   const handleFundDeleted = () => {
-    setRefreshTrigger((prev) => prev + 1);
+    setRefreshTrigger((prev) => prev);
   };
 
   useEffect(() => {
@@ -282,10 +269,10 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
                     src={
                       fundDetails.profile_picture.attachment_thumbnail_url_512
                     }
-                    alt="Fund Image"
+                    alt=""
                   />
                 ) : (
-                  <img src="/media-placeholder.jpeg" />
+                  <p>Geen afbeelding gevonden</p>
                 )}
               </div>
               <div className={styles["fund-info"]}>

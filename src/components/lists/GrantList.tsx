@@ -45,10 +45,6 @@ const GrantList: React.FC<GrantListProps> = ({
   const navigate = useNavigate();
 
   useEffect(() => {
-    console.log("Grants:", grants);
-  }, [grants]);
-
-  useEffect(() => {
     async function fetchInitiativeCounts() {
       try {
         const countsAndInitiatives = await Promise.all(
@@ -65,11 +61,6 @@ const GrantList: React.FC<GrantListProps> = ({
               response.initiatives.length > 0
                 ? response.initiatives[0].id
                 : null;
-
-            console.log(
-              `Grant ${grant.id} - First Initiative ID:`,
-              firstInitiativeId,
-            );
 
             return { grantId: grant.id, count, firstInitiativeId };
           }),

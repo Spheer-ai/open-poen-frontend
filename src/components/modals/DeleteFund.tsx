@@ -33,7 +33,7 @@ const DeleteFund: React.FC<DeleteFundProps> = ({
 
   const handleDelete = async () => {
     try {
-      await deleteInitiative(authToken, initiativeId);
+      const response = await deleteInitiative(authToken, initiativeId);
       setApiError("");
       handleClose();
       onFundDeleted();
