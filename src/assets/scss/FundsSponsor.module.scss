@@ -39,3 +39,15 @@
   justify-content: center;
   align-content: center;
 }
+
+@media (max-width: 768px) {
+  .details-container {
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 50px;
+
+    .details-item {
+      flex-basis: calc(50% - 10px);
+    }
+  }
+}

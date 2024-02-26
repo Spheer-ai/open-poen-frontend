@@ -20,3 +20,15 @@
   flex-grow: 1;
   max-width: calc(100% - 80px);
 }
+
+@media (max-width: 768px) {
+  .app-container {
+    flex-direction: column;
+    height: 100%;
+  }
+
+  .page-content {
+    flex-grow: 1;
+    max-width: 100%;
+  }
+}

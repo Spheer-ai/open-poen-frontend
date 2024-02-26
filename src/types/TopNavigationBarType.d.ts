@@ -15,4 +15,6 @@ export interface TopNavigationBarProps {
   hasPermission: boolean;
   showSearch: boolean;
   onTitleClick?: () => void;
+  showHomeLink: boolean;
+  showTitleOnSmallScreen: boolean;
 }

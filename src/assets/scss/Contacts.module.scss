@@ -45,23 +45,15 @@ ul {
   background-color: gray;
 }
 
-@keyframes fadeIn {
-  0% {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.fade-in {
-  animation: fadeIn 0.5s ease-in-out;
-  animation-fill-mode: both;
-}
-
 .user-link .profile {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px;
+  overflow: hidden;
+}
+
+.profile {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -95,6 +87,15 @@ ul {
   z-index: 1;
   overflow: scroll;
   overflow-x: hidden;
+  padding-bottom: 20px;
+}
+
+@media (max-width: 768px) {
+  .side-panel {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+  }
 }
 
 li {
@@ -126,6 +127,14 @@ li {
   height: 100vh;
   justify-content: center;
   align-content: center;
+}
+
+.loading-container-load-more {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-content: center;
+  padding: 50px;
 }
 
 .dropdown-container {
@@ -193,6 +202,12 @@ li {
   position: relative;
 }
 
+@media (max-width: 768px) {
+  .container {
+    display: block;
+  }
+}
+
 .side-panel {
   flex: 1;
 }
@@ -222,4 +237,8 @@ li {
 .load-more-button {
   text-align: center;
   width: 100%;
+}
+
+.user-list-profile {
+  padding: 0px 20px;
 }

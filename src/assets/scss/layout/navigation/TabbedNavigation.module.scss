@@ -28,3 +28,21 @@ button {
   color: #265ed4;
   border-bottom: solid 4px;
 }
+
+@media (max-width: 768px) {
+  .tab-fund-container {
+    max-width: calc(100%);
+    overflow-x: auto;
+  }
+
+  .tab-container {
+    display: flex;
+    max-width: calc(100%);
+    gap: 0px;
+    border-bottom: solid 1px #ebebeb;
+
+    button {
+      min-width: 50%;
+    }
+  }
+}

@@ -175,3 +175,46 @@
   transform: translateY(20px);
   animation-fill-mode: forwards;
 }
+
+@media (max-width: 768px) {
+  .bank-item {
+    flex-direction: column;
+    gap: 30px;
+  }
+
+  .bank-options {
+    flex-direction: column;
+    gap: 10px;
+    align-items: stretch;
+  }
+
+  .section-title {
+    text-align: center;
+  }
+
+  .bank-details {
+    gap: 10px;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  .bank-info {
+    align-items: center;
+  }
+
+  .bank-connections-container {
+    text-align: center;
+    padding-bottom: 0px;
+  }
+
+  .button-container {
+    position: relative;
+    padding: 0;
+    margin: 0 auto;
+    justify-content: center;
+
+    .saveButton {
+      margin: 0 auto;
+    }
+  }
+}
