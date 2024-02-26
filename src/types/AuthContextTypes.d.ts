@@ -10,4 +10,5 @@ export interface AuthContextValue {
   login: (username: string, password: string) => Promise<boolean>;
   logout: () => void;
   isLoading: boolean;
+  isAuthenticated: boolean;
 }

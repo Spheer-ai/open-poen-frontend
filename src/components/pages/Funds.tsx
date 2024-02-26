@@ -50,6 +50,23 @@ export default function Funds() {
   const [allInitiativesFetched, setAllInitiativesFetched] = useState(false);
   const initialFetchDoneRef = useRef(false);
 
+  const [isAtBottom, setIsAtBottom] = useState(false);
+  const sidePanelRef = useRef<HTMLDivElement | null>(null);
+
+  const checkBottom = () => {
+    const sidePanel = sidePanelRef.current;
+
+    if (sidePanel) {
+      const scrollY = sidePanel.scrollTop;
+      const panelHeight = sidePanel.clientHeight;
+      const contentHeight = sidePanel.scrollHeight;
+
+      const threshold = 50;
+
+      setIsAtBottom(contentHeight - (scrollY + panelHeight) < threshold);
+    }
+  };
+
   useEffect(() => {
     if (user?.token) {
       if (entityPermissions.length === 0) {
@@ -139,10 +156,28 @@ export default function Funds() {
     fetchAndDisplayInitiatives(user?.token, onlyMine, newOffset, limit);
   };
 
+  useEffect(() => {
+    const sidePanel = sidePanelRef.current;
+
+    if (sidePanel) {
+      sidePanel.addEventListener("scroll", checkBottom);
+
+      return () => {
+        sidePanel.removeEventListener("scroll", checkBottom);
+      };
+    }
+  }, []);
+
+  useEffect(() => {
+    if (isAtBottom) {
+      handleLoadMoreClick();
+    }
+  }, [isAtBottom]);
+
   const handleSearch = (query) => {};
 
   const navigateToActivities = (initiativeId, initiativeName) => {
-    navigate(`/funds/${initiativeId}/activities/${initiativeName}`, {
+    navigate(`/funds/${initiativeId}/${initiativeName}`, {
       state: { initiativeName },
     });
   };
@@ -162,9 +197,10 @@ export default function Funds() {
       expensesWidth,
     };
   };
+
   return (
     <div className={styles["container"]}>
-      <div className={styles["side-panel"]}>
+      <div className={styles["side-panel"]} ref={sidePanelRef}>
         <TopNavigationBar
           title={`Initiatieven`}
           showSettings={false}
@@ -174,6 +210,8 @@ export default function Funds() {
           onSearch={handleSearch}
           hasPermission={hasPermission}
           showSearch={false}
+          showHomeLink={true}
+          showTitleOnSmallScreen={false}
         />
         {user && (
           <div className={styles["filter-buttons"]}>
@@ -201,7 +239,7 @@ export default function Funds() {
               onClick={() => {
                 setOnlyMine(true);
                 setOffset(0);
-                setLimit(3);
+                setLimit(20);
                 setIsFetchingInitiatives(true);
                 setInitiatives([]);
                 setAllInitiatives([]);
@@ -273,13 +311,7 @@ export default function Funds() {
                     </span>
                   </div>
                   <div className={styles["shared-values"]}>
-                    <label
-                      className={
-                        initiative?.income
-                          ? styles["value-income"]
-                          : styles["value-expenses"]
-                      }
-                    >
+                    <label className={styles["value-income"]}>
                       Beschikbaar:
                     </label>
                     <span>
@@ -291,15 +323,7 @@ export default function Funds() {
                     </span>
                   </div>
                   <div className={styles["shared-values"]}>
-                    <label
-                      className={
-                        initiative?.expenses
-                          ? styles["value-expenses"]
-                          : styles["value-income"]
-                      }
-                    >
-                      Besteed:
-                    </label>
+                    <label className={styles["value-expenses"]}>Besteed:</label>
                     <span>
                       €
                       {initiative?.expenses.toLocaleString("nl-NL", {
@@ -324,9 +348,7 @@ export default function Funds() {
               <LoadingDot delay={0.2} />
             </div>
           ) : (
-            <button onClick={handleLoadMoreClick}>
-              Meer initiatieven laden..
-            </button>
+            <></>
           )}
         </ul>
       </div>

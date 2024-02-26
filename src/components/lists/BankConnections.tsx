@@ -44,6 +44,7 @@ const BankConnections = () => {
     BankConnection[]
   >([]);
   const [isLoading, setIsLoading] = useState(true);
+  const isMobile = window.innerWidth <= 768;
 
   const handleToggleRevokeBankModal = (bankId: number | null) => {
     if (isRevokeBankModalOpen) {

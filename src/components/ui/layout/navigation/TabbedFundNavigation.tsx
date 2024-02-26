@@ -35,7 +35,7 @@ const TabbedFundNavigation: React.FC<Props> = ({
 
   const handleTabChange = (tabName: string) => {
     setActiveTab(tabName);
-    navigate(`/funds/${initiativeId}/activities/${tabName}`);
+    navigate(`/funds/${initiativeId}/${tabName}`);
     onTabChange(tabName);
   };
 

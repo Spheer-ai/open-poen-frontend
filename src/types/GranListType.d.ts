@@ -6,6 +6,7 @@ export type Grant = {
   income: number;
   expenses: number;
   permissions: string[];
+  initiatives: Initiative[];
 };
 
 export type GrantOfficer = {

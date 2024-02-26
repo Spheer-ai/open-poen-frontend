@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { getPaymentsByActivity } from "../../../middleware/Api";
 import styles from "../../../../assets/scss/TransactionOverview.module.scss";
 import PaymentDetails from "../../../modals/PaymentDetails";
@@ -99,6 +99,22 @@ const ActivityTransactions: React.FC<{
   const [maxAmount, setMaxAmount] = useState<string>("");
   const [route, setRoute] = useState<string>("");
   const [pageSize] = useState(20);
+  const [isAtBottom, setIsAtBottom] = useState(false);
+  const sidePanelRef = useRef<HTMLDivElement | null>(null);
+
+  const checkBottom = () => {
+    const sidePanel = sidePanelRef.current;
+
+    if (sidePanel) {
+      const scrollY = sidePanel.scrollTop;
+      const panelHeight = sidePanel.clientHeight;
+      const contentHeight = sidePanel.scrollHeight;
+
+      const threshold = 20;
+
+      setIsAtBottom(contentHeight - (scrollY + panelHeight) < threshold);
+    }
+  };
 
   useEffect(() => {
     fetchTransactions();
@@ -233,6 +249,7 @@ const ActivityTransactions: React.FC<{
         setEditedTransaction({
           ...selectedTransaction,
           booking_date: isoDate,
+          activity_name: selectedTransaction.activity_name,
         });
         setIsEditPaymentModalOpen(true);
       } else {
@@ -273,11 +290,11 @@ const ActivityTransactions: React.FC<{
       setTimeout(() => {
         setIsBlockingInteraction(false);
         setIsFetchPaymentDetailsModalOpen(false);
-        navigate(`/funds/${initiativeId}/activities`);
+        navigate(`/funds/${initiativeId}/activities/${activityId}`);
       }, 300);
     } else {
       setIsFetchPaymentDetailsModalOpen(true);
-      navigate(`/funds/${initiativeId}/activities/${initiativeId}/details`);
+      navigate(`/funds/${initiativeId}/activities/${activityId}/details`);
     }
   };
 
@@ -333,11 +350,13 @@ const ActivityTransactions: React.FC<{
       setTimeout(() => {
         setIsBlockingInteraction(false);
         setIsFilterPaymentModalOpen(false);
-        navigate(`/funds/${initiativeId}/activities`);
+        navigate(`/funds/${initiativeId}/activities/${activityId}`);
       }, 300);
     } else {
       setIsFilterPaymentModalOpen(true);
-      navigate(`/funds/${initiativeId}/activities/filter-payment`);
+      navigate(
+        `/funds/${initiativeId}/activities/${activityId}/filter-payment`,
+      );
     }
   };
 
@@ -350,6 +369,24 @@ const ActivityTransactions: React.FC<{
 
     fetchTransactions();
   };
+
+  useEffect(() => {
+    const sidePanel = sidePanelRef.current;
+
+    if (sidePanel) {
+      sidePanel.addEventListener("scroll", checkBottom);
+
+      return () => {
+        sidePanel.removeEventListener("scroll", checkBottom);
+      };
+    }
+  }, []);
+
+  useEffect(() => {
+    if (isAtBottom) {
+      handleLoadMore();
+    }
+  }, [isAtBottom]);
 
   return (
     <>
@@ -386,7 +423,7 @@ const ActivityTransactions: React.FC<{
           </button>
         </div>
       ) : null}
-      <div className={styles.fundTransactionOverview}>
+      <div className={styles.fundTransactionOverview} ref={sidePanelRef}>
         <table key={refreshTrigger} className={styles.fundTransactionTable}>
           <thead>
             <tr>
@@ -468,7 +505,7 @@ const ActivityTransactions: React.FC<{
               disabled={loadingMore}
             >
               {loadingMore ? (
-                <div className={styles["loading-dots"]}>
+                <div className={styles["loading-container"]}>
                   <LoadingDot delay={0} />
                   <LoadingDot delay={0.1} />
                   <LoadingDot delay={0.1} />
@@ -476,7 +513,7 @@ const ActivityTransactions: React.FC<{
                   <LoadingDot delay={0.2} />
                 </div>
               ) : (
-                "Meer transacties laden"
+                <></>
               )}
             </button>
           </div>
@@ -499,6 +536,8 @@ const ActivityTransactions: React.FC<{
           fieldPermissions={entityPermissions}
           fields={[]}
           hasDeletePermission={hasDeletePermission}
+          activityName={activity_name}
+          initiativeId={initiativeId}
         />
       </div>
     </>

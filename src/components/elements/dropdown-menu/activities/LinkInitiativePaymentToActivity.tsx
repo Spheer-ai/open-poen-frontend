@@ -17,7 +17,7 @@ interface LinkInitiativePaymentToActivityProps {
   paymentId: number | null;
   initiativeId: number | null;
   linkedActivityId: number | null;
-  activityName: string;
+  activityName: string | null;
   isInitiativeLinked: boolean;
 }
 
@@ -32,7 +32,7 @@ const LinkInitiativePaymentToActivity: React.FC<
   const [isLinking, setIsLinking] = useState<boolean>(false);
   const [linkableActivities, setLinkableActivities] = useState<Activity[]>(
     linkedActivityId !== null
-      ? [{ id: linkedActivityId, name: activityName }]
+      ? [{ id: linkedActivityId, name: activityName || "" }]
       : [],
   );
   const [noDataLabel, setNoDataLabel] = useState<string>("");
@@ -59,6 +59,11 @@ const LinkInitiativePaymentToActivity: React.FC<
           );
 
           setLinkableActivities([verbreekVerbindingOption, ...activities]);
+
+          console.log(
+            "Fetched activities:",
+            activities.map((activity) => activity.name),
+          );
 
           setIsLoading(false);
         } catch (error) {

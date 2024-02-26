@@ -17,6 +17,7 @@ const AuthContext = createContext<AuthContextValue>({
   login: async () => false,
   logout: () => {},
   isLoading: false,
+  isAuthenticated: false,
 });
 
 export const useAuth = (): AuthContextValue => {
@@ -143,6 +144,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const contextValue: AuthContextValue = {
     user,
+    isAuthenticated: !!user,
     login,
     logout,
     isLoading,
