@@ -273,7 +273,7 @@ const BankConnections = () => {
 
               <section>
                 <h3 className={styles["section-title"]}>
-                  Met jouw gedeelde rekeningnummers
+                  Met jou gedeelde rekeningnummers
                 </h3>
                 <ul>
                   {Array.isArray(usedBankConnections) &&
