@@ -134,23 +134,6 @@ const AddGrantDesktop: React.FC<AddGrantDesktopProps> = ({
         <hr></hr>
         <div className={styles.formGroup} style={{ margin: "0px 20px" }}>
           <h3>Info</h3>
-          <label className={styles.label}>Naam:</label>
-          <input
-            type="text"
-            placeholder="Vul een naam in"
-            value={grantName}
-            onChange={(e) => setGrantName(e.target.value)}
-            onKeyUp={(e) => {
-              if (e.key === "Enter") {
-                handleAdd();
-              }
-            }}
-          />
-          <p style={{ color: "red", display: "block", marginTop: "5px" }}>
-            {nameError}
-          </p>
-        </div>
-        <div className={styles.formGroup} style={{ margin: "0px 20px" }}>
           <label className={styles.label}>Referentie:</label>
           <input
             type="text"
@@ -165,6 +148,23 @@ const AddGrantDesktop: React.FC<AddGrantDesktopProps> = ({
           />
           <p style={{ color: "red", display: "block", marginTop: "5px" }}>
             {referenceError}
+          </p>
+        </div>
+        <div className={styles.formGroup} style={{ margin: "0px 20px" }}>
+          <label className={styles.label}>Naam:</label>
+          <input
+            type="text"
+            placeholder="Vul een naam in"
+            value={grantName}
+            onChange={(e) => setGrantName(e.target.value)}
+            onKeyUp={(e) => {
+              if (e.key === "Enter") {
+                handleAdd();
+              }
+            }}
+          />
+          <p style={{ color: "red", display: "block", marginTop: "5px" }}>
+            {nameError}
           </p>
         </div>
         <div className={styles.formGroup} style={{ margin: "0px 20px" }}>

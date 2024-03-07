@@ -176,29 +176,6 @@ const EditGrantDesktop: React.FC<EditGrantDesktopProps> = ({
         <hr></hr>
         <div className={styles.formGroup} style={{ margin: "10px 20px" }}>
           <h3>Info</h3>
-          <label className={styles.label}>Naam:</label>
-          <input
-            type="text"
-            value={grantName}
-            onChange={(e) => {
-              setGrantName(e.target.value);
-              setNameError(false);
-              setApiError("");
-            }}
-            onKeyPress={handleKeyPress}
-          />
-          {nameError && (
-            <span style={{ color: "red", display: "block", marginTop: "5px" }}>
-              Vul een naam in.
-            </span>
-          )}
-          {apiError && !budgetError && (
-            <span style={{ color: "red", display: "block", marginTop: "5px" }}>
-              {apiError}
-            </span>
-          )}
-        </div>
-        <div className={styles.formGroup} style={{ margin: "10px 20px" }}>
           <label className={styles.label}>Referentie:</label>
           <input
             type="text"
@@ -213,6 +190,29 @@ const EditGrantDesktop: React.FC<EditGrantDesktopProps> = ({
           {referenceError && (
             <span style={{ color: "red", display: "block", marginTop: "5px" }}>
               Vul een referentie in.
+            </span>
+          )}
+          {apiError && !budgetError && (
+            <span style={{ color: "red", display: "block", marginTop: "5px" }}>
+              {apiError}
+            </span>
+          )}
+        </div>
+        <div className={styles.formGroup} style={{ margin: "10px 20px" }}>
+          <label className={styles.label}>Naam:</label>
+          <input
+            type="text"
+            value={grantName}
+            onChange={(e) => {
+              setGrantName(e.target.value);
+              setNameError(false);
+              setApiError("");
+            }}
+            onKeyPress={handleKeyPress}
+          />
+          {nameError && (
+            <span style={{ color: "red", display: "block", marginTop: "5px" }}>
+              Vul een naam in.
             </span>
           )}
           {apiError && !budgetError && (
