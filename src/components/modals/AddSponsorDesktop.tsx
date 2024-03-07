@@ -29,6 +29,11 @@ const AddSponsorDesktop: React.FC<AddSponsorDesktopProps> = ({
     } else {
       setTimeout(() => {
         setModalIsOpen(false);
+        setSponsorName("");
+        setSponsorUrl("");
+        setIsUrlValid(true);
+        setNameError(null);
+        setUrlError(null);
       }, 300);
     }
   }, [isOpen]);
