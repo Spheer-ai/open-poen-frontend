@@ -88,11 +88,11 @@ const AddSponsorDesktop: React.FC<AddSponsorDesktopProps> = ({
     } catch (error) {
       if (error.response && error.response.status === 500) {
         setNameError(
-          "Het maken van de sponsor is mislukt. Controlleer of deze sponsor reeds is aangemaakt.",
+          "Het maken van de sponsor is mislukt. Controlleer of de naam al in gebruik is.",
         );
       } else {
         setNameError(
-          "Het maken van de sponsor is mislukt. Controlleer of deze sponsor reeds is aangemaakt.",
+          "Het maken van de sponsor is mislukt. Controlleer of de naam al in gebruik is.",
         );
       }
     }

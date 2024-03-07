@@ -40,6 +40,11 @@ const AddActivity: React.FC<AddActivityProps> = ({
       setModalIsOpen(true);
     } else {
       setTimeout(() => {
+        setActivityName("");
+        setActivityDescription("");
+        setPurpose("");
+        setTargetAudience("");
+        setActivityBudget(0);
         setModalIsOpen(false);
       }, 300);
     }
