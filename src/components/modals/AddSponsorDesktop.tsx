@@ -19,8 +19,8 @@ const AddSponsorDesktop: React.FC<AddSponsorDesktopProps> = ({
   const [sponsorName, setSponsorName] = useState("");
   const [sponsorUrl, setSponsorUrl] = useState("");
   const [isUrlValid, setIsUrlValid] = useState(true);
-  const [nameError, setNameError] = useState(false);
-  const [urlError, setUrlError] = useState(false);
+  const [nameError, setNameError] = useState<string | null>(null);
+  const [urlError, setUrlError] = useState<string | null>(null);
   const [maxNameLength] = useState(128);
 
   useEffect(() => {
@@ -44,8 +44,8 @@ const AddSponsorDesktop: React.FC<AddSponsorDesktopProps> = ({
 
   const handleSave = async () => {
     if (sponsorName.trim() === "" && sponsorUrl.trim() === "") {
-      setNameError(true);
-      setUrlError(true);
+      setNameError("Vul een naam in.");
+      setUrlError("Vul een URL in.");
       return;
     }
 
@@ -57,33 +57,39 @@ const AddSponsorDesktop: React.FC<AddSponsorDesktopProps> = ({
     }
 
     if (sponsorName.trim() === "") {
-      setNameError(true);
+      setNameError("Vul een naam in.");
       return;
     } else {
-      setNameError(false);
+      setNameError(null);
     }
 
     if (sponsorName.length > maxNameLength) {
-      setNameError(true);
+      setNameError("Naam mag niet meer dan 128 karakters bevatten.");
       return;
     }
 
-    setUrlError(false);
+    setUrlError(null);
 
     try {
       const token = localStorage.getItem("token");
       if (!token) {
-        console.error("Token is not available in localStorage");
-        return;
+        throw new Error("Token is not available in localStorage");
       }
       await addSponsor(token, sponsorName, sponsorUrl);
       setSponsorName("");
       setSponsorUrl("");
       handleClose();
-
       onSponsorAdded();
     } catch (error) {
-      console.error("Failed to create sponsor:", error);
+      if (error.response && error.response.status === 500) {
+        setNameError(
+          "Het maken van de sponsor is mislukt. Controlleer of deze sponsor reeds is aangemaakt.",
+        );
+      } else {
+        setNameError(
+          "Het maken van de sponsor is mislukt. Controlleer of deze sponsor reeds is aangemaakt.",
+        );
+      }
     }
   };
 
@@ -129,12 +135,9 @@ const AddSponsorDesktop: React.FC<AddSponsorDesktopProps> = ({
             onChange={(e) => setSponsorName(e.target.value)}
             onKeyPress={handleEnterKeyPress}
           />
-
           {nameError && (
             <span style={{ color: "red", display: "block", marginTop: "5px" }}>
-              {sponsorName.length > maxNameLength
-                ? "Naam mag niet meer dan 128 karakters bevatten."
-                : "Vul een naam in."}
+              {nameError}
             </span>
           )}
         </div>
@@ -154,7 +157,7 @@ const AddSponsorDesktop: React.FC<AddSponsorDesktopProps> = ({
           )}
           {urlError && (
             <span style={{ color: "red", display: "block", marginTop: "5px" }}>
-              Vul een naam en URL in.
+              {urlError}
             </span>
           )}
         </div>
