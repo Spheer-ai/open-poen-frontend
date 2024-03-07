@@ -34,6 +34,12 @@ const AddGrantDesktop: React.FC<AddGrantDesktopProps> = ({
     } else {
       setTimeout(() => {
         setModalIsOpen(false);
+        setGrantReference("");
+        setBudgetError("");
+        setGrantName("");
+        setNameError("");
+        setGrantBudget("");
+        setModalIsOpen(false);
       }, 300);
     }
   }, [isOpen]);
@@ -108,7 +114,21 @@ const AddGrantDesktop: React.FC<AddGrantDesktopProps> = ({
       handleClose();
       onGrantAdded(newGrantId);
     } catch (error) {
-      console.error("Failed to add grant:", error);
+      if (error.response) {
+        if (error.response.status === 500) {
+          setReferenceError(
+            "Het maken van de beschikking is mislukt. Controleer of de referentie al in gebruik is.",
+          );
+        } else if (error.response.status === 409) {
+          setNameError("Naam is reeds in gebruik. Kies een andere naam.");
+        } else {
+          setNameError("Naam is reeds in gebruik. Kies een andere naam.");
+        }
+      } else {
+        setReferenceError(
+          "Het maken van de beschikking is mislukt. Controleer of de referentie al in gebruik is.",
+        );
+      }
     }
   };
 
