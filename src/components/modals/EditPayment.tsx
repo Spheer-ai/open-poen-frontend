@@ -68,6 +68,7 @@ const EditPayment: React.FC<EditPaymentProps> = ({
 }) => {
   const [modalIsOpen, setModalIsOpen] = useState(isOpen);
   const [displayDate, setDisplayDate] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
   const [apiDate, setApiDate] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -185,6 +186,16 @@ const EditPayment: React.FC<EditPaymentProps> = ({
 
       const originalPaymentData = paymentData || {};
 
+      const formattedAmount = transactionData.transaction_amount.replace(
+        ",",
+        ".",
+      );
+      if (!isValidAmount(formattedAmount)) {
+        setErrorMessage("Ongeldige invoer. Vul een correct bedrag in");
+        setIsLoading(false); // Stop loading state
+        return;
+      }
+
       let requestData = {
         transaction_id: paymentId,
         booking_date: apiDate,
@@ -196,7 +207,7 @@ const EditPayment: React.FC<EditPaymentProps> = ({
         short_user_description: transactionData.short_user_description,
         long_user_description: transactionData.long_user_description,
         hidden: transactionData.hidden,
-        transaction_amount: parseFloat(transactionData.transaction_amount),
+        transaction_amount: parseFloat(formattedAmount),
       };
 
       for (const key in requestData) {
@@ -207,6 +218,8 @@ const EditPayment: React.FC<EditPaymentProps> = ({
           delete requestData[key];
         }
       }
+
+      console.log("Amount sent to API:", requestData.transaction_amount);
 
       for (const file of selectedFiles) {
         await uploadPaymentAttachment(paymentId, file, token);
@@ -220,7 +233,12 @@ const EditPayment: React.FC<EditPaymentProps> = ({
       setIsLoading(false);
       handleClose();
     } catch (error) {
-      console.error("Error editing payment:", error);
+      if (error.response && error.response.status === 422) {
+        const errorMessage = "Ongeldige invoer. Vul een correct bedrag in";
+        setErrorMessage(errorMessage);
+      } else {
+        console.error("Error editing payment:", error);
+      }
     }
   };
 
@@ -324,6 +342,13 @@ const EditPayment: React.FC<EditPaymentProps> = ({
   function parseNumberOrReturnNull(value) {
     const parsedValue = parseInt(value, 10);
     return isNaN(parsedValue) ? null : parsedValue;
+  }
+
+  function isValidAmount(value) {
+    // Regular expression to match a valid number format
+    const numberRegex = /^-?\d*\.?\d+$/;
+    // Check if the value matches the regex pattern
+    return numberRegex.test(value);
   }
 
   return (
@@ -436,10 +461,13 @@ const EditPayment: React.FC<EditPaymentProps> = ({
                 type="text"
                 value={transactionData.transaction_amount}
                 onChange={(e) => {
+                  const userInput = e.target.value;
+                  const formattedValue = userInput.replace(",", ".");
                   setTransactionData({
                     ...transactionData,
-                    transaction_amount: e.target.value,
+                    transaction_amount: formattedValue,
                   });
+                  setErrorMessage("");
                 }}
                 onKeyDown={(e) => {
                   if (
@@ -467,6 +495,13 @@ const EditPayment: React.FC<EditPaymentProps> = ({
                   )
                 }
               />
+              {errorMessage && (
+                <span
+                  style={{ color: "red", display: "block", marginTop: "5px" }}
+                >
+                  {errorMessage}
+                </span>
+              )}
             </div>
             <div className={styles.formGroup}>
               <label className={styles.labelField}>Activiteit:</label>
