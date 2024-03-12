@@ -359,27 +359,6 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
                 )}
               </div>
               <div
-                className={styles["fund-income"]}
-                style={{ backgroundColor: "#E9EFFB" }}
-              >
-                {activityDetails.income !== null ? (
-                  <>
-                    <p>
-                      Ontvangen budget: <br />
-                      <span>
-                        €{" "}
-                        {activityDetails.income.toLocaleString("nl-NL", {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                        })}
-                      </span>
-                    </p>
-                  </>
-                ) : (
-                  <p>Income not found</p>
-                )}
-              </div>
-              <div
                 className={styles["fund-expenses"]}
                 style={{ backgroundColor: "#FEE6F0" }}
               >
