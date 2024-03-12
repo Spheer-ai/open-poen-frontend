@@ -234,7 +234,8 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
     if (activityDetails) {
       const receivedBudget = activityDetails.income || 0;
       const spentBudget = activityDetails.expenses || 0;
-      const availableBudgetValue = receivedBudget + spentBudget;
+      const totalBudget = activityDetails.budget || 0;
+      const availableBudgetValue = totalBudget + spentBudget;
       setAvailableBudget(availableBudgetValue);
     }
   }, [activityDetails, refreshTrigger]);
