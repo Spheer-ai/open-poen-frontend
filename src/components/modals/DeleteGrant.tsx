@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import styles from "../../assets/scss/layout/AddFundDesktop.module.scss";
 import { deleteGrant } from "../middleware/Api";
+import CloseIson from "/close-icon.svg";
 
 type Grant = {
   name: string;
@@ -101,7 +102,12 @@ const DeleteGrant: React.FC<DeleteGrantProps> = ({
         onClick={handleClose}
       ></div>
       <div className={`${styles.modal} ${modalIsOpen ? styles.open : ""}`}>
-        <h2 className={styles.title}>Beschikking verwijderen</h2>
+        <div className={styles.formTop}>
+          <h2 className={styles.title}>Beschikking verwijderen</h2>
+          <button onClick={handleClose} className={styles.closeBtn}>
+            <img src={CloseIson} alt="" />
+          </button>
+        </div>
         <hr></hr>
         <div className={styles.formGroup}>
           <h3>Info</h3>

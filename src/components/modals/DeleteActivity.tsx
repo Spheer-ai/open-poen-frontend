@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styles from "../../assets/scss/layout/AddFundDesktop.module.scss";
 import { deleteActivity } from "../middleware/Api";
+import CloseIson from "/close-icon.svg";
 
 interface DeleteActivityProps {
   isOpen: boolean;
@@ -68,7 +69,12 @@ const DeleteActivity: React.FC<DeleteActivityProps> = ({
         onClick={handleClose}
       ></div>
       <div className={`${styles.modal} ${modalIsOpen ? styles.open : ""}`}>
-        <h2 className={styles.title}>Activiteit verwijderen</h2>
+        <div className={styles.formTop}>
+          <h2 className={styles.title}>Activiteit verwijderen</h2>
+          <button onClick={handleClose} className={styles.closeBtn}>
+            <img src={CloseIson} alt="" />
+          </button>
+        </div>
         <hr></hr>
         <div className={styles.confirmation}>
           <p>Weet je zeker dat je de activiteit wil verwijderen?</p>

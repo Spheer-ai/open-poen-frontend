@@ -210,12 +210,17 @@ textarea {
   }
 }
 
+.formTop {
+  display: flex;
+  justify-content: space-between;
+}
+
 @media (max-width: 768px) {
   .modal {
     right: 0%;
-    height: 90vh;
-    border-top-right-radius: 15px;
-    border-top-left-radius: 15px;
+    height: 85vh;
+    border-top-right-radius: 10px;
+    border-top-left-radius: 10px;
     top: unset;
     bottom: -100%;
     max-width: 100%;

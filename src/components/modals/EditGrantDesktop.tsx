@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import styles from "../../assets/scss/layout/AddFundDesktop.module.scss";
 import { editGrant } from "../middleware/Api";
+import CloseIson from "/close-icon.svg";
 
 type Grant = {
   name: string;
@@ -162,7 +163,12 @@ const EditGrantDesktop: React.FC<EditGrantDesktopProps> = ({
         onClick={handleClose}
       ></div>
       <div className={`${styles.modal} ${modalIsOpen ? styles.open : ""}`}>
-        <h2 className={styles.title}>Beschikking bewerken</h2>
+        <div className={styles.formTop}>
+          <h2 className={styles.title}>Beschikking bewerken</h2>
+          <button onClick={handleClose} className={styles.closeBtn}>
+            <img src={CloseIson} alt="" />
+          </button>
+        </div>
         <hr></hr>
         <div className={styles.formGroup} style={{ margin: "10px 20px" }}>
           <h3>Info</h3>

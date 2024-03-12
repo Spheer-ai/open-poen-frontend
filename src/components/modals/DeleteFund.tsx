@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styles from "../../assets/scss/layout/AddFundDesktop.module.scss";
 import { deleteInitiative } from "../middleware/Api";
+import CloseIson from "/close-icon.svg";
 
 interface DeleteFundProps {
   isOpen: boolean;
@@ -65,7 +66,12 @@ const DeleteFund: React.FC<DeleteFundProps> = ({
         onClick={handleClose}
       ></div>
       <div className={`${styles.modal} ${modalIsOpen ? styles.open : ""}`}>
-        <h2 className={styles.title}>Initiatief verwijderen</h2>
+        <div className={styles.formTop}>
+          <h2 className={styles.title}>Initiatief verwijderen</h2>
+          <button onClick={handleClose} className={styles.closeBtn}>
+            <img src={CloseIson} alt="" />
+          </button>
+        </div>
         <hr></hr>
         <div className={styles.confirmation}>
           <p>Weet je zeker dat je het initatief wil verwijderen?</p>

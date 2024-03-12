@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styles from "../../assets/scss/layout/AddFundDesktop.module.scss";
 import { addGrant } from "../middleware/Api";
+import CloseIson from "/close-icon.svg";
 
 interface AddGrantDesktopProps {
   isOpen: boolean;
@@ -150,7 +151,12 @@ const AddGrantDesktop: React.FC<AddGrantDesktopProps> = ({
         onClick={handleClose}
       ></div>
       <div className={`${styles.modal} ${modalIsOpen ? styles.open : ""}`}>
-        <h2 className={styles.title}>Beschikking aanmaken</h2>
+        <div className={styles.formTop}>
+          <h2 className={styles.title}>Beschikking aanmaken</h2>
+          <button onClick={handleClose} className={styles.closeBtn}>
+            <img src={CloseIson} alt="" />
+          </button>
+        </div>
         <hr></hr>
         <div className={styles.formGroup} style={{ margin: "0px 20px" }}>
           <h3>Info</h3>

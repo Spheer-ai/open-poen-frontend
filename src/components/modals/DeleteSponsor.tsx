@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styles from "../../assets/scss/layout/AddFundDesktop.module.scss";
 import { deleteSponsor } from "../middleware/Api";
+import CloseIson from "/close-icon.svg";
 
 interface DeleteSponsorProps {
   isOpen: boolean;
@@ -40,7 +41,7 @@ const DeleteSponsor: React.FC<DeleteSponsorProps> = ({
         console.error("Sponsor ID is missing");
         return;
       }
-      await deleteSponsor(token, Number(sponsorId)); // Use sponsorId to delete the sponsor
+      await deleteSponsor(token, Number(sponsorId));
       handleClose();
       onSponsorDeleted();
     } catch (error) {
@@ -66,7 +67,12 @@ const DeleteSponsor: React.FC<DeleteSponsorProps> = ({
         onClick={handleClose}
       ></div>
       <div className={`${styles.modal} ${modalIsOpen ? styles.open : ""}`}>
-        <h2 className={styles.title}>Sponsor Verwijderen</h2>
+        <div className={styles.formTop}>
+          <h2 className={styles.title}>Sponsor Verwijderen</h2>
+          <button onClick={handleClose} className={styles.closeBtn}>
+            <img src={CloseIson} alt="" />
+          </button>
+        </div>
         <hr />
         <div className={styles.formGroup}>
           <h3>Info</h3>

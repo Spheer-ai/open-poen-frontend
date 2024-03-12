@@ -10,6 +10,7 @@ import {
   fetchPaymentAttachments,
   uploadPaymentAttachment,
 } from "../middleware/Api";
+import CloseIson from "/close-icon.svg";
 
 interface Attachment {
   attachment_id: number;
@@ -192,7 +193,7 @@ const EditPayment: React.FC<EditPaymentProps> = ({
       );
       if (!isValidAmount(formattedAmount)) {
         setErrorMessage("Ongeldige invoer. Vul een correct bedrag in");
-        setIsLoading(false); // Stop loading state
+        setIsLoading(false);
         return;
       }
 
@@ -345,9 +346,7 @@ const EditPayment: React.FC<EditPaymentProps> = ({
   }
 
   function isValidAmount(value) {
-    // Regular expression to match a valid number format
     const numberRegex = /^-?\d*\.?\d+$/;
-    // Check if the value matches the regex pattern
     return numberRegex.test(value);
   }
 
@@ -359,7 +358,12 @@ const EditPayment: React.FC<EditPaymentProps> = ({
       ></div>
 
       <div className={`${styles.modal} ${modalIsOpen ? styles.open : ""}`}>
-        <h2 className={styles.title}>Transacties bewerken</h2>
+        <div className={styles.formTop}>
+          <h2 className={styles.title}>Transacties bewerken</h2>
+          <button onClick={handleClose} className={styles.closeBtn}>
+            <img src={CloseIson} alt="" />
+          </button>
+        </div>
         <hr></hr>
         {isLoading && (
           <div className={styles["loading-container"]}>

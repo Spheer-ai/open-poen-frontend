@@ -8,6 +8,7 @@ import {
   updateUserProfile,
   uploadProfileImage,
 } from "../middleware/Api";
+import CloseIson from "/close-icon.svg";
 
 const EditUserProfileForm: React.FC<EditUserProfileFormProps> = ({
   userId,
@@ -151,7 +152,12 @@ const EditUserProfileForm: React.FC<EditUserProfileFormProps> = ({
         onClick={handleClose}
       ></div>
       <div className={`${styles.modal} ${modalIsOpen ? styles.open : ""}`}>
-        <h2 className={styles.title}>Gebruiker bewerken</h2>
+        <div className={styles.formTop}>
+          <h2 className={styles.title}>Gebruiker bewerken</h2>
+          <button onClick={handleClose} className={styles.closeBtn}>
+            <img src={CloseIson} alt="" />
+          </button>
+        </div>
         <hr></hr>
         <form>
           <div className={styles.formGroup}>

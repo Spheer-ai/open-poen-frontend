@@ -6,6 +6,7 @@ import {
   fetchRegulationDetails,
 } from "../middleware/Api";
 import { Officer } from "../../types/AddOfficerType";
+import CloseIson from "/close-icon.svg";
 import deleteIcon from "/delete-icon.svg";
 
 interface AddEmployeeToRegulationProps {
@@ -195,7 +196,12 @@ const AddEmployeeToRegulation: React.FC<AddEmployeeToRegulationProps> = ({
         onClick={handleClose}
       ></div>
       <div className={`${styles.modal} ${modalIsOpen ? styles.open : ""}`}>
-        <h2 className={styles.title}>Medewerker aanmaken</h2>
+        <div className={styles.formTop}>
+          <h2 className={styles.title}>Medewerker aanmaken</h2>
+          <button onClick={handleClose} className={styles.closeBtn}>
+            <img src={CloseIson} alt="" />
+          </button>
+        </div>
         <hr></hr>
         <div className={styles.formGroup}>
           <h3>Subsidiemedewerkers</h3>

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import styles from "../../assets/scss/layout/AddFundDesktop.module.scss";
 import FundImageUploader from "../elements/uploadder/FundImageUploader";
 import { editFund, uploadFundPicture } from "../middleware/Api";
+import CloseIson from "/close-icon.svg";
 
 interface InitiativeOwner {
   id: number;
@@ -145,7 +146,12 @@ const EditFund: React.FC<EditFundProps> = ({
         onClick={handleClose}
       ></div>
       <div className={`${styles.modal} ${modalIsOpen ? styles.open : ""}`}>
-        <h2 className={styles.title}>Beheer initiatief</h2>
+        <div className={styles.formTop}>
+          <h2 className={styles.title}>Beheer initiatief</h2>
+          <button onClick={handleClose} className={styles.closeBtn}>
+            <img src={CloseIson} alt="" />
+          </button>
+        </div>
         <hr></hr>
         <div className={styles.formGroup}>
           <h4>Algemene initiatiefinstellingen</h4>

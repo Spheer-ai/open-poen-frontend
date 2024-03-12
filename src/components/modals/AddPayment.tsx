@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import styles from "../../assets/scss/layout/AddFundDesktop.module.scss";
 import Select from "react-select";
 import { createPayment } from "../middleware/Api";
+import CloseIson from "/close-icon.svg";
 
 interface AddPaymentProps {
   isOpen: boolean;
@@ -116,7 +117,12 @@ const AddPayment: React.FC<AddPaymentProps> = ({
         onClick={handleClose}
       ></div>
       <div className={`${styles.modal} ${modalIsOpen ? styles.open : ""}`}>
-        <h2 className={styles.title}>Transacties aanmaken</h2>
+        <div className={styles.formTop}>
+          <h2 className={styles.title}>Transacties aanmaken</h2>
+          <button onClick={handleClose} className={styles.closeBtn}>
+            <img src={CloseIson} alt="" />
+          </button>
+        </div>
         <hr></hr>
         <div className={styles.formGroup}>
           <h3>Info</h3>

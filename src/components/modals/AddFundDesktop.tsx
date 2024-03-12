@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styles from "../../assets/scss/layout/AddFundDesktop.module.scss";
 import LoadingDot from "../animation/LoadingDot";
+import CloseIson from "/close-icon.svg";
 import { addFund, fetchGrantDetails } from "../middleware/Api";
 
 const initialFormData = {
@@ -287,7 +288,12 @@ const AddFundDesktop: React.FC<AddFundDesktopProps> = ({
           </div>
         ) : (
           <>
-            <h2 className={styles.title}>Initiatief toevoegen</h2>
+            <div className={styles.formTop}>
+              <h2 className={styles.title}>Initiatief toevoegen</h2>
+              <button onClick={handleClose} className={styles.closeBtn}>
+                <img src={CloseIson} alt="" />
+              </button>
+            </div>
             <hr></hr>
             <div className={styles.formGroup}>
               <h3>Info</h3>

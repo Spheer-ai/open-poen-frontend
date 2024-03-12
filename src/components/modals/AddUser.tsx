@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import styles from "../../assets/scss/layout/AddFundDesktop.module.scss";
+import CloseIson from "/close-icon.svg";
 import { createUser } from "../middleware/Api";
 
 const roleLabels = {
@@ -144,7 +145,12 @@ const AddUser: React.FC<AddUserProps> = ({
         onClick={handleClose}
       ></div>
       <div className={`${styles.modal} ${modalIsOpen ? styles.open : ""}`}>
-        <h2 className={styles.title}>Gebruiker aanmaken</h2>
+        <div className={styles.formTop}>
+          <h2 className={styles.title}>Gebruiker aanmaken</h2>
+          <button onClick={handleClose} className={styles.closeBtn}>
+            <img src={CloseIson} alt="" />
+          </button>
+        </div>
         <hr></hr>
         <form>
           <div className={styles.formGroup}>
