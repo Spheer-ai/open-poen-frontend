@@ -115,7 +115,7 @@ const FetchPayment: React.FC<FetchPaymentProps> = ({
         </div>
         <hr></hr>
         <div className={`${styles.formGroup} ${styles.flexed}`}>
-          <label className={styles.labelField}>Naam ontvanger:</label>
+          <label className={styles.labelField}>Korte beschrijving:</label>
           {paymentData?.short_user_description ? (
             <span>{paymentData.short_user_description}</span>
           ) : (
@@ -124,7 +124,7 @@ const FetchPayment: React.FC<FetchPaymentProps> = ({
         </div>
         <hr></hr>
         <div className={`${styles.formGroup} ${styles.flexed}`}>
-          <label className={styles.labelField}>Naam betaler:</label>
+          <label className={styles.labelField}>Betaal IBAN:</label>
           {paymentData?.debtor_account ? (
             <span>{paymentData.debtor_account}</span>
           ) : (
