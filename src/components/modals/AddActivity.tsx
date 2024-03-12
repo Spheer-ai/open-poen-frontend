@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import styles from "../../assets/scss/layout/AddFundDesktop.module.scss";
 import { AddActivity as addActivityApi } from "../middleware/Api";
+import CloseIson from "/close-icon.svg";
 
 interface AddActivityProps {
   isOpen: boolean;
@@ -40,6 +41,11 @@ const AddActivity: React.FC<AddActivityProps> = ({
       setModalIsOpen(true);
     } else {
       setTimeout(() => {
+        setActivityName("");
+        setActivityDescription("");
+        setPurpose("");
+        setTargetAudience("");
+        setActivityBudget(0);
         setModalIsOpen(false);
       }, 300);
     }
@@ -169,7 +175,12 @@ const AddActivity: React.FC<AddActivityProps> = ({
         onClick={handleClose}
       ></div>
       <div className={`${styles.modal} ${modalIsOpen ? styles.open : ""}`}>
-        <h2 className={styles.title}>Activiteit aanmaken</h2>
+        <div className={styles.formTop}>
+          <h2 className={styles.title}>Activiteit aanmaken</h2>
+          <button onClick={handleClose} className={styles.closeBtn}>
+            <img src={CloseIson} alt="" />
+          </button>
+        </div>
         <hr></hr>
         <div className={styles.formGroup}>
           <h3>Info</h3>

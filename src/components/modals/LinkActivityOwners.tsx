@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import styles from "../../assets/scss/layout/AddFundDesktop.module.scss";
 import { updateActivityOwners, searchUsersByEmail } from "../middleware/Api";
 import deleteIcon from "/delete-icon.svg";
+import CloseIson from "/close-icon.svg";
 
 interface User {
   id: string;
@@ -178,7 +179,12 @@ const LinkActivityOwner: React.FC<LinkActivityOwnerProps> = ({
         onClick={handleClose}
       ></div>
       <div className={`${styles.modal} ${modalIsOpen ? styles.open : ""}`}>
-        <h2 className={styles.title}>Activiteitnemers toevoegen</h2>
+        <div className={styles.formTop}>
+          <h2 className={styles.title}>Activiteitnemers toevoegen</h2>
+          <button onClick={handleClose} className={styles.closeBtn}>
+            <img src={CloseIson} alt="" />
+          </button>
+        </div>
         <hr></hr>
         <div className={styles.formGroup}>
           <h3>Zoeken</h3>

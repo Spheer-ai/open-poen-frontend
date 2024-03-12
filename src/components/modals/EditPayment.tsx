@@ -10,6 +10,7 @@ import {
   fetchPaymentAttachments,
   uploadPaymentAttachment,
 } from "../middleware/Api";
+import CloseIson from "/close-icon.svg";
 
 interface Attachment {
   attachment_id: number;
@@ -68,6 +69,7 @@ const EditPayment: React.FC<EditPaymentProps> = ({
 }) => {
   const [modalIsOpen, setModalIsOpen] = useState(isOpen);
   const [displayDate, setDisplayDate] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
   const [apiDate, setApiDate] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -185,6 +187,16 @@ const EditPayment: React.FC<EditPaymentProps> = ({
 
       const originalPaymentData = paymentData || {};
 
+      const formattedAmount = transactionData.transaction_amount.replace(
+        ",",
+        ".",
+      );
+      if (!isValidAmount(formattedAmount)) {
+        setErrorMessage("Ongeldige invoer. Vul een correct bedrag in");
+        setIsLoading(false);
+        return;
+      }
+
       let requestData = {
         transaction_id: paymentId,
         booking_date: apiDate,
@@ -196,7 +208,7 @@ const EditPayment: React.FC<EditPaymentProps> = ({
         short_user_description: transactionData.short_user_description,
         long_user_description: transactionData.long_user_description,
         hidden: transactionData.hidden,
-        transaction_amount: parseFloat(transactionData.transaction_amount),
+        transaction_amount: parseFloat(formattedAmount),
       };
 
       for (const key in requestData) {
@@ -207,6 +219,8 @@ const EditPayment: React.FC<EditPaymentProps> = ({
           delete requestData[key];
         }
       }
+
+      console.log("Amount sent to API:", requestData.transaction_amount);
 
       for (const file of selectedFiles) {
         await uploadPaymentAttachment(paymentId, file, token);
@@ -220,7 +234,12 @@ const EditPayment: React.FC<EditPaymentProps> = ({
       setIsLoading(false);
       handleClose();
     } catch (error) {
-      console.error("Error editing payment:", error);
+      if (error.response && error.response.status === 422) {
+        const errorMessage = "Ongeldige invoer. Vul een correct bedrag in";
+        setErrorMessage(errorMessage);
+      } else {
+        console.error("Error editing payment:", error);
+      }
     }
   };
 
@@ -326,6 +345,11 @@ const EditPayment: React.FC<EditPaymentProps> = ({
     return isNaN(parsedValue) ? null : parsedValue;
   }
 
+  function isValidAmount(value) {
+    const numberRegex = /^-?\d*\.?\d+$/;
+    return numberRegex.test(value);
+  }
+
   return (
     <>
       <div
@@ -334,7 +358,12 @@ const EditPayment: React.FC<EditPaymentProps> = ({
       ></div>
 
       <div className={`${styles.modal} ${modalIsOpen ? styles.open : ""}`}>
-        <h2 className={styles.title}>Transacties bewerken</h2>
+        <div className={styles.formTop}>
+          <h2 className={styles.title}>Transacties bewerken</h2>
+          <button onClick={handleClose} className={styles.closeBtn}>
+            <img src={CloseIson} alt="" />
+          </button>
+        </div>
         <hr></hr>
         {isLoading && (
           <div className={styles["loading-container"]}>
@@ -436,10 +465,13 @@ const EditPayment: React.FC<EditPaymentProps> = ({
                 type="text"
                 value={transactionData.transaction_amount}
                 onChange={(e) => {
+                  const userInput = e.target.value;
+                  const formattedValue = userInput.replace(",", ".");
                   setTransactionData({
                     ...transactionData,
-                    transaction_amount: e.target.value,
+                    transaction_amount: formattedValue,
                   });
+                  setErrorMessage("");
                 }}
                 onKeyDown={(e) => {
                   if (
@@ -467,6 +499,13 @@ const EditPayment: React.FC<EditPaymentProps> = ({
                   )
                 }
               />
+              {errorMessage && (
+                <span
+                  style={{ color: "red", display: "block", marginTop: "5px" }}
+                >
+                  {errorMessage}
+                </span>
+              )}
             </div>
             <div className={styles.formGroup}>
               <label className={styles.labelField}>Activiteit:</label>

@@ -3,6 +3,7 @@ import styles from "../../assets/scss/layout/AddFundDesktop.module.scss";
 import { fetchPaymentDetails } from "../middleware/Api";
 import format from "date-fns/format";
 import nlLocale from "date-fns/locale/nl";
+import CloseIson from "/close-icon.svg";
 
 export interface Transaction {
   id: number;
@@ -74,7 +75,12 @@ const FetchPayment: React.FC<FetchPaymentProps> = ({
         onClick={handleClose}
       ></div>
       <div className={`${styles.modal} ${modalIsOpen ? styles.open : ""}`}>
-        <h2 className={styles.title}>Transactie details</h2>
+        <div className={styles.formTop}>
+          <h2 className={styles.title}>Transactie details</h2>
+          <button onClick={handleClose} className={styles.closeBtn}>
+            <img src={CloseIson} alt="" />
+          </button>
+        </div>
         <hr></hr>
         <div className={`${styles.formGroup} ${styles.flexed}`}>
           <h3>Info</h3>
@@ -115,7 +121,7 @@ const FetchPayment: React.FC<FetchPaymentProps> = ({
         </div>
         <hr></hr>
         <div className={`${styles.formGroup} ${styles.flexed}`}>
-          <label className={styles.labelField}>Naam ontvanger:</label>
+          <label className={styles.labelField}>Korte beschrijving:</label>
           {paymentData?.short_user_description ? (
             <span>{paymentData.short_user_description}</span>
           ) : (
@@ -124,7 +130,7 @@ const FetchPayment: React.FC<FetchPaymentProps> = ({
         </div>
         <hr></hr>
         <div className={`${styles.formGroup} ${styles.flexed}`}>
-          <label className={styles.labelField}>Naam betaler:</label>
+          <label className={styles.labelField}>Betaal IBAN:</label>
           {paymentData?.debtor_account ? (
             <span>{paymentData.debtor_account}</span>
           ) : (

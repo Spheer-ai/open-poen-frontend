@@ -234,7 +234,8 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
     if (activityDetails) {
       const receivedBudget = activityDetails.income || 0;
       const spentBudget = activityDetails.expenses || 0;
-      const availableBudgetValue = receivedBudget + spentBudget;
+      const totalBudget = activityDetails.budget || 0;
+      const availableBudgetValue = totalBudget + spentBudget;
       setAvailableBudget(availableBudgetValue);
     }
   }, [activityDetails, refreshTrigger]);
@@ -356,27 +357,6 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
                   </>
                 ) : (
                   <p>Budget not found</p>
-                )}
-              </div>
-              <div
-                className={styles["fund-income"]}
-                style={{ backgroundColor: "#E9EFFB" }}
-              >
-                {activityDetails.income !== null ? (
-                  <>
-                    <p>
-                      Ontvangen budget: <br />
-                      <span>
-                        €{" "}
-                        {activityDetails.income.toLocaleString("nl-NL", {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                        })}
-                      </span>
-                    </p>
-                  </>
-                ) : (
-                  <p>Income not found</p>
                 )}
               </div>
               <div

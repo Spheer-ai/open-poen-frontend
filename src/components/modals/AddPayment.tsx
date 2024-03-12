@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import styles from "../../assets/scss/layout/AddFundDesktop.module.scss";
 import Select from "react-select";
 import { createPayment } from "../middleware/Api";
+import CloseIson from "/close-icon.svg";
 
 interface AddPaymentProps {
   isOpen: boolean;
@@ -36,6 +37,7 @@ const AddPayment: React.FC<AddPaymentProps> = ({
     activity_id: activityId ? Number(activityId) : null,
   };
   const [modalIsOpen, setModalIsOpen] = useState(isOpen);
+  const [errorMessage, setErrorMessage] = useState("");
   const [paymentData, setPaymentData] = useState(initialPaymentData);
   const routeOptions = [
     { value: "inkomen", label: "Inkomen" },
@@ -74,7 +76,12 @@ const AddPayment: React.FC<AddPaymentProps> = ({
       handleClose();
       setPaymentData(initialPaymentData);
     } catch (error) {
-      console.error("Error creating payment:", error);
+      if (error.response && error.response.status === 422) {
+        const errorMessage = "Ongeldige invoer. Vul een correct bedrag in";
+        setErrorMessage(errorMessage);
+      } else {
+        console.error("Error creating payment:", error);
+      }
     }
   };
 
@@ -110,7 +117,12 @@ const AddPayment: React.FC<AddPaymentProps> = ({
         onClick={handleClose}
       ></div>
       <div className={`${styles.modal} ${modalIsOpen ? styles.open : ""}`}>
-        <h2 className={styles.title}>Transacties aanmaken</h2>
+        <div className={styles.formTop}>
+          <h2 className={styles.title}>Transacties aanmaken</h2>
+          <button onClick={handleClose} className={styles.closeBtn}>
+            <img src={CloseIson} alt="" />
+          </button>
+        </div>
         <hr></hr>
         <div className={styles.formGroup}>
           <h3>Info</h3>
@@ -126,6 +138,7 @@ const AddPayment: React.FC<AddPaymentProps> = ({
                 ...paymentData,
                 transaction_amount: formattedValue,
               });
+              setErrorMessage("");
             }}
             onKeyDown={(e) => {
               if (
@@ -143,7 +156,12 @@ const AddPayment: React.FC<AddPaymentProps> = ({
                 });
               }
             }}
-          />
+          />{" "}
+          {errorMessage && (
+            <span style={{ color: "red", display: "block", marginTop: "5px" }}>
+              {errorMessage}
+            </span>
+          )}
         </div>
         <div className={styles.formGroup}>
           <label className={styles.labelField}>Datum:</label>

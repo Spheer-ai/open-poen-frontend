@@ -4,6 +4,7 @@ import styles from "../../assets/scss/layout/AddFundDesktop.module.scss";
 import SearchFundUsers from "../elements/search/funds/SearchFundsUser";
 import ActivityImageUploader from "../elements/uploadder/ActivityImageUploader";
 import { editActivity, uploadActivityPicture } from "../middleware/Api";
+import CloseIson from "/close-icon.svg";
 
 interface ActivityOwner {
   id: number;
@@ -166,7 +167,12 @@ const EditActivity: React.FC<EditActivityProps> = ({
         onClick={handleClose}
       ></div>
       <div className={`${styles.modal} ${modalIsOpen ? styles.open : ""}`}>
-        <h2 className={styles.title}>Beheer activiteit</h2>
+        <div className={styles.formTop}>
+          <h2 className={styles.title}>Beheer activiteit</h2>
+          <button onClick={handleClose} className={styles.closeBtn}>
+            <img src={CloseIson} alt="" />
+          </button>
+        </div>
         <hr></hr>
         <div className={styles.formGroup}>
           <h4>Algemene activiteitinstellingen</h4>

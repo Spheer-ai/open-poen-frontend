@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styles from "../../assets/scss/layout/AddFundDesktop.module.scss";
 import { addGrant } from "../middleware/Api";
+import CloseIson from "/close-icon.svg";
 
 interface AddGrantDesktopProps {
   isOpen: boolean;
@@ -33,6 +34,12 @@ const AddGrantDesktop: React.FC<AddGrantDesktopProps> = ({
       setModalIsOpen(true);
     } else {
       setTimeout(() => {
+        setModalIsOpen(false);
+        setGrantReference("");
+        setBudgetError("");
+        setGrantName("");
+        setNameError("");
+        setGrantBudget("");
         setModalIsOpen(false);
       }, 300);
     }
@@ -108,7 +115,21 @@ const AddGrantDesktop: React.FC<AddGrantDesktopProps> = ({
       handleClose();
       onGrantAdded(newGrantId);
     } catch (error) {
-      console.error("Failed to add grant:", error);
+      if (error.response) {
+        if (error.response.status === 500) {
+          setReferenceError(
+            "Het maken van de beschikking is mislukt. Controleer of de referentie al in gebruik is.",
+          );
+        } else if (error.response.status === 409) {
+          setNameError("Naam is reeds in gebruik. Kies een andere naam.");
+        } else {
+          setNameError("Naam is reeds in gebruik. Kies een andere naam.");
+        }
+      } else {
+        setReferenceError(
+          "Het maken van de beschikking is mislukt. Controleer of de referentie al in gebruik is.",
+        );
+      }
     }
   };
 
@@ -130,27 +151,15 @@ const AddGrantDesktop: React.FC<AddGrantDesktopProps> = ({
         onClick={handleClose}
       ></div>
       <div className={`${styles.modal} ${modalIsOpen ? styles.open : ""}`}>
-        <h2 className={styles.title}>Beschikking aanmaken</h2>
+        <div className={styles.formTop}>
+          <h2 className={styles.title}>Beschikking aanmaken</h2>
+          <button onClick={handleClose} className={styles.closeBtn}>
+            <img src={CloseIson} alt="" />
+          </button>
+        </div>
         <hr></hr>
         <div className={styles.formGroup} style={{ margin: "0px 20px" }}>
           <h3>Info</h3>
-          <label className={styles.label}>Naam:</label>
-          <input
-            type="text"
-            placeholder="Vul een naam in"
-            value={grantName}
-            onChange={(e) => setGrantName(e.target.value)}
-            onKeyUp={(e) => {
-              if (e.key === "Enter") {
-                handleAdd();
-              }
-            }}
-          />
-          <p style={{ color: "red", display: "block", marginTop: "5px" }}>
-            {nameError}
-          </p>
-        </div>
-        <div className={styles.formGroup} style={{ margin: "0px 20px" }}>
           <label className={styles.label}>Referentie:</label>
           <input
             type="text"
@@ -165,6 +174,23 @@ const AddGrantDesktop: React.FC<AddGrantDesktopProps> = ({
           />
           <p style={{ color: "red", display: "block", marginTop: "5px" }}>
             {referenceError}
+          </p>
+        </div>
+        <div className={styles.formGroup} style={{ margin: "0px 20px" }}>
+          <label className={styles.label}>Naam:</label>
+          <input
+            type="text"
+            placeholder="Vul een naam in"
+            value={grantName}
+            onChange={(e) => setGrantName(e.target.value)}
+            onKeyUp={(e) => {
+              if (e.key === "Enter") {
+                handleAdd();
+              }
+            }}
+          />
+          <p style={{ color: "red", display: "block", marginTop: "5px" }}>
+            {nameError}
           </p>
         </div>
         <div className={styles.formGroup} style={{ margin: "0px 20px" }}>

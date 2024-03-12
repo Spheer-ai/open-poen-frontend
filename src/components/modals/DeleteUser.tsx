@@ -3,6 +3,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import { DeleteUserFormProps } from "../../types/DeleteUserForm";
 import { deleteUser } from "../middleware/Api";
 import styles from "../../assets/scss/layout/AddFundDesktop.module.scss";
+import CloseIson from "/close-icon.svg";
 
 const DeleteUserForm: React.FC<DeleteUserFormProps> = ({
   userId,
@@ -53,7 +54,12 @@ const DeleteUserForm: React.FC<DeleteUserFormProps> = ({
         onClick={handleClose}
       ></div>
       <div className={`${styles.modal} ${modalIsOpen ? styles.open : ""}`}>
-        <h2 className={styles.title}>Gebruiker verwijderen</h2>
+        <div className={styles.formTop}>
+          <h2 className={styles.title}>Gebruiker verwijderen</h2>
+          <button onClick={handleClose} className={styles.closeBtn}>
+            <img src={CloseIson} alt="" />
+          </button>
+        </div>
         <hr></hr>
         <form>
           <div className={styles.formGroup}>

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styles from "../../assets/scss/layout/AddFundDesktop.module.scss";
 import { updateRegulationDetails } from "../middleware/Api";
+import CloseIson from "/close-icon.svg";
 
 interface EditRegulationDesktopProps {
   isOpen: boolean;
@@ -147,7 +148,12 @@ const EditRegulationDesktop: React.FC<EditRegulationDesktopProps> = ({
         onClick={handleClose}
       ></div>
       <div className={`${styles.modal} ${modalIsOpen ? styles.open : ""}`}>
-        <h2 className={styles.title}>Regeling Bewerken</h2>
+        <div className={styles.formTop}>
+          <h2 className={styles.title}>Regeling Bewerken</h2>
+          <button onClick={handleClose} className={styles.closeBtn}>
+            <img src={CloseIson} alt="" />
+          </button>
+        </div>
         <hr></hr>
         <div className={styles.formGroup}>
           <h3>Info</h3>

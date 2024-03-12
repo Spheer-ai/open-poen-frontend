@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useAuth } from "../../contexts/AuthContext";
 import { updateUser } from "../middleware/Api";
 import styles from "../../assets/scss/layout/AddFundDesktop.module.scss";
+import CloseIson from "/close-icon.svg";
 
 const ChangePasswordForm = ({
   onClose,
@@ -74,7 +75,12 @@ const ChangePasswordForm = ({
         onClick={handleClose}
       ></div>
       <div className={`${styles.modal} ${modalIsOpen ? styles.open : ""}`}>
-        <h2 className={styles.title}>Wachtwoord wijzigen</h2>
+        <div className={styles.formTop}>
+          <h2 className={styles.title}>Wachtwoord wijzigen</h2>
+          <button onClick={handleClose} className={styles.closeBtn}>
+            <img src={CloseIson} alt="" />
+          </button>
+        </div>
         <hr></hr>
         <form>
           <div className={styles.formGroup}>

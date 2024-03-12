@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styles from "../../assets/scss/layout/AddFundDesktop.module.scss";
 import { deleteRegulation } from "../middleware/Api";
+import CloseIson from "/close-icon.svg";
 
 interface DeleteRegulationProps {
   isOpen: boolean;
@@ -84,7 +85,12 @@ const DeleteRegulation: React.FC<DeleteRegulationProps> = ({
         onClick={handleClose}
       ></div>
       <div className={`${styles.modal} ${modalIsOpen ? styles.open : ""}`}>
-        <h2 className={styles.title}>Regeling Verwijderen</h2>
+        <div className={styles.formTop}>
+          <h2 className={styles.title}>Regeling Verwijderen</h2>
+          <button onClick={handleClose} className={styles.closeBtn}>
+            <img src={CloseIson} alt="" />
+          </button>
+        </div>
         <hr></hr>
         <div className={styles.formGroup}>
           <h3>Info</h3>

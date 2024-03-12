@@ -7,6 +7,7 @@ import {
 } from "../middleware/Api";
 import { Officer } from "../../types/AddOfficerType";
 import deleteIcon from "/delete-icon.svg";
+import CloseIson from "/close-icon.svg";
 
 interface AddOfficerDesktopProps {
   isOpen: boolean;
@@ -176,7 +177,12 @@ const AddOfficerDesktop: React.FC<AddOfficerDesktopProps> = ({
         onClick={handleClose}
       ></div>
       <div className={`${styles.modal} ${modalIsOpen ? styles.open : ""}`}>
-        <h2 className={styles.title}>Penvoerder aanmaken</h2>
+        <div className={styles.formTop}>
+          <h2 className={styles.title}>Penvoerder aanmaken</h2>
+          <button onClick={handleClose} className={styles.closeBtn}>
+            <img src={CloseIson} alt="" />
+          </button>
+        </div>
         <hr></hr>
         <div className={styles.formGroup}>
           <h3>Penvoerders</h3>

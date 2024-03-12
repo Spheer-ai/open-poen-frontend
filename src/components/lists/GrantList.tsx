@@ -139,9 +139,8 @@ const GrantList: React.FC<GrantListProps> = ({
                 }
               }}
             >
-              {grant.name}
-              {" | "}
-              {grant.reference} | €{" "}
+              {grant.reference} | {grant.name}
+              {" | "}€{" "}
               {grant.budget.toLocaleString("nl-NL", {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2,

@@ -212,7 +212,8 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
     if (fundDetails) {
       const receivedBudget = fundDetails.income || 0;
       const spentBudget = fundDetails.expenses || 0;
-      const availableBudgetValue = receivedBudget + spentBudget;
+      const totalBudget = fundDetails.budget || 0;
+      const availableBudgetValue = totalBudget + spentBudget;
       setAvailableBudget(availableBudgetValue);
     }
   }, [fundDetails, refreshTrigger]);
