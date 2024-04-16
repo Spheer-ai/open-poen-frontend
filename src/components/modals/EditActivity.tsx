@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from "react";
-import deleteIcon from "/delete-icon.svg";
 import styles from "../../assets/scss/layout/AddFundDesktop.module.scss";
-import SearchFundUsers from "../elements/search/funds/SearchFundsUser";
 import ActivityImageUploader from "../elements/uploadder/ActivityImageUploader";
 import { editActivity, uploadActivityPicture } from "../middleware/Api";
 import CloseIson from "/close-icon.svg";

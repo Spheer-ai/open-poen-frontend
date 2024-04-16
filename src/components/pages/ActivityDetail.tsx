@@ -46,6 +46,10 @@ interface ActivityDetails {
     reference: string;
     budget: number;
   };
+  initiative: {
+    kvk_registration: string;
+    location: string;
+  };
 }
 
 interface FundDetails {
@@ -468,6 +472,8 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
             description={activityDetails?.description}
             purpose={activityDetails?.purpose}
             target_audience={activityDetails?.target_audience}
+            kvk_registration={activityDetails?.initiative.kvk_registration}
+            location={activityDetails?.initiative.location}
           />
         )}
         {activeTab === "sponsoren" && (

@@ -18,6 +18,8 @@ interface FundDetails {
   expenses?: number;
   purpose?: string;
   target_audience?: string;
+  kvk_registration?: string;
+  location?: string;
 }
 
 interface EditFundProps {
@@ -90,6 +92,8 @@ const EditFund: React.FC<EditFundProps> = ({
         ...formData,
         purpose: formData.purpose || "",
         target_audience: formData.target_audience || "",
+        kvk_registration: formData.kvk_registration || "",
+        location: formData.location || "",
         hidden_sponsors: isHiddenSponsors,
         hidden: isHidden,
       };
@@ -285,6 +289,45 @@ const EditFund: React.FC<EditFundProps> = ({
                   {targetAudienceError}
                 </p>
               )}
+            </>
+          )}
+        </div>
+        <div className={styles.formGroup}>
+          {fieldPermissions.fields.includes("kvk_registration") && (
+            <>
+              <label className={styles.label}>KVK Registratie:</label>
+              <input
+                type="text"
+                placeholder="KVK Registratie"
+                value={formData?.kvk_registration || ""}
+                onChange={(e) => {
+                  const newKvkRegistration = e.target.value;
+                  // TO DO: Validation and state update logic
+                  setFormData({
+                    ...formData,
+                    kvk_registration: newKvkRegistration,
+                  });
+                }}
+              />
+              {/* TO DO: Error message display */}
+            </>
+          )}
+        </div>
+        <div className={styles.formGroup}>
+          {fieldPermissions.fields.includes("location") && (
+            <>
+              <label className={styles.label}>Locatie:</label>
+              <input
+                type="text"
+                placeholder="Locatie"
+                value={formData?.location || ""}
+                onChange={(e) => {
+                  const newLocation = e.target.value;
+                  // Validation and state update logic
+                  setFormData({ ...formData, location: newLocation });
+                }}
+              />
+              {/* TO DO: Error message display */}
             </>
           )}
         </div>

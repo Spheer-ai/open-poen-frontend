@@ -6,6 +6,8 @@ interface ActivityDetailsProps {
   description?: string;
   purpose?: string;
   target_audience?: string;
+  kvk_registration?: string;
+  location?: string;
 }
 
 const ActivityDetails: React.FC<ActivityDetailsProps> = ({
@@ -13,6 +15,8 @@ const ActivityDetails: React.FC<ActivityDetailsProps> = ({
   description,
   purpose,
   target_audience,
+  kvk_registration,
+  location,
 }) => {
   return (
     <div className={styles["details-container"]}>
@@ -24,6 +28,10 @@ const ActivityDetails: React.FC<ActivityDetailsProps> = ({
       <p>{purpose}</p>
       <label>Doelgroep</label>
       <p>{target_audience}</p>
+      <label>Kamer van Koophandel</label>
+      <p>{kvk_registration}</p>
+      <label>Locatie-inflatie</label>
+      <p>{location}</p>
     </div>
   );
 };

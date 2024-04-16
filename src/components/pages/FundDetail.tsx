@@ -32,6 +32,8 @@ interface FundDetails {
   description: string;
   purpose: string;
   target_audience: string;
+  kvk_registration: string;
+  location: string;
   budget: number;
   income: number;
   expenses: number;
@@ -464,6 +466,8 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
             description={fundDetails?.description}
             purpose={fundDetails?.purpose}
             target_audience={fundDetails?.target_audience}
+            kvk_registration={fundDetails?.kvk_registration}
+            location={fundDetails?.location}
           />
         )}
         {activeTab === "sponsoren" && (
