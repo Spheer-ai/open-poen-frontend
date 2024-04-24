@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import Select, { SingleValue, ActionMeta } from "react-select";
 import styles from "../../../../assets/scss/TransactionOverview.module.scss";
 
@@ -31,7 +31,6 @@ const TransactionFilters: React.FC<
   }
 > = ({
   transactions,
-  onFilter,
   ibanFilter,
   setIbanFilter,
   initiativeFilter,
@@ -66,14 +65,6 @@ const TransactionFilters: React.FC<
     }),
   };
 
-  useEffect(() => {
-    onFilter({
-      iban: ibanFilter,
-      initiative: initiativeFilter,
-      activity: activityFilter,
-    });
-  }, [ibanFilter, initiativeFilter, activityFilter, onFilter]);
-
   const uniqueIbans = Array.from(new Set(transactions.map((t) => t.iban))).map(
     (iban) => ({ value: iban, label: iban }),
   );
@@ -97,12 +88,15 @@ const TransactionFilters: React.FC<
     const value = option ? option.value : "";
     switch (name) {
       case "iban":
+        console.log("IBAN filter selected:", value);
         setIbanFilter(value);
         break;
       case "initiative":
+        console.log("Initiative filter selected:", value);
         setInitiativeFilter(value);
         break;
       case "activity":
+        console.log("Activity filter selected:", value);
         setActivityFilter(value);
         break;
       default:

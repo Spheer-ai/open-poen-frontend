@@ -56,12 +56,6 @@ const TransactionOverview = () => {
     }
   };
 
-  const handleFilterChange = ({ iban, initiative, activity }) => {
-    setIbanFilter(iban);
-    setInitiativeFilter(initiative);
-    setActivityFilter(activity);
-  };
-
   useEffect(() => {
     let delayTimer: NodeJS.Timeout;
 
@@ -77,50 +71,39 @@ const TransactionOverview = () => {
   }, [loadMoreDelayActive]);
 
   useEffect(() => {
-    fetchInitialTransactions();
-  }, [searchQuery]);
-
-  useEffect(() => {
-    const unifiedQuery =
-      `${searchQuery} ${ibanFilter} ${initiativeFilter} ${activityFilter}`.trim();
-
     const filtered = allTransactions.filter((transaction) => {
-      const ibanMatch = ibanFilter === "" || transaction.iban === ibanFilter;
-      const initiativeMatch =
-        initiativeFilter === "" ||
-        transaction.initiative_name === initiativeFilter;
-      const activityMatch =
-        activityFilter === "" || transaction.activity_name === activityFilter;
-
-      const unifiedQueryMatch =
-        unifiedQuery === "" ||
-        (transaction.initiative_name &&
-          transaction.initiative_name
-            .toLowerCase()
-            .includes(unifiedQuery.toLowerCase())) ||
-        (transaction.activity_name &&
-          transaction.activity_name
-            .toLowerCase()
-            .includes(unifiedQuery.toLowerCase())) ||
-        (transaction.iban &&
-          transaction.iban.toLowerCase().includes(unifiedQuery.toLowerCase()));
-
+      const unifiedQuery = `${transaction.initiative_name || ""} ${
+        transaction.activity_name || ""
+      } ${transaction.iban || ""}`.toLowerCase();
       return (
-        (ibanMatch || initiativeMatch || activityMatch) && unifiedQueryMatch
+        (!searchQuery || unifiedQuery.includes(searchQuery.toLowerCase())) &&
+        (!ibanFilter ||
+          transaction.iban?.toLowerCase().includes(ibanFilter.toLowerCase())) &&
+        (!initiativeFilter ||
+          transaction.initiative_name
+            ?.toLowerCase()
+            .includes(initiativeFilter.toLowerCase())) &&
+        (!activityFilter ||
+          transaction.activity_name
+            ?.toLowerCase()
+            .includes(activityFilter.toLowerCase()))
       );
     });
 
-    filteredTransactionsRef.current = filtered;
-
-    setFilteredTransactions(filtered.slice(0, limit));
+    setFilteredTransactions(filtered);
   }, [
     searchQuery,
     ibanFilter,
     initiativeFilter,
     activityFilter,
     allTransactions,
-    limit,
   ]);
+
+  useEffect(() => {
+    if (user && user.userId && user.token) {
+      fetchInitialTransactions();
+    }
+  }, [user, user?.userId, user?.token, searchQuery]);
 
   const fetchInitialTransactions = async () => {
     if (user && user.userId && user.token) {
@@ -156,28 +139,31 @@ const TransactionOverview = () => {
     }
   };
 
-  useEffect(() => {
-    const filtered = allTransactions.filter((transaction) => {
-      const initiativeNameMatch =
-        transaction.initiative_name &&
-        transaction.initiative_name
-          .toLowerCase()
-          .includes(searchQuery.toLowerCase());
-      const activityNameMatch =
-        transaction.activity_name &&
-        transaction.activity_name
-          .toLowerCase()
-          .includes(searchQuery.toLowerCase());
-      const ibanMatch =
-        transaction.iban &&
-        transaction.iban.toLowerCase().includes(searchQuery.toLowerCase());
-
-      return initiativeNameMatch || activityNameMatch || ibanMatch;
+  const handleFilterChange = ({ iban, initiative, activity }) => {
+    setIbanFilter((prevIbanFilter) => {
+      if (iban !== undefined) {
+        return iban;
+      } else {
+        return prevIbanFilter;
+      }
     });
 
-    setFilteredTransactions(filtered);
-    setTransactions(filtered.slice(0, limit));
-  }, [allTransactions, limit, searchQuery]);
+    setInitiativeFilter((prevInitiativeFilter) => {
+      if (initiative !== undefined) {
+        return initiative;
+      } else {
+        return prevInitiativeFilter;
+      }
+    });
+
+    setActivityFilter((prevActivityFilter) => {
+      if (activity !== undefined) {
+        return activity;
+      } else {
+        return prevActivityFilter;
+      }
+    });
+  };
 
   const handleLoadMore = async () => {
     if (!isLastLoadMoreComplete || loadMoreDelayActive) {
@@ -220,6 +206,51 @@ const TransactionOverview = () => {
         setLinkingStatus(updatedLinkingStatus);
 
         setTotalTransactionsCount(data.totalCount || 0);
+
+        let filteredNewTransactions = data.payments;
+
+        if (searchQuery) {
+          filteredNewTransactions = filteredNewTransactions.filter(
+            (transaction) => {
+              const unifiedQuery = `${transaction.initiative_name || ""} ${
+                transaction.activity_name || ""
+              } ${transaction.iban || ""}`.toLowerCase();
+              return unifiedQuery.includes(searchQuery.toLowerCase());
+            },
+          );
+        }
+
+        if (ibanFilter) {
+          filteredNewTransactions = filteredNewTransactions.filter(
+            (transaction) =>
+              transaction.iban
+                ?.toLowerCase()
+                .includes(ibanFilter.toLowerCase()),
+          );
+        }
+
+        if (initiativeFilter) {
+          filteredNewTransactions = filteredNewTransactions.filter(
+            (transaction) =>
+              transaction.initiative_name
+                ?.toLowerCase()
+                .includes(initiativeFilter.toLowerCase()),
+          );
+        }
+
+        if (activityFilter) {
+          filteredNewTransactions = filteredNewTransactions.filter(
+            (transaction) =>
+              transaction.activity_name
+                ?.toLowerCase()
+                .includes(activityFilter.toLowerCase()),
+          );
+        }
+
+        setFilteredTransactions((prevFilteredTransactions) => [
+          ...prevFilteredTransactions,
+          ...filteredNewTransactions,
+        ]);
 
         setAllTransactions((prevAllTransactions) => [
           ...prevAllTransactions,

@@ -132,10 +132,7 @@ const FilterPayment: React.FC<FilterPaymentProps> = ({
   };
 
   const handleRouteCheckboxChange = (value) => {
-    const updatedRoute = selectedRoute.includes(value)
-      ? selectedRoute.filter((route) => route !== value)
-      : [...selectedRoute, value];
-
+    const updatedRoute = selectedRoute.includes(value) ? [] : [value];
     setSelectedRoute(updatedRoute);
   };
 
