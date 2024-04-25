@@ -48,12 +48,14 @@ const ActivityTransactions: React.FC<{
   activity_name: string;
   onRefreshTrigger: () => void;
   entityPermissions;
+  hasCreatePaymentPermission;
 }> = ({
   authToken,
   initiativeId,
   activityId,
   activity_name,
   onRefreshTrigger,
+  hasCreatePaymentPermission,
 }) => {
   const { user } = useAuth();
   const { fetchPermissions } = usePermissions();
@@ -101,6 +103,22 @@ const ActivityTransactions: React.FC<{
   const [pageSize] = useState(20);
   const [isAtBottom, setIsAtBottom] = useState(false);
   const sidePanelRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    console.log("ActivityTransactions component mounted with props:", {
+      authToken,
+      initiativeId,
+      onRefreshTrigger,
+      entityPermissions,
+      hasCreatePaymentPermission,
+    });
+  }, [
+    authToken,
+    initiativeId,
+    onRefreshTrigger,
+    entityPermissions,
+    hasCreatePaymentPermission,
+  ]);
 
   const checkBottom = () => {
     const sidePanel = sidePanelRef.current;
@@ -409,12 +427,14 @@ const ActivityTransactions: React.FC<{
       />
       {user ? (
         <div className={styles["transactionContainer"]}>
-          <button
-            className={styles["saveButton"]}
-            onClick={handleToggleAddPaymentModal}
-          >
-            Transactie toevoegen
-          </button>
+          {hasCreatePaymentPermission && (
+            <button
+              className={styles["saveButton"]}
+              onClick={handleToggleAddPaymentModal}
+            >
+              Transactie toevoegen
+            </button>
+          )}
           <button
             className={styles["filterButton"]}
             onClick={handleToggleFilterPaymentModal}
