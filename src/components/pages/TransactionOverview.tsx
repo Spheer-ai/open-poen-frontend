@@ -335,7 +335,7 @@ const TransactionOverview = () => {
     <div className={styles.transactionOverview}>
       {!isMobile && (
         <div className={styles.transactionOptions}>
-          <TransactionSearchInput onSearch={handleSearch} />
+          {/* <TransactionSearchInput onSearch={handleSearch} /> */}
           <TransactionFilters
             transactions={allTransactions}
             onFilter={handleFilterChange}

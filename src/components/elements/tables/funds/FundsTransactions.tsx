@@ -106,22 +106,6 @@ const FundsTransactions: React.FC<{
   const [isAtBottom, setIsAtBottom] = useState(false);
   const sidePanelRef = useRef<HTMLDivElement | null>(null);
 
-  useEffect(() => {
-    console.log("FundsTransactions component mounted with props:", {
-      authToken,
-      initiativeId,
-      onRefreshTrigger,
-      entityPermissions,
-      hasCreatePaymentPermission,
-    });
-  }, [
-    authToken,
-    initiativeId,
-    onRefreshTrigger,
-    entityPermissions,
-    hasCreatePaymentPermission,
-  ]);
-
   const checkBottom = () => {
     const sidePanel = sidePanelRef.current;
 
@@ -136,30 +120,35 @@ const FundsTransactions: React.FC<{
     }
   };
 
+  useEffect(() => {
+    fetchTransactions();
+  }, [filterCriteria]);
+
+  const handleFilterApplied = (filters) => {
+    setStartDate(filters.startDate);
+    setEndDate(filters.endDate);
+    setMinAmount(filters.minAmount);
+    setMaxAmount(filters.maxAmount);
+    setRoute(filters.route);
+    setCurrentPage(1);
+
+    setFilterCriteria(filters);
+  };
+
   const fetchTransactions = async () => {
     try {
       setLoadingMore(true);
 
-      let queryParams = {
-        start_date: startDate || undefined,
-        end_date: endDate || undefined,
-        min_amount: minAmount || undefined,
-        max_amount: maxAmount || undefined,
-        route: route || undefined,
+      let queryParams: any = {
+        offset: (currentPage - 1) * pageSize,
+        limit: pageSize,
       };
 
-      if (
-        filterCriteria.startDate ||
-        filterCriteria.endDate ||
-        filterCriteria.minAmount ||
-        filterCriteria.maxAmount ||
-        filterCriteria.route
-      ) {
-        queryParams = {
-          ...queryParams,
-          ...filterCriteria,
-        };
-      }
+      if (startDate) queryParams.start_date = startDate;
+      if (endDate) queryParams.end_date = endDate;
+      if (minAmount) queryParams.min_amount = minAmount;
+      if (maxAmount) queryParams.max_amount = maxAmount;
+      if (route) queryParams.route = route;
 
       const response = await getPaymentsByInitiative(
         authToken,
@@ -190,6 +179,8 @@ const FundsTransactions: React.FC<{
 
           if (formattedTransactions.length < pageSize) {
             setHasMoreTransactions(false);
+          } else {
+            setHasMoreTransactions(true);
           }
         } else {
           setTransactions([]);
@@ -206,20 +197,16 @@ const FundsTransactions: React.FC<{
   const handleLoadMore = () => {
     if (!loadingMore && hasMoreTransactions) {
       setCurrentPage((prevPage) => prevPage + 1);
+      setFilterCriteria((prevCriteria) => ({
+        ...prevCriteria,
+        startDate: "",
+        endDate: "",
+        minAmount: "",
+        maxAmount: "",
+        route: "",
+      }));
     }
   };
-
-  useEffect(() => {
-    fetchTransactions();
-  }, [
-    currentPage,
-    refreshTrigger,
-    startDate,
-    endDate,
-    minAmount,
-    maxAmount,
-    route,
-  ]);
 
   const handleEyeIconClick = async (transactionId: number) => {
     setIsLoadingPermissions(true);
@@ -384,16 +371,6 @@ const FundsTransactions: React.FC<{
       setIsFilterPaymentModalOpen(true);
       navigate(`/funds/${initiativeId}/filter-payment`);
     }
-  };
-
-  const handleFilterApplied = (filters) => {
-    setStartDate(filters.startDate);
-    setEndDate(filters.endDate);
-    setMinAmount(filters.minAmount);
-    setMaxAmount(filters.maxAmount);
-    setRoute(filters.route);
-
-    fetchTransactions();
   };
 
   useEffect(() => {

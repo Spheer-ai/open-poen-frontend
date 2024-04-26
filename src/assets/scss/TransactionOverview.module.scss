@@ -137,7 +137,7 @@
   background: #fff;
   overflow: scroll;
   margin-top: 15px;
-  max-height: 30vh;
+  max-height: 40vh;
   padding-bottom: 20px;
 
   .transaction-table-container {
@@ -170,7 +170,6 @@
     border-collapse: collapse;
 
     thead {
-      position: sticky;
       top: 0;
       background: #ffffff;
 
