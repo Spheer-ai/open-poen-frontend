@@ -3,6 +3,13 @@
   flex-direction: column;
   padding: 10px 50px;
   position: relative;
+
+  .content-wrapper {
+    display: flex;
+    min-height: 35vh;
+    flex-direction: column;
+    justify-content: space-between;
+  }
 }
 
 .container {
@@ -42,8 +49,8 @@
 
   .fund-info {
     flex: 1;
-    width: 50%;
-    max-width: 50%;
+    width: 60%;
+    max-width: 60%;
     padding-right: 30px;
     overflow-wrap: break-word;
 
@@ -53,8 +60,8 @@
   }
 
   .fund-image {
-    width: 50%;
-    max-width: 50%;
+    width: 40%;
+    max-width: 40%;
     padding-left: 30px;
     margin-top: 30px;
     align-items: start;

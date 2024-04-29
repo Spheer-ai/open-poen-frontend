@@ -32,6 +32,8 @@ interface FundDetails {
   description: string;
   purpose: string;
   target_audience: string;
+  kvk_registration: string;
+  location: string;
   budget: number;
   income: number;
   expenses: number;
@@ -57,6 +59,8 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
   const { fetchPermissions } = usePermissions();
   const [hasEditPermission, setHasEditPermission] = useState(false);
   const [hasDeletePermission, setHasDeletePermission] = useState(false);
+  const [hasCreatePaymentPermission, setHasCreatePaymentPermission] =
+    useState(false);
   const { fetchFieldPermissions } = useFieldPermissions();
   const [entityPermissions, setEntityPermissions] = useState<string[]>([]);
   const [fundDetails, setFundDetails] = useState<FundDetails | null>(null);
@@ -139,6 +143,12 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
             setHasDeletePermission(true);
           } else {
             setHasDeletePermission(false);
+          }
+
+          if (userPermissions && userPermissions.includes("create_payment")) {
+            setHasCreatePaymentPermission(true);
+          } else {
+            setHasCreatePaymentPermission(false);
           }
         }
       } catch (error) {
@@ -261,133 +271,71 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
         </>
       </div>
       <div className={styles["fund-detail-container"]}>
-        {fundDetails ? (
-          <>
-            <div className={styles["content-container"]}>
-              <div className={styles["fund-image"]}>
-                {fundDetails.profile_picture ? (
-                  <img
-                    src={
-                      fundDetails.profile_picture.attachment_thumbnail_url_512
-                    }
-                    alt=""
-                  />
-                ) : (
-                  <p>Geen afbeelding gevonden</p>
-                )}
-              </div>
-              <div className={styles["fund-info"]}>
-                <div className={styles["fund-name"]}>
-                  {fundDetails.name ? (
-                    <h1>{fundDetails.name}</h1>
+        <div className={styles["content-wrapper"]}>
+          {fundDetails ? (
+            <>
+              <div className={styles["content-container"]}>
+                <div className={styles["fund-image"]}>
+                  {fundDetails.profile_picture ? (
+                    <img
+                      src={
+                        fundDetails.profile_picture.attachment_thumbnail_url_512
+                      }
+                      alt=""
+                    />
                   ) : (
-                    <p>Geen naam gevonden</p>
+                    <p>Geen afbeelding gevonden</p>
                   )}
                 </div>
-                <div className={styles["fund-description"]}>
-                  {fundDetails.description ? (
-                    <div>
-                      <p>
-                        {showFullDescription
-                          ? fundDetails.description
-                          : `${fundDetails.description.slice(0, 250)}${
-                              fundDetails.description.length > 250 ? "..." : ""
-                            }`}
-                      </p>
-                      {fundDetails.description.length > 250 && (
-                        <button
-                          onClick={() =>
-                            setShowFullDescription(!showFullDescription)
-                          }
-                          className={styles["read-more-button"]}
-                        >
-                          {showFullDescription ? "Lees minder" : "Lees meer"}
-                        </button>
-                      )}
-                    </div>
-                  ) : (
-                    <p>Geen beschrijving gevonden</p>
-                  )}
+                <div className={styles["fund-info"]}>
+                  <div className={styles["fund-name"]}>
+                    {fundDetails.name ? (
+                      <h1>{fundDetails.name}</h1>
+                    ) : (
+                      <p>Geen naam gevonden</p>
+                    )}
+                  </div>
+                  <div className={styles["fund-description"]}>
+                    {fundDetails.description ? (
+                      <div>
+                        <p>
+                          {showFullDescription
+                            ? fundDetails.description
+                            : `${fundDetails.description.slice(0, 250)}${
+                                fundDetails.description.length > 250
+                                  ? "..."
+                                  : ""
+                              }`}
+                        </p>
+                        {fundDetails.description.length > 250 && (
+                          <button
+                            onClick={() =>
+                              setShowFullDescription(!showFullDescription)
+                            }
+                            className={styles["read-more-button"]}
+                          >
+                            {showFullDescription ? "Lees minder" : "Lees meer"}
+                          </button>
+                        )}
+                      </div>
+                    ) : (
+                      <p>Geen beschrijving gevonden</p>
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
-            <div className={styles["statistics-container"]}>
-              <div
-                className={styles["fund-budget"]}
-                style={{ backgroundColor: "#E9EFFB" }}
-              >
-                {fundDetails.budget !== null ? (
-                  <>
-                    <p>
-                      Toegekend budget: <br />
-                      <span>
-                        €{" "}
-                        {fundDetails.budget.toLocaleString("nl-NL", {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                        })}
-                      </span>
-                    </p>
-                  </>
-                ) : (
-                  <p>Geen toegekend budget gevonden</p>
-                )}
-              </div>
-              <div
-                className={styles["fund-income"]}
-                style={{ backgroundColor: "#E9EFFB" }}
-              >
-                {fundDetails.income !== null ? (
-                  <>
-                    <p>
-                      Ontvangen budget: <br />
-                      <span>
-                        €{" "}
-                        {fundDetails.income.toLocaleString("nl-NL", {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                        })}
-                      </span>
-                    </p>
-                  </>
-                ) : (
-                  <p>Geen inkomsten gevonden</p>
-                )}
-              </div>
-              <div
-                className={styles["fund-expenses"]}
-                style={{ backgroundColor: "#FEE6F0" }}
-              >
-                {fundDetails.expenses !== null ? (
-                  <>
-                    <p style={{ color: "#B82466" }}>
-                      Besteed:
-                      <br />
-                      <span style={{ color: "#B82466" }}>
-                        €{" "}
-                        {fundDetails.expenses.toLocaleString("nl-NL", {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                        })}
-                      </span>
-                    </p>
-                  </>
-                ) : (
-                  <p>Geen besteed budget gevonden</p>
-                )}
-              </div>
-              {availableBudget !== null && (
+              <div className={styles["statistics-container"]}>
                 <div
-                  className={styles["fund-available-budget"]}
-                  style={{ backgroundColor: "#E7FDEA" }}
+                  className={styles["fund-budget"]}
+                  style={{ backgroundColor: "#E9EFFB" }}
                 >
-                  {availableBudget !== null ? (
+                  {fundDetails.budget !== null ? (
                     <>
-                      <p style={{ color: "#008000" }}>
-                        Beschikbaar budget: <br />
-                        <span style={{ color: "#008000" }}>
+                      <p>
+                        Toegekend budget: <br />
+                        <span>
                           €{" "}
-                          {availableBudget.toLocaleString("nl-NL", {
+                          {fundDetails.budget.toLocaleString("nl-NL", {
                             minimumFractionDigits: 2,
                             maximumFractionDigits: 2,
                           })}
@@ -395,32 +343,98 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
                       </p>
                     </>
                   ) : (
-                    <p style={{ color: "#008000" }}>
-                      Available budget not found
-                    </p>
+                    <p>Geen toegekend budget gevonden</p>
                   )}
                 </div>
-              )}
+                <div
+                  className={styles["fund-income"]}
+                  style={{ backgroundColor: "#E9EFFB" }}
+                >
+                  {fundDetails.income !== null ? (
+                    <>
+                      <p>
+                        Ontvangen budget: <br />
+                        <span>
+                          €{" "}
+                          {fundDetails.income.toLocaleString("nl-NL", {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          })}
+                        </span>
+                      </p>
+                    </>
+                  ) : (
+                    <p>Geen inkomsten gevonden</p>
+                  )}
+                </div>
+                <div
+                  className={styles["fund-expenses"]}
+                  style={{ backgroundColor: "#FEE6F0" }}
+                >
+                  {fundDetails.expenses !== null ? (
+                    <>
+                      <p style={{ color: "#B82466" }}>
+                        Besteed:
+                        <br />
+                        <span style={{ color: "#B82466" }}>
+                          €{" "}
+                          {fundDetails.expenses.toLocaleString("nl-NL", {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          })}
+                        </span>
+                      </p>
+                    </>
+                  ) : (
+                    <p>Geen besteed budget gevonden</p>
+                  )}
+                </div>
+                {availableBudget !== null && (
+                  <div
+                    className={styles["fund-available-budget"]}
+                    style={{ backgroundColor: "#E7FDEA" }}
+                  >
+                    {availableBudget !== null ? (
+                      <>
+                        <p style={{ color: "#008000" }}>
+                          Beschikbaar budget: <br />
+                          <span style={{ color: "#008000" }}>
+                            €{" "}
+                            {availableBudget.toLocaleString("nl-NL", {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                            })}
+                          </span>
+                        </p>
+                      </>
+                    ) : (
+                      <p style={{ color: "#008000" }}>
+                        Available budget not found
+                      </p>
+                    )}
+                  </div>
+                )}
+              </div>
+            </>
+          ) : (
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                height: "200px",
+                marginTop: "120px",
+              }}
+            >
+              <div className={styles["loading-container"]}>
+                <LoadingDot delay={0} />
+                <LoadingDot delay={0.1} />
+                <LoadingDot delay={0.1} />
+                <LoadingDot delay={0.2} />
+                <LoadingDot delay={0.2} />
+              </div>
             </div>
-          </>
-        ) : (
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              height: "200px",
-              marginTop: "120px",
-            }}
-          >
-            <div className={styles["loading-container"]}>
-              <LoadingDot delay={0} />
-              <LoadingDot delay={0.1} />
-              <LoadingDot delay={0.1} />
-              <LoadingDot delay={0.2} />
-              <LoadingDot delay={0.2} />
-            </div>
-          </div>
-        )}
+          )}
+        </div>
         <EditFund
           isOpen={isEditFundModalOpen}
           onClose={handleToggleEditFundModal}
@@ -450,6 +464,7 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
             authToken={user?.token || ""}
             onRefreshTrigger={handleRefreshTrigger}
             entityPermissions={entityPermissions}
+            hasCreatePaymentPermission={hasCreatePaymentPermission}
           />
         )}
         {activeTab === "activiteiten" && (
@@ -464,6 +479,8 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
             description={fundDetails?.description}
             purpose={fundDetails?.purpose}
             target_audience={fundDetails?.target_audience}
+            kvk_registration={fundDetails?.kvk_registration}
+            location={fundDetails?.location}
           />
         )}
         {activeTab === "sponsoren" && (

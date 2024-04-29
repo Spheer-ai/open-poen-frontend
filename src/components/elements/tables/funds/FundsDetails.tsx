@@ -6,6 +6,8 @@ interface FundDetailsProps {
   description?: string;
   purpose?: string;
   target_audience?: string;
+  kvk_registration?: string;
+  location?: string;
 }
 
 const FundDetails: React.FC<FundDetailsProps> = ({
@@ -13,6 +15,8 @@ const FundDetails: React.FC<FundDetailsProps> = ({
   description,
   purpose,
   target_audience,
+  kvk_registration,
+  location,
 }) => {
   return (
     <div className={styles["details-container"]}>
@@ -24,6 +28,10 @@ const FundDetails: React.FC<FundDetailsProps> = ({
       <p>{purpose}</p>
       <label>Doelgroep</label>
       <p>{target_audience}</p>
+      <label>Kamer van Koophandel</label>
+      <p>{kvk_registration}</p>
+      <label>Locatie-initiatief</label>
+      <p>{location}</p>
     </div>
   );
 };

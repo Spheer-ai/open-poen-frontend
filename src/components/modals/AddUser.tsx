@@ -155,6 +155,19 @@ const AddUser: React.FC<AddUserProps> = ({
         <form>
           <div className={styles.formGroup}>
             <h3>Info</h3>
+            <label className={styles["label-first_name"]} htmlFor="first_name">
+              Voornaam
+            </label>
+            <input
+              type="text"
+              id="first_name"
+              name="first_name"
+              placeholder="Voer de voornaam in"
+              value={formData.first_name}
+              onChange={handleChange}
+            />
+          </div>
+          <div className={styles.formGroup}>
             <label className={styles.labelField} htmlFor="email">
               E-mail
             </label>

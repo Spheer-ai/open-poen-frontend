@@ -47,7 +47,13 @@ const FundsTransactions: React.FC<{
   initiativeId: string;
   onRefreshTrigger: () => void;
   entityPermissions;
-}> = ({ authToken, initiativeId, onRefreshTrigger }) => {
+  hasCreatePaymentPermission;
+}> = ({
+  authToken,
+  initiativeId,
+  onRefreshTrigger,
+  hasCreatePaymentPermission,
+}) => {
   const { user } = useAuth();
   const { fetchPermissions } = usePermissions();
   const navigate = useNavigate();
@@ -114,30 +120,35 @@ const FundsTransactions: React.FC<{
     }
   };
 
+  useEffect(() => {
+    fetchTransactions();
+  }, [filterCriteria]);
+
+  const handleFilterApplied = (filters) => {
+    setStartDate(filters.startDate);
+    setEndDate(filters.endDate);
+    setMinAmount(filters.minAmount);
+    setMaxAmount(filters.maxAmount);
+    setRoute(filters.route);
+    setCurrentPage(1);
+
+    setFilterCriteria(filters);
+  };
+
   const fetchTransactions = async () => {
     try {
       setLoadingMore(true);
 
-      let queryParams = {
-        start_date: startDate || undefined,
-        end_date: endDate || undefined,
-        min_amount: minAmount || undefined,
-        max_amount: maxAmount || undefined,
-        route: route || undefined,
+      let queryParams: any = {
+        offset: (currentPage - 1) * pageSize,
+        limit: pageSize,
       };
 
-      if (
-        filterCriteria.startDate ||
-        filterCriteria.endDate ||
-        filterCriteria.minAmount ||
-        filterCriteria.maxAmount ||
-        filterCriteria.route
-      ) {
-        queryParams = {
-          ...queryParams,
-          ...filterCriteria,
-        };
-      }
+      if (startDate) queryParams.start_date = startDate;
+      if (endDate) queryParams.end_date = endDate;
+      if (minAmount) queryParams.min_amount = minAmount;
+      if (maxAmount) queryParams.max_amount = maxAmount;
+      if (route) queryParams.route = route;
 
       const response = await getPaymentsByInitiative(
         authToken,
@@ -168,6 +179,8 @@ const FundsTransactions: React.FC<{
 
           if (formattedTransactions.length < pageSize) {
             setHasMoreTransactions(false);
+          } else {
+            setHasMoreTransactions(true);
           }
         } else {
           setTransactions([]);
@@ -184,20 +197,16 @@ const FundsTransactions: React.FC<{
   const handleLoadMore = () => {
     if (!loadingMore && hasMoreTransactions) {
       setCurrentPage((prevPage) => prevPage + 1);
+      setFilterCriteria((prevCriteria) => ({
+        ...prevCriteria,
+        startDate: "",
+        endDate: "",
+        minAmount: "",
+        maxAmount: "",
+        route: "",
+      }));
     }
   };
-
-  useEffect(() => {
-    fetchTransactions();
-  }, [
-    currentPage,
-    refreshTrigger,
-    startDate,
-    endDate,
-    minAmount,
-    maxAmount,
-    route,
-  ]);
 
   const handleEyeIconClick = async (transactionId: number) => {
     setIsLoadingPermissions(true);
@@ -364,16 +373,6 @@ const FundsTransactions: React.FC<{
     }
   };
 
-  const handleFilterApplied = (filters) => {
-    setStartDate(filters.startDate);
-    setEndDate(filters.endDate);
-    setMinAmount(filters.minAmount);
-    setMaxAmount(filters.maxAmount);
-    setRoute(filters.route);
-
-    fetchTransactions();
-  };
-
   useEffect(() => {
     const sidePanel = sidePanelRef.current;
 
@@ -413,12 +412,14 @@ const FundsTransactions: React.FC<{
       />
       {user ? (
         <div className={styles["transactionContainer"]}>
-          <button
-            className={styles["saveButton"]}
-            onClick={handleToggleAddPaymentModal}
-          >
-            Transactie toevoegen
-          </button>
+          {hasCreatePaymentPermission && (
+            <button
+              className={styles["saveButton"]}
+              onClick={handleToggleAddPaymentModal}
+            >
+              Transactie toevoegen
+            </button>
+          )}
           <button
             className={styles["filterButton"]}
             onClick={handleToggleFilterPaymentModal}

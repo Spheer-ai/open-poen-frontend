@@ -45,45 +45,33 @@ const FilterPayment: React.FC<FilterPaymentProps> = ({
     }
   }, [isOpen]);
 
-  const queryParams = {
-    startDate,
-    endDate,
-    minAmount,
-    maxAmount,
-    route: selectedRoute.join(","),
+  const handleClearFilters = () => {
+    setStartDate("");
+    setEndDate("");
+    setMinAmount("");
+    setMaxAmount("");
+    setSelectedRoute([]);
+    setRoute("");
   };
 
   const handleSave = async () => {
     try {
-      const newQueryParams: {
-        startDate?: string;
-        endDate?: string;
-        minAmount?: string;
-        maxAmount?: string;
-        route?: string;
-      } = {};
+      const newFilters = {
+        startDate,
+        endDate,
+        minAmount,
+        maxAmount,
+        route: selectedRoute.join(","),
+      };
 
-      if (queryParams.startDate) {
-        newQueryParams.startDate = queryParams.startDate;
-      }
+      setStartDate(newFilters.startDate);
+      setEndDate(newFilters.endDate);
+      setMinAmount(newFilters.minAmount);
+      setMaxAmount(newFilters.maxAmount);
+      setSelectedRoute(newFilters.route.split(","));
 
-      if (queryParams.endDate) {
-        newQueryParams.endDate = queryParams.endDate;
-      }
+      await onFilterApplied(newFilters);
 
-      if (queryParams.minAmount !== "") {
-        newQueryParams.minAmount = queryParams.minAmount.toString();
-      }
-
-      if (queryParams.maxAmount !== "") {
-        newQueryParams.maxAmount = queryParams.maxAmount.toString();
-      }
-
-      if (queryParams.route) {
-        newQueryParams.route = queryParams.route;
-      }
-
-      await onFilterApplied(newQueryParams);
       handleClose();
     } catch (error) {
       console.error("Error filter payment:", error);
@@ -115,27 +103,8 @@ const FilterPayment: React.FC<FilterPaymentProps> = ({
     return null;
   }
 
-  const handleClearFilters = () => {
-    setStartDate("");
-    setEndDate("");
-    setMinAmount("");
-    setMaxAmount("");
-    setSelectedRoute([]);
-    setRoute("");
-    onFilterApplied({
-      startDate: "",
-      endDate: "",
-      minAmount: "",
-      maxAmount: "",
-      route: "",
-    });
-  };
-
   const handleRouteCheckboxChange = (value) => {
-    const updatedRoute = selectedRoute.includes(value)
-      ? selectedRoute.filter((route) => route !== value)
-      : [...selectedRoute, value];
-
+    const updatedRoute = selectedRoute.includes(value) ? [] : [value];
     setSelectedRoute(updatedRoute);
   };
 

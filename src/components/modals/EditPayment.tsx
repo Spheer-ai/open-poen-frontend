@@ -220,8 +220,6 @@ const EditPayment: React.FC<EditPaymentProps> = ({
         }
       }
 
-      console.log("Amount sent to API:", requestData.transaction_amount);
-
       for (const file of selectedFiles) {
         await uploadPaymentAttachment(paymentId, file, token);
       }

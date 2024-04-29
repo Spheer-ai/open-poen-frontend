@@ -219,7 +219,6 @@ export default function Contacts() {
       setTimeout(() => {
         setIsBlockingInteraction(false);
         setIsModalOpen(false);
-        navigate("/contacts");
       }, 300);
     } else {
       setIsModalOpen(true);

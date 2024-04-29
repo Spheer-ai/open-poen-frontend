@@ -46,6 +46,10 @@ interface ActivityDetails {
     reference: string;
     budget: number;
   };
+  initiative: {
+    kvk_registration: string;
+    location: string;
+  };
 }
 
 interface FundDetails {
@@ -80,6 +84,8 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
   const [fundDetails, setFundDetails] = useState<FundDetails | null>(null);
   const [hasEditPermission, setHasEditPermission] = useState(false);
   const [hasDeletePermission, setHasDeletePermission] = useState(false);
+  const [hasCreatePaymentPermission, setHasCreatePaymentPermission] =
+    useState(false);
   const [showFullDescription, setShowFullDescription] = useState(false);
   const [availableBudget, setAvailableBudget] = useState<number | null>(null);
   const [currentActivityData, setCurrentActivityData] =
@@ -134,6 +140,12 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
             setHasDeletePermission(true);
           } else {
             setHasDeletePermission(false);
+          }
+
+          if (userPermissions && userPermissions.includes("create_payment")) {
+            setHasCreatePaymentPermission(true);
+          } else {
+            setHasCreatePaymentPermission(false);
           }
         }
       } catch (error) {
@@ -284,114 +296,72 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
         </div>
       </div>
       <div className={styles["fund-detail-container"]}>
-        {activityDetails ? (
-          <>
-            <div className={styles["content-container"]}>
-              <div className={styles["fund-image"]}>
-                {activityDetails.profile_picture ? (
-                  <img
-                    src={
-                      activityDetails.profile_picture
-                        .attachment_thumbnail_url_512
-                    }
-                    alt="Fund Image"
-                  />
-                ) : (
-                  <p>Geen afbeelding gevonden</p>
-                )}
-              </div>
-              <div className={styles["fund-info"]}>
-                <div className={styles["fund-name"]}>
-                  {activityDetails.name ? (
-                    <h1>{activityDetails.name}</h1>
+        <div className={styles["content-wrapper"]}>
+          {activityDetails ? (
+            <>
+              <div className={styles["content-container"]}>
+                <div className={styles["fund-image"]}>
+                  {activityDetails.profile_picture ? (
+                    <img
+                      src={
+                        activityDetails.profile_picture
+                          .attachment_thumbnail_url_512
+                      }
+                      alt="Fund Image"
+                    />
                   ) : (
-                    <p>Geen naam gevonden</p>
+                    <p>Geen afbeelding gevonden</p>
                   )}
                 </div>
-                <div className={styles["fund-description"]}>
-                  {activityDetails.description ? (
-                    <div>
-                      <p>
-                        {showFullDescription
-                          ? activityDetails.description
-                          : `${activityDetails.description.slice(0, 250)}${
-                              activityDetails.description.length > 250
-                                ? "..."
-                                : ""
-                            }`}
-                      </p>
-                      {activityDetails.description.length > 250 && (
-                        <button
-                          onClick={() =>
-                            setShowFullDescription(!showFullDescription)
-                          }
-                          className={styles["read-more-button"]}
-                        >
-                          {showFullDescription ? "Lees minder" : "Lees meer"}
-                        </button>
-                      )}
-                    </div>
-                  ) : (
-                    <p>Geen beschrijving gevonden</p>
-                  )}
+                <div className={styles["fund-info"]}>
+                  <div className={styles["fund-name"]}>
+                    {activityDetails.name ? (
+                      <h1>{activityDetails.name}</h1>
+                    ) : (
+                      <p>Geen naam gevonden</p>
+                    )}
+                  </div>
+                  <div className={styles["fund-description"]}>
+                    {activityDetails.description ? (
+                      <div>
+                        <p>
+                          {showFullDescription
+                            ? activityDetails.description
+                            : `${activityDetails.description.slice(0, 250)}${
+                                activityDetails.description.length > 250
+                                  ? "..."
+                                  : ""
+                              }`}
+                        </p>
+                        {activityDetails.description.length > 250 && (
+                          <button
+                            onClick={() =>
+                              setShowFullDescription(!showFullDescription)
+                            }
+                            className={styles["read-more-button"]}
+                          >
+                            {showFullDescription ? "Lees minder" : "Lees meer"}
+                          </button>
+                        )}
+                      </div>
+                    ) : (
+                      <p>Geen beschrijving gevonden</p>
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
-            <div className={styles["statistics-container"]}>
-              <div
-                className={styles["fund-budget"]}
-                style={{ backgroundColor: "#E9EFFB" }}
-              >
-                {activityDetails.budget !== null ? (
-                  <>
-                    <p>
-                      Toegekend budget: <br />
-                      <span>
-                        €{" "}
-                        {activityDetails.budget.toLocaleString("nl-NL", {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                        })}
-                      </span>
-                    </p>
-                  </>
-                ) : (
-                  <p>Budget not found</p>
-                )}
-              </div>
-              <div
-                className={styles["fund-expenses"]}
-                style={{ backgroundColor: "#FEE6F0" }}
-              >
-                {activityDetails.expenses !== null ? (
-                  <>
-                    <p style={{ color: "#B82466" }}>
-                      Besteed: <br />
-                      <span style={{ color: "#B82466" }}>
-                        €{" "}
-                        {activityDetails.expenses.toLocaleString("nl-NL", {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                        })}
-                      </span>
-                    </p>
-                  </>
-                ) : (
-                  <p>Expenses not found</p>
-                )}
-              </div>
-              {availableBudget !== null && (
+              <div className={styles["statistics-container"]}>
                 <div
-                  className={styles["fund-available-budget"]}
-                  style={{ backgroundColor: "#E7FDEA" }}
+                  className={styles["fund-budget"]}
+                  style={{ backgroundColor: "#E9EFFB" }}
                 >
-                  {availableBudget !== null ? (
+                  {activityDetails.budget !== null ? (
                     <>
-                      <p style={{ color: "#008000" }}>
-                        Beschikbaar budget: <br />
-                        <span style={{ color: "#008000" }}>
+                      <p>
+                        Toegekend budget: <br />
+                        <span>
                           €{" "}
-                          {availableBudget.toLocaleString("nl-NL", {
+                          {activityDetails.budget.toLocaleString("nl-NL", {
                             minimumFractionDigits: 2,
                             maximumFractionDigits: 2,
                           })}
@@ -399,32 +369,76 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
                       </p>
                     </>
                   ) : (
-                    <p style={{ color: "#008000" }}>
-                      Available budget not found
-                    </p>
+                    <p>Budget not found</p>
                   )}
                 </div>
-              )}
+                <div
+                  className={styles["fund-expenses"]}
+                  style={{ backgroundColor: "#FEE6F0" }}
+                >
+                  {activityDetails.expenses !== null ? (
+                    <>
+                      <p style={{ color: "#B82466" }}>
+                        Besteed: <br />
+                        <span style={{ color: "#B82466" }}>
+                          €{" "}
+                          {activityDetails.expenses.toLocaleString("nl-NL", {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          })}
+                        </span>
+                      </p>
+                    </>
+                  ) : (
+                    <p>Expenses not found</p>
+                  )}
+                </div>
+                {availableBudget !== null && (
+                  <div
+                    className={styles["fund-available-budget"]}
+                    style={{ backgroundColor: "#E7FDEA" }}
+                  >
+                    {availableBudget !== null ? (
+                      <>
+                        <p style={{ color: "#008000" }}>
+                          Beschikbaar budget: <br />
+                          <span style={{ color: "#008000" }}>
+                            €{" "}
+                            {availableBudget.toLocaleString("nl-NL", {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                            })}
+                          </span>
+                        </p>
+                      </>
+                    ) : (
+                      <p style={{ color: "#008000" }}>
+                        Available budget not found
+                      </p>
+                    )}
+                  </div>
+                )}
+              </div>
+            </>
+          ) : (
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                height: "200px",
+                marginTop: "120px",
+              }}
+            >
+              <div className={styles["loading-container"]}>
+                <LoadingDot delay={0} />
+                <LoadingDot delay={0.1} />
+                <LoadingDot delay={0.1} />
+                <LoadingDot delay={0.2} />
+                <LoadingDot delay={0.2} />
+              </div>
             </div>
-          </>
-        ) : (
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              height: "200px",
-              marginTop: "120px",
-            }}
-          >
-            <div className={styles["loading-container"]}>
-              <LoadingDot delay={0} />
-              <LoadingDot delay={0.1} />
-              <LoadingDot delay={0.1} />
-              <LoadingDot delay={0.2} />
-              <LoadingDot delay={0.2} />
-            </div>
-          </div>
-        )}
+          )}
+        </div>
         <EditActivity
           isOpen={isEditActivityModalOpen}
           onClose={handleToggleEditActivitydModal}
@@ -460,6 +474,7 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
             onRefreshTrigger={handleRefreshTrigger}
             entityPermissions={entityPermissions}
             activity_name={activityDetails?.name || ""}
+            hasCreatePaymentPermission={hasCreatePaymentPermission}
           />
         )}
         {activeTab === "details" && (
@@ -468,6 +483,8 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
             description={activityDetails?.description}
             purpose={activityDetails?.purpose}
             target_audience={activityDetails?.target_audience}
+            kvk_registration={activityDetails?.initiative.kvk_registration}
+            location={activityDetails?.initiative.location}
           />
         )}
         {activeTab === "sponsoren" && (

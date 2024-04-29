@@ -60,11 +60,6 @@ const LinkInitiativePaymentToActivity: React.FC<
 
           setLinkableActivities([verbreekVerbindingOption, ...activities]);
 
-          console.log(
-            "Fetched activities:",
-            activities.map((activity) => activity.name),
-          );
-
           setIsLoading(false);
         } catch (error) {
           setIsLoading(false);
