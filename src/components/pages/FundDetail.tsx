@@ -133,8 +133,6 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
             userToken,
           );
 
-          console.log("User Permissions:", userPermissions);
-
           if (userPermissions && userPermissions.includes("edit")) {
             setHasEditPermission(true);
           } else {

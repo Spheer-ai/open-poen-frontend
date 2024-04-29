@@ -88,15 +88,12 @@ const TransactionFilters: React.FC<
     const value = option ? option.value : "";
     switch (name) {
       case "iban":
-        console.log("IBAN filter selected:", value);
         setIbanFilter(value);
         break;
       case "initiative":
-        console.log("Initiative filter selected:", value);
         setInitiativeFilter(value);
         break;
       case "activity":
-        console.log("Activity filter selected:", value);
         setActivityFilter(value);
         break;
       default:
