@@ -6,12 +6,17 @@
 }
 
 .tab-fund-container {
-  margin: 15px 0px;
+  margin: 10px 0px;
   display: flex;
   gap: 1rem;
   border-bottom: solid 1px #ebebeb;
   border-top: solid 1px #ebebeb;
   max-width: calc(100% - 20px);
+  overflow: scroll;
+
+  button {
+    padding: 1rem;
+  }
 }
 
 button {

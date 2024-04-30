@@ -466,7 +466,7 @@ const FundsTransactions: React.FC<{
                       style={{
                         color: "#265ED4",
                         fontWeight: "bold",
-                        fontSize: "14px",
+                        fontSize: "12px",
                         marginBottom: "2px",
                       }}
                     >
@@ -477,7 +477,7 @@ const FundsTransactions: React.FC<{
                       style={{
                         color: "blue",
                         fontWeight: "bold",
-                        fontSize: "14px",
+                        fontSize: "12px",
                         marginBottom: "2px",
                       }}
                     >
