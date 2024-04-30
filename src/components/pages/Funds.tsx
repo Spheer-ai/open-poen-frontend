@@ -326,7 +326,7 @@ export default function Funds() {
                     <label className={styles["value-expenses"]}>Besteed:</label>
                     <span>
                       €
-                      {initiative?.expenses.toLocaleString("nl-NL", {
+                      {Math.abs(initiative?.expenses).toLocaleString("nl-NL", {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2,
                       })}

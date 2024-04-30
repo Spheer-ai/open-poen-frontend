@@ -379,13 +379,17 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
                   {activityDetails.expenses !== null ? (
                     <>
                       <p style={{ color: "#B82466" }}>
-                        Besteed: <br />
+                        Besteed:
+                        <br />
                         <span style={{ color: "#B82466" }}>
                           €{" "}
-                          {activityDetails.expenses.toLocaleString("nl-NL", {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                          })}
+                          {Math.abs(activityDetails.expenses).toLocaleString(
+                            "nl-NL",
+                            {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                            },
+                          )}
                         </span>
                       </p>
                     </>
