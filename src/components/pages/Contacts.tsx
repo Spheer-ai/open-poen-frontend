@@ -191,7 +191,6 @@ export default function Contacts() {
     setSearchQuery(query);
 
     if (query === "") {
-      setUserList([]);
     } else {
       try {
         const usersResponse = await getUsersOrdered(
