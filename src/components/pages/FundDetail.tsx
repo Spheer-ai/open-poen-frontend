@@ -378,10 +378,13 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
                         <br />
                         <span style={{ color: "#B82466" }}>
                           €{" "}
-                          {fundDetails.expenses.toLocaleString("nl-NL", {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                          })}
+                          {Math.abs(fundDetails.expenses).toLocaleString(
+                            "nl-NL",
+                            {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                            },
+                          )}
                         </span>
                       </p>
                     </>

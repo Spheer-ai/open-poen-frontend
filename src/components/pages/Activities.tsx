@@ -258,7 +258,7 @@ export default function ActivitiesPage() {
                         </label>
                         <span>
                           €
-                          {activity.expenses.toLocaleString("nl-NL", {
+                          {Math.abs(activity.expenses).toLocaleString("nl-NL", {
                             minimumFractionDigits: 2,
                             maximumFractionDigits: 2,
                           })}

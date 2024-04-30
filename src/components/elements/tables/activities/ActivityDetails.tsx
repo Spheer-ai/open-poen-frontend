@@ -20,18 +20,20 @@ const ActivityDetails: React.FC<ActivityDetailsProps> = ({
 }) => {
   return (
     <div className={styles["details-container"]}>
-      <label>Naam</label>
-      <p>{name}</p>
-      <label>Beschrijving</label>
-      <p>{description}</p>
-      <label>Doel</label>
-      <p>{purpose}</p>
-      <label>Doelgroep</label>
-      <p>{target_audience}</p>
-      <label>Kamer van Koophandel</label>
-      <p>{kvk_registration}</p>
-      <label>Locatie-inflatie</label>
-      <p>{location}</p>
+      <div className={styles["details-wrapper"]}>
+        <label>Naam</label>
+        <p>{name}</p>
+        <label>Beschrijving</label>
+        <p>{description}</p>
+        <label>Doel</label>
+        <p>{purpose}</p>
+        <label>Doelgroep</label>
+        <p>{target_audience}</p>
+        <label>Kamer van Koophandel</label>
+        <p>{kvk_registration}</p>
+        <label>Locatie-inflatie</label>
+        <p>{location}</p>
+      </div>
     </div>
   );
 };

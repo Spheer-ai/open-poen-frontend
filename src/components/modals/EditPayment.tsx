@@ -11,6 +11,7 @@ import {
   uploadPaymentAttachment,
 } from "../middleware/Api";
 import CloseIson from "/close-icon.svg";
+import PaymentMediaPreview from "./PaymentMediaPreview";
 
 interface Attachment {
   attachment_id: number;
@@ -77,6 +78,8 @@ const EditPayment: React.FC<EditPaymentProps> = ({
   const [deletedAttachmentIds, setDeletedAttachmentIds] = useState<Set<number>>(
     new Set(),
   );
+  const [selectedMediaUrl, setSelectedMediaUrl] = useState<string | null>(null);
+  const [isPdfPreview, setIsPdfPreview] = useState<boolean>(false);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [transactionData, setTransactionData] = useState({
     transaction_amount: paymentData?.transaction_amount?.toString() || "",
@@ -95,6 +98,16 @@ const EditPayment: React.FC<EditPaymentProps> = ({
     { value: "inkomen", label: "Inkomen" },
     { value: "uitgaven", label: "Uitgaven" },
   ];
+
+  const handleOpenMediaPreview = (url: string, isPdf: boolean) => {
+    setSelectedMediaUrl(url);
+    setIsPdfPreview(isPdf);
+  };
+
+  const handleCloseMediaPreview = () => {
+    setSelectedMediaUrl(null);
+    setIsPdfPreview(false);
+  };
 
   const fetchAttachments = async () => {
     try {
@@ -384,7 +397,15 @@ const EditPayment: React.FC<EditPaymentProps> = ({
                         <div className={styles.imageContainer}>
                           <div className={styles.pdfContainer}>
                             {isPDF(attachment) ? (
-                              <div className={styles.pdfPreview}>
+                              <div
+                                className={styles.pdfPreview}
+                                onClick={() =>
+                                  handleOpenMediaPreview(
+                                    attachment.attachment_url,
+                                    true,
+                                  )
+                                }
+                              >
                                 <span>.pdf</span>
                               </div>
                             ) : isImage(attachment) ? (
@@ -393,6 +414,12 @@ const EditPayment: React.FC<EditPaymentProps> = ({
                                 alt={`Image Preview ${index + 1}`}
                                 className={styles.previewImage}
                                 style={{ borderRadius: "8px" }}
+                                onClick={() =>
+                                  handleOpenMediaPreview(
+                                    attachment.attachment_url,
+                                    false,
+                                  )
+                                }
                               />
                             ) : (
                               <div>Onbekend bestand</div>
@@ -413,7 +440,15 @@ const EditPayment: React.FC<EditPaymentProps> = ({
                     <div className={styles.imageContainer}>
                       <div className={styles.pdfContainer}>
                         {file.type === "application/pdf" ? (
-                          <div className={styles.pdfPreview}>
+                          <div
+                            className={styles.pdfPreview}
+                            onClick={() =>
+                              handleOpenMediaPreview(
+                                URL.createObjectURL(file),
+                                true,
+                              )
+                            }
+                          >
                             <span>.pdf</span>
                           </div>
                         ) : (
@@ -422,6 +457,12 @@ const EditPayment: React.FC<EditPaymentProps> = ({
                             alt={`Image Preview ${index + 1}`}
                             className={styles.previewImage}
                             style={{ borderRadius: "8px" }}
+                            onClick={() =>
+                              handleOpenMediaPreview(
+                                URL.createObjectURL(file),
+                                false,
+                              )
+                            }
                           />
                         )}
                         <button
@@ -720,6 +761,13 @@ const EditPayment: React.FC<EditPaymentProps> = ({
           </button>
         </div>
       </div>
+      {selectedMediaUrl && (
+        <PaymentMediaPreview
+          mediaUrl={selectedMediaUrl}
+          isPdf={isPdfPreview}
+          onClose={handleCloseMediaPreview}
+        />
+      )}
     </>
   );
 };

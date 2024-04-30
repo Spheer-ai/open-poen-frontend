@@ -148,7 +148,13 @@ const FundsActivities: React.FC<{
                   >
                     Besteed:
                   </label>
-                  <span>€{activity.expenses}</span>
+                  <span>
+                    €
+                    {Math.abs(activity.expenses).toLocaleString("nl-NL", {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })}
+                  </span>
                 </div>
               </li>
             </div>

@@ -38,7 +38,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 999;
+  z-index: 99900;
 }
 
 .image-preview {
@@ -53,7 +53,8 @@
 
 .preview-container {
   width: 90%;
-  max-height: 75%;
+  max-width: 1000px;
+  max-height: 700px;
   overflow: hidden;
   transition: opacity 0.3s ease;
 

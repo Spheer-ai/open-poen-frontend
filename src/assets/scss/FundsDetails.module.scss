@@ -1,6 +1,20 @@
 .details-container {
-  padding: 30px;
+  padding: 20px 30px;
   overflow-wrap: break-word;
+  min-height: 300px;
+  max-height: 400px;
+  padding-bottom: 200px;
+  display: block;
+  overflow: scroll;
+
+  .details-wrapper {
+    height: 100%;
+    display: block;
+  }
+
+  p {
+    font-size: 14px;
+  }
 }
 
 @media (max-width: 768px) {
