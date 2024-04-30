@@ -67,7 +67,9 @@ const MyProfile: React.FC<MyProfileProps> = ({
     return null;
   }
 
-  const fullName = `${myProfileData.first_name} ${myProfileData.last_name}`;
+  const fullName = `${myProfileData.first_name || "Voornaam"} ${
+    myProfileData.last_name || ""
+  }`;
 
   return (
     <div className={`${styles["user-list-profile"]}`}>
