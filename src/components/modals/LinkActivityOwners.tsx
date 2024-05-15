@@ -105,7 +105,7 @@ const LinkActivityOwner: React.FC<LinkActivityOwnerProps> = ({
     try {
       const trimmedSearchTerm = searchTerm.trim();
 
-      if (trimmedSearchTerm.length < 3) {
+      if (trimmedSearchTerm.length < 1) {
         setSearchedUsers([]);
         return;
       }
@@ -122,7 +122,7 @@ const LinkActivityOwner: React.FC<LinkActivityOwnerProps> = ({
   };
 
   useEffect(() => {
-    if (searchTerm.length >= 3) {
+    if (searchTerm.length >= 1) {
       handleSearch();
     }
   }, [searchTerm]);
