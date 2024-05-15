@@ -197,7 +197,7 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
   };
 
   const handleFundEdited = () => {
-    setRefreshTrigger((prev) => prev);
+    setRefreshTrigger((prev) => prev + 1);
   };
 
   const handleToggleDeleteFundModal = () => {
