@@ -65,6 +65,7 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
   initiativeId,
   activityId,
   authToken,
+  onActivityEdited,
 }) => {
   const [activeTab, setActiveTab] = useState("transactieoverzicht");
   const location = useLocation();
@@ -224,6 +225,7 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
 
   const handleActivityEdited = () => {
     setRefreshTrigger((prev) => prev + 1);
+    onActivityEdited();
   };
 
   useEffect(() => {
