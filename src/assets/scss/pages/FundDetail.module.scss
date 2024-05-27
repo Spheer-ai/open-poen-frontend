@@ -3,10 +3,10 @@
   flex-direction: column;
   padding: 10px 50px;
   position: relative;
+  height: 100vh;
 
   .content-wrapper {
     display: flex;
-    min-height: 35vh;
     flex-direction: column;
     justify-content: space-between;
   }

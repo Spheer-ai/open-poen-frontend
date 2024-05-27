@@ -231,7 +231,9 @@ export default function ActivitiesPage() {
                 Geen activiteiten gevonden
               </p>
             ) : (
-              <ul className={styles["shared-unordered-list"]}>
+              <ul
+                className={`${styles["shared-unordered-list"]} ${styles["activity-list"]}`}
+              >
                 {activities.map((activity, index) => (
                   <div
                     className={`${styles["shared-styling"]} ${styles["initiative-fade-in"]}`}
