@@ -12,7 +12,6 @@
   border-bottom: solid 1px #ebebeb;
   border-top: solid 1px #ebebeb;
   max-width: calc(100% - 20px);
-  overflow: scroll;
 
   button {
     padding: 1rem;
@@ -37,6 +36,7 @@ button {
 @media (max-width: 768px) {
   .tab-fund-container {
     max-width: calc(100%);
+    overflow: scroll;
     overflow-x: auto;
   }
 

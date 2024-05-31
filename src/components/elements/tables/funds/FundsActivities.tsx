@@ -39,7 +39,13 @@ const FundsActivities: React.FC<{
             user?.token || "",
           );
           const updatedActivities = result.activities || [];
-          setActivities(updatedActivities);
+          const activitiesWithBeschikbaar = updatedActivities.map(
+            (activity) => ({
+              ...activity,
+              beschikbaar: activity.budget + activity.expenses,
+            }),
+          );
+          setActivities(activitiesWithBeschikbaar);
         } catch (error) {
           console.error("Error fetching activities:", error);
           setError("Error fetching activities.");
@@ -52,19 +58,19 @@ const FundsActivities: React.FC<{
     }
   }, [initiativeId, user]);
 
-  const calculateBarWidth = (income, expenses) => {
-    const total = Math.abs(income) + Math.abs(expenses);
+  const calculateBarWidth = (beschikbaar, besteed) => {
+    const total = Math.abs(beschikbaar) + Math.abs(besteed);
     if (total === 0) {
       return {
-        incomeWidth: "50%",
-        expensesWidth: "50%",
+        beschikbaarWidth: "50%",
+        besteedWidth: "50%",
       };
     }
-    const incomeWidth = `${(Math.abs(income) / total) * 100}%`;
-    const expensesWidth = `${(Math.abs(expenses) / total) * 100}%`;
+    const beschikbaarWidth = `${(Math.abs(beschikbaar) / total) * 100}%`;
+    const besteedWidth = `${(Math.abs(besteed) / total) * 100}%`;
     return {
-      incomeWidth,
-      expensesWidth,
+      beschikbaarWidth,
+      besteedWidth,
     };
   };
 
@@ -105,55 +111,58 @@ const FundsActivities: React.FC<{
               </li>
               <div className={styles["values-bar"]}>
                 <div
-                  key={`income-${activity.id}`}
-                  className={styles["income-bar"]}
+                  key={`besteed-${activity.id}`}
+                  className={styles["expenses-bar"]}
                   style={{
-                    width: calculateBarWidth(activity.income, activity.expenses)
-                      .incomeWidth,
+                    width: calculateBarWidth(
+                      activity.budget + activity.expenses,
+                      activity.expenses,
+                    ).besteedWidth,
                   }}
                 ></div>
                 <div
-                  key={`expenses-${activity.id}`}
-                  className={styles["expenses-bar"]}
+                  key={`beschikbaar-${activity.id}`}
+                  className={styles["income-bar"]}
                   style={{
-                    width: calculateBarWidth(activity.income, activity.expenses)
-                      .expensesWidth,
+                    width: calculateBarWidth(
+                      activity.budget + activity.expenses,
+                      activity.expenses,
+                    ).beschikbaarWidth,
                   }}
                 ></div>
               </div>
               <li key={activity.id} className={styles["shared-list"]}>
                 <div className={styles["shared-values"]}>
-                  <label>Begroting:</label>
-                  <span>€{activity.budget}</span>
+                  <label>Toegekend:</label>
+                  <span>
+                    €
+                    {activity.budget.toLocaleString("nl-NL", {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })}
+                  </span>
                 </div>
                 <div className={styles["shared-values"]}>
-                  <label
-                    className={
-                      activity.income
-                        ? styles["value-income"]
-                        : styles["value-expenses"]
-                    }
-                  >
-                    Beschikbaar:
-                  </label>
-                  <span>€{activity.income}</span>
-                </div>
-                <div className={styles["shared-values"]}>
-                  <label
-                    className={
-                      activity.expenses
-                        ? styles["value-expenses"]
-                        : styles["value-income"]
-                    }
-                  >
-                    Besteed:
-                  </label>
+                  <label className={styles["value-expenses"]}>Besteed:</label>
                   <span>
                     €
                     {Math.abs(activity.expenses).toLocaleString("nl-NL", {
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 2,
                     })}
+                  </span>
+                </div>
+                <div className={styles["shared-values"]}>
+                  <label className={styles["value-income"]}>Beschikbaar:</label>
+                  <span>
+                    €
+                    {(activity.budget + activity.expenses).toLocaleString(
+                      "nl-NL",
+                      {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      },
+                    )}
                   </span>
                 </div>
               </li>

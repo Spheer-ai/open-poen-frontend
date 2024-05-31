@@ -4,11 +4,6 @@ import FundImageUploader from "../elements/uploadder/FundImageUploader";
 import { editFund, uploadFundPicture } from "../middleware/Api";
 import CloseIson from "/close-icon.svg";
 
-interface InitiativeOwner {
-  id: number;
-  email: string;
-}
-
 interface FundDetails {
   id?: number;
   name?: string;
@@ -173,14 +168,14 @@ const EditFund: React.FC<EditFundProps> = ({
                   if (isSaveClicked) {
                     if (!newName.trim()) {
                       setNameError("Naam mag niet leeg zijn");
+                    } else if (newName.length > 64) {
+                      setNameError("Naam mag maximaal 64 tekens bevatten");
                     } else {
                       setNameError("");
                     }
                   }
 
-                  if (newName.length <= 64) {
-                    setFormData({ ...formData, name: newName });
-                  }
+                  setFormData({ ...formData, name: newName });
                 }}
               />
               {isSaveClicked && nameError && (
@@ -275,12 +270,10 @@ const EditFund: React.FC<EditFundProps> = ({
                     }
                   }
 
-                  if (newTargetAudience.length <= 64) {
-                    setFormData({
-                      ...formData,
-                      target_audience: newTargetAudience,
-                    });
-                  }
+                  setFormData({
+                    ...formData,
+                    target_audience: newTargetAudience,
+                  });
                   setCharCount(newTargetAudience.length);
                 }}
               />

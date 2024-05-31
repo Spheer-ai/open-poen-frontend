@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import TopNavigationBar from "../ui/top-navigation-bar/TopNavigationBar";
 import styles from "../../assets/scss/Funds.module.scss";
@@ -18,17 +18,18 @@ interface Activities {
   expenses: number;
   initiativeName: string;
   hidden: boolean;
+  beschikbaar?: number;
 }
 
 export default function ActivitiesPage() {
   const navigate = useNavigate();
-
   const { user } = useAuth();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isBlockingInteraction, setIsBlockingInteraction] = useState(false);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const { fetchPermissions } = usePermissions();
   const [permissionsFetched, setPermissionsFetched] = useState(false);
+  const permissionsRef = useRef(false);
   const [entityPermissions, setEntityPermissions] = useState<string[]>([]);
   const hasPermission = entityPermissions.includes("create_activity");
   const [activities, setActivities] = useState<Activities[]>([]);
@@ -40,7 +41,7 @@ export default function ActivitiesPage() {
   const location = useLocation();
   const isMobile = window.innerWidth <= 768;
 
-  useEffect(() => {
+  const loadActivities = useCallback(async () => {
     setIsLoading(true);
 
     if (!initiativeId) {
@@ -48,51 +49,78 @@ export default function ActivitiesPage() {
       return;
     }
 
-    fetchActivities(Number(initiativeId), user?.token ?? "")
-      .then((initiativeData) => {
-        const updatedActivities = initiativeData.activities || [];
-        setInitiativeName(initiativeData.name);
+    console.log("Fetching activities for initiativeId:", initiativeId);
 
-        const activitiesWithInitiativeNames = updatedActivities.map(
-          (activity) => ({
-            ...activity,
-            initiativeName: initiativeData.name,
-          }),
-        );
-        setActivities(activitiesWithInitiativeNames);
-        setIsLoading(false);
-        setIsActivitiesLoaded(true);
-      })
-      .catch((error) => {
-        console.error("Error fetching activities:", error);
-        setIsLoading(false);
-      });
-  }, [initiativeId, user?.token, refreshTrigger]);
+    try {
+      const initiativeData = await fetchActivities(
+        Number(initiativeId),
+        user?.token ?? "",
+      );
+      console.log("Fetched initiative data:", initiativeData);
+
+      const updatedActivities = initiativeData.activities || [];
+      setInitiativeName(initiativeData.name);
+
+      const activitiesWithInitiativeNames = updatedActivities.map(
+        (activity) => ({
+          ...activity,
+          initiativeName: initiativeData.name,
+          beschikbaar: activity.budget + activity.expenses,
+        }),
+      );
+      console.log(
+        "Updated activities with initiative names:",
+        activitiesWithInitiativeNames,
+      );
+
+      setActivities(activitiesWithInitiativeNames);
+      setIsLoading(false);
+      setIsActivitiesLoaded(true);
+    } catch (error) {
+      console.error("Error fetching activities:", error);
+      setIsLoading(false);
+    }
+  }, [initiativeId, user?.token]);
+
+  useEffect(() => {
+    console.log("useEffect for loading activities triggered");
+    loadActivities();
+  }, [loadActivities, refreshTrigger]);
+
+  useEffect(() => {
+    if (
+      isActivitiesLoaded &&
+      initiativeId &&
+      user?.token &&
+      !permissionsRef.current
+    ) {
+      const loadPermissions = async () => {
+        console.log("Fetching permissions for initiativeId:", initiativeId);
+
+        try {
+          const permissions = await fetchPermissions(
+            "Initiative",
+            parseInt(initiativeId),
+            user.token,
+          );
+          console.log("Fetched permissions:", permissions);
+
+          setEntityPermissions(permissions || []);
+          setPermissionsFetched(true);
+          permissionsRef.current = true;
+        } catch (error) {
+          console.error("Failed to fetch permissions:", error);
+          setPermissionsFetched(true);
+        }
+      };
+
+      loadPermissions();
+    }
+  }, [isActivitiesLoaded, initiativeId, user?.token, fetchPermissions]);
 
   useEffect(() => {
     if (activityId) {
-      setSelectedActivity(activityId);
-    }
-  }, [activityId]);
-
-  useEffect(() => {
-    if (initiativeId) {
-      if (user?.token && !permissionsFetched) {
-        fetchPermissions("Initiative", parseInt(initiativeId), user.token)
-          .then((permissions) => {
-            setEntityPermissions(permissions || []);
-            setPermissionsFetched(true);
-          })
-          .catch((error) => {
-            console.error("Failed to fetch permissions:", error);
-            setPermissionsFetched(true);
-          });
-      }
-    }
-  }, [user, fetchPermissions, permissionsFetched, initiativeId]);
-
-  useEffect(() => {
-    if (activityId) {
+      console.log("Setting selectedActivity:", activityId);
       setSelectedActivity(activityId);
     } else if (
       location.pathname.includes("/funds/") &&
@@ -101,39 +129,46 @@ export default function ActivitiesPage() {
       const activityIdFromPath = location.pathname.split("/").pop();
 
       if (activityIdFromPath) {
+        console.log("Setting selectedActivity from path:", activityIdFromPath);
         setSelectedActivity(activityIdFromPath);
       }
     }
-  }, [activityId, location]);
+  }, [activityId, location.pathname]);
 
-  const calculateBarWidth = (income, expenses) => {
-    const total = Math.abs(income) + Math.abs(expenses);
+  const calculateBarWidth = (beschikbaar, besteed) => {
+    const total = Math.abs(beschikbaar) + Math.abs(besteed);
     if (total === 0) {
       return {
-        incomeWidth: "50%",
-        expensesWidth: "50%",
+        beschikbaarWidth: "50%",
+        besteedWidth: "50%",
       };
     }
-    const incomeWidth = `${(Math.abs(income) / total) * 100}%`;
-    const expensesWidth = `${(Math.abs(expenses) / total) * 100}%`;
+    const beschikbaarWidth = `${(Math.abs(beschikbaar) / total) * 100}%`;
+    const besteedWidth = `${(Math.abs(besteed) / total) * 100}%`;
     return {
-      incomeWidth,
-      expensesWidth,
+      beschikbaarWidth,
+      besteedWidth,
     };
   };
 
-  const handleSearch = (query) => {};
+  const handleSearch = (query) => {
+    console.log("Search query:", query);
+  };
 
   const handleBackClick = () => {
+    console.log("Back button clicked");
     navigate("/funds");
   };
 
   const handleTitleClick = () => {
+    console.log("Title clicked");
     setSelectedActivity(null);
     navigate(`/funds/${initiativeId}`);
   };
 
   const handleToggleAddActivityModal = () => {
+    console.log("Toggling add activity modal, isModalOpen:", isModalOpen);
+
     if (isModalOpen) {
       setIsBlockingInteraction(true);
       setTimeout(() => {
@@ -148,22 +183,24 @@ export default function ActivitiesPage() {
   };
 
   const handleActivityAdded = () => {
+    console.log("Activity added");
+    setRefreshTrigger((prev) => prev + 1);
+  };
+
+  const handleActivityEdited = () => {
+    console.log("Activity edited");
     setRefreshTrigger((prev) => prev + 1);
   };
 
   const handleActivityClick = (activityId) => {
+    console.log("Activity clicked:", activityId);
     setSelectedActivity(activityId);
     navigate(`/funds/${initiativeId}/activities/${activityId}`);
   };
 
   return (
     <div className={styles["container"]}>
-      <div
-        className={styles["side-panel"]}
-        style={{
-          height: "auto",
-        }}
-      >
+      <div className={styles["side-panel"]} style={{ height: "auto" }}>
         <TopNavigationBar
           title={`Activiteiten`}
           subtitle={`${initiativeName}`}
@@ -194,14 +231,14 @@ export default function ActivitiesPage() {
                 Geen activiteiten gevonden
               </p>
             ) : (
-              <ul className={styles["shared-unordered-list"]}>
+              <ul
+                className={`${styles["shared-unordered-list"]} ${styles["activity-list"]}`}
+              >
                 {activities.map((activity, index) => (
                   <div
                     className={`${styles["shared-styling"]} ${styles["initiative-fade-in"]}`}
                     key={`${activity?.id}-${index}`}
-                    style={{
-                      animationDelay: `${index * 0.2}s`,
-                    }}
+                    style={{ animationDelay: `${index * 0.2}s` }}
                     onClick={() => handleActivityClick(activity.id)}
                   >
                     <li className={styles["shared-name"]}>
@@ -209,44 +246,32 @@ export default function ActivitiesPage() {
                     </li>
                     <div className={styles["values-bar"]}>
                       <div
-                        key={`income-${activity.id}`}
-                        className={styles["income-bar"]}
-                        style={{
-                          width: calculateBarWidth(
-                            activity.income,
-                            activity.expenses,
-                          ).incomeWidth,
-                        }}
-                      ></div>
-                      <div
-                        key={`expenses-${activity.id}`}
+                        key={`besteed-${activity.id}`}
                         className={styles["expenses-bar"]}
                         style={{
                           width: calculateBarWidth(
-                            activity.income,
+                            activity.budget + activity.expenses,
                             activity.expenses,
-                          ).expensesWidth,
+                          ).besteedWidth,
+                        }}
+                      ></div>
+                      <div
+                        key={`beschikbaar-${activity.id}`}
+                        className={styles["income-bar"]}
+                        style={{
+                          width: calculateBarWidth(
+                            activity.budget + activity.expenses,
+                            activity.expenses,
+                          ).beschikbaarWidth,
                         }}
                       ></div>
                     </div>
                     <li key={activity.id} className={styles["shared-list"]}>
                       <div className={styles["shared-values"]}>
-                        <label>Begroting:</label>
+                        <label>Toegekend:</label>
                         <span>
                           €
                           {activity.budget.toLocaleString("nl-NL", {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                          })}
-                        </span>
-                      </div>
-                      <div className={styles["shared-values"]}>
-                        <label className={styles["value-income"]}>
-                          Beschikbaar:
-                        </label>
-                        <span>
-                          €
-                          {activity.income.toLocaleString("nl-NL", {
                             minimumFractionDigits: 2,
                             maximumFractionDigits: 2,
                           })}
@@ -262,6 +287,21 @@ export default function ActivitiesPage() {
                             minimumFractionDigits: 2,
                             maximumFractionDigits: 2,
                           })}
+                        </span>
+                      </div>
+                      <div className={styles["shared-values"]}>
+                        <label className={styles["value-income"]}>
+                          Beschikbaar:
+                        </label>
+                        <span>
+                          €
+                          {(activity.budget + activity.expenses).toLocaleString(
+                            "nl-NL",
+                            {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                            },
+                          )}
                         </span>
                       </div>
                     </li>
@@ -289,7 +329,7 @@ export default function ActivitiesPage() {
             activityId={selectedActivity}
             authToken={user?.token || ""}
             initiativeId={initiativeId || ""}
-            onActivityEdited={() => {}}
+            onActivityEdited={handleActivityEdited}
           />
         ) : initiativeId !== null ? (
           <FundDetail
