@@ -4,11 +4,6 @@ import ActivityImageUploader from "../elements/uploadder/ActivityImageUploader";
 import { editActivity, uploadActivityPicture } from "../middleware/Api";
 import CloseIson from "/close-icon.svg";
 
-interface ActivityOwner {
-  id: number;
-  email: string;
-}
-
 interface ActivityDetails {
   id?: number;
   name?: string;
@@ -72,7 +67,6 @@ const EditActivity: React.FC<EditActivityProps> = ({
   useEffect(() => {
     if (isOpen && activityData) {
       setFormData(activityData);
-
       setCharCount(
         activityData.description ? activityData.description.length : 0,
       );
@@ -87,7 +81,7 @@ const EditActivity: React.FC<EditActivityProps> = ({
 
   const handleSave = async () => {
     setIsSaveClicked(true);
-    if (charCount > 64) {
+    if (!formData?.name || formData?.name.trim().length > 64) {
       setNameError("Naam mag maximaal 64 tekens bevatten");
       return;
     }
@@ -188,25 +182,19 @@ const EditActivity: React.FC<EditActivityProps> = ({
                   if (isSaveClicked) {
                     if (!newName.trim()) {
                       setNameError("Naam mag niet leeg zijn");
+                    } else if (newName.length > 64) {
+                      setNameError("Naam mag maximaal 64 tekens bevatten");
                     } else {
                       setNameError("");
                     }
                   }
 
-                  if (newName.length <= 64) {
-                    setFormData({ ...formData, name: newName });
-                  }
-                  setCharCount(newName.length);
+                  setFormData({ ...formData, name: newName });
                 }}
               />
               {isSaveClicked && nameError && (
                 <p style={{ color: "red", display: "block", marginTop: "5px" }}>
                   {nameError}
-                </p>
-              )}
-              {charCount > 64 && (
-                <p className={styles.error}>
-                  Naam mag maximaal 64 tekens bevatten
                 </p>
               )}
             </>
@@ -296,13 +284,10 @@ const EditActivity: React.FC<EditActivityProps> = ({
                     }
                   }
 
-                  if (newTargetAudience.length <= 64) {
-                    setFormData({
-                      ...formData,
-                      target_audience: newTargetAudience,
-                    });
-                  }
-                  setCharCount(newTargetAudience.length);
+                  setFormData({
+                    ...formData,
+                    target_audience: newTargetAudience,
+                  });
                 }}
               />
               {isSaveClicked && targetAudienceError && (
