@@ -20,6 +20,7 @@ interface Initiative {
   income: number;
   expenses: number;
   hidden: boolean;
+  beschikbaar?: number;
 }
 
 export default function Funds() {
@@ -106,20 +107,27 @@ export default function Funds() {
 
       fetchInitiatives(apiToken, onlyMine, offset, limit)
         .then((initiativesData: Initiative[]) => {
+          const initiativesWithBeschikbaar = initiativesData.map(
+            (initiative) => ({
+              ...initiative,
+              beschikbaar: initiative.budget + initiative.expenses,
+            }),
+          );
+
           setAllFetchedInitiatives((prevInitiatives) => [
             ...prevInitiatives,
-            ...initiativesData,
+            ...initiativesWithBeschikbaar,
           ]);
 
           if (onlyMine) {
             setMyInitiatives((prevMyInitiatives) => [
               ...prevMyInitiatives,
-              ...initiativesData,
+              ...initiativesWithBeschikbaar,
             ]);
           } else {
             setAllInitiatives((prevAllInitiatives) => [
               ...prevAllInitiatives,
-              ...initiativesData,
+              ...initiativesWithBeschikbaar,
             ]);
           }
 
@@ -279,32 +287,42 @@ export default function Funds() {
 
                 <div className={styles["values-bar"]}>
                   <div
-                    key={`income-${initiative?.id}`}
-                    className={styles["income-bar"]}
-                    style={{
-                      width: calculateBarWidth(
-                        initiative?.income,
-                        initiative?.expenses,
-                      )?.incomeWidth,
-                    }}
-                  ></div>
-                  <div
                     key={`expenses-${initiative?.id}`}
                     className={styles["expenses-bar"]}
                     style={{
                       width: calculateBarWidth(
-                        initiative?.income,
+                        initiative?.budget + initiative?.expenses,
                         initiative?.expenses,
-                      )?.expensesWidth,
+                      ).expensesWidth,
+                    }}
+                  ></div>
+                  <div
+                    key={`income-${initiative?.id}`}
+                    className={styles["income-bar"]}
+                    style={{
+                      width: calculateBarWidth(
+                        initiative?.budget + initiative?.expenses,
+                        initiative?.expenses,
+                      ).incomeWidth,
                     }}
                   ></div>
                 </div>
                 <li className={styles["shared-list"]}>
                   <div className={styles["shared-values"]}>
-                    <label>Begroting:</label>
+                    <label>Toegekend:</label>
                     <span>
                       €
                       {initiative?.budget.toLocaleString("nl-NL", {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}
+                    </span>
+                  </div>
+                  <div className={styles["shared-values"]}>
+                    <label className={styles["value-expenses"]}>Besteed:</label>
+                    <span>
+                      €
+                      {Math.abs(initiative?.expenses).toLocaleString("nl-NL", {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2,
                       })}
@@ -316,17 +334,9 @@ export default function Funds() {
                     </label>
                     <span>
                       €
-                      {initiative?.income.toLocaleString("nl-NL", {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })}
-                    </span>
-                  </div>
-                  <div className={styles["shared-values"]}>
-                    <label className={styles["value-expenses"]}>Besteed:</label>
-                    <span>
-                      €
-                      {Math.abs(initiative?.expenses).toLocaleString("nl-NL", {
+                      {(
+                        initiative?.budget + initiative?.expenses
+                      ).toLocaleString("nl-NL", {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2,
                       })}
