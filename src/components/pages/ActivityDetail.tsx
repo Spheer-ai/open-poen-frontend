@@ -353,69 +353,60 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
                 </div>
               </div>
               <div className={styles["statistics-container"]}>
-                <div
-                  className={styles["fund-budget"]}
-                  style={{ backgroundColor: "#E9EFFB" }}
-                >
+                <div className={styles["fund-budget"]}>
                   {activityDetails.budget !== null ? (
                     <>
                       <p>
                         Toegekend budget: <br />
-                        <span>
-                          €{" "}
-                          {activityDetails.budget.toLocaleString("nl-NL", {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                          })}
-                        </span>
                       </p>
+                      <span>
+                        €{" "}
+                        {activityDetails.budget.toLocaleString("nl-NL", {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })}
+                      </span>
                     </>
                   ) : (
                     <p>Budget not found</p>
                   )}
                 </div>
-                <div
-                  className={styles["fund-expenses"]}
-                  style={{ backgroundColor: "#FEE6F0" }}
-                >
+                <div className={styles["fund-expenses"]}>
                   {activityDetails.expenses !== null ? (
                     <>
-                      <p style={{ color: "#B82466" }}>
+                      <p>
                         Besteed:
                         <br />
-                        <span style={{ color: "#B82466" }}>
-                          €{" "}
-                          {Math.abs(activityDetails.expenses).toLocaleString(
-                            "nl-NL",
-                            {
-                              minimumFractionDigits: 2,
-                              maximumFractionDigits: 2,
-                            },
-                          )}
-                        </span>
                       </p>
+                      <span style={{ color: "#B82466" }}>
+                        €{" "}
+                        {Math.abs(activityDetails.expenses).toLocaleString(
+                          "nl-NL",
+                          {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          },
+                        )}
+                      </span>
                     </>
                   ) : (
                     <p>Expenses not found</p>
                   )}
                 </div>
                 {availableBudget !== null && (
-                  <div
-                    className={styles["fund-available-budget"]}
-                    style={{ backgroundColor: "#E7FDEA" }}
-                  >
+                  <div className={styles["fund-available-budget"]}>
                     {availableBudget !== null ? (
                       <>
-                        <p style={{ color: "#008000" }}>
+                        <p>
                           Beschikbaar budget: <br />
-                          <span style={{ color: "#008000" }}>
-                            €{" "}
-                            {availableBudget.toLocaleString("nl-NL", {
-                              minimumFractionDigits: 2,
-                              maximumFractionDigits: 2,
-                            })}
-                          </span>
                         </p>
+                        <span style={{ color: "#008000" }}>
+                          €{" "}
+                          {availableBudget.toLocaleString("nl-NL", {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          })}
+                        </span>
                       </>
                     ) : (
                       <p style={{ color: "#008000" }}>

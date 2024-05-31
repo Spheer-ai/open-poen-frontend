@@ -325,95 +325,65 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
                 </div>
               </div>
               <div className={styles["statistics-container"]}>
-                <div
-                  className={styles["fund-budget"]}
-                  style={{ backgroundColor: "#E9EFFB" }}
-                >
+                <div className={styles["fund-budget"]}>
                   {fundDetails.budget !== null ? (
                     <>
-                      <p>
-                        Toegekend budget: <br />
-                        <span>
-                          €{" "}
-                          {fundDetails.budget.toLocaleString("nl-NL", {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                          })}
-                        </span>
-                      </p>
-                    </>
-                  ) : (
-                    <p>Geen toegekend budget gevonden</p>
-                  )}
-                </div>
-                <div
-                  className={styles["fund-income"]}
-                  style={{ backgroundColor: "#E9EFFB" }}
-                >
-                  {fundDetails.income !== null ? (
-                    <>
-                      <p>
-                        Ontvangen budget: <br />
-                        <span>
-                          €{" "}
+                      <p>Toegekend budget:</p>
+                      <span>
+                        €{" "}
+                        {fundDetails.budget.toLocaleString("nl-NL", {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })}
+                      </span>
+                      <div className={styles["tooltip"]}>
+                        <span className={styles["tooltip-text"]}>
+                          Waarvan ontvangen: €{" "}
                           {fundDetails.income.toLocaleString("nl-NL", {
                             minimumFractionDigits: 2,
                             maximumFractionDigits: 2,
                           })}
                         </span>
-                      </p>
+                      </div>
                     </>
                   ) : (
-                    <p>Geen inkomsten gevonden</p>
+                    <p>Geen toegekend budget gevonden</p>
                   )}
                 </div>
-                <div
-                  className={styles["fund-expenses"]}
-                  style={{ backgroundColor: "#FEE6F0" }}
-                >
+                <div className={styles["fund-expenses"]}>
                   {fundDetails.expenses !== null ? (
                     <>
-                      <p style={{ color: "#B82466" }}>
-                        Besteed:
-                        <br />
-                        <span style={{ color: "#B82466" }}>
-                          €{" "}
-                          {Math.abs(fundDetails.expenses).toLocaleString(
-                            "nl-NL",
-                            {
-                              minimumFractionDigits: 2,
-                              maximumFractionDigits: 2,
-                            },
-                          )}
-                        </span>
-                      </p>
+                      <p>Besteed:</p>
+                      <span style={{ color: "#B82466" }}>
+                        €{" "}
+                        {Math.abs(fundDetails.expenses).toLocaleString(
+                          "nl-NL",
+                          {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          },
+                        )}
+                      </span>
                     </>
                   ) : (
                     <p>Geen besteed budget gevonden</p>
                   )}
                 </div>
                 {availableBudget !== null && (
-                  <div
-                    className={styles["fund-available-budget"]}
-                    style={{ backgroundColor: "#E7FDEA" }}
-                  >
+                  <div className={styles["fund-available-budget"]}>
                     {availableBudget !== null ? (
                       <>
-                        <p style={{ color: "#008000" }}>
-                          Beschikbaar budget: <br />
-                          <span style={{ color: "#008000" }}>
-                            €{" "}
-                            {availableBudget.toLocaleString("nl-NL", {
-                              minimumFractionDigits: 2,
-                              maximumFractionDigits: 2,
-                            })}
-                          </span>
-                        </p>
+                        <p>Beschikbaar budget:</p>
+                        <span style={{ color: "#008000" }}>
+                          €{" "}
+                          {availableBudget.toLocaleString("nl-NL", {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          })}
+                        </span>
                       </>
                     ) : (
-                      <p style={{ color: "#008000" }}>
-                        Available budget not found
-                      </p>
+                      <p>Available budget not found</p>
                     )}
                   </div>
                 )}
