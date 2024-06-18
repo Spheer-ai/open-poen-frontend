@@ -108,10 +108,13 @@ export default function Funds() {
       fetchInitiatives(apiToken, onlyMine, offset, limit)
         .then((initiativesData: Initiative[]) => {
           const initiativesWithBeschikbaar = initiativesData.map(
-            (initiative) => ({
-              ...initiative,
-              beschikbaar: initiative.budget + initiative.expenses,
-            }),
+            (initiative) => {
+              const beschikbaar = Math.max(
+                initiative.budget + initiative.expenses,
+                0,
+              );
+              return { ...initiative, beschikbaar };
+            },
           );
 
           setAllFetchedInitiatives((prevInitiatives) => [
@@ -190,19 +193,24 @@ export default function Funds() {
     });
   };
 
-  const calculateBarWidth = (income, expenses) => {
-    const total = Math.abs(income) + Math.abs(expenses);
+  const calculateBarWidth = (budget, expenses) => {
+    const available = Math.max(budget + expenses, 0);
+    const spent = Math.abs(expenses);
+    const total = available + spent;
+
     if (total === 0) {
       return {
-        incomeWidth: "50%",
-        expensesWidth: "50%",
+        availableWidth: "50%",
+        spentWidth: "50%",
       };
     }
-    const incomeWidth = `${(Math.abs(income) / total) * 100}%`;
-    const expensesWidth = `${(Math.abs(expenses) / total) * 100}%`;
+
+    const availableWidth = `${(available / total) * 100}%`;
+    const spentWidth = `${(spent / total) * 100}%`;
+
     return {
-      incomeWidth,
-      expensesWidth,
+      availableWidth,
+      spentWidth,
     };
   };
 
@@ -291,9 +299,9 @@ export default function Funds() {
                     className={styles["expenses-bar"]}
                     style={{
                       width: calculateBarWidth(
-                        initiative?.budget + initiative?.expenses,
+                        initiative?.budget,
                         initiative?.expenses,
-                      ).expensesWidth,
+                      ).spentWidth,
                     }}
                   ></div>
                   <div
@@ -301,9 +309,9 @@ export default function Funds() {
                     className={styles["income-bar"]}
                     style={{
                       width: calculateBarWidth(
-                        initiative?.budget + initiative?.expenses,
+                        initiative?.budget,
                         initiative?.expenses,
-                      ).incomeWidth,
+                      ).availableWidth,
                     }}
                   ></div>
                 </div>
@@ -334,9 +342,7 @@ export default function Funds() {
                     </label>
                     <span>
                       €
-                      {(
-                        initiative?.budget + initiative?.expenses
-                      ).toLocaleString("nl-NL", {
+                      {(initiative?.beschikbaar ?? 0).toLocaleString("nl-NL", {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2,
                       })}

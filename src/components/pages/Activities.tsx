@@ -65,7 +65,7 @@ export default function ActivitiesPage() {
         (activity) => ({
           ...activity,
           initiativeName: initiativeData.name,
-          beschikbaar: activity.budget + activity.expenses,
+          beschikbaar: Math.max(activity.budget + activity.expenses, 0),
         }),
       );
       console.log(
@@ -135,19 +135,24 @@ export default function ActivitiesPage() {
     }
   }, [activityId, location.pathname]);
 
-  const calculateBarWidth = (beschikbaar, besteed) => {
-    const total = Math.abs(beschikbaar) + Math.abs(besteed);
+  const calculateBarWidth = (budget, expenses) => {
+    const available = Math.max(budget + expenses, 0);
+    const spent = Math.abs(expenses);
+    const total = available + spent;
+
     if (total === 0) {
       return {
-        beschikbaarWidth: "50%",
-        besteedWidth: "50%",
+        availableWidth: "50%",
+        spentWidth: "50%",
       };
     }
-    const beschikbaarWidth = `${(Math.abs(beschikbaar) / total) * 100}%`;
-    const besteedWidth = `${(Math.abs(besteed) / total) * 100}%`;
+
+    const availableWidth = `${(available / total) * 100}%`;
+    const spentWidth = `${(spent / total) * 100}%`;
+
     return {
-      beschikbaarWidth,
-      besteedWidth,
+      availableWidth,
+      spentWidth,
     };
   };
 
@@ -250,9 +255,9 @@ export default function ActivitiesPage() {
                         className={styles["expenses-bar"]}
                         style={{
                           width: calculateBarWidth(
-                            activity.budget + activity.expenses,
+                            activity.budget,
                             activity.expenses,
-                          ).besteedWidth,
+                          ).spentWidth,
                         }}
                       ></div>
                       <div
@@ -260,9 +265,9 @@ export default function ActivitiesPage() {
                         className={styles["income-bar"]}
                         style={{
                           width: calculateBarWidth(
-                            activity.budget + activity.expenses,
+                            activity.budget,
                             activity.expenses,
-                          ).beschikbaarWidth,
+                          ).availableWidth,
                         }}
                       ></div>
                     </div>
@@ -295,13 +300,13 @@ export default function ActivitiesPage() {
                         </label>
                         <span>
                           €
-                          {(activity.budget + activity.expenses).toLocaleString(
-                            "nl-NL",
-                            {
-                              minimumFractionDigits: 2,
-                              maximumFractionDigits: 2,
-                            },
-                          )}
+                          {Math.max(
+                            activity.budget + activity.expenses,
+                            0,
+                          ).toLocaleString("nl-NL", {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          })}
                         </span>
                       </div>
                     </li>
