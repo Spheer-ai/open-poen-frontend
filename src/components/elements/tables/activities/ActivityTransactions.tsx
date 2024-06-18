@@ -41,14 +41,16 @@ const formatDate = (dateString: string) => {
     return "";
   }
 };
+
 const ActivityTransactions: React.FC<{
   authToken: string;
   initiativeId: string;
   activityId: string;
   activity_name: string;
   onRefreshTrigger: () => void;
-  entityPermissions;
-  hasCreatePaymentPermission;
+  entityPermissions: string[];
+  hasCreatePaymentPermission: boolean;
+  activeTab: string;
 }> = ({
   authToken,
   initiativeId,
@@ -56,6 +58,7 @@ const ActivityTransactions: React.FC<{
   activity_name,
   onRefreshTrigger,
   hasCreatePaymentPermission,
+  activeTab,
 }) => {
   const { user } = useAuth();
   const { fetchPermissions } = usePermissions();
@@ -75,7 +78,6 @@ const ActivityTransactions: React.FC<{
   >(null);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [isBlockingInteraction, setIsBlockingInteraction] = useState(false);
-  const [entityPermissions, setEntityPermissions] = useState<string[]>([]);
   const [isLoadingPermissions, setIsLoadingPermissions] = useState(false);
   const { fetchFieldPermissions } = useFieldPermissions();
   const [
@@ -87,6 +89,7 @@ const ActivityTransactions: React.FC<{
   const [isAddPaymentModalOpen, setIsAddPaymentModalOpen] = useState(false);
   const [isFilterPaymentModalOpen, setIsFilterPaymentModalOpen] =
     useState(false);
+  const [entityPermissions, setEntityPermissions] = useState<string[]>([]);
   const [isEditPaymentModalOpen, setIsEditPaymentModalOpen] = useState(false);
   const [selectedTransaction, setSelectedTransaction] =
     useState<Transaction | null>(null);
@@ -126,8 +129,10 @@ const ActivityTransactions: React.FC<{
   };
 
   useEffect(() => {
-    fetchTransactions();
-  }, [filterCriteria]);
+    if (activeTab === "transactieoverzicht") {
+      fetchTransactions();
+    }
+  }, [activeTab, activityId, filterCriteria]);
 
   const handleFilterApplied = (filters) => {
     setStartDate(filters.startDate);

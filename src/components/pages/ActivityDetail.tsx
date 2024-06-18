@@ -472,6 +472,7 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
             entityPermissions={entityPermissions}
             activity_name={activityDetails?.name || ""}
             hasCreatePaymentPermission={hasCreatePaymentPermission}
+            activeTab={activeTab}
           />
         )}
         {activeTab === "details" && (
