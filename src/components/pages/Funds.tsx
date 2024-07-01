@@ -1,218 +1,124 @@
 import React, {
   useEffect,
-  useState,
   useMemo,
-  useCallback,
   useRef,
+  useCallback,
+  useState,
 } from "react";
 import { useNavigate } from "react-router-dom";
 import TopNavigationBar from "../ui/top-navigation-bar/TopNavigationBar";
 import styles from "../../assets/scss/Funds.module.scss";
 import { usePermissions } from "../../contexts/PermissionContext";
 import { useAuth } from "../../contexts/AuthContext";
-import { fetchInitiatives } from "../middleware/Api";
 import LoadingDot from "../animation/LoadingDot";
-
-interface Initiative {
-  id: number;
-  name: string;
-  budget: number;
-  income: number;
-  expenses: number;
-  hidden: boolean;
-  beschikbaar?: number;
-}
+import useInitiatives from "../hooks/useInitiatives";
+import { calculateBarWidth, formatCurrency } from "../utils/calculations";
 
 export default function Funds() {
+  console.log("Funds component rendering");
+
   const navigate = useNavigate();
   const { user } = useAuth();
   const { fetchPermissions } = usePermissions();
   const [entityPermissions, setEntityPermissions] = useState<string[]>([]);
-  const hasPermission = useMemo(
-    () => entityPermissions.includes("create"),
-    [entityPermissions],
-  );
   const [onlyMine, setOnlyMine] = useState(false);
-  const [initiatives, setInitiatives] = useState<Initiative[]>([]);
-  const [isFetchingInitiatives, setIsFetchingInitiatives] = useState(false);
-  const [allInitiatives, setAllInitiatives] = useState<Initiative[]>([]);
-  const [myInitiatives, setMyInitiatives] = useState<Initiative[]>([]);
-  const [displayedInitiativesCount, setDisplayedInitiativesCount] = useState(0);
-  const [initialFetchDone, setInitialFetchDone] = useState(false);
-  const [offset, setOffset] = useState(0);
-  const [limit, setLimit] = useState(20);
-  const [totalInitiatives, setTotalInitiatives] = useState(0);
-
-  const [allFetchedInitiatives, setAllFetchedInitiatives] = useState<
-    Initiative[]
-  >([]);
-  const [isLoadingMoreInitiatives, setIsLoadingMoreInitiatives] =
-    useState(false);
-  const [allInitiativesFetched, setAllInitiativesFetched] = useState(false);
   const initialFetchDoneRef = useRef(false);
 
-  const [isAtBottom, setIsAtBottom] = useState(false);
+  useEffect(() => {
+    console.log("Current user:", user);
+    console.log("Entity permissions:", entityPermissions);
+    console.log("Only mine filter:", onlyMine);
+  }, [user, entityPermissions, onlyMine]);
+
+  const hasPermission = useMemo(() => {
+    console.log("Calculating hasPermission");
+    return entityPermissions.includes("create");
+  }, [entityPermissions]);
+
+  const limit = 3;
+
+  const {
+    initiatives,
+    isLoadingMoreInitiatives,
+    loadMoreInitiatives,
+    resetInitiatives,
+    hasMoreInitiatives,
+    fetchAndDisplayInitiatives,
+  } = useInitiatives(user?.token, limit, onlyMine);
+
   const sidePanelRef = useRef<HTMLDivElement | null>(null);
 
-  const checkBottom = () => {
+  const checkBottom = useCallback(() => {
     const sidePanel = sidePanelRef.current;
-
-    if (sidePanel) {
+    if (sidePanel && !isLoadingMoreInitiatives && hasMoreInitiatives) {
       const scrollY = sidePanel.scrollTop;
       const panelHeight = sidePanel.clientHeight;
       const contentHeight = sidePanel.scrollHeight;
-
       const threshold = 50;
-
-      setIsAtBottom(contentHeight - (scrollY + panelHeight) < threshold);
-    }
-  };
-
-  useEffect(() => {
-    if (user?.token) {
-      if (entityPermissions.length === 0) {
-        fetchPermissions("Funder", undefined, user.token)
-          .then((permissions) => {
-            setEntityPermissions(permissions || []);
-          })
-          .catch((error) => {
-            console.error("Failed to fetch permissions:", error);
-          });
+      if (contentHeight - (scrollY + panelHeight) < threshold) {
+        loadMoreInitiatives();
       }
     }
-  }, [user]);
+  }, [isLoadingMoreInitiatives, hasMoreInitiatives, loadMoreInitiatives]);
 
   useEffect(() => {
-    if (!initialFetchDoneRef.current) {
-      const cleanup = fetchAndDisplayInitiatives(
-        user?.token,
-        onlyMine,
-        0,
-        limit,
-      );
-      initialFetchDoneRef.current = true;
-      return cleanup;
-    }
-  }, [user?.token, onlyMine, entityPermissions, offset, limit]);
-
-  const fetchAndDisplayInitiatives = useCallback(
-    (token, onlyMine, offset, limit) => {
-      if (offset === 0) {
-        setIsFetchingInitiatives(true);
-      } else {
-        setIsLoadingMoreInitiatives(true);
-      }
-
-      const apiToken = user?.token || "";
-
-      fetchInitiatives(apiToken, onlyMine, offset, limit)
-        .then((initiativesData: Initiative[]) => {
-          const initiativesWithBeschikbaar = initiativesData.map(
-            (initiative) => {
-              const beschikbaar = Math.max(
-                initiative.budget + initiative.expenses,
-                0,
-              );
-              return { ...initiative, beschikbaar };
-            },
-          );
-
-          setAllFetchedInitiatives((prevInitiatives) => [
-            ...prevInitiatives,
-            ...initiativesWithBeschikbaar,
-          ]);
-
-          if (onlyMine) {
-            setMyInitiatives((prevMyInitiatives) => [
-              ...prevMyInitiatives,
-              ...initiativesWithBeschikbaar,
-            ]);
-          } else {
-            setAllInitiatives((prevAllInitiatives) => [
-              ...prevAllInitiatives,
-              ...initiativesWithBeschikbaar,
-            ]);
-          }
-
-          if (allFetchedInitiatives.length >= totalInitiatives) {
-            setAllInitiativesFetched(true);
-          }
-
-          const count = initiativesData.length;
-          let currentIndex = 0;
-          const interval = setInterval(() => {
-            if (currentIndex < count) {
-              setDisplayedInitiativesCount(currentIndex + 1);
-              currentIndex++;
-            } else {
-              clearInterval(interval);
-            }
-          }, 50);
-
-          setIsFetchingInitiatives(false);
-          setIsLoadingMoreInitiatives(false);
+    if (user?.token && entityPermissions.length === 0) {
+      console.log("Fetching permissions for user", user);
+      fetchPermissions("Funder", undefined, user.token)
+        .then((permissions) => {
+          console.log("Permissions fetched", permissions);
+          setEntityPermissions(permissions || []);
         })
         .catch((error) => {
-          console.error("Error fetching initiatives:", error);
-          setIsFetchingInitiatives(false);
-          setIsLoadingMoreInitiatives(false);
+          console.error("Failed to fetch permissions:", error);
         });
-    },
-    [user, limit],
-  );
+    }
+  }, [user?.token, entityPermissions.length, fetchPermissions]);
 
-  const handleLoadMoreClick = () => {
-    const newOffset = offset + limit;
-    setOffset(newOffset);
-    fetchAndDisplayInitiatives(user?.token, onlyMine, newOffset, limit);
-  };
+  useEffect(() => {
+    if (user && !initialFetchDoneRef.current) {
+      console.log(
+        "Initial fetch: resetInitiatives and fetchAndDisplayInitiatives",
+      );
+      resetInitiatives();
+      fetchAndDisplayInitiatives(0, limit);
+      initialFetchDoneRef.current = true;
+    }
+  }, [user, onlyMine, resetInitiatives, fetchAndDisplayInitiatives, limit]);
 
   useEffect(() => {
     const sidePanel = sidePanelRef.current;
-
     if (sidePanel) {
+      console.log("Adding scroll event listener to side panel");
       sidePanel.addEventListener("scroll", checkBottom);
-
       return () => {
+        console.log("Removing scroll event listener from side panel");
         sidePanel.removeEventListener("scroll", checkBottom);
       };
     }
-  }, []);
+  }, [checkBottom]);
 
-  useEffect(() => {
-    if (isAtBottom) {
-      handleLoadMoreClick();
-    }
-  }, [isAtBottom]);
+  const handleSearch = () => {
+    // Implement search functionality here if needed
+  };
 
-  const handleSearch = (query) => {};
-
-  const navigateToActivities = (initiativeId, initiativeName) => {
+  const navigateToActivities = (
+    initiativeId: number,
+    initiativeName: string,
+  ) => {
     navigate(`/funds/${initiativeId}/${initiativeName}`, {
       state: { initiativeName },
     });
   };
 
-  const calculateBarWidth = (budget, expenses) => {
-    const available = Math.max(budget + expenses, 0);
-    const spent = Math.abs(expenses);
-    const total = available + spent;
-
-    if (total === 0) {
-      return {
-        availableWidth: "50%",
-        spentWidth: "50%",
-      };
-    }
-
-    const availableWidth = `${(available / total) * 100}%`;
-    const spentWidth = `${(spent / total) * 100}%`;
-
-    return {
-      availableWidth,
-      spentWidth,
-    };
+  const toggleFilter = (filter: boolean) => {
+    console.log("Toggling filter", filter);
+    setOnlyMine(filter);
   };
+
+  if (!user) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className={styles["container"]}>
@@ -233,18 +139,9 @@ export default function Funds() {
           <div className={styles["filter-buttons"]}>
             <button
               className={
-                !onlyMine ? styles["active-button"] : styles["filter-button"]
+                onlyMine ? styles["filter-button"] : styles["active-button"]
               }
-              onClick={() => {
-                setOnlyMine(false);
-                setOffset(0);
-                setLimit(20);
-                setIsFetchingInitiatives(true);
-                setInitiatives([]);
-                setAllInitiatives([]);
-                setMyInitiatives([]);
-                fetchAndDisplayInitiatives(user?.token, false, 0, 20);
-              }}
+              onClick={() => toggleFilter(false)}
             >
               Alle Initiatieven
             </button>
@@ -252,110 +149,67 @@ export default function Funds() {
               className={
                 onlyMine ? styles["active-button"] : styles["filter-button"]
               }
-              onClick={() => {
-                setOnlyMine(true);
-                setOffset(0);
-                setLimit(20);
-                setIsFetchingInitiatives(true);
-                setInitiatives([]);
-                setAllInitiatives([]);
-                setMyInitiatives([]);
-                fetchAndDisplayInitiatives(user?.token, true, 0, 20);
-              }}
+              onClick={() => toggleFilter(true)}
             >
               Mijn Initiatieven
             </button>
           </div>
         )}
-        {isFetchingInitiatives && offset === 0 && (
-          <div className={styles["loading-container"]}>
-            <LoadingDot delay={0} />
-            <LoadingDot delay={0.1} />
-            <LoadingDot delay={0.1} />
-            <LoadingDot delay={0.2} />
-            <LoadingDot delay={0.2} />
-          </div>
-        )}
         <ul className={styles["shared-unordered-list"]}>
-          {(onlyMine ? myInitiatives : allInitiatives).map(
-            (initiative, index) => (
-              <div
-                className={`${styles["shared-styling"]} ${styles["initiative-fade-in"]}`}
-                key={`${initiative?.id}-${index}`}
-                style={{
-                  animationDelay: `${index * 0.1}s`,
-                }}
-                onClick={() =>
-                  navigateToActivities(initiative?.id, initiative?.name)
-                }
-              >
-                <li className={styles["shared-name"]}>
-                  <strong>{initiative?.name}</strong>
-                </li>
-
-                <div className={styles["values-bar"]}>
-                  <div
-                    key={`expenses-${initiative?.id}`}
-                    className={styles["expenses-bar"]}
-                    style={{
-                      width: calculateBarWidth(
-                        initiative?.budget,
-                        initiative?.expenses,
-                      ).spentWidth,
-                    }}
-                  ></div>
-                  <div
-                    key={`income-${initiative?.id}`}
-                    className={styles["income-bar"]}
-                    style={{
-                      width: calculateBarWidth(
-                        initiative?.budget,
-                        initiative?.expenses,
-                      ).availableWidth,
-                    }}
-                  ></div>
-                </div>
-                <li className={styles["shared-list"]}>
-                  <div className={styles["shared-values"]}>
-                    <label>Toegekend:</label>
-                    <span>
-                      €
-                      {initiative?.budget.toLocaleString("nl-NL", {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })}
-                    </span>
-                  </div>
-                  <div className={styles["shared-values"]}>
-                    <label className={styles["value-expenses"]}>Besteed:</label>
-                    <span>
-                      €
-                      {Math.abs(initiative?.expenses).toLocaleString("nl-NL", {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })}
-                    </span>
-                  </div>
-                  <div className={styles["shared-values"]}>
-                    <label className={styles["value-income"]}>
-                      Beschikbaar:
-                    </label>
-                    <span>
-                      €
-                      {(initiative?.beschikbaar ?? 0).toLocaleString("nl-NL", {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })}
-                    </span>
-                  </div>
-                </li>
-                {initiative?.hidden && (
-                  <span className={styles["hidden-label"]}>Verborgen</span>
-                )}
+          {initiatives.map((initiative, index) => (
+            <div
+              className={`${styles["shared-styling"]} ${styles["initiative-fade-in"]}`}
+              key={`${initiative?.id}-${index}`}
+              style={{ animationDelay: `${index * 0.1}s` }}
+              onClick={() =>
+                navigateToActivities(initiative?.id, initiative?.name)
+              }
+            >
+              <li className={styles["shared-name"]}>
+                <strong>{initiative?.name}</strong>
+              </li>
+              <div className={styles["values-bar"]}>
+                <div
+                  key={`expenses-${initiative?.id}`}
+                  className={styles["expenses-bar"]}
+                  style={{
+                    width: calculateBarWidth(
+                      initiative?.budget,
+                      initiative?.expenses,
+                    ).spentWidth,
+                  }}
+                ></div>
+                <div
+                  key={`income-${initiative?.id}`}
+                  className={styles["income-bar"]}
+                  style={{
+                    width: calculateBarWidth(
+                      initiative?.budget,
+                      initiative?.expenses,
+                    ).availableWidth,
+                  }}
+                ></div>
               </div>
-            ),
-          )}
-          {isLoadingMoreInitiatives ? (
+              <li className={styles["shared-list"]}>
+                <div className={styles["shared-values"]}>
+                  <label>Toegekend:</label>
+                  <span>€{formatCurrency(initiative?.budget)}</span>
+                </div>
+                <div className={styles["shared-values"]}>
+                  <label className={styles["value-expenses"]}>Besteed:</label>
+                  <span>€{formatCurrency(Math.abs(initiative?.expenses))}</span>
+                </div>
+                <div className={styles["shared-values"]}>
+                  <label className={styles["value-income"]}>Beschikbaar:</label>
+                  <span>€{formatCurrency(initiative?.beschikbaar ?? 0)}</span>
+                </div>
+              </li>
+              {initiative?.hidden && (
+                <span className={styles["hidden-label"]}>Verborgen</span>
+              )}
+            </div>
+          ))}
+          {isLoadingMoreInitiatives && (
             <div className={styles["loading-container-small"]}>
               <LoadingDot delay={0} />
               <LoadingDot delay={0.1} />
@@ -363,8 +217,6 @@ export default function Funds() {
               <LoadingDot delay={0.2} />
               <LoadingDot delay={0.2} />
             </div>
-          ) : (
-            <></>
           )}
         </ul>
       </div>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import styles from "../../assets/scss/pages/FundDetail.module.scss";
 import EditIcon from "/edit-icon.svg";
 import DeleteIcon from "/bin-icon.svg";
@@ -68,7 +68,6 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
   onActivityEdited,
 }) => {
   const [activeTab, setActiveTab] = useState("transactieoverzicht");
-  const location = useLocation();
   const navigate = useNavigate();
   const { user } = useAuth();
   const { fetchPermissions } = usePermissions();
@@ -81,7 +80,6 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
   const [isEditActivityModalOpen, setIsEditActivityModalOpen] = useState(false);
   const [isDeleteActivityModalOpen, setIsDeleteActivityModalOpen] =
     useState(false);
-  const [isAddPaymentModalOpen, setIsAddPaymentModalOpen] = useState(false);
   const [fundDetails, setFundDetails] = useState<FundDetails | null>(null);
   const [hasEditPermission, setHasEditPermission] = useState(false);
   const [hasDeletePermission, setHasDeletePermission] = useState(false);
@@ -94,7 +92,7 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
   const activityOwners: ActivityOwner[] =
     activityDetails?.activity_owners || [];
 
-  const handleTabChange = (tabName) => {
+  const handleTabChange = (tabName: string) => {
     setActiveTab(tabName);
 
     if (tabName === "transactieoverzicht") {
@@ -155,7 +153,7 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
     }
 
     fetchUserPermissions();
-  }, [user, activityId]);
+  }, [user, activityId, authToken, fetchPermissions]);
 
   useEffect(() => {
     async function fetchFieldPermissionsOnMount() {
@@ -246,7 +244,6 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
 
   useEffect(() => {
     if (activityDetails) {
-      const receivedBudget = activityDetails.income || 0;
       const spentBudget = activityDetails.expenses || 0;
       const totalBudget = activityDetails.budget || 0;
       const availableBudgetValue = totalBudget + spentBudget;

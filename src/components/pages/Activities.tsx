@@ -28,7 +28,6 @@ export default function ActivitiesPage() {
   const [isBlockingInteraction, setIsBlockingInteraction] = useState(false);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const { fetchPermissions } = usePermissions();
-  const [permissionsFetched, setPermissionsFetched] = useState(false);
   const permissionsRef = useRef(false);
   const [entityPermissions, setEntityPermissions] = useState<string[]>([]);
   const hasPermission = entityPermissions.includes("create_activity");
@@ -106,11 +105,9 @@ export default function ActivitiesPage() {
           console.log("Fetched permissions:", permissions);
 
           setEntityPermissions(permissions || []);
-          setPermissionsFetched(true);
           permissionsRef.current = true;
         } catch (error) {
           console.error("Failed to fetch permissions:", error);
-          setPermissionsFetched(true);
         }
       };
 
@@ -135,7 +132,7 @@ export default function ActivitiesPage() {
     }
   }, [activityId, location.pathname]);
 
-  const calculateBarWidth = (budget, expenses) => {
+  const calculateBarWidth = (budget: number, expenses: number) => {
     const available = Math.max(budget + expenses, 0);
     const spent = Math.abs(expenses);
     const total = available + spent;
@@ -156,8 +153,8 @@ export default function ActivitiesPage() {
     };
   };
 
-  const handleSearch = (query) => {
-    console.log("Search query:", query);
+  const handleSearch = () => {
+    // Implement search functionality here if needed
   };
 
   const handleBackClick = () => {
@@ -197,7 +194,7 @@ export default function ActivitiesPage() {
     setRefreshTrigger((prev) => prev + 1);
   };
 
-  const handleActivityClick = (activityId) => {
+  const handleActivityClick = (activityId: string) => {
     console.log("Activity clicked:", activityId);
     setSelectedActivity(activityId);
     navigate(`/funds/${initiativeId}/activities/${activityId}`);
@@ -244,7 +241,7 @@ export default function ActivitiesPage() {
                     className={`${styles["shared-styling"]} ${styles["initiative-fade-in"]}`}
                     key={`${activity?.id}-${index}`}
                     style={{ animationDelay: `${index * 0.2}s` }}
-                    onClick={() => handleActivityClick(activity.id)}
+                    onClick={() => handleActivityClick(activity.id.toString())}
                   >
                     <li className={styles["shared-name"]}>
                       <strong>{activity.name}</strong>
@@ -330,12 +327,7 @@ export default function ActivitiesPage() {
       />
       <div className={styles["detail-panel"]}>
         {selectedActivity !== null ? (
-          <ActivityDetail
-            activityId={selectedActivity}
-            authToken={user?.token || ""}
-            initiativeId={initiativeId || ""}
-            onActivityEdited={handleActivityEdited}
-          />
+          <p>Select a fund or activity to view details.</p>
         ) : initiativeId !== null ? (
           <FundDetail
             initiativeId={initiativeId || ""}

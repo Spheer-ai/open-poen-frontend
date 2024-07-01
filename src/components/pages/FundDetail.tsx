@@ -37,7 +37,6 @@ interface FundDetails {
   budget: number;
   income: number;
   expenses: number;
-  onFundEdited: () => void;
   profile_picture: {
     attachment_thumbnail_url_512: string;
   };
@@ -73,9 +72,6 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
   const [currentFundData, setCurrentFundData] = useState<FundDetails | null>(
     null,
   );
-  const [initiativeOwners, setInitiativeOwners] = useState<InitiativeOwner[]>(
-    [],
-  );
 
   useEffect(() => {
     if (initiativeId) {
@@ -83,7 +79,6 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
         .then((data) => {
           setFundDetails(data);
           setCurrentFundData(data);
-          setInitiativeOwners(data.initiative_owners);
         })
         .catch((error) => {
           console.error("Error fetching fund details:", error);
@@ -92,12 +87,12 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
   }, [initiativeId, authToken, refreshTrigger]);
 
   useEffect(() => {
-    if (location.pathname.includes("/funds/${initiativeId}")) {
-      setActiveTab("transactieoverzicht");
-    }
+    const pathParts = location.pathname.split("/");
+    const currentTab = pathParts[pathParts.length - 1];
+    setActiveTab(currentTab);
   }, [location.pathname]);
 
-  const handleTabChange = (tabName) => {
+  const handleTabChange = (tabName: string) => {
     setActiveTab(tabName);
 
     if (tabName === "transactieoverzicht") {
@@ -133,23 +128,11 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
             userToken,
           );
 
-          if (userPermissions && userPermissions.includes("edit")) {
-            setHasEditPermission(true);
-          } else {
-            setHasEditPermission(false);
-          }
-
-          if (userPermissions && userPermissions.includes("delete")) {
-            setHasDeletePermission(true);
-          } else {
-            setHasDeletePermission(false);
-          }
-
-          if (userPermissions && userPermissions.includes("create_payment")) {
-            setHasCreatePaymentPermission(true);
-          } else {
-            setHasCreatePaymentPermission(false);
-          }
+          setHasEditPermission(userPermissions?.includes("edit") || false);
+          setHasDeletePermission(userPermissions?.includes("delete") || false);
+          setHasCreatePaymentPermission(
+            userPermissions?.includes("create_payment") || false,
+          );
         }
       } catch (error) {
         console.error("Failed to fetch user permissions:", error);
@@ -157,7 +140,7 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
     }
 
     fetchUserPermissions();
-  }, [user, initiativeId]);
+  }, [user, initiativeId, authToken, fetchPermissions]);
 
   useEffect(() => {
     async function fetchFieldPermissionsOnMount() {
@@ -170,9 +153,7 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
               user.token,
             );
 
-          if (fieldPermissions) {
-            setEntityPermissions(fieldPermissions);
-          }
+          setEntityPermissions(fieldPermissions || []);
         }
       } catch (error) {
         console.error("Failed to fetch field permissions:", error);
@@ -220,7 +201,6 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
 
   useEffect(() => {
     if (fundDetails) {
-      const receivedBudget = fundDetails.income || 0;
       const spentBudget = fundDetails.expenses || 0;
       const totalBudget = fundDetails.budget || 0;
       const availableBudgetValue = totalBudget + spentBudget;
