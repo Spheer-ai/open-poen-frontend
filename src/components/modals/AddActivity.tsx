@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import styles from "../../assets/scss/layout/AddFundDesktop.module.scss";
+import { Activities } from "../../types/ActivitiesTypes";
 import { AddActivity as addActivityApi } from "../middleware/Api";
 import CloseIson from "/close-icon.svg";
 
@@ -7,8 +8,7 @@ interface AddActivityProps {
   isOpen: boolean;
   onClose: () => void;
   isBlockingInteraction: boolean;
-  onActivityAdded: () => void;
-  refreshTrigger: number;
+  onActivityAdded: (newActivity: Activities) => void;
   initiativeId: number;
 }
 
@@ -121,8 +121,12 @@ const AddActivity: React.FC<AddActivityProps> = ({
         hidden: hidden,
       };
 
-      await addActivityApi(initiativeId, token, activityData);
-      onActivityAdded();
+      const newActivity = await addActivityApi(
+        initiativeId,
+        token,
+        activityData,
+      );
+      onActivityAdded(newActivity);
       handleClose();
     } catch (error) {
       if (error.response) {

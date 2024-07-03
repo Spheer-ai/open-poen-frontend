@@ -1,3 +1,5 @@
+// useActivities.tsx
+
 import { useState, useEffect, useCallback, useRef } from "react";
 import { Activities } from "../../types/ActivitiesTypes";
 import { fetchActivities } from "../middleware/Api";
@@ -30,7 +32,9 @@ const useActivities = (
         initiativeId,
         token ?? "",
       );
-      const updatedActivities = fetchedInitiativeData.activities || [];
+      let updatedActivities = fetchedInitiativeData.activities || [];
+
+      updatedActivities = updatedActivities.sort((a, b) => b.id - a.id);
 
       setInitiativeName(fetchedInitiativeData.name);
       setInitiativeData(fetchedInitiativeData);
@@ -52,6 +56,13 @@ const useActivities = (
     }
   }, [initiativeId, token, setLoading]);
 
+  const addActivityToList = (newActivity: Activities) => {
+    setActivities((prevActivities) => {
+      const updatedActivities = [newActivity, ...prevActivities];
+      return updatedActivities.sort((a, b) => b.id - a.id);
+    });
+  };
+
   useEffect(() => {
     loadActivities();
   }, [loadActivities]);
@@ -62,6 +73,7 @@ const useActivities = (
     initiativeName,
     isActivitiesLoaded,
     loadActivities,
+    addActivityToList,
   };
 };
 

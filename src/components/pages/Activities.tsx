@@ -10,6 +10,7 @@ import FundDetail from "./FundDetail";
 import ActivityDetail from "./ActivityDetail";
 import { calculateBarWidth, formatCurrency } from "../utils/calculations";
 import useActivities from "../hooks/useActivities";
+import { Activities } from "../../types/ActivitiesTypes";
 
 export default function ActivitiesPage() {
   const navigate = useNavigate();
@@ -33,6 +34,7 @@ export default function ActivitiesPage() {
     isActivitiesLoaded,
     loadActivities,
     initiativeData,
+    addActivityToList,
   } = useActivities(Number(initiativeId), user?.token, setIsLoading);
 
   useEffect(() => {
@@ -106,8 +108,9 @@ export default function ActivitiesPage() {
     }
   };
 
-  const handleActivityAdded = () => {
-    setRefreshTrigger((prev) => prev + 1);
+  const handleActivityAdded = (newActivity: Activities) => {
+    addActivityToList(newActivity);
+    setIsModalOpen(false);
   };
 
   const handleActivityEdited = () => {
@@ -231,7 +234,6 @@ export default function ActivitiesPage() {
         onClose={handleToggleAddActivityModal}
         isBlockingInteraction={isBlockingInteraction}
         onActivityAdded={handleActivityAdded}
-        refreshTrigger={refreshTrigger}
         initiativeId={Number(initiativeId)}
       />
       <div className={styles["detail-panel"]}>
