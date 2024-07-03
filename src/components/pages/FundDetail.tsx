@@ -7,8 +7,6 @@ import EditFund from "../modals/EditFund";
 import { useAuth } from "../../contexts/AuthContext";
 import DeleteFund from "../modals/DeleteFund";
 import LoadingDot from "../animation/LoadingDot";
-import { usePermissions } from "../../contexts/PermissionContext";
-import { useFieldPermissions } from "../../contexts/FieldPermissionContext";
 import Breadcrumb from "../ui/layout/BreadCrumbs";
 import { InitiativeOwner } from "../../types/InitiativeOwners";
 
@@ -24,18 +22,16 @@ const FundDetail: React.FC<FundDetailProps> = ({
   initiativeId,
   authToken,
   initiativeData,
+  entityPermissions,
   onFundEdited,
 }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { fetchPermissions } = usePermissions();
   const [hasEditPermission, setHasEditPermission] = useState(false);
   const [hasDeletePermission, setHasDeletePermission] = useState(false);
   const [hasCreatePaymentPermission, setHasCreatePaymentPermission] =
     useState(false);
-  const { fetchFieldPermissions } = useFieldPermissions();
-  const [entityPermissions, setEntityPermissions] = useState<string[]>([]);
   const [showFullDescription, setShowFullDescription] = useState(false);
   const [availableBudget, setAvailableBudget] = useState<number | null>(null);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
@@ -44,51 +40,10 @@ const FundDetail: React.FC<FundDetailProps> = ({
   const [isDeleteFundModalOpen, setIsDeleteFundModalOpen] = useState(false);
 
   useEffect(() => {
-    const fetchUserPermissions = async () => {
-      try {
-        let userToken = authToken;
-        if (user && user.token && initiativeId) {
-          userToken = user.token;
-          const userPermissions: string[] | undefined = await fetchPermissions(
-            "Initiative",
-            parseInt(initiativeId),
-            userToken,
-          );
-
-          setHasEditPermission(userPermissions?.includes("edit") || false);
-          setHasDeletePermission(userPermissions?.includes("delete") || false);
-          setHasCreatePaymentPermission(
-            userPermissions?.includes("create_payment") || false,
-          );
-        }
-      } catch (error) {
-        console.error("Failed to fetch user permissions:", error);
-      }
-    };
-
-    fetchUserPermissions();
-  }, [user, initiativeId, authToken, fetchPermissions]);
-
-  useEffect(() => {
-    const fetchFieldPermissionsOnMount = async () => {
-      try {
-        if (user && user.token && initiativeId) {
-          const fieldPermissions: string[] | undefined =
-            await fetchFieldPermissions(
-              "Initiative",
-              parseInt(initiativeId),
-              user.token,
-            );
-
-          setEntityPermissions(fieldPermissions || []);
-        }
-      } catch (error) {
-        console.error("Failed to fetch field permissions:", error);
-      }
-    };
-
-    fetchFieldPermissionsOnMount();
-  }, [user, initiativeId, fetchFieldPermissions]);
+    setHasEditPermission(entityPermissions.includes("edit"));
+    setHasDeletePermission(entityPermissions.includes("delete"));
+    setHasCreatePaymentPermission(entityPermissions.includes("create_payment"));
+  }, [entityPermissions]);
 
   useEffect(() => {
     if (initiativeData) {
@@ -124,7 +79,6 @@ const FundDetail: React.FC<FundDetailProps> = ({
       setTimeout(() => {
         setIsBlockingInteraction(false);
         setIsDeleteFundModalOpen(false);
-        navigate(`/funds`);
       }, 300);
     } else {
       setIsDeleteFundModalOpen(true);
@@ -321,6 +275,14 @@ const FundDetail: React.FC<FundDetailProps> = ({
           fundData={initiativeData}
           fieldPermissions={entityPermissions}
           fields={[]}
+        />
+        <DeleteFund
+          isOpen={isDeleteFundModalOpen}
+          onClose={handleToggleDeleteFundModal}
+          isBlockingInteraction={isBlockingInteraction}
+          onFundDeleted={handleFundDeleted}
+          initiativeId={initiativeId}
+          authToken={user?.token || ""}
         />
       </div>
     </>

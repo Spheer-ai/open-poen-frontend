@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import styles from "../../assets/scss/layout/AddFundDesktop.module.scss";
+import { useNavigate } from "react-router-dom";
 import { deleteInitiative } from "../middleware/Api";
-import CloseIson from "/close-icon.svg";
+import CloseIcon from "/close-icon.svg";
 
 interface DeleteFundProps {
   isOpen: boolean;
@@ -20,6 +21,7 @@ const DeleteFund: React.FC<DeleteFundProps> = ({
   authToken,
 }) => {
   const [modalIsOpen, setModalIsOpen] = useState(isOpen);
+  const navigate = useNavigate();
   const [apiError, setApiError] = useState("");
 
   useEffect(() => {
@@ -36,8 +38,9 @@ const DeleteFund: React.FC<DeleteFundProps> = ({
     try {
       const response = await deleteInitiative(authToken, initiativeId);
       setApiError("");
-      handleClose();
+      handleClose(true);
       onFundDeleted();
+      navigate(`/funds`);
     } catch (error) {
       console.error("Failed to delete fund:", error);
       if (error.response && error.response.status === 422) {
@@ -48,10 +51,13 @@ const DeleteFund: React.FC<DeleteFundProps> = ({
     }
   };
 
-  const handleClose = () => {
+  const handleClose = (wasDeleted: boolean = false) => {
     if (!isBlockingInteraction) {
       setModalIsOpen(false);
       onClose();
+      if (!wasDeleted) {
+        navigate(`/funds/${initiativeId}`);
+      }
     }
   };
 
@@ -63,13 +69,16 @@ const DeleteFund: React.FC<DeleteFundProps> = ({
     <>
       <div
         className={`${styles.backdrop} ${modalIsOpen ? styles.open : ""}`}
-        onClick={handleClose}
+        onClick={() => handleClose(false)}
       ></div>
       <div className={`${styles.modal} ${modalIsOpen ? styles.open : ""}`}>
         <div className={styles.formTop}>
           <h2 className={styles.title}>Initiatief verwijderen</h2>
-          <button onClick={handleClose} className={styles.closeBtn}>
-            <img src={CloseIson} alt="" />
+          <button
+            onClick={() => handleClose(false)}
+            className={styles.closeBtn}
+          >
+            <img src={CloseIcon} alt="" />
           </button>
         </div>
         <hr></hr>
@@ -78,7 +87,10 @@ const DeleteFund: React.FC<DeleteFundProps> = ({
         </div>
         {apiError && <p className={styles.error}>{apiError}</p>}
         <div className={styles.buttonContainer}>
-          <button onClick={handleClose} className={styles.cancelButton}>
+          <button
+            onClick={() => handleClose(false)}
+            className={styles.cancelButton}
+          >
             Annuleren
           </button>
           <button onClick={handleDelete} className={styles.deleteButton}>
