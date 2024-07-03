@@ -6,18 +6,48 @@ import DeleteIcon from "/bin-icon.svg";
 import EditFund from "../modals/EditFund";
 import { useAuth } from "../../contexts/AuthContext";
 import DeleteFund from "../modals/DeleteFund";
+import TabbedFundNavigation from "../ui/layout/navigation/TabbedFundNavigation";
+import FundsActivities from "../elements/tables/funds/FundsActivities";
+import FundsTransactions from "../elements/tables/funds/FundsTransactions";
+import FundsMedia from "../elements/tables/funds/FundsMedia";
+import FundsDetails from "../elements/tables/funds/FundsDetails";
+import FundsSponsors from "../elements/tables/funds/FundsSponsors";
+import FundsUsers from "../elements/tables/funds/FundsUsers";
 import LoadingDot from "../animation/LoadingDot";
+import { InitiativeOwner } from "../../types/InitiativeOwners";
 import { usePermissions } from "../../contexts/PermissionContext";
 import { useFieldPermissions } from "../../contexts/FieldPermissionContext";
 import Breadcrumb from "../ui/layout/BreadCrumbs";
-import { InitiativeOwner } from "../../types/InitiativeOwners";
 
 interface FundDetailProps {
   initiativeId: string;
   authToken: string;
   initiativeData: any;
-  entityPermissions: string[];
   onFundEdited: () => void;
+}
+
+interface FundDetails {
+  id: number;
+  name: string;
+  description: string;
+  purpose: string;
+  target_audience: string;
+  kvk_registration: string;
+  location: string;
+  budget: number;
+  income: number;
+  expenses: number;
+  profile_picture: {
+    attachment_thumbnail_url_512: string;
+  };
+  initiative_owners: InitiativeOwner[];
+  entityPermissions: string[];
+  grant: {
+    id: number;
+    name: string;
+    reference: string;
+    budget: number;
+  };
 }
 
 const FundDetail: React.FC<FundDetailProps> = ({
@@ -26,6 +56,7 @@ const FundDetail: React.FC<FundDetailProps> = ({
   initiativeData,
   onFundEdited,
 }) => {
+  const [activeTab, setActiveTab] = useState("transactieoverzicht");
   const location = useLocation();
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -36,17 +67,58 @@ const FundDetail: React.FC<FundDetailProps> = ({
     useState(false);
   const { fetchFieldPermissions } = useFieldPermissions();
   const [entityPermissions, setEntityPermissions] = useState<string[]>([]);
-  const [showFullDescription, setShowFullDescription] = useState(false);
-  const [availableBudget, setAvailableBudget] = useState<number | null>(null);
+  const [fundDetails, setFundDetails] = useState<FundDetails | null>(null);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [isBlockingInteraction, setIsBlockingInteraction] = useState(false);
   const [isEditFundModalOpen, setIsEditFundModalOpen] = useState(false);
   const [isDeleteFundModalOpen, setIsDeleteFundModalOpen] = useState(false);
+  const [showFullDescription, setShowFullDescription] = useState(false);
+  const [availableBudget, setAvailableBudget] = useState<number | null>(null);
+  const [currentFundData, setCurrentFundData] = useState<FundDetails | null>(
+    null,
+  );
 
   useEffect(() => {
-    const fetchUserPermissions = async () => {
+    if (initiativeData) {
+      setFundDetails(initiativeData); // Use initiative data directly
+      setCurrentFundData(initiativeData);
+    }
+  }, [initiativeData]);
+
+  useEffect(() => {
+    const pathParts = location.pathname.split("/");
+    const currentTab = pathParts[pathParts.length - 1];
+    setActiveTab(currentTab);
+  }, [location.pathname]);
+
+  const handleTabChange = (tabName: string) => {
+    setActiveTab(tabName);
+
+    if (tabName === "transactieoverzicht") {
+      navigate(`/funds/${initiativeId}/transactieoverzicht`);
+    }
+    if (tabName === "activiteiten") {
+      navigate(`/funds/${initiativeId}/activiteiten`);
+    }
+    if (tabName === "details") {
+      navigate(`/funds/${initiativeId}/details`);
+    }
+    if (tabName === "sponsoren") {
+      navigate(`/funds/${initiativeId}/sponsors`);
+    }
+    if (tabName === "media") {
+      navigate(`/funds/${initiativeId}/media`);
+    }
+    if (tabName === "gebruikers") {
+      navigate(`/funds/${initiativeId}/gebruikers`);
+    }
+  };
+
+  useEffect(() => {
+    async function fetchUserPermissions() {
       try {
         let userToken = authToken;
+
         if (user && user.token && initiativeId) {
           userToken = user.token;
           const userPermissions: string[] | undefined = await fetchPermissions(
@@ -64,13 +136,13 @@ const FundDetail: React.FC<FundDetailProps> = ({
       } catch (error) {
         console.error("Failed to fetch user permissions:", error);
       }
-    };
+    }
 
     fetchUserPermissions();
   }, [user, initiativeId, authToken, fetchPermissions]);
 
   useEffect(() => {
-    const fetchFieldPermissionsOnMount = async () => {
+    async function fetchFieldPermissionsOnMount() {
       try {
         if (user && user.token && initiativeId) {
           const fieldPermissions: string[] | undefined =
@@ -85,19 +157,10 @@ const FundDetail: React.FC<FundDetailProps> = ({
       } catch (error) {
         console.error("Failed to fetch field permissions:", error);
       }
-    };
+    }
 
     fetchFieldPermissionsOnMount();
   }, [user, initiativeId, fetchFieldPermissions]);
-
-  useEffect(() => {
-    if (initiativeData) {
-      const spentBudget = initiativeData.expenses || 0;
-      const totalBudget = initiativeData.budget || 0;
-      const availableBudgetValue = totalBudget + spentBudget;
-      setAvailableBudget(availableBudgetValue);
-    }
-  }, [initiativeData, refreshTrigger]);
 
   const handleToggleEditFundModal = () => {
     if (isEditFundModalOpen) {
@@ -115,7 +178,7 @@ const FundDetail: React.FC<FundDetailProps> = ({
 
   const handleFundEdited = () => {
     setRefreshTrigger((prev) => prev + 1);
-    onFundEdited();
+    onFundEdited(); // Call the passed in onFundEdited function
   };
 
   const handleToggleDeleteFundModal = () => {
@@ -136,6 +199,15 @@ const FundDetail: React.FC<FundDetailProps> = ({
     setRefreshTrigger((prev) => prev);
   };
 
+  useEffect(() => {
+    if (fundDetails) {
+      const spentBudget = fundDetails.expenses || 0;
+      const totalBudget = fundDetails.budget || 0;
+      const availableBudgetValue = totalBudget + spentBudget;
+      setAvailableBudget(availableBudgetValue);
+    }
+  }, [fundDetails, refreshTrigger]);
+
   const handleRefreshTrigger = () => {
     setRefreshTrigger((prev) => prev + 1);
   };
@@ -150,43 +222,44 @@ const FundDetail: React.FC<FundDetailProps> = ({
                 Initiatieven
               </Link>,
               <Link key="funds" to={`/funds/${initiativeId}`}>
-                {initiativeData?.name}
+                {fundDetails?.name}
               </Link>,
             ]}
           />
         </div>
-        <div className={styles["top-right-button-container"]}>
-          {hasEditPermission && (
-            <button
-              className={styles["edit-button"]}
-              onClick={handleToggleEditFundModal}
-            >
-              <img src={EditIcon} alt="Edit" className={styles["icon"]} />
-              <span>Beheer initiatief</span>
-            </button>
-          )}
-          {hasDeletePermission && (
-            <button
-              className={styles["edit-button"]}
-              onClick={handleToggleDeleteFundModal}
-            >
-              <img src={DeleteIcon} alt="Delete" className={styles["icon"]} />
-              <span>Verwijder initiatief</span>
-            </button>
-          )}
-        </div>
+        <>
+          <div className={styles["top-right-button-container"]}>
+            {hasEditPermission && (
+              <button
+                className={styles["edit-button"]}
+                onClick={handleToggleEditFundModal}
+              >
+                <img src={EditIcon} alt="Edit" className={styles["icon"]} />
+                <span>Beheer initiatief</span>
+              </button>
+            )}
+            {hasDeletePermission && (
+              <button
+                className={styles["edit-button"]}
+                onClick={handleToggleDeleteFundModal}
+              >
+                <img src={DeleteIcon} alt="Delete" className={styles["icon"]} />
+                <span>Verwijder initiatief</span>
+              </button>
+            )}
+          </div>
+        </>
       </div>
       <div className={styles["fund-detail-container"]}>
         <div className={styles["content-wrapper"]}>
-          {initiativeData ? (
+          {fundDetails ? (
             <>
               <div className={styles["content-container"]}>
                 <div className={styles["fund-image"]}>
-                  {initiativeData.profile_picture ? (
+                  {fundDetails.profile_picture ? (
                     <img
                       src={
-                        initiativeData.profile_picture
-                          .attachment_thumbnail_url_512
+                        fundDetails.profile_picture.attachment_thumbnail_url_512
                       }
                       alt=""
                     />
@@ -196,25 +269,25 @@ const FundDetail: React.FC<FundDetailProps> = ({
                 </div>
                 <div className={styles["fund-info"]}>
                   <div className={styles["fund-name"]}>
-                    {initiativeData.name ? (
-                      <h1>{initiativeData.name}</h1>
+                    {fundDetails.name ? (
+                      <h1>{fundDetails.name}</h1>
                     ) : (
                       <p>Geen naam gevonden</p>
                     )}
                   </div>
                   <div className={styles["fund-description"]}>
-                    {initiativeData.description ? (
+                    {fundDetails.description ? (
                       <div>
                         <p>
                           {showFullDescription
-                            ? initiativeData.description
-                            : `${initiativeData.description.slice(0, 250)}${
-                                initiativeData.description.length > 250
+                            ? fundDetails.description
+                            : `${fundDetails.description.slice(0, 250)}${
+                                fundDetails.description.length > 250
                                   ? "..."
                                   : ""
                               }`}
                         </p>
-                        {initiativeData.description.length > 250 && (
+                        {fundDetails.description.length > 250 && (
                           <button
                             onClick={() =>
                               setShowFullDescription(!showFullDescription)
@@ -233,12 +306,12 @@ const FundDetail: React.FC<FundDetailProps> = ({
               </div>
               <div className={styles["statistics-container"]}>
                 <div className={styles["fund-budget"]}>
-                  {initiativeData.budget !== null ? (
+                  {fundDetails.budget !== null ? (
                     <>
                       <p>Toegekend budget:</p>
                       <span>
                         €{" "}
-                        {initiativeData.budget.toLocaleString("nl-NL", {
+                        {fundDetails.budget.toLocaleString("nl-NL", {
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 2,
                         })}
@@ -246,7 +319,7 @@ const FundDetail: React.FC<FundDetailProps> = ({
                       <div className={styles["tooltip"]}>
                         <span className={styles["tooltip-text"]}>
                           Waarvan ontvangen: €{" "}
-                          {initiativeData.income.toLocaleString("nl-NL", {
+                          {fundDetails.income.toLocaleString("nl-NL", {
                             minimumFractionDigits: 2,
                             maximumFractionDigits: 2,
                           })}
@@ -258,12 +331,12 @@ const FundDetail: React.FC<FundDetailProps> = ({
                   )}
                 </div>
                 <div className={styles["fund-expenses"]}>
-                  {initiativeData.expenses !== null ? (
+                  {fundDetails.expenses !== null ? (
                     <>
                       <p>Besteed:</p>
                       <span style={{ color: "#B82466" }}>
                         €{" "}
-                        {Math.abs(initiativeData.expenses).toLocaleString(
+                        {Math.abs(fundDetails.expenses).toLocaleString(
                           "nl-NL",
                           {
                             minimumFractionDigits: 2,
@@ -278,16 +351,20 @@ const FundDetail: React.FC<FundDetailProps> = ({
                 </div>
                 {availableBudget !== null && (
                   <div className={styles["fund-available-budget"]}>
-                    <>
-                      <p>Beschikbaar budget:</p>
-                      <span style={{ color: "#008000" }}>
-                        €{" "}
-                        {availableBudget.toLocaleString("nl-NL", {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                        })}
-                      </span>
-                    </>
+                    {availableBudget !== null ? (
+                      <>
+                        <p>Beschikbaar budget:</p>
+                        <span style={{ color: "#008000" }}>
+                          €{" "}
+                          {availableBudget.toLocaleString("nl-NL", {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          })}
+                        </span>
+                      </>
+                    ) : (
+                      <p>Available budget not found</p>
+                    )}
                   </div>
                 )}
               </div>
@@ -311,17 +388,73 @@ const FundDetail: React.FC<FundDetailProps> = ({
             </div>
           )}
         </div>
-        <EditFund
+        {/* Uncomment these as needed */}
+        {/* <EditFund
           isOpen={isEditFundModalOpen}
           onClose={handleToggleEditFundModal}
           isBlockingInteraction={isBlockingInteraction}
           onFundEdited={handleFundEdited}
           initiativeId={initiativeId}
           authToken={user?.token || ""}
-          fundData={initiativeData}
+          fundData={currentFundData}
           fieldPermissions={entityPermissions}
           fields={[]}
         />
+        <DeleteFund
+          isOpen={isDeleteFundModalOpen}
+          onClose={handleToggleDeleteFundModal}
+          isBlockingInteraction={isBlockingInteraction}
+          onFundDeleted={handleFundDeleted}
+          initiativeId={initiativeId}
+          authToken={user?.token || ""}
+        /> */}
+        <TabbedFundNavigation
+          onTabChange={handleTabChange}
+          initiativeId={initiativeId}
+        />
+        {activeTab === "transactieoverzicht" && (
+          <FundsTransactions
+            initiativeId={initiativeId}
+            authToken={user?.token || ""}
+            onRefreshTrigger={handleRefreshTrigger}
+            entityPermissions={entityPermissions}
+            hasCreatePaymentPermission={hasCreatePaymentPermission}
+          />
+        )}
+        {activeTab === "activiteiten" && (
+          <FundsActivities
+            initiativeId={initiativeId}
+            authToken={user?.token || ""}
+          />
+        )}
+        {activeTab === "details" && (
+          <FundsDetails
+            name={fundDetails?.name}
+            description={fundDetails?.description}
+            purpose={fundDetails?.purpose}
+            target_audience={fundDetails?.target_audience}
+            kvk_registration={fundDetails?.kvk_registration}
+            location={fundDetails?.location}
+          />
+        )}
+        {activeTab === "sponsoren" && (
+          <FundsSponsors
+            grantId={fundDetails?.grant?.id}
+            grantName={fundDetails?.grant?.name}
+            grantReference={fundDetails?.grant?.reference}
+            grantBudget={fundDetails?.grant?.budget}
+            token={user?.token || ""}
+          />
+        )}
+        {activeTab === "media" && (
+          <FundsMedia
+            initiativeId={initiativeId}
+            authToken={user?.token || ""}
+          />
+        )}
+        {activeTab === "gebruikers" && (
+          <FundsUsers initiativeId={initiativeId} token={user?.token || ""} />
+        )}
       </div>
     </>
   );

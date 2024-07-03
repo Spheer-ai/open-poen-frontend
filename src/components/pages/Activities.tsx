@@ -1,12 +1,12 @@
-import React, { useEffect, useState, useCallback, useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import TopNavigationBar from "../ui/top-navigation-bar/TopNavigationBar";
 import styles from "../../assets/scss/Funds.module.scss";
-import { usePermissions } from "../../contexts/PermissionContext";
+import { useFetchEntityPermissions } from "../hooks/useFetchPermissions";
 import { useAuth } from "../../contexts/AuthContext";
 import AddActivity from "../modals/AddActivity";
 import LoadingDot from "../animation/LoadingDot";
-// import FundDetail from "./FundDetail"; // Commented out to avoid rendering
+import FundDetail from "./FundDetail";
 import ActivityDetail from "./ActivityDetail";
 import { calculateBarWidth, formatCurrency } from "../utils/calculations";
 import useActivities from "../hooks/useActivities";
@@ -17,7 +17,7 @@ export default function ActivitiesPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isBlockingInteraction, setIsBlockingInteraction] = useState(false);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
-  const { fetchPermissions } = usePermissions();
+  const { permissions, fetchPermissions } = useFetchEntityPermissions();
   const permissionsRef = useRef(false);
   const [entityPermissions, setEntityPermissions] = useState<string[]>([]);
   const hasPermission = entityPermissions.includes("create_activity");
@@ -27,11 +27,15 @@ export default function ActivitiesPage() {
   const location = useLocation();
   const isMobile = window.innerWidth <= 768;
 
-  const { activities, initiativeName, isActivitiesLoaded, loadActivities } =
-    useActivities(Number(initiativeId), user?.token, setIsLoading);
+  const {
+    activities,
+    initiativeName,
+    isActivitiesLoaded,
+    loadActivities,
+    initiativeData,
+  } = useActivities(Number(initiativeId), user?.token, setIsLoading);
 
   useEffect(() => {
-    console.log("useEffect for loading activities triggered");
     loadActivities();
   }, [loadActivities, refreshTrigger]);
 
@@ -44,11 +48,12 @@ export default function ActivitiesPage() {
     ) {
       const loadPermissions = async () => {
         console.log("Fetching permissions for initiativeId:", initiativeId);
+        console.log("User token:", user.token);
 
         try {
           const permissions = await fetchPermissions(
             "Initiative",
-            parseInt(initiativeId),
+            Number(initiativeId),
             user.token,
           );
           console.log("Fetched permissions:", permissions);
@@ -66,35 +71,28 @@ export default function ActivitiesPage() {
 
   useEffect(() => {
     if (activityId) {
-      console.log("Setting selectedActivity:", activityId);
       setSelectedActivity(activityId);
     } else if (
       location.pathname.includes("/funds/") &&
       location.pathname.includes("/activities/")
     ) {
       const activityIdFromPath = location.pathname.split("/").pop();
-
       if (activityIdFromPath) {
-        console.log("Setting selectedActivity from path:", activityIdFromPath);
         setSelectedActivity(activityIdFromPath);
       }
     }
   }, [activityId, location.pathname]);
 
   const handleBackClick = () => {
-    console.log("Back button clicked");
     navigate("/funds");
   };
 
   const handleTitleClick = () => {
-    console.log("Title clicked");
     setSelectedActivity(null);
     navigate(`/funds/${initiativeId}`);
   };
 
   const handleToggleAddActivityModal = () => {
-    console.log("Toggling add activity modal, isModalOpen:", isModalOpen);
-
     if (isModalOpen) {
       setIsBlockingInteraction(true);
       setTimeout(() => {
@@ -109,19 +107,20 @@ export default function ActivitiesPage() {
   };
 
   const handleActivityAdded = () => {
-    console.log("Activity added");
     setRefreshTrigger((prev) => prev + 1);
   };
 
   const handleActivityEdited = () => {
-    console.log("Activity edited");
     setRefreshTrigger((prev) => prev + 1);
   };
 
   const handleActivityClick = (activityId: string) => {
-    console.log("Activity clicked:", activityId);
     setSelectedActivity(activityId);
     navigate(`/funds/${initiativeId}/activities/${activityId}`);
+  };
+
+  const handleFundEdited = () => {
+    setRefreshTrigger((prev) => prev + 1);
   };
 
   return (
@@ -239,12 +238,13 @@ export default function ActivitiesPage() {
         {selectedActivity !== null ? (
           <p>Select a fund or activity to view details.</p>
         ) : initiativeId !== null ? (
-          // <FundDetail
-          //   initiativeId={initiativeId || ""}
-          //   authToken={user?.token || ""}
-          //   onFundEdited={() => {}}
-          // />
-          <p>Select a fund or activity to view details.</p>
+          <FundDetail
+            initiativeId={initiativeId || ""}
+            authToken={user?.token || ""}
+            initiativeData={initiativeData}
+            onFundEdited={handleFundEdited}
+            entityPermissions={entityPermissions}
+          />
         ) : (
           <p>Select a fund or activity to view details.</p>
         )}

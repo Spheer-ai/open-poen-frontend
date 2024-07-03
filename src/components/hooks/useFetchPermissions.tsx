@@ -7,15 +7,19 @@ export const useFetchEntityPermissions = () => {
   const fetchedRef = useRef(false);
 
   const fetchPermissions = useCallback(
-    async (entityClass: string, token?: string) => {
+    async (entityClass: string, entityId?: number, token?: string) => {
       if (fetchedRef.current) return;
       try {
+        console.log(
+          `Fetching permissions for entityClass: ${entityClass}, entityId: ${entityId}, with token: ${token}`,
+        );
         setLoading(true);
         const perms = await fetchEntityPermissions(
           entityClass,
-          undefined,
+          entityId,
           token,
         );
+        console.log("Permissions fetched: ", perms);
         setPermissions((prevPermissions) => ({
           ...prevPermissions,
           [entityClass]: perms,
@@ -23,7 +27,10 @@ export const useFetchEntityPermissions = () => {
         fetchedRef.current = true;
         return perms;
       } catch (error) {
-        console.error(`Error fetching permissions for ${entityClass}:`, error);
+        console.error(
+          `Error fetching permissions for ${entityClass} with ID ${entityId}:`,
+          error,
+        );
         return undefined;
       } finally {
         setLoading(false);

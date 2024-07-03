@@ -483,14 +483,26 @@ export const fetchEntityPermissions = async (
       headers["Authorization"] = `Bearer ${token}`;
     }
 
+    console.log(
+      "Sending request to /auth/entity-access/actions with params: ",
+      params,
+      " and headers: ",
+      headers,
+    );
+
     const response = await api.get("/auth/entity-access/actions", {
       params,
       headers,
     });
 
+    console.log("Response received: ", response.data);
+
     return response.data.actions;
   } catch (error) {
-    console.error(`Failed to fetch permissions for ${entityClass}:`, error);
+    console.error(
+      `Failed to fetch permissions for ${entityClass} with ID ${entityId}:`,
+      error,
+    );
     throw error;
   }
 };
