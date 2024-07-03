@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Initiative } from "../../types/InitiativesTypes";
 import { fetchInitiatives } from "../middleware/Api";
 
@@ -6,21 +6,25 @@ const useInitiatives = (
   token: string | undefined,
   limit: number,
   onlyMine: boolean,
+  setLoading: React.Dispatch<React.SetStateAction<boolean>>,
 ) => {
   const [initiatives, setInitiatives] = useState<Initiative[]>([]);
   const [offset, setOffset] = useState(0);
   const [isLoadingMoreInitiatives, setIsLoadingMoreInitiatives] =
     useState(false);
   const [hasMoreInitiatives, setHasMoreInitiatives] = useState(true);
-  const initialFetchDoneRef = useRef(false);
 
   const fetchAndDisplayInitiatives = useCallback(
-    async (offset: number, limit: number) => {
+    async (offset: number, limit: number, reset: boolean = false) => {
       console.log(
         `Fetching initiatives: offset=${offset}, limit=${limit}, onlyMine=${onlyMine}`,
       );
-      setIsLoadingMoreInitiatives(true);
+      if (!reset) {
+        setIsLoadingMoreInitiatives(true);
+      }
       try {
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+
         const initiativesData = await fetchInitiatives(
           token || "",
           onlyMine,
@@ -39,34 +43,30 @@ const useInitiatives = (
           return { ...initiative, beschikbaar };
         });
 
-        setInitiatives((prevInitiatives) => [
-          ...prevInitiatives,
-          ...initiativesWithBeschikbaar,
-        ]);
+        if (reset) {
+          setInitiatives(initiativesWithBeschikbaar);
+        } else {
+          setInitiatives((prevInitiatives) => [
+            ...prevInitiatives,
+            ...initiativesWithBeschikbaar,
+          ]);
+        }
       } catch (error) {
         console.error("Error fetching initiatives:", error);
       } finally {
-        setIsLoadingMoreInitiatives(false);
+        if (!reset) {
+          setIsLoadingMoreInitiatives(false);
+        }
+        setLoading(false);
       }
     },
-    [token, onlyMine],
+    [token, onlyMine, setLoading],
   );
 
   useEffect(() => {
-    if (!initialFetchDoneRef.current) {
-      console.log("Initial fetch of initiatives");
-      fetchAndDisplayInitiatives(0, limit);
-      initialFetchDoneRef.current = true;
-    }
-  }, [fetchAndDisplayInitiatives, limit]);
-
-  useEffect(() => {
-    console.log("Fetching initiatives due to onlyMine or limit change");
-    setOffset(0);
-    setInitiatives([]);
-    setHasMoreInitiatives(true);
-    fetchAndDisplayInitiatives(0, limit);
-  }, [onlyMine, fetchAndDisplayInitiatives, limit]);
+    setLoading(true);
+    fetchAndDisplayInitiatives(0, limit, true);
+  }, [fetchAndDisplayInitiatives, limit, onlyMine, setLoading]);
 
   const loadMoreInitiatives = useCallback(() => {
     if (hasMoreInitiatives && !isLoadingMoreInitiatives) {
@@ -83,20 +83,11 @@ const useInitiatives = (
     isLoadingMoreInitiatives,
   ]);
 
-  const resetInitiatives = useCallback(() => {
-    console.log("Resetting initiatives");
-    setOffset(0);
-    setInitiatives([]);
-    setHasMoreInitiatives(true);
-  }, []);
-
   return {
     initiatives,
     isLoadingMoreInitiatives,
     loadMoreInitiatives,
-    resetInitiatives,
     hasMoreInitiatives,
-    fetchAndDisplayInitiatives,
   };
 };
 

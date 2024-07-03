@@ -33,6 +33,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const [user, setUser] = useState<UserData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isTokenLoaded, setIsTokenLoaded] = useState(false);
   const locale = getLocale();
   const intl: IntlShape = createIntl({ locale, messages: messages[locale] });
 
@@ -70,6 +71,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         }
       }
     }
+    setIsTokenLoaded(true); // Markeer de token als geladen
   }, []);
 
   useEffect(() => {
@@ -145,7 +147,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         locale={intl.locale}
         messages={messages[intl.locale] || messages[defaultLocale]}
       >
-        {children}
+        {isTokenLoaded ? children : <div>Loading...</div>}
       </IntlProvider>
     </AuthContext.Provider>
   );
