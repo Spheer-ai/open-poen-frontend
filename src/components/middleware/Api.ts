@@ -268,6 +268,25 @@ export const fetchInitiatives = async (
   }
 };
 
+export const fetchFundDetails = async (token, initiativeId) => {
+  try {
+    const response = await api.get(`/initiative/${initiativeId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (response.status === 200) {
+      return response.data;
+    } else {
+      throw new Error("Failed to fetch fund details");
+    }
+  } catch (error) {
+    console.error("Error fetching fund details:", error);
+    throw error;
+  }
+};
+
 export const fetchActivities = async (initiativeId: number, token: string) => {
   try {
     const response = await api.get(`/initiative/${initiativeId}`, {
@@ -1307,25 +1326,6 @@ export const fetchLinkableActivities = async (token, initiativeId) => {
     }
   } catch (error) {
     console.error("Error fetching linkable activities:", error);
-    throw error;
-  }
-};
-
-export const fetchFundDetails = async (token, initiativeId) => {
-  try {
-    const response = await api.get(`/initiative/${initiativeId}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    if (response.status === 200) {
-      return response.data;
-    } else {
-      throw new Error("Failed to fetch fund details");
-    }
-  } catch (error) {
-    console.error("Error fetching fund details:", error);
     throw error;
   }
 };

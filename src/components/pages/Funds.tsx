@@ -54,10 +54,6 @@ export default function Funds() {
     }
   }, [checkBottom]);
 
-  const handleSearch = () => {
-    console.log("handleSearch called");
-  };
-
   const navigateToActivities = (
     initiativeId: number,
     initiativeName: string,
@@ -84,7 +80,7 @@ export default function Funds() {
           showCta={false}
           onSettingsClick={() => {}}
           onCtaClick={() => {}}
-          onSearch={handleSearch}
+          onSearch={() => {}}
           showSearch={false}
           showHomeLink={true}
           showTitleOnSmallScreen={false}
