@@ -3,31 +3,8 @@ import styles from "../../assets/scss/layout/AddFundDesktop.module.scss";
 import FundImageUploader from "../elements/uploadder/FundImageUploader";
 import { editFund, uploadFundPicture } from "../middleware/Api";
 import CloseIson from "/close-icon.svg";
-
-interface FundDetails {
-  id?: number;
-  name?: string;
-  description?: string;
-  budget?: number;
-  income?: number;
-  expenses?: number;
-  purpose?: string;
-  target_audience?: string;
-  kvk_registration?: string;
-  location?: string;
-}
-
-interface EditFundProps {
-  isOpen: boolean;
-  onClose: () => void;
-  isBlockingInteraction: boolean;
-  onFundEdited: () => void;
-  initiativeId: string;
-  authToken: string;
-  fundData: FundDetails | null;
-  fieldPermissions;
-  fields: string[];
-}
+import { useFieldPermissions } from "../../contexts/FieldPermissionContext";
+import { EditFundProps, FundDetails } from "../../types/EditFundTypes";
 
 const EditFund: React.FC<EditFundProps> = ({
   isOpen,
@@ -37,7 +14,6 @@ const EditFund: React.FC<EditFundProps> = ({
   initiativeId,
   authToken,
   fundData,
-  fieldPermissions,
 }) => {
   const [modalIsOpen, setModalIsOpen] = useState(isOpen);
   const [isHiddenSponsors, setIsHiddenSponsors] = useState(false);
@@ -53,6 +29,8 @@ const EditFund: React.FC<EditFundProps> = ({
   const [purposeError, setPurposeError] = useState("");
   const [targetAudienceError, setTargetAudienceError] = useState("");
 
+  const { fieldPermissions, fetchFieldPermissions } = useFieldPermissions();
+
   useEffect(() => {
     if (isOpen) {
       setModalIsOpen(true);
@@ -64,11 +42,24 @@ const EditFund: React.FC<EditFundProps> = ({
   }, [isOpen]);
 
   useEffect(() => {
+    if (isOpen) {
+      console.log(
+        `EditFund: Fetching field permissions for initiative ID ${initiativeId}`,
+      );
+      fetchFieldPermissions("Initiative", parseInt(initiativeId), authToken);
+    }
+  }, [isOpen, initiativeId, authToken, fetchFieldPermissions]);
+
+  useEffect(() => {
     if (isOpen && fundData) {
       setFormData(fundData);
       setCharCount(fundData.description ? fundData.description.length : 0);
     }
   }, [isOpen, fundData]);
+
+  useEffect(() => {
+    console.log("EditFund: Current field permissions:", fieldPermissions);
+  }, [fieldPermissions]);
 
   const handleSave = async () => {
     setIsSaveClicked(true);
@@ -107,7 +98,7 @@ const EditFund: React.FC<EditFundProps> = ({
 
       setApiError("");
       handleClose();
-      onFundEdited();
+      onFundEdited(updatedFundData); // Pass the updated fund data
     } catch (error) {
       console.error("Failed to edit fund:", error);
       if (error.response && error.response.status === 409) {
@@ -138,6 +129,8 @@ const EditFund: React.FC<EditFundProps> = ({
     setSelectedImage(file);
   };
 
+  const fields = fieldPermissions.fields || [];
+
   return (
     <>
       <div
@@ -154,7 +147,7 @@ const EditFund: React.FC<EditFundProps> = ({
         <hr></hr>
         <div className={styles.formGroup}>
           <h4>Algemene initiatiefinstellingen</h4>
-          {fieldPermissions.fields.includes("name") && (
+          {fields.includes("name") && (
             <>
               <label className={styles.label}>Naam:</label>
               <input
@@ -187,7 +180,7 @@ const EditFund: React.FC<EditFundProps> = ({
           )}
         </div>
         <div className={styles.formGroup}>
-          {fieldPermissions.fields.includes("description") && (
+          {fields.includes("description") && (
             <>
               <label className={styles.label}>Beschrijving:</label>
               <textarea
@@ -219,7 +212,7 @@ const EditFund: React.FC<EditFundProps> = ({
           )}
         </div>
         <div className={styles.formGroup}>
-          {fieldPermissions.fields.includes("purpose") && (
+          {fields.includes("purpose") && (
             <>
               <label className={styles.label}>Doel:</label>
               <textarea
@@ -251,7 +244,7 @@ const EditFund: React.FC<EditFundProps> = ({
           )}
         </div>
         <div className={styles.formGroup}>
-          {fieldPermissions.fields.includes("target_audience") && (
+          {fields.includes("target_audience") && (
             <>
               <label className={styles.label}>Doelgroep:</label>
               <input
@@ -286,7 +279,7 @@ const EditFund: React.FC<EditFundProps> = ({
           )}
         </div>
         <div className={styles.formGroup}>
-          {fieldPermissions.fields.includes("kvk_registration") && (
+          {fields.includes("kvk_registration") && (
             <>
               <label className={styles.label}>KVK Registratie:</label>
               <input
@@ -307,7 +300,7 @@ const EditFund: React.FC<EditFundProps> = ({
           )}
         </div>
         <div className={styles.formGroup}>
-          {fieldPermissions.fields.includes("location") && (
+          {fields.includes("location") && (
             <>
               <label className={styles.label}>Locatie:</label>
               <input
@@ -326,7 +319,7 @@ const EditFund: React.FC<EditFundProps> = ({
         </div>
         <div className={styles.formGroup}>
           <div className={styles.roleOptions}>
-            {fieldPermissions.fields.includes("hidden") && (
+            {fields.includes("hidden") && (
               <label className={styles.roleLabel}>
                 <input
                   type="checkbox"
@@ -336,7 +329,7 @@ const EditFund: React.FC<EditFundProps> = ({
                 Initiatief verbergen
               </label>
             )}
-            {fieldPermissions.fields.includes("hidden_sponsors") && (
+            {fields.includes("hidden_sponsors") && (
               <label className={styles.roleLabel}>
                 <input
                   type="checkbox"
@@ -349,7 +342,7 @@ const EditFund: React.FC<EditFundProps> = ({
           </div>
         </div>
         <div className={styles.formGroup}>
-          {fieldPermissions.fields.includes("budget") && (
+          {fields.includes("budget") && (
             <div className={styles.budgetContainer}>
               <label className={styles.labelField}> Begroting: </label>
               <input

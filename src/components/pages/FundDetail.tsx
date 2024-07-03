@@ -8,12 +8,12 @@ import { useAuth } from "../../contexts/AuthContext";
 import DeleteFund from "../modals/DeleteFund";
 import LoadingDot from "../animation/LoadingDot";
 import Breadcrumb from "../ui/layout/BreadCrumbs";
-import { InitiativeOwner } from "../../types/InitiativeOwners";
+import { FundDetails } from "../../types/EditFundTypes"; // Ensure correct import
 
 interface FundDetailProps {
   initiativeId: string;
   authToken: string;
-  initiativeData: any;
+  initiativeData: FundDetails; // Use the correct type here
   entityPermissions: string[];
   onFundEdited: () => void;
 }
@@ -21,7 +21,7 @@ interface FundDetailProps {
 const FundDetail: React.FC<FundDetailProps> = ({
   initiativeId,
   authToken,
-  initiativeData,
+  initiativeData: initialData, // Renamed to avoid conflict with state
   entityPermissions,
   onFundEdited,
 }) => {
@@ -38,6 +38,8 @@ const FundDetail: React.FC<FundDetailProps> = ({
   const [isBlockingInteraction, setIsBlockingInteraction] = useState(false);
   const [isEditFundModalOpen, setIsEditFundModalOpen] = useState(false);
   const [isDeleteFundModalOpen, setIsDeleteFundModalOpen] = useState(false);
+  const [initiativeData, setInitiativeData] =
+    useState<FundDetails>(initialData); // Define state
 
   useEffect(() => {
     setHasEditPermission(entityPermissions.includes("edit"));
@@ -68,8 +70,9 @@ const FundDetail: React.FC<FundDetailProps> = ({
     }
   };
 
-  const handleFundEdited = () => {
+  const handleFundEdited = (updatedFundData: FundDetails) => {
     setRefreshTrigger((prev) => prev + 1);
+    setInitiativeData(updatedFundData); // Update the initiative data with the updated data
     onFundEdited();
   };
 
@@ -104,7 +107,7 @@ const FundDetail: React.FC<FundDetailProps> = ({
                 Initiatieven
               </Link>,
               <Link key="funds" to={`/funds/${initiativeId}`}>
-                {initiativeData?.name}
+                {initiativeData?.name || "Naam onbekend"}
               </Link>,
             ]}
           />
@@ -142,7 +145,7 @@ const FundDetail: React.FC<FundDetailProps> = ({
                         initiativeData.profile_picture
                           .attachment_thumbnail_url_512
                       }
-                      alt=""
+                      alt="Initiatief Afbeelding"
                     />
                   ) : (
                     <p>Geen afbeelding gevonden</p>
@@ -187,12 +190,12 @@ const FundDetail: React.FC<FundDetailProps> = ({
               </div>
               <div className={styles["statistics-container"]}>
                 <div className={styles["fund-budget"]}>
-                  {initiativeData.budget !== null ? (
+                  {initiativeData.budget !== undefined ? (
                     <>
                       <p>Toegekend budget:</p>
                       <span>
                         €{" "}
-                        {initiativeData.budget.toLocaleString("nl-NL", {
+                        {initiativeData.budget?.toLocaleString("nl-NL", {
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 2,
                         })}
@@ -200,7 +203,7 @@ const FundDetail: React.FC<FundDetailProps> = ({
                       <div className={styles["tooltip"]}>
                         <span className={styles["tooltip-text"]}>
                           Waarvan ontvangen: €{" "}
-                          {initiativeData.income.toLocaleString("nl-NL", {
+                          {initiativeData.income?.toLocaleString("nl-NL", {
                             minimumFractionDigits: 2,
                             maximumFractionDigits: 2,
                           })}
@@ -212,12 +215,12 @@ const FundDetail: React.FC<FundDetailProps> = ({
                   )}
                 </div>
                 <div className={styles["fund-expenses"]}>
-                  {initiativeData.expenses !== null ? (
+                  {initiativeData.expenses !== undefined ? (
                     <>
                       <p>Besteed:</p>
                       <span style={{ color: "#B82466" }}>
                         €{" "}
-                        {Math.abs(initiativeData.expenses).toLocaleString(
+                        {Math.abs(initiativeData.expenses)?.toLocaleString(
                           "nl-NL",
                           {
                             minimumFractionDigits: 2,
@@ -273,8 +276,6 @@ const FundDetail: React.FC<FundDetailProps> = ({
           initiativeId={initiativeId}
           authToken={user?.token || ""}
           fundData={initiativeData}
-          fieldPermissions={entityPermissions}
-          fields={[]}
         />
         <DeleteFund
           isOpen={isDeleteFundModalOpen}

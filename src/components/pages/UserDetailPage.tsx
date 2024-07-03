@@ -13,7 +13,7 @@ import DeleteIcon from "/bin-icon.svg";
 import SettingsIcon from "/setting-icon.svg";
 import ChangePasswordIcon from "/change-password-icon.svg";
 import { fetchUserDetails } from "../middleware/Api";
-import { usePermissions } from "../../contexts/PermissionContext";
+import { useFetchEntityPermissions } from "../hooks/useFetchPermissions";
 import { useFieldPermissions } from "../../contexts/FieldPermissionContext";
 import EditUserForm from "../modals/EditUser";
 import DeleteUser from "../modals/DeleteUser";
@@ -62,8 +62,8 @@ export default function UserDetailsPage({
   const [isChangePasswordModalOpen, setIsChangePasswordModalOpen] =
     useState(false);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
-  const { fetchFieldPermissions } = useFieldPermissions();
-  const { fetchPermissions } = usePermissions();
+  const { fieldPermissions, fetchFieldPermissions } = useFieldPermissions();
+  const { permissions, fetchPermissions } = useFetchEntityPermissions();
   const [entityPermissions, setEntityPermissions] = useState<string[]>([]);
   const [hasEditPermission, setHasEditPermission] = useState(false);
   const [hasDeletePermission, setHasDeletePermission] = useState(false);
@@ -112,11 +112,14 @@ export default function UserDetailsPage({
     async function fetchFieldPermissionsOnMount() {
       try {
         if (user && user.token && userId) {
-          const fieldPermissions: string[] | undefined =
-            await fetchFieldPermissions("User", parseInt(userId), user.token);
+          const fieldPermissionsResponse = await fetchFieldPermissions(
+            "User",
+            parseInt(userId),
+            user.token,
+          );
 
-          if (fieldPermissions) {
-            setEntityPermissions(fieldPermissions);
+          if (fieldPermissionsResponse) {
+            setEntityPermissions(fieldPermissionsResponse.fields || []);
           }
         }
       } catch (error) {
@@ -407,7 +410,7 @@ export default function UserDetailsPage({
         last_name={""}
         biography={""}
         hidden={true}
-        fieldPermissions={entityPermissions}
+        fieldPermissions={fieldPermissions}
         fields={[]}
         isOpen={isEditUserProfileModalOpen}
         onClose={handleToggleEditUserProfileModal}
@@ -417,7 +420,7 @@ export default function UserDetailsPage({
 
       <EditUserForm
         userId={userId || ""}
-        fieldPermissions={entityPermissions}
+        fieldPermissions={fieldPermissions}
         fields={[]}
         isOpen={isEditUserModalOpen}
         onClose={handleToggleEditUserModal}
