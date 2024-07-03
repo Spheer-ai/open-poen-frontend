@@ -17,15 +17,14 @@ export default function ActivitiesPage() {
   const { user } = useAuth();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isBlockingInteraction, setIsBlockingInteraction] = useState(false);
-  const [refreshTrigger, setRefreshTrigger] = useState(0);
   const { permissions, fetchPermissions } = useFetchEntityPermissions();
-  const permissionsRef = useRef(false);
   const [entityPermissions, setEntityPermissions] = useState<string[]>([]);
   const hasPermission = entityPermissions.includes("create_activity");
   const [selectedActivity, setSelectedActivity] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const { initiativeId, activityId } = useParams();
   const location = useLocation();
+  const [arePermissionsLoading, setArePermissionsLoading] = useState(true);
   const isMobile = window.innerWidth <= 768;
 
   const {
@@ -33,21 +32,12 @@ export default function ActivitiesPage() {
     initiativeName,
     isActivitiesLoaded,
     loadActivities,
-    initiativeData,
     addActivityToList,
+    initiativeData,
   } = useActivities(Number(initiativeId), user?.token, setIsLoading);
 
   useEffect(() => {
-    loadActivities();
-  }, [loadActivities, refreshTrigger]);
-
-  useEffect(() => {
-    if (
-      isActivitiesLoaded &&
-      initiativeId &&
-      user?.token &&
-      !permissionsRef.current
-    ) {
+    if (initiativeId && user?.token) {
       const loadPermissions = async () => {
         console.log("Fetching permissions for initiativeId:", initiativeId);
         console.log("User token:", user.token);
@@ -61,15 +51,22 @@ export default function ActivitiesPage() {
           console.log("Fetched permissions:", permissions);
 
           setEntityPermissions(permissions || []);
-          permissionsRef.current = true;
         } catch (error) {
           console.error("Failed to fetch permissions:", error);
+        } finally {
+          setArePermissionsLoading(false);
         }
       };
 
       loadPermissions();
     }
-  }, [isActivitiesLoaded, initiativeId, user?.token, fetchPermissions]);
+  }, [initiativeId, user?.token, fetchPermissions]);
+
+  useEffect(() => {
+    if (!arePermissionsLoading && !isActivitiesLoaded) {
+      loadActivities();
+    }
+  }, [arePermissionsLoading, isActivitiesLoaded, loadActivities]);
 
   useEffect(() => {
     if (activityId) {
@@ -110,11 +107,10 @@ export default function ActivitiesPage() {
 
   const handleActivityAdded = (newActivity: Activities) => {
     addActivityToList(newActivity);
-    setIsModalOpen(false);
   };
 
   const handleActivityEdited = () => {
-    setRefreshTrigger((prev) => prev + 1);
+    // Handle activity edited if needed
   };
 
   const handleActivityClick = (activityId: string) => {
@@ -123,7 +119,7 @@ export default function ActivitiesPage() {
   };
 
   const handleFundEdited = () => {
-    setRefreshTrigger((prev) => prev + 1);
+    // Handle fund edited if needed
   };
 
   return (
@@ -146,7 +142,7 @@ export default function ActivitiesPage() {
         />
         {!isMobile && (
           <>
-            {isLoading ? (
+            {isLoading || arePermissionsLoading ? (
               <div className={styles["loading-container"]}>
                 <LoadingDot delay={0} />
                 <LoadingDot delay={0.1} />

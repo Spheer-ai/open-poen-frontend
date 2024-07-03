@@ -3,12 +3,15 @@ import { fetchEntityPermissions } from "../middleware/Api";
 
 export const useFetchEntityPermissions = () => {
   const [permissions, setPermissions] = useState<Record<string, string[]>>({});
-  const [loading, setLoading] = useState(true);
-  const fetchedRef = useRef(false);
+  const [loading, setLoading] = useState(false);
+  const permissionsRef = useRef<Record<string, string[]>>({});
+  const fetchedRef = useRef<Record<string, boolean>>({});
 
   const fetchPermissions = useCallback(
     async (entityClass: string, entityId?: number, token?: string) => {
-      if (fetchedRef.current) return;
+      const key = `${entityClass}-${entityId}`;
+      if (fetchedRef.current[key])
+        return permissionsRef.current[entityClass] || [];
       try {
         console.log(
           `Fetching permissions for entityClass: ${entityClass}, entityId: ${entityId}, with token: ${token}`,
@@ -20,18 +23,19 @@ export const useFetchEntityPermissions = () => {
           token,
         );
         console.log("Permissions fetched: ", perms);
+        permissionsRef.current[entityClass] = perms;
+        fetchedRef.current[key] = true;
         setPermissions((prevPermissions) => ({
           ...prevPermissions,
           [entityClass]: perms,
         }));
-        fetchedRef.current = true;
         return perms;
       } catch (error) {
         console.error(
           `Error fetching permissions for ${entityClass} with ID ${entityId}:`,
           error,
         );
-        return undefined;
+        return [];
       } finally {
         setLoading(false);
       }

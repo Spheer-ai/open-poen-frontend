@@ -1,6 +1,4 @@
-// useActivities.tsx
-
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { Activities } from "../../types/ActivitiesTypes";
 import { fetchActivities } from "../middleware/Api";
 
@@ -13,18 +11,17 @@ const useActivities = (
   const [initiativeData, setInitiativeData] = useState<any>(null);
   const [initiativeName, setInitiativeName] = useState<string>("");
   const [isActivitiesLoaded, setIsActivitiesLoaded] = useState(false);
-  const hasFetchedActivities = useRef(false);
+  const activitiesRef = useRef<Activities[]>([]);
+  const initiativeDataRef = useRef<any>(null);
+  const initiativeNameRef = useRef<string>("");
+  const isLoadedRef = useRef(false);
 
   const loadActivities = useCallback(async () => {
-    if (!initiativeId) {
+    if (!initiativeId || isLoadedRef.current) {
       setLoading(false);
       return;
     }
-    if (hasFetchedActivities.current) {
-      return;
-    }
 
-    hasFetchedActivities.current = true;
     setLoading(true);
 
     try {
@@ -36,18 +33,18 @@ const useActivities = (
 
       updatedActivities = updatedActivities.sort((a, b) => b.id - a.id);
 
-      setInitiativeName(fetchedInitiativeData.name);
-      setInitiativeData(fetchedInitiativeData);
+      activitiesRef.current = updatedActivities.map((activity) => ({
+        ...activity,
+        initiativeName: fetchedInitiativeData.name,
+        beschikbaar: Math.max(activity.budget + activity.expenses, 0),
+      }));
+      initiativeDataRef.current = fetchedInitiativeData;
+      initiativeNameRef.current = fetchedInitiativeData.name;
+      isLoadedRef.current = true;
 
-      const activitiesWithInitiativeNames = updatedActivities.map(
-        (activity) => ({
-          ...activity,
-          initiativeName: fetchedInitiativeData.name,
-          beschikbaar: Math.max(activity.budget + activity.expenses, 0),
-        }),
-      );
-
-      setActivities(activitiesWithInitiativeNames);
+      setActivities(activitiesRef.current);
+      setInitiativeData(initiativeDataRef.current);
+      setInitiativeName(initiativeNameRef.current);
       setIsActivitiesLoaded(true);
     } catch (error) {
       console.error("Error fetching activities:", error);
@@ -57,10 +54,10 @@ const useActivities = (
   }, [initiativeId, token, setLoading]);
 
   const addActivityToList = (newActivity: Activities) => {
-    setActivities((prevActivities) => {
-      const updatedActivities = [newActivity, ...prevActivities];
-      return updatedActivities.sort((a, b) => b.id - a.id);
-    });
+    activitiesRef.current = [newActivity, ...activitiesRef.current].sort(
+      (a, b) => b.id - a.id,
+    );
+    setActivities([...activitiesRef.current]);
   };
 
   useEffect(() => {
