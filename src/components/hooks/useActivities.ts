@@ -58,6 +58,28 @@ const useActivities = (
       (a, b) => b.id - a.id,
     );
     setActivities([...activitiesRef.current]);
+    console.log("Activity added:", newActivity);
+    console.log("Updated activities list:", activitiesRef.current);
+  };
+
+  const updateActivityInList = (updatedActivity: Activities) => {
+    activitiesRef.current = activitiesRef.current.map((activity) =>
+      activity.id === updatedActivity.id
+        ? { ...activity, ...updatedActivity }
+        : activity,
+    );
+    setActivities([...activitiesRef.current]);
+    console.log("Activity updated:", updatedActivity);
+    console.log("Updated activities list:", activitiesRef.current);
+  };
+
+  const removeActivityFromList = (activityId: string) => {
+    activitiesRef.current = activitiesRef.current.filter(
+      (activity) => activity.id !== parseInt(activityId),
+    );
+    setActivities([...activitiesRef.current]);
+    console.log("Activity removed:", activityId);
+    console.log("Updated activities list:", activitiesRef.current);
   };
 
   useEffect(() => {
@@ -71,6 +93,8 @@ const useActivities = (
     isActivitiesLoaded,
     loadActivities,
     addActivityToList,
+    updateActivityInList,
+    removeActivityFromList,
   };
 };
 

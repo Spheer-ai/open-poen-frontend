@@ -4,75 +4,34 @@ import styles from "../../assets/scss/pages/FundDetail.module.scss";
 import EditIcon from "/edit-icon.svg";
 import DeleteIcon from "/bin-icon.svg";
 import { useAuth } from "../../contexts/AuthContext";
-import { fetchActivityDetails, fetchFundDetails } from "../middleware/Api";
+import { fetchActivityDetails } from "../middleware/Api";
 import EditActivity from "../modals/EditActivity";
 import DeleteActivity from "../modals/DeleteActivity";
-import TabbedActivitiesNavigation from "../ui/layout/navigation/TabbedActivitiesNavigation";
-import ActivityTransactions from "../elements/tables/activities/ActivityTransactions";
-import ActivityDetails from "../elements/tables/activities/ActivityDetails";
-import ActivitySponsors from "../elements/tables/activities/ActivitySponsors";
-import ActivityMedia from "../elements/tables/activities/ActivityMedia";
-import ActivityUsers from "../elements/tables/activities/ActivityUsers";
 import LoadingDot from "../animation/LoadingDot";
 import { ActivityOwner } from "../../types/ActivityOwners";
-import { usePermissions } from "../../contexts/PermissionContext";
-import { useFieldPermissions } from "../../contexts/FieldPermissionContext";
 import Breadcrumb from "../ui/layout/BreadCrumbs";
+import { Activities } from "../../types/ActivitiesTypes";
 
 interface ActivityDetailProps {
   initiativeId: string;
   activityId: string;
   authToken: string;
-  onActivityEdited: () => void;
-}
-
-interface ActivityDetails {
-  id: number;
-  name: string;
-  description: string;
-  purpose: string;
-  target_audience: string;
-  budget: number;
-  income: number;
-  expenses: number;
-  profile_picture: {
-    attachment_thumbnail_url_512: string;
-  };
-  activity_owners: ActivityOwner[];
   entityPermissions: string[];
-  grant: {
-    id: number;
-    name: string;
-    reference: string;
-    budget: number;
-  };
-  initiative: {
-    kvk_registration: string;
-    location: string;
-  };
-}
-
-interface FundDetails {
-  grant: {
-    id: number;
-    name: string;
-    reference: string;
-    budget: number;
-  };
+  onActivityEdited: (updatedActivity: Activities) => void;
+  onActivityDeleted: (activityId: string) => void;
 }
 
 const ActivityDetail: React.FC<ActivityDetailProps> = ({
   initiativeId,
   activityId,
   authToken,
+  entityPermissions,
   onActivityEdited,
+  onActivityDeleted,
 }) => {
   const [activeTab, setActiveTab] = useState("transactieoverzicht");
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { fetchPermissions } = usePermissions();
-  const { fetchFieldPermissions } = useFieldPermissions();
-  const [entityPermissions, setEntityPermissions] = useState<string[]>([]);
   const [activityDetails, setActivityDetails] =
     useState<ActivityDetails | null>(null);
   const [isBlockingInteraction, setIsBlockingInteraction] = useState(false);
@@ -80,11 +39,9 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
   const [isEditActivityModalOpen, setIsEditActivityModalOpen] = useState(false);
   const [isDeleteActivityModalOpen, setIsDeleteActivityModalOpen] =
     useState(false);
-  const [fundDetails, setFundDetails] = useState<FundDetails | null>(null);
   const [hasEditPermission, setHasEditPermission] = useState(false);
   const [hasDeletePermission, setHasDeletePermission] = useState(false);
-  const [hasCreatePaymentPermission, setHasCreatePaymentPermission] =
-    useState(false);
+
   const [showFullDescription, setShowFullDescription] = useState(false);
   const [availableBudget, setAvailableBudget] = useState<number | null>(null);
   const [currentActivityData, setCurrentActivityData] =
@@ -92,91 +49,10 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
   const activityOwners: ActivityOwner[] =
     activityDetails?.activity_owners || [];
 
-  const handleTabChange = (tabName: string) => {
-    setActiveTab(tabName);
-
-    if (tabName === "transactieoverzicht") {
-      navigate(
-        `/funds/${initiativeId}/activities/${activityId}/transactieoverzicht`,
-      );
-    }
-    if (tabName === "activiteiten") {
-      navigate(`/funds/${initiativeId}/activities/${activityId}/activiteiten`);
-    }
-    if (tabName === "details") {
-      navigate(`/funds/${initiativeId}/activities/${activityId}/details`);
-    }
-    if (tabName === "sponsoren") {
-      navigate(`/funds/${initiativeId}/activities/${activityId}/sponsors`);
-    }
-    if (tabName === "media") {
-      navigate(`/funds/${initiativeId}/activities/${activityId}/media`);
-    }
-    if (tabName === "gebruikers") {
-      navigate(`/funds/${initiativeId}/activities/${activityId}/gebruikers`);
-    }
-  };
-
   useEffect(() => {
-    async function fetchUserPermissions() {
-      try {
-        let userToken = authToken;
-        if (user && user.token && activityId) {
-          userToken = user.token;
-          const userPermissions: string[] | undefined = await fetchPermissions(
-            "Activity",
-            parseInt(activityId),
-            userToken,
-          );
-
-          if (userPermissions && userPermissions.includes("edit")) {
-            setHasEditPermission(true);
-          } else {
-            setHasEditPermission(false);
-          }
-
-          if (userPermissions && userPermissions.includes("delete")) {
-            setHasDeletePermission(true);
-          } else {
-            setHasDeletePermission(false);
-          }
-
-          if (userPermissions && userPermissions.includes("create_payment")) {
-            setHasCreatePaymentPermission(true);
-          } else {
-            setHasCreatePaymentPermission(false);
-          }
-        }
-      } catch (error) {
-        console.error("Failed to fetch user permissions:", error);
-      }
-    }
-
-    fetchUserPermissions();
-  }, [user, activityId, authToken, fetchPermissions]);
-
-  useEffect(() => {
-    async function fetchFieldPermissionsOnMount() {
-      try {
-        if (user && user.token && initiativeId) {
-          const fieldPermissions: string[] | undefined =
-            await fetchFieldPermissions(
-              "Initiative",
-              parseInt(initiativeId),
-              user.token,
-            );
-
-          if (fieldPermissions) {
-            setEntityPermissions(fieldPermissions);
-          }
-        }
-      } catch (error) {
-        console.error("Failed to fetch field permissions:", error);
-      }
-    }
-
-    fetchFieldPermissionsOnMount();
-  }, [user, initiativeId, fetchFieldPermissions]);
+    setHasEditPermission(entityPermissions.includes("edit"));
+    setHasDeletePermission(entityPermissions.includes("delete"));
+  }, [entityPermissions]);
 
   useEffect(() => {
     if (activityId) {
@@ -211,7 +87,6 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
       setTimeout(() => {
         setIsBlockingInteraction(false);
         setIsDeleteActivityModalOpen(false);
-        navigate(`/funds`);
       }, 300);
     } else {
       setIsDeleteActivityModalOpen(true);
@@ -221,25 +96,16 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
     }
   };
 
-  const handleActivityEdited = () => {
+  const handleActivityEdited = (updatedActivity: Activities) => {
+    console.log("Activity edited:", updatedActivity);
     setRefreshTrigger((prev) => prev + 1);
-    onActivityEdited();
+    onActivityEdited(updatedActivity);
   };
 
-  useEffect(() => {
-    if (initiativeId && authToken) {
-      fetchFundDetails(authToken, initiativeId)
-        .then((data) => {
-          setFundDetails(data);
-        })
-        .catch((error) => {
-          console.error("Error fetching fund details:", error);
-        });
-    }
-  }, [initiativeId, authToken]);
-
   const handleActivityDeleted = () => {
-    setRefreshTrigger((prev) => prev + 1);
+    console.log("Activity deleted, navigating to fund detail");
+    onActivityDeleted(activityId);
+    navigate(`/funds/${initiativeId}`);
   };
 
   useEffect(() => {
@@ -250,10 +116,6 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
       setAvailableBudget(availableBudgetValue);
     }
   }, [activityDetails, refreshTrigger]);
-
-  const handleRefreshTrigger = () => {
-    setRefreshTrigger((prev) => prev + 1);
-  };
 
   return (
     <>
@@ -442,8 +304,6 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
           authToken={user?.token || ""}
           activityId={activityId}
           activityData={currentActivityData}
-          fieldPermissions={entityPermissions}
-          fields={[]}
         />
         <DeleteActivity
           isOpen={isDeleteActivityModalOpen}
@@ -454,58 +314,6 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
           authToken={user?.token || ""}
           activityId={activityId}
         />
-
-        <TabbedActivitiesNavigation
-          onTabChange={handleTabChange}
-          initiativeId={initiativeId}
-          activityId={activityId}
-        />
-        {activeTab === "transactieoverzicht" && (
-          <ActivityTransactions
-            initiativeId={initiativeId}
-            authToken={user?.token || ""}
-            activityId={activityId}
-            onRefreshTrigger={handleRefreshTrigger}
-            entityPermissions={entityPermissions}
-            activity_name={activityDetails?.name || ""}
-            hasCreatePaymentPermission={hasCreatePaymentPermission}
-            activeTab={activeTab}
-          />
-        )}
-        {activeTab === "details" && (
-          <ActivityDetails
-            name={activityDetails?.name}
-            description={activityDetails?.description}
-            purpose={activityDetails?.purpose}
-            target_audience={activityDetails?.target_audience}
-            kvk_registration={activityDetails?.initiative.kvk_registration}
-            location={activityDetails?.initiative.location}
-          />
-        )}
-        {activeTab === "sponsoren" && (
-          <ActivitySponsors
-            grantId={fundDetails?.grant?.id}
-            grantName={fundDetails?.grant?.name}
-            grantReference={fundDetails?.grant?.reference}
-            grantBudget={fundDetails?.grant?.budget}
-            token={user?.token || ""}
-          />
-        )}
-        {activeTab === "media" && (
-          <ActivityMedia
-            initiativeId={initiativeId}
-            activityId={activityId}
-            authToken={user?.token || ""}
-          />
-        )}
-        {activeTab === "gebruikers" && (
-          <ActivityUsers
-            activityOwners={activityOwners}
-            initiativeId={initiativeId}
-            activityId={activityId}
-            token={user?.token || ""}
-          />
-        )}
       </div>
     </>
   );

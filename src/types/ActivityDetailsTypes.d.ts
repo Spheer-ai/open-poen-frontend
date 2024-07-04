@@ -1,15 +1,4 @@
-export interface Activities {
-  id: number;
-  name: string;
-  budget: number;
-  income: number;
-  expenses: number;
-  initiativeName: string;
-  hidden: boolean;
-  beschikbaar?: number;
-}
-
-export interface ActivityDetails {
+interface ActivityDetails {
   id: number;
   name: string;
   description: string;
@@ -32,14 +21,5 @@ export interface ActivityDetails {
   initiative: {
     kvk_registration: string;
     location: string;
-  };
-}
-
-interface FundDetails {
-  grant: {
-    id: number;
-    name: string;
-    reference: string;
-    budget: number;
   };
 }

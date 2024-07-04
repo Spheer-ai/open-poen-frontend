@@ -1,30 +1,13 @@
 import React, { useEffect, useState } from "react";
 import styles from "../../assets/scss/layout/AddFundDesktop.module.scss";
+import { useFieldPermissions } from "../../contexts/FieldPermissionContext";
 import ActivityImageUploader from "../elements/uploadder/ActivityImageUploader";
 import { editActivity, uploadActivityPicture } from "../middleware/Api";
+import {
+  EditActivityProps,
+  ActivityDetails,
+} from "../../types/EditActivitiesTypes";
 import CloseIson from "/close-icon.svg";
-
-interface ActivityDetails {
-  id?: number;
-  name?: string;
-  description?: string;
-  budget?: number;
-  purpose?: string;
-  target_audience?: string;
-}
-
-interface EditActivityProps {
-  isOpen: boolean;
-  onClose: () => void;
-  isBlockingInteraction: boolean;
-  onActivityEdited: () => void;
-  initiativeId: string;
-  activityId: string;
-  authToken: string;
-  activityData: ActivityDetails | null;
-  fieldPermissions;
-  fields: string[];
-}
 
 const EditActivity: React.FC<EditActivityProps> = ({
   isOpen,
@@ -35,7 +18,6 @@ const EditActivity: React.FC<EditActivityProps> = ({
   activityId,
   authToken,
   activityData,
-  fieldPermissions,
 }) => {
   const [modalIsOpen, setModalIsOpen] = useState(isOpen);
   const [isHidden, setIsHidden] = useState(false);
@@ -53,6 +35,7 @@ const EditActivity: React.FC<EditActivityProps> = ({
   const [descriptionError, setDescriptionError] = useState("");
   const [purposeError, setPurposeError] = useState("");
   const [targetAudienceError, setTargetAudienceError] = useState("");
+  const { fieldPermissions, fetchFieldPermissions } = useFieldPermissions();
 
   useEffect(() => {
     if (isOpen) {
@@ -63,6 +46,12 @@ const EditActivity: React.FC<EditActivityProps> = ({
       }, 300);
     }
   }, [isOpen]);
+
+  useEffect(() => {
+    if (isOpen) {
+      fetchFieldPermissions("Activity", parseInt(activityId), authToken);
+    }
+  }, [isOpen, initiativeId, authToken, fetchFieldPermissions]);
 
   useEffect(() => {
     if (isOpen && activityData) {
@@ -93,6 +82,7 @@ const EditActivity: React.FC<EditActivityProps> = ({
 
     try {
       const updatedActivityData = {
+        id: activityData?.id,
         name: formData.name || "",
         description: formData.description || "",
         purpose: formData.purpose || "",
@@ -101,10 +91,8 @@ const EditActivity: React.FC<EditActivityProps> = ({
         budget: formData.budget || 0,
       };
 
-      let imageUploadResult;
-
       if (selectedImage) {
-        imageUploadResult = await uploadActivityPicture(
+        await uploadActivityPicture(
           initiativeId,
           activityId,
           selectedImage,
@@ -120,8 +108,9 @@ const EditActivity: React.FC<EditActivityProps> = ({
       );
 
       setApiError("");
+      console.log("Activity saved:", updatedActivityData);
       handleClose();
-      onActivityEdited();
+      onActivityEdited(updatedActivityData);
     } catch (error) {
       console.error("Failed to edit activity:", error);
       if (error.response && error.response.status === 409) {
@@ -137,20 +126,13 @@ const EditActivity: React.FC<EditActivityProps> = ({
     }
   };
 
-  const handleEnterKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      handleSave();
-    }
+  const handleImageChange = (file: File) => {
+    setSelectedImage(file);
   };
 
   if (!isOpen && !modalIsOpen) {
     return null;
   }
-
-  const handleImageChange = (file: File) => {
-    setSelectedImage(file);
-  };
 
   return (
     <>
@@ -162,10 +144,10 @@ const EditActivity: React.FC<EditActivityProps> = ({
         <div className={styles.formTop}>
           <h2 className={styles.title}>Beheer activiteit</h2>
           <button onClick={handleClose} className={styles.closeBtn}>
-            <img src={CloseIson} alt="" />
+            <img src={CloseIson} alt="Close" />
           </button>
         </div>
-        <hr></hr>
+        <hr />
         <div className={styles.formGroup}>
           <h4>Algemene activiteitinstellingen</h4>
           {fieldPermissions.fields.includes("name") && (
@@ -175,7 +157,6 @@ const EditActivity: React.FC<EditActivityProps> = ({
                 type="text"
                 placeholder="Naam"
                 value={formData?.name || ""}
-                onKeyPress={handleEnterKeyPress}
                 onChange={(e) => {
                   const newName = e.target.value;
 
@@ -272,7 +253,6 @@ const EditActivity: React.FC<EditActivityProps> = ({
                 type="text"
                 placeholder="Doelgroep"
                 value={formData?.target_audience || ""}
-                onKeyPress={handleEnterKeyPress}
                 onChange={(e) => {
                   const newTargetAudience = e.target.value;
 
@@ -320,7 +300,6 @@ const EditActivity: React.FC<EditActivityProps> = ({
                 type="number"
                 placeholder="Vul het begrootte bedrag in"
                 name="budget"
-                onKeyDown={handleEnterKeyPress}
                 value={formData?.budget || ""}
                 onChange={(e) =>
                   setFormData({

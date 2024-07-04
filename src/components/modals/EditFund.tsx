@@ -98,7 +98,7 @@ const EditFund: React.FC<EditFundProps> = ({
 
       setApiError("");
       handleClose();
-      onFundEdited(updatedFundData); // Pass the updated fund data
+      onFundEdited(updatedFundData);
     } catch (error) {
       console.error("Failed to edit fund:", error);
       if (error.response && error.response.status === 409) {

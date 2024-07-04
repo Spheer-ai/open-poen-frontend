@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import styles from "../../assets/scss/pages/FundDetail.module.scss";
 import EditIcon from "/edit-icon.svg";
 import DeleteIcon from "/bin-icon.svg";
@@ -8,12 +8,12 @@ import { useAuth } from "../../contexts/AuthContext";
 import DeleteFund from "../modals/DeleteFund";
 import LoadingDot from "../animation/LoadingDot";
 import Breadcrumb from "../ui/layout/BreadCrumbs";
-import { FundDetails } from "../../types/EditFundTypes"; // Ensure correct import
+import { FundDetails } from "../../types/EditFundTypes";
 
 interface FundDetailProps {
   initiativeId: string;
   authToken: string;
-  initiativeData: FundDetails; // Use the correct type here
+  initiativeData: FundDetails;
   entityPermissions: string[];
   onFundEdited: () => void;
 }
@@ -21,11 +21,10 @@ interface FundDetailProps {
 const FundDetail: React.FC<FundDetailProps> = ({
   initiativeId,
   authToken,
-  initiativeData: initialData, // Renamed to avoid conflict with state
+  initiativeData: initialData,
   entityPermissions,
   onFundEdited,
 }) => {
-  const location = useLocation();
   const navigate = useNavigate();
   const { user } = useAuth();
   const [hasEditPermission, setHasEditPermission] = useState(false);
@@ -38,8 +37,14 @@ const FundDetail: React.FC<FundDetailProps> = ({
   const [isBlockingInteraction, setIsBlockingInteraction] = useState(false);
   const [isEditFundModalOpen, setIsEditFundModalOpen] = useState(false);
   const [isDeleteFundModalOpen, setIsDeleteFundModalOpen] = useState(false);
-  const [initiativeData, setInitiativeData] =
-    useState<FundDetails>(initialData); // Define state
+  const [initiativeData, setInitiativeData] = useState<FundDetails | null>(
+    initialData,
+  );
+
+  useEffect(() => {
+    console.log("Received initiativeData:", initialData);
+    setInitiativeData(initialData);
+  }, [initialData]);
 
   useEffect(() => {
     setHasEditPermission(entityPermissions.includes("edit"));
@@ -72,7 +77,7 @@ const FundDetail: React.FC<FundDetailProps> = ({
 
   const handleFundEdited = (updatedFundData: FundDetails) => {
     setRefreshTrigger((prev) => prev + 1);
-    setInitiativeData(updatedFundData); // Update the initiative data with the updated data
+    setInitiativeData(updatedFundData);
     onFundEdited();
   };
 
@@ -96,6 +101,27 @@ const FundDetail: React.FC<FundDetailProps> = ({
   const handleRefreshTrigger = () => {
     setRefreshTrigger((prev) => prev + 1);
   };
+
+  if (!initiativeData) {
+    return (
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          height: "200px",
+          marginTop: "120px",
+        }}
+      >
+        <div className={styles["loading-container"]}>
+          <LoadingDot delay={0} />
+          <LoadingDot delay={0.1} />
+          <LoadingDot delay={0.1} />
+          <LoadingDot delay={0.2} />
+          <LoadingDot delay={0.2} />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>

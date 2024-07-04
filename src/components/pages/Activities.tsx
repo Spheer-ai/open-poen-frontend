@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import TopNavigationBar from "../ui/top-navigation-bar/TopNavigationBar";
 import styles from "../../assets/scss/Funds.module.scss";
@@ -34,6 +34,8 @@ export default function ActivitiesPage() {
     loadActivities,
     addActivityToList,
     initiativeData,
+    updateActivityInList,
+    removeActivityFromList,
   } = useActivities(Number(initiativeId), user?.token, setIsLoading);
 
   useEffect(() => {
@@ -109,13 +111,21 @@ export default function ActivitiesPage() {
     addActivityToList(newActivity);
   };
 
-  const handleActivityEdited = () => {
-    // Handle activity edited if needed
+  const handleActivityEdited = (updatedActivity: Activities) => {
+    console.log("handleActivityEdited called with:", updatedActivity);
+    updateActivityInList(updatedActivity);
   };
 
   const handleActivityClick = (activityId: string) => {
     setSelectedActivity(activityId);
     navigate(`/funds/${initiativeId}/activities/${activityId}`);
+  };
+
+  const handleActivityDeleted = (activityId: string) => {
+    console.log("Activity deleted, navigating to fund detail");
+    setSelectedActivity(null);
+    removeActivityFromList(activityId);
+    navigate(`/funds/${initiativeId}`);
   };
 
   const handleFundEdited = () => {
@@ -234,7 +244,14 @@ export default function ActivitiesPage() {
       />
       <div className={styles["detail-panel"]}>
         {selectedActivity !== null ? (
-          <p>Select a fund or activity to view details.</p>
+          <ActivityDetail
+            activityId={selectedActivity}
+            authToken={user?.token || ""}
+            initiativeId={initiativeId || ""}
+            onActivityEdited={handleActivityEdited}
+            onActivityDeleted={handleActivityDeleted}
+            entityPermissions={entityPermissions}
+          />
         ) : initiativeId !== null ? (
           <FundDetail
             initiativeId={initiativeId || ""}
