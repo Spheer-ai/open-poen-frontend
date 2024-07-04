@@ -2,7 +2,8 @@ import React, { useEffect, useState } from "react";
 import styles from "../../assets/scss/layout/AddFundDesktop.module.scss";
 import { updateInitiativeOwners, searchUsersByEmail } from "../middleware/Api";
 import deleteIcon from "/delete-icon.svg";
-import CloseIson from "/close-icon.svg";
+import CloseIcon from "/close-icon.svg";
+import { InitiativeOwner } from "../../types/EditFundTypes";
 
 interface User {
   id: string;
@@ -13,11 +14,11 @@ export interface LinkFundOwnerProps {
   isOpen: boolean;
   onClose: () => void;
   isBlockingInteraction: boolean;
-  onFundOwnerLinked: (newOwners: any[]) => void;
+  onFundOwnerLinked: (newOwners: InitiativeOwner[]) => void;
   initiativeId: string;
   token: string;
-  initiativeOwners: any[];
-  onUpdateInitiativeOwners: (newOwners: any[]) => void;
+  initiativeOwners: InitiativeOwner[];
+  onUpdateInitiativeOwners: (newOwners: InitiativeOwner[]) => void;
 }
 
 const LinkFundOwner: React.FC<LinkFundOwnerProps> = ({
@@ -33,16 +34,10 @@ const LinkFundOwner: React.FC<LinkFundOwnerProps> = ({
   const [modalIsOpen, setModalIsOpen] = useState(isOpen);
   const [searchedUsers, setSearchedUsers] = useState<User[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedUserEmails, setSelectedUserEmails] = useState<Set<string>>(
-    new Set(),
-  );
-  const [selectedUserIds, setSelectedUserIds] = useState<Set<string>>(
-    new Set(),
-  );
+  const [selectedUsers, setSelectedUsers] = useState<InitiativeOwner[]>([]);
 
   const resetModalState = () => {
-    setSelectedUserEmails(new Set());
-    setSelectedUserIds(new Set());
+    setSelectedUsers([]);
     setSearchedUsers([]);
     setSearchTerm("");
   };
@@ -58,47 +53,35 @@ const LinkFundOwner: React.FC<LinkFundOwnerProps> = ({
   }, [isOpen]);
 
   const handleUserSelect = (user: User) => {
-    const isUserAlreadyAdded = initiativeOwners.some(
-      (owner) => owner.email === user.email,
-    );
+    const newOwner: InitiativeOwner = {
+      id: parseInt(user.id, 10),
+      email: user.email,
+      is_active: true,
+      is_superuser: false,
+      is_verified: false,
+      first_name: "",
+      last_name: "",
+      biography: "",
+      role: "user",
+      profile_picture: null,
+    };
 
-    setSelectedUserEmails((prevEmails) => {
-      const newEmails = new Set(prevEmails);
-      newEmails.add(user.email);
-      return newEmails;
-    });
-
-    setSelectedUserIds((prevUserIds) => {
-      const newUserIds = new Set(prevUserIds);
-      newUserIds.add(user.id);
-      return newUserIds;
+    setSelectedUsers((prevSelectedUsers) => {
+      if (!prevSelectedUsers.some((u) => u.email === user.email)) {
+        return [...prevSelectedUsers, newOwner];
+      }
+      return prevSelectedUsers;
     });
   };
 
-  const handleRemoveUser = (userId: string) => {
-    setSelectedUserEmails((prevEmails) => {
-      const newEmails = new Set(prevEmails);
-      const userToRemove = initiativeOwners.find(
-        (owner) => owner.id === userId,
-      );
-
-      if (userToRemove) {
-        newEmails.delete(userToRemove.email);
-      }
-
-      return newEmails;
-    });
-
-    setSelectedUserIds((prevUserIds) => {
-      const newUserIds = new Set(prevUserIds);
-      newUserIds.delete(userId);
-
-      return newUserIds;
-    });
-    const updatedInitiativeOwners = initiativeOwners.filter(
-      (owner) => owner.id !== userId,
+  const handleRemoveUser = (userId: number) => {
+    setSelectedUsers((prevSelectedUsers) =>
+      prevSelectedUsers.filter((user) => user.id !== userId),
     );
-    onUpdateInitiativeOwners(updatedInitiativeOwners);
+
+    onUpdateInitiativeOwners(
+      initiativeOwners.filter((owner) => owner.id !== userId),
+    );
   };
 
   const handleSearch = async () => {
@@ -114,7 +97,6 @@ const LinkFundOwner: React.FC<LinkFundOwnerProps> = ({
         token,
         trimmedSearchTerm,
       );
-
       setSearchedUsers(usersWithEmails);
     } catch (error) {
       console.error("Error searching for users:", error);
@@ -129,18 +111,21 @@ const LinkFundOwner: React.FC<LinkFundOwnerProps> = ({
 
   const handleSave = async () => {
     try {
-      const filteredInitiativeOwners = initiativeOwners.filter(
-        (owner) => !selectedUserIds.has(owner.id),
-      );
-
-      const updatedOwners = [
-        ...Array.from(selectedUserIds),
-        ...filteredInitiativeOwners.map((owner) => owner.id),
+      const updatedOwners: InitiativeOwner[] = [
+        ...initiativeOwners.filter(
+          (owner) => !selectedUsers.some((user) => user.id === owner.id),
+        ),
+        ...selectedUsers,
       ];
 
-      await updateInitiativeOwners(initiativeId, updatedOwners, token);
+      await updateInitiativeOwners(
+        initiativeId,
+        updatedOwners.map((owner) => owner.id.toString()),
+        token,
+      );
 
-      onFundOwnerLinked(filteredInitiativeOwners);
+      onFundOwnerLinked(updatedOwners);
+      onUpdateInitiativeOwners(updatedOwners);
 
       handleClose();
       resetModalState();
@@ -177,19 +162,19 @@ const LinkFundOwner: React.FC<LinkFundOwnerProps> = ({
         <div className={styles.formTop}>
           <h2 className={styles.title}>Initiatiefnemer toevoegen</h2>
           <button onClick={handleClose} className={styles.closeBtn}>
-            <img src={CloseIson} alt="" />
+            <img src={CloseIcon} alt="" />
           </button>
         </div>
-        <hr></hr>
+        <hr />
         <div className={styles.formGroup}>
           <h3>Zoeken</h3>
-
           <input
             type="text"
             placeholder="Search users by email"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             onBlur={handleSearch}
+            onKeyPress={handleEnterKeyPress}
           />
           {searchedUsers.length > 0 && (
             <div className={styles.dropdown}>
@@ -210,27 +195,22 @@ const LinkFundOwner: React.FC<LinkFundOwnerProps> = ({
         <div className={styles.formGroup}>
           <h3>Initiatiefnemers:</h3>
           <ul className={styles.formList}>
-            {initiativeOwners.map((owner) => {
-              if (!selectedUserIds.has(owner.id)) {
-                return (
-                  <li key={owner.id} className={styles.formListItem}>
-                    {owner.email}
-                    <button
-                      onClick={() => handleRemoveUser(owner.id)}
-                      className={styles.removeButton}
-                    >
-                      <img src={deleteIcon} alt="Delete" />
-                    </button>
-                  </li>
-                );
-              }
-              return null;
-            })}
-            {Array.from(selectedUserEmails).map((userEmail) => (
-              <li key={userEmail} className={styles.formListItem}>
-                {userEmail}
+            {initiativeOwners.map((owner) => (
+              <li key={owner.id} className={styles.formListItem}>
+                {owner.email}
                 <button
-                  onClick={() => handleRemoveUser(userEmail)}
+                  onClick={() => handleRemoveUser(owner.id)}
+                  className={styles.removeButton}
+                >
+                  <img src={deleteIcon} alt="Delete" />
+                </button>
+              </li>
+            ))}
+            {selectedUsers.map((user) => (
+              <li key={user.id} className={styles.formListItem}>
+                {user.email}
+                <button
+                  onClick={() => handleRemoveUser(user.id)}
                   className={styles.removeButton}
                 >
                   <img src={deleteIcon} alt="Delete" />

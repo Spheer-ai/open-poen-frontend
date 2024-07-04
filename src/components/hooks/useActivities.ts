@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef, useMemo } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { Activities } from "../../types/ActivitiesTypes";
 import { fetchActivities } from "../middleware/Api";
 
@@ -11,6 +11,7 @@ const useActivities = (
   const [initiativeData, setInitiativeData] = useState<any>(null);
   const [initiativeName, setInitiativeName] = useState<string>("");
   const [isActivitiesLoaded, setIsActivitiesLoaded] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const activitiesRef = useRef<Activities[]>([]);
   const initiativeDataRef = useRef<any>(null);
   const initiativeNameRef = useRef<string>("");
@@ -19,10 +20,12 @@ const useActivities = (
   const loadActivities = useCallback(async () => {
     if (!initiativeId || isLoadedRef.current) {
       setLoading(false);
+      setIsLoading(false);
       return;
     }
 
     setLoading(true);
+    setIsLoading(true);
 
     try {
       const fetchedInitiativeData = await fetchActivities(
@@ -35,6 +38,7 @@ const useActivities = (
 
       activitiesRef.current = updatedActivities.map((activity) => ({
         ...activity,
+        initiativeId, // Ensure initiativeId is included
         initiativeName: fetchedInitiativeData.name,
         beschikbaar: Math.max(activity.budget + activity.expenses, 0),
       }));
@@ -50,6 +54,7 @@ const useActivities = (
       console.error("Error fetching activities:", error);
     } finally {
       setLoading(false);
+      setIsLoading(false);
     }
   }, [initiativeId, token, setLoading]);
 
@@ -95,6 +100,7 @@ const useActivities = (
     addActivityToList,
     updateActivityInList,
     removeActivityFromList,
+    isLoading,
   };
 };
 

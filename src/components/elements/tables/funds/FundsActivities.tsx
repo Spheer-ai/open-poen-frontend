@@ -1,9 +1,7 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import React from "react";
+import { useNavigate } from "react-router-dom";
 import styles from "../../../../assets/scss/Funds.module.scss";
-import { useAuth } from "../../../../contexts/AuthContext";
 import LoadingDot from "../../../animation/LoadingDot";
-import { fetchActivities } from "../../../middleware/Api";
 
 interface Activities {
   id: number;
@@ -12,71 +10,33 @@ interface Activities {
   income: number;
   expenses: number;
   initiativeId: string;
-  token: string;
 }
 
 const FundsActivities: React.FC<{
-  authToken: string;
+  activities: Activities[];
+  isLoading: boolean;
   initiativeId: string;
-}> = ({ authToken }) => {
-  const { user } = useAuth();
-
+}> = ({ activities, isLoading, initiativeId }) => {
   const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(true);
-  const [activities, setActivities] = useState<Activities[]>([]);
-  const [error, setError] = useState<string | null>(null);
-  const initiativeId = useParams()?.initiativeId || "";
-  const [selectedActivity, setSelectedActivity] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (initiativeId) {
-      const fetchActivitiesData = async () => {
-        try {
-          setIsLoading(true);
-          setError(null);
-          const result = await fetchActivities(
-            Number(initiativeId),
-            user?.token || "",
-          );
-          const updatedActivities = result.activities || [];
-          const activitiesWithBeschikbaar = updatedActivities.map(
-            (activity) => ({
-              ...activity,
-              beschikbaar: activity.budget + activity.expenses,
-            }),
-          );
-          setActivities(activitiesWithBeschikbaar);
-        } catch (error) {
-          console.error("Error fetching activities:", error);
-          setError("Error fetching activities.");
-        } finally {
-          setIsLoading(false);
-        }
-      };
-
-      fetchActivitiesData();
-    }
-  }, [initiativeId, user]);
-
-  const calculateBarWidth = (beschikbaar, besteed) => {
-    const total = Math.abs(beschikbaar) + Math.abs(besteed);
-    if (total === 0) {
-      return {
-        beschikbaarWidth: "50%",
-        besteedWidth: "50%",
-      };
-    }
-    const beschikbaarWidth = `${(Math.abs(beschikbaar) / total) * 100}%`;
-    const besteedWidth = `${(Math.abs(besteed) / total) * 100}%`;
-    return {
-      beschikbaarWidth,
-      besteedWidth,
-    };
-  };
 
   const handleActivityClick = (activityId) => {
-    setSelectedActivity(activityId);
     navigate(`/funds/${initiativeId}/activities/${activityId}`);
+  };
+
+  const calculateBarWidth = (budget, expenses) => {
+    const total = Math.abs(budget) + Math.abs(expenses);
+    if (total === 0) {
+      return {
+        availableWidth: "50%",
+        spentWidth: "50%",
+      };
+    }
+    const availableWidth = `${(Math.abs(budget) / total) * 100}%`;
+    const spentWidth = `${(Math.abs(expenses) / total) * 100}%`;
+    return {
+      availableWidth,
+      spentWidth,
+    };
   };
 
   return (
@@ -114,20 +74,16 @@ const FundsActivities: React.FC<{
                   key={`besteed-${activity.id}`}
                   className={styles["expenses-bar"]}
                   style={{
-                    width: calculateBarWidth(
-                      activity.budget + activity.expenses,
-                      activity.expenses,
-                    ).besteedWidth,
+                    width: calculateBarWidth(activity.budget, activity.expenses)
+                      .spentWidth,
                   }}
                 ></div>
                 <div
                   key={`beschikbaar-${activity.id}`}
                   className={styles["income-bar"]}
                   style={{
-                    width: calculateBarWidth(
-                      activity.budget + activity.expenses,
-                      activity.expenses,
-                    ).beschikbaarWidth,
+                    width: calculateBarWidth(activity.budget, activity.expenses)
+                      .availableWidth,
                   }}
                 ></div>
               </div>

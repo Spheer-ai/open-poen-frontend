@@ -235,7 +235,7 @@ export const fetchInitiatives = async (
   token: string,
   onlyMine: boolean,
   offset: number = 0,
-  limit: number = 3,
+  limit: number = 20,
 ) => {
   try {
     const response = await api.get(`/initiatives`, {

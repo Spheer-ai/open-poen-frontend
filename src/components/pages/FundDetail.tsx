@@ -5,10 +5,17 @@ import EditIcon from "/edit-icon.svg";
 import DeleteIcon from "/bin-icon.svg";
 import EditFund from "../modals/EditFund";
 import { useAuth } from "../../contexts/AuthContext";
+import TabbedFundNavigation from "../ui/layout/navigation/TabbedFundNavigation";
+import FundsActivities from "../elements/tables/funds/FundsActivities";
+import FundsTransactions from "../elements/tables/funds/FundsTransactions";
+import FundsMedia from "../elements/tables/funds/FundsMedia";
+import FundsDetails from "../elements/tables/funds/FundsDetails";
+import FundsUsers from "../elements/tables/funds/FundsUsers";
 import DeleteFund from "../modals/DeleteFund";
 import LoadingDot from "../animation/LoadingDot";
 import Breadcrumb from "../ui/layout/BreadCrumbs";
-import { FundDetails } from "../../types/EditFundTypes";
+import { FundDetails, InitiativeOwner } from "../../types/EditFundTypes";
+import { Activities } from "../../types/ActivitiesTypes";
 
 interface FundDetailProps {
   initiativeId: string;
@@ -16,6 +23,8 @@ interface FundDetailProps {
   initiativeData: FundDetails;
   entityPermissions: string[];
   onFundEdited: () => void;
+  activities: Activities[];
+  isLoading: boolean;
 }
 
 const FundDetail: React.FC<FundDetailProps> = ({
@@ -24,7 +33,10 @@ const FundDetail: React.FC<FundDetailProps> = ({
   initiativeData: initialData,
   entityPermissions,
   onFundEdited,
+  activities,
+  isLoading,
 }) => {
+  const [activeTab, setActiveTab] = useState("transactieoverzicht");
   const navigate = useNavigate();
   const { user } = useAuth();
   const [hasEditPermission, setHasEditPermission] = useState(false);
@@ -40,6 +52,26 @@ const FundDetail: React.FC<FundDetailProps> = ({
   const [initiativeData, setInitiativeData] = useState<FundDetails | null>(
     initialData,
   );
+
+  const handleTabChange = (tabName: string) => {
+    setActiveTab(tabName);
+
+    if (tabName === "transactieoverzicht") {
+      navigate(`/funds/${initiativeId}/transactieoverzicht`);
+    }
+    if (tabName === "activiteiten") {
+      navigate(`/funds/${initiativeId}/activiteiten`);
+    }
+    if (tabName === "details") {
+      navigate(`/funds/${initiativeId}/details`);
+    }
+    if (tabName === "media") {
+      navigate(`/funds/${initiativeId}/media`);
+    }
+    if (tabName === "gebruikers") {
+      navigate(`/funds/${initiativeId}/gebruikers`);
+    }
+  };
 
   useEffect(() => {
     console.log("Received initiativeData:", initialData);
@@ -311,6 +343,49 @@ const FundDetail: React.FC<FundDetailProps> = ({
           initiativeId={initiativeId}
           authToken={user?.token || ""}
         />
+        <TabbedFundNavigation
+          onTabChange={handleTabChange}
+          initiativeId={initiativeId}
+        />
+        {activeTab === "transactieoverzicht" && (
+          <FundsTransactions
+            initiativeId={initiativeId}
+            authToken={user?.token || ""}
+            onRefreshTrigger={handleRefreshTrigger}
+            entityPermissions={entityPermissions}
+            hasCreatePaymentPermission={hasCreatePaymentPermission}
+          />
+        )}
+        {activeTab === "activiteiten" && (
+          <FundsActivities
+            activities={activities}
+            isLoading={isLoading}
+            initiativeId={initiativeId}
+          />
+        )}
+        {activeTab === "details" && (
+          <FundsDetails
+            name={initiativeData?.name}
+            description={initiativeData?.description}
+            purpose={initiativeData?.purpose}
+            target_audience={initiativeData?.target_audience}
+            kvk_registration={initiativeData?.kvk_registration}
+            location={initiativeData?.location}
+          />
+        )}
+        {activeTab === "media" && (
+          <FundsMedia
+            initiativeId={initiativeId}
+            authToken={user?.token || ""}
+          />
+        )}
+        {activeTab === "gebruikers" && (
+          <FundsUsers
+            initiativeId={initiativeId}
+            token={user?.token || ""}
+            initiativeOwners={initiativeData.initiative_owners || []}
+          />
+        )}
       </div>
     </>
   );

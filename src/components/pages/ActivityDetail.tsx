@@ -11,6 +11,12 @@ import LoadingDot from "../animation/LoadingDot";
 import { ActivityOwner } from "../../types/ActivityOwners";
 import Breadcrumb from "../ui/layout/BreadCrumbs";
 import { Activities } from "../../types/ActivitiesTypes";
+import TabbedActivitiesNavigation from "../ui/layout/navigation/TabbedActivitiesNavigation";
+import ActivityDetails from "../elements/tables/activities/ActivityDetails";
+import ActivityMedia from "../elements/tables/activities/ActivityMedia";
+import ActivitySponsors from "../elements/tables/activities/ActivitySponsors";
+import ActivityTransactions from "../elements/tables/activities/ActivityTransactions";
+import ActivityUsers from "../elements/tables/activities/ActivityUsers";
 
 interface ActivityDetailProps {
   initiativeId: string;
@@ -41,6 +47,7 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
     useState(false);
   const [hasEditPermission, setHasEditPermission] = useState(false);
   const [hasDeletePermission, setHasDeletePermission] = useState(false);
+  const [hasCreatePermission, setHasCreatePermission] = useState(false);
 
   const [showFullDescription, setShowFullDescription] = useState(false);
   const [availableBudget, setAvailableBudget] = useState<number | null>(null);
@@ -49,9 +56,35 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
   const activityOwners: ActivityOwner[] =
     activityDetails?.activity_owners || [];
 
+  const handleTabChange = (tabName) => {
+    setActiveTab(tabName);
+
+    if (tabName === "transactieoverzicht") {
+      navigate(
+        `/funds/${initiativeId}/activities/${activityId}/transactieoverzicht`,
+      );
+    }
+    if (tabName === "activiteiten") {
+      navigate(`/funds/${initiativeId}/activities/${activityId}/activiteiten`);
+    }
+    if (tabName === "details") {
+      navigate(`/funds/${initiativeId}/activities/${activityId}/details`);
+    }
+    if (tabName === "sponsoren") {
+      navigate(`/funds/${initiativeId}/activities/${activityId}/sponsors`);
+    }
+    if (tabName === "media") {
+      navigate(`/funds/${initiativeId}/activities/${activityId}/media`);
+    }
+    if (tabName === "gebruikers") {
+      navigate(`/funds/${initiativeId}/activities/${activityId}/gebruikers`);
+    }
+  };
+
   useEffect(() => {
     setHasEditPermission(entityPermissions.includes("edit"));
     setHasDeletePermission(entityPermissions.includes("delete"));
+    setHasCreatePermission(entityPermissions.includes("create_payment"));
   }, [entityPermissions]);
 
   useEffect(() => {

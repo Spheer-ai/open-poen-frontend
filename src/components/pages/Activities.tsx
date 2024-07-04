@@ -18,6 +18,7 @@ export default function ActivitiesPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isBlockingInteraction, setIsBlockingInteraction] = useState(false);
   const { permissions, fetchPermissions } = useFetchEntityPermissions();
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [entityPermissions, setEntityPermissions] = useState<string[]>([]);
   const hasPermission = entityPermissions.includes("create_activity");
   const [selectedActivity, setSelectedActivity] = useState<string | null>(null);
@@ -48,7 +49,7 @@ export default function ActivitiesPage() {
           const permissions = await fetchPermissions(
             "Initiative",
             Number(initiativeId),
-            user.token,
+            user?.token,
           );
           console.log("Fetched permissions:", permissions);
 
@@ -129,7 +130,7 @@ export default function ActivitiesPage() {
   };
 
   const handleFundEdited = () => {
-    // Handle fund edited if needed
+    setRefreshTrigger((prev) => prev + 1);
   };
 
   return (
@@ -259,6 +260,8 @@ export default function ActivitiesPage() {
             initiativeData={initiativeData}
             onFundEdited={handleFundEdited}
             entityPermissions={entityPermissions}
+            activities={activities}
+            isLoading={isLoading}
           />
         ) : (
           <p>Select a fund or activity to view details.</p>

@@ -19,7 +19,7 @@ export default function Funds() {
     console.log("Only mine filter:", onlyMine);
   }, [user, onlyMine]);
 
-  const limit = 3;
+  const limit = 20;
   const {
     initiatives,
     isLoadingMoreInitiatives,

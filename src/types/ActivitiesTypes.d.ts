@@ -7,6 +7,13 @@ export interface Activities {
   initiativeName: string;
   hidden: boolean;
   beschikbaar?: number;
+  id: number;
+  name: string;
+  budget: number;
+  income: number;
+  expenses: number;
+  initiativeId: string;
+  hidden?: boolean;
 }
 
 export interface ActivityDetails {
