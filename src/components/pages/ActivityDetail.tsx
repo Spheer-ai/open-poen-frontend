@@ -105,6 +105,7 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
           console.log("Fetched activity details:", data); // Add this line
           setActivityDetails(data);
           setCurrentActivityData(data);
+          setRefreshTrigger((prev) => prev + 1); // Trigger refresh
           if (data && data.grant) {
             console.log("Grant ID:", data.grant.id);
           } else {
@@ -115,7 +116,7 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
           console.error("Error fetching activity details:", error);
         });
     }
-  }, [activityId, initiativeId, authToken, refreshTrigger]);
+  }, [activityId, initiativeId, authToken]);
 
   const handleToggleEditActivitydModal = () => {
     if (isEditActivityModalOpen) {
@@ -383,6 +384,7 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
             entityPermissions={entityPermissions}
             activity_name={activityDetails?.name || ""}
             hasCreatePaymentPermission={hasCreatePaymentPermission}
+            key={activityId}
           />
         )}
         {activeTab === "details" && (

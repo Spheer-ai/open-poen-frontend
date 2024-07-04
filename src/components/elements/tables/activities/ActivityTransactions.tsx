@@ -324,6 +324,10 @@ const ActivityTransactions: React.FC<{
   };
 
   useEffect(() => {
+    fetchTransactions();
+  }, [filterCriteria]);
+
+  useEffect(() => {
     if (refreshTrigger > 0) {
       fetchTransactions();
     }
