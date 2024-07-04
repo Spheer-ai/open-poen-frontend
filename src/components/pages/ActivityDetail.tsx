@@ -47,7 +47,8 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
     useState(false);
   const [hasEditPermission, setHasEditPermission] = useState(false);
   const [hasDeletePermission, setHasDeletePermission] = useState(false);
-  const [hasCreatePermission, setHasCreatePermission] = useState(false);
+  const [hasCreatePaymentPermission, setHasCreatePaymentPermission] =
+    useState(false);
 
   const [showFullDescription, setShowFullDescription] = useState(false);
   const [availableBudget, setAvailableBudget] = useState<number | null>(null);
@@ -82,9 +83,10 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
   };
 
   useEffect(() => {
+    1;
     setHasEditPermission(entityPermissions.includes("edit"));
     setHasDeletePermission(entityPermissions.includes("delete"));
-    setHasCreatePermission(entityPermissions.includes("create_payment"));
+    setHasCreatePaymentPermission(entityPermissions.includes("create_payment"));
   }, [entityPermissions]);
 
   useEffect(() => {
@@ -149,6 +151,10 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
       setAvailableBudget(availableBudgetValue);
     }
   }, [activityDetails, refreshTrigger]);
+
+  const handleRefreshTrigger = () => {
+    setRefreshTrigger((prev) => prev + 1);
+  };
 
   return (
     <>
@@ -347,6 +353,58 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
           authToken={user?.token || ""}
           activityId={activityId}
         />
+
+        <TabbedActivitiesNavigation
+          onTabChange={handleTabChange}
+          initiativeId={initiativeId}
+          activityId={activityId}
+        />
+        {activeTab === "transactieoverzicht" && (
+          <ActivityTransactions
+            initiativeId={initiativeId}
+            authToken={user?.token || ""}
+            activityId={activityId}
+            onRefreshTrigger={handleRefreshTrigger}
+            entityPermissions={entityPermissions}
+            activity_name={activityDetails?.name || ""}
+            hasCreatePaymentPermission={hasCreatePaymentPermission}
+          />
+        )}
+        {activeTab === "details" && (
+          <ActivityDetails
+            name={activityDetails?.name}
+            description={activityDetails?.description}
+            purpose={activityDetails?.purpose}
+            target_audience={activityDetails?.target_audience}
+            kvk_registration={activityDetails?.initiative.kvk_registration}
+            location={activityDetails?.initiative.location}
+          />
+        )}
+        {activeTab === "sponsoren" && (
+          <ActivitySponsors
+            grantId={activityDetails?.grant?.id}
+            grantName={activityDetails?.grant?.name}
+            grantReference={activityDetails?.grant?.reference}
+            grantBudget={activityDetails?.grant?.budget}
+            token={user?.token || ""}
+          />
+        )}
+        {activeTab === "media" && (
+          <ActivityMedia
+            initiativeId={initiativeId}
+            activityId={activityId}
+            authToken={user?.token || ""}
+          />
+        )}
+        {activeTab === "gebruikers" && (
+          <ActivityUsers
+            activityOwners={activityOwners}
+            initiativeId={initiativeId}
+            activityId={activityId}
+            token={user?.token || ""}
+            key={activeTab}
+          />
+        )}
       </div>
     </>
   );

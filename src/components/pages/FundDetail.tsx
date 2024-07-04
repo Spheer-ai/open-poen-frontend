@@ -384,6 +384,7 @@ const FundDetail: React.FC<FundDetailProps> = ({
             initiativeId={initiativeId}
             token={user?.token || ""}
             initiativeOwners={initiativeData.initiative_owners || []}
+            refreshTrigger={0}
           />
         )}
       </div>

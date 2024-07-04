@@ -278,29 +278,6 @@ const FundsTransactions: React.FC<{
     }
   };
 
-  useEffect(() => {
-    async function fetchFieldPermissionsOnMount() {
-      try {
-        if (user && user.token && selectedTransactionId) {
-          const fieldPermissions: string[] | undefined =
-            await fetchFieldPermissions(
-              "Payment",
-              selectedTransactionId,
-              user.token,
-            );
-
-          if (fieldPermissions) {
-            setEntityPermissions(fieldPermissions);
-          }
-        }
-      } catch (error) {
-        console.error("Failed to fetch field permissions:", error);
-      }
-    }
-
-    fetchFieldPermissionsOnMount();
-  }, [user, selectedTransactionId, fetchFieldPermissions]);
-
   const handleToggleFetchPaymentDetailsModal = () => {
     if (isFetchPaymentDetailsModalOpen) {
       setIsBlockingInteraction(true);

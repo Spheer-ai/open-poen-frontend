@@ -1,16 +1,18 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "../../../../assets/scss/FundsUsers.module.scss";
 import LoadingDot from "../../../animation/LoadingDot";
 import { useAuth } from "../../../../contexts/AuthContext";
 import LinkFundOwners from "../../../modals/LinkFundOwners";
+import { fetchFundDetails } from "../../../middleware/Api";
 import { InitiativeOwner } from "../../../../types/EditFundTypes";
 
 const FundsUsers: React.FC<{
   initiativeId: string;
   token: string;
   initiativeOwners: InitiativeOwner[];
-}> = ({ initiativeId, token, initiativeOwners }) => {
+  refreshTrigger: number;
+}> = ({ initiativeId, token, initiativeOwners, refreshTrigger }) => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [isBlockingInteraction, setIsBlockingInteraction] = useState(false);
@@ -36,6 +38,19 @@ const FundsUsers: React.FC<{
   const handleFundOwnerLinked = (newOwners: InitiativeOwner[]) => {
     setOwners(newOwners);
   };
+
+  useEffect(() => {
+    setIsLoading(true);
+    fetchFundDetails(token, initiativeId)
+      .then((data) => {
+        setOwners(data.initiative_owners);
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        console.error("Error fetching fund owners:", error);
+        setIsLoading(false);
+      });
+  }, [refreshTrigger, initiativeId, token]);
 
   return (
     <div className={styles["users-container"]}>

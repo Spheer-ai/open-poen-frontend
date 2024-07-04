@@ -1,25 +1,45 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "../../../../assets/scss/FundsUsers.module.scss";
 import { useAuth } from "../../../../contexts/AuthContext";
 import LinkActivityOwners from "../../../modals/LinkActivityOwners";
-import { fetchActivityDetails } from "../../../middleware/Api";
+import { ActivityOwner } from "../../../../types/ActivityOwners";
 import LoadingDot from "../../../animation/LoadingDot";
+import { fetchActivityDetails } from "../../../middleware/Api";
 
 const ActivityUsers: React.FC<{
-  activityOwners: any[];
+  activityOwners: ActivityOwner[];
   initiativeId: string;
   activityId: string;
   token: string;
-}> = ({ initiativeId, activityId, token }) => {
+}> = ({ activityOwners: initialOwners, initiativeId, activityId, token }) => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [isBlockingInteraction, setIsBlockingInteraction] = useState(false);
   const [isLinkActivityOwnerModalOpen, setIsLinkActivityOwnerModalOpen] =
     useState(false);
-  const [refreshTrigger, setRefreshTrigger] = useState(0);
-  const [activityOwners, setActivityOwners] = useState<any[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+  const [owners, setOwners] = useState<ActivityOwner[]>(initialOwners);
+
+  useEffect(() => {
+    const fetchOwners = async () => {
+      setIsLoading(true);
+      try {
+        const data = await fetchActivityDetails(
+          token,
+          initiativeId,
+          activityId,
+        );
+        setOwners(data.activity_owners);
+      } catch (error) {
+        console.error("Error fetching activity details:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchOwners();
+  }, [initiativeId, activityId, token]);
 
   const handleToggleLinkActivityOwnerModal = () => {
     if (isLinkActivityOwnerModalOpen) {
@@ -37,23 +57,8 @@ const ActivityUsers: React.FC<{
     }
   };
 
-  useEffect(() => {
-    setIsLoading(true);
-    if (initiativeId) {
-      fetchActivityDetails(token, initiativeId, activityId)
-        .then((data) => {
-          setActivityOwners(data.activity_owners);
-          setIsLoading(false);
-        })
-        .catch((error) => {
-          console.error("Error fetching fund details:", error);
-          setIsLoading(false);
-        });
-    }
-  }, [initiativeId, activityId, token, refreshTrigger]);
-
-  const handleActivityOwnerLinked = () => {
-    setRefreshTrigger((prev) => prev + 1);
+  const handleActivityOwnerLinked = (newOwners: ActivityOwner[]) => {
+    setOwners(newOwners);
   };
 
   return (
@@ -63,11 +68,11 @@ const ActivityUsers: React.FC<{
         onClose={handleToggleLinkActivityOwnerModal}
         isBlockingInteraction={isBlockingInteraction}
         onActivityOwnerLinked={handleActivityOwnerLinked}
-        onUpdateActivityOwners={setActivityOwners}
+        onUpdateActivityOwners={setOwners}
         initiativeId={initiativeId}
         activityId={activityId}
         token={token}
-        activityOwners={activityOwners}
+        activityOwners={owners}
       />
       {user && token ? (
         <button
@@ -95,12 +100,12 @@ const ActivityUsers: React.FC<{
           </div>
         ) : (
           <>
-            {activityOwners.length === 0 ? (
+            {owners.length === 0 ? (
               <p className={styles["no-users"]}>
                 Geen activiteitnemers gevonden
               </p>
             ) : (
-              activityOwners.map((owner, index) => (
+              owners.map((owner) => (
                 <div
                   className={`${styles["user-container"]} ${styles["fundusers-fade-in"]}`}
                   key={owner.id}
@@ -111,6 +116,14 @@ const ActivityUsers: React.FC<{
                         src={owner.profile_picture.attachment_thumbnail_url_128}
                         alt="Profile"
                         className={styles["profile-image"]}
+                        onError={(e) => {
+                          console.error(
+                            `Failed to load image for ${owner.email}`,
+                            e,
+                          );
+                          e.currentTarget.src =
+                            "../../../../profile-placeholder.png";
+                        }}
                       />
                     ) : (
                       <img
@@ -120,7 +133,7 @@ const ActivityUsers: React.FC<{
                       />
                     )}
                   </div>
-                  <div className={styles["user-card"]} key={index}>
+                  <div className={styles["user-card"]}>
                     <span>
                       {owner.first_name} {owner.last_name}
                     </span>

@@ -50,7 +50,6 @@ const ActivityTransactions: React.FC<{
   onRefreshTrigger: () => void;
   entityPermissions: string[];
   hasCreatePaymentPermission: boolean;
-  activeTab: string;
 }> = ({
   authToken,
   initiativeId,
@@ -58,7 +57,6 @@ const ActivityTransactions: React.FC<{
   activity_name,
   onRefreshTrigger,
   hasCreatePaymentPermission,
-  activeTab,
 }) => {
   const { user } = useAuth();
   const { fetchPermissions } = usePermissions();
@@ -127,12 +125,6 @@ const ActivityTransactions: React.FC<{
       setIsAtBottom(contentHeight - (scrollY + panelHeight) < threshold);
     }
   };
-
-  useEffect(() => {
-    if (activeTab === "transactieoverzicht") {
-      fetchTransactions();
-    }
-  }, [activeTab, activityId, filterCriteria]);
 
   const handleFilterApplied = (filters) => {
     setStartDate(filters.startDate);
@@ -286,29 +278,6 @@ const ActivityTransactions: React.FC<{
       }
     }
   };
-
-  useEffect(() => {
-    async function fetchFieldPermissionsOnMount() {
-      try {
-        if (user && user.token && selectedTransactionId) {
-          const fieldPermissions: string[] | undefined =
-            await fetchFieldPermissions(
-              "Payment",
-              selectedTransactionId,
-              user.token,
-            );
-
-          if (fieldPermissions) {
-            setEntityPermissions(fieldPermissions);
-          }
-        }
-      } catch (error) {
-        console.error("Failed to fetch field permissions:", error);
-      }
-    }
-
-    fetchFieldPermissionsOnMount();
-  }, [user, selectedTransactionId, fetchFieldPermissions]);
 
   const handleToggleFetchPaymentDetailsModal = () => {
     if (isFetchPaymentDetailsModalOpen) {

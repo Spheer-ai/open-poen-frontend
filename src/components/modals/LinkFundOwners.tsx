@@ -202,6 +202,7 @@ const LinkFundOwner: React.FC<LinkFundOwnerProps> = ({
                   onClick={() => handleRemoveUser(owner.id)}
                   className={styles.removeButton}
                 >
+                  \
                   <img src={deleteIcon} alt="Delete" />
                 </button>
               </li>
