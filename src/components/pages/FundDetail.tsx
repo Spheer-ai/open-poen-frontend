@@ -16,6 +16,7 @@ import LoadingDot from "../animation/LoadingDot";
 import Breadcrumb from "../ui/layout/BreadCrumbs";
 import { FundDetails, InitiativeOwner } from "../../types/EditFundTypes";
 import { Activities } from "../../types/ActivitiesTypes";
+import FundsSponsors from "../elements/tables/funds/FundsSponsors";
 
 interface FundDetailProps {
   initiativeId: string;
@@ -371,6 +372,15 @@ const FundDetail: React.FC<FundDetailProps> = ({
             target_audience={initiativeData?.target_audience}
             kvk_registration={initiativeData?.kvk_registration}
             location={initiativeData?.location}
+          />
+        )}
+        {activeTab === "sponsoren" && (
+          <FundsSponsors
+            grantId={initiativeData?.grant?.id}
+            grantName={initiativeData?.grant?.name}
+            grantReference={initiativeData?.grant?.reference}
+            grantBudget={initiativeData?.grant?.budget}
+            token={user?.token || ""}
           />
         )}
         {activeTab === "media" && (

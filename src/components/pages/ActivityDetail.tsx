@@ -10,7 +10,7 @@ import DeleteActivity from "../modals/DeleteActivity";
 import LoadingDot from "../animation/LoadingDot";
 import { ActivityOwner } from "../../types/ActivityOwners";
 import Breadcrumb from "../ui/layout/BreadCrumbs";
-import { Activities } from "../../types/ActivitiesTypes";
+import { Activities, FundDetails } from "../../types/ActivitiesTypes";
 import TabbedActivitiesNavigation from "../ui/layout/navigation/TabbedActivitiesNavigation";
 import ActivityDetails from "../elements/tables/activities/ActivityDetails";
 import ActivityMedia from "../elements/tables/activities/ActivityMedia";
@@ -22,6 +22,7 @@ interface ActivityDetailProps {
   initiativeId: string;
   activityId: string;
   authToken: string;
+  initiativeData: FundDetails;
   entityPermissions: string[];
   onActivityEdited: (updatedActivity: Activities) => void;
   onActivityDeleted: (activityId: string) => void;
@@ -30,6 +31,7 @@ interface ActivityDetailProps {
 const ActivityDetail: React.FC<ActivityDetailProps> = ({
   initiativeId,
   activityId,
+  initiativeData: initialData,
   authToken,
   entityPermissions,
   onActivityEdited,
@@ -56,6 +58,14 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
     useState<ActivityDetails | null>(null);
   const activityOwners: ActivityOwner[] =
     activityDetails?.activity_owners || [];
+  const [initiativeData, setInitiativeData] = useState<FundDetails | null>(
+    initialData,
+  );
+
+  useEffect(() => {
+    console.log("Received initiativeData:", initialData);
+    setInitiativeData(initialData);
+  }, [initialData]);
 
   const handleTabChange = (tabName) => {
     setActiveTab(tabName);
@@ -83,7 +93,6 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
   };
 
   useEffect(() => {
-    1;
     setHasEditPermission(entityPermissions.includes("edit"));
     setHasDeletePermission(entityPermissions.includes("delete"));
     setHasCreatePaymentPermission(entityPermissions.includes("create_payment"));
@@ -93,8 +102,14 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
     if (activityId) {
       fetchActivityDetails(authToken, initiativeId, activityId)
         .then((data) => {
+          console.log("Fetched activity details:", data); // Add this line
           setActivityDetails(data);
           setCurrentActivityData(data);
+          if (data && data.grant) {
+            console.log("Grant ID:", data.grant.id);
+          } else {
+            console.log("No grant information available.");
+          }
         })
         .catch((error) => {
           console.error("Error fetching activity details:", error);
@@ -382,11 +397,12 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
         )}
         {activeTab === "sponsoren" && (
           <ActivitySponsors
-            grantId={activityDetails?.grant?.id}
-            grantName={activityDetails?.grant?.name}
-            grantReference={activityDetails?.grant?.reference}
-            grantBudget={activityDetails?.grant?.budget}
+            grantId={initiativeData?.grant?.id}
+            grantName={initiativeData?.grant?.name}
+            grantReference={initiativeData?.grant?.reference}
+            grantBudget={initiativeData?.grant?.budget}
             token={user?.token || ""}
+            key={activeTab}
           />
         )}
         {activeTab === "media" && (

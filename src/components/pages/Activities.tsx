@@ -252,6 +252,7 @@ export default function ActivitiesPage() {
             onActivityEdited={handleActivityEdited}
             onActivityDeleted={handleActivityDeleted}
             entityPermissions={entityPermissions}
+            initiativeData={initiativeData}
           />
         ) : initiativeId !== null ? (
           <FundDetail

@@ -6,7 +6,7 @@ import {
   fetchRegulationDetails,
 } from "../../../middleware/Api";
 
-interface FundsSponsorsProps {
+interface ActivitySponsorsProps {
   grantId?: number;
   grantName?: string;
   grantReference?: string;
@@ -14,7 +14,7 @@ interface FundsSponsorsProps {
   token: string;
 }
 
-const FundsSponsors: React.FC<FundsSponsorsProps> = ({
+const ActivitySponsors: React.FC<ActivitySponsorsProps> = ({
   grantId,
   grantName,
   grantReference,
@@ -132,4 +132,4 @@ const FundsSponsors: React.FC<FundsSponsorsProps> = ({
     </div>
   );
 };
-export default FundsSponsors;
+export default ActivitySponsors;

@@ -9,6 +9,7 @@ export interface EditFundProps {
 }
 
 export interface FundDetails {
+  grant: any;
   id?: number;
   name?: string;
   description?: string;
