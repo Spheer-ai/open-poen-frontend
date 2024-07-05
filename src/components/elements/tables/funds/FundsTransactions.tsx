@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import { getPaymentsByInitiative } from "../../../middleware/Api";
 import styles from "../../../../assets/scss/TransactionOverview.module.scss";
 import PaymentDetails from "../../../modals/PaymentDetails";
@@ -45,16 +45,17 @@ const FundsTransactions: React.FC<{
   authToken: string;
   initiativeId: string;
   onRefreshTrigger: () => void;
-  entityPermissions;
-  hasCreatePaymentPermission;
+  entityPermissions: string[];
+  hasCreatePaymentPermission: boolean;
 }> = ({
   authToken,
   initiativeId,
   onRefreshTrigger,
+  entityPermissions,
   hasCreatePaymentPermission,
 }) => {
   const { user } = useAuth();
-  const { permissions, fetchPermissions } = useFetchEntityPermissions();
+  const { fetchPermissions } = useFetchEntityPermissions();
   const navigate = useNavigate();
   const [selectedTransactionId, setSelectedTransactionId] = useState<
     number | null
@@ -67,34 +68,21 @@ const FundsTransactions: React.FC<{
     useState(false);
   const [isEditPaymentModalOpen, setIsEditPaymentModalOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [entityPermissions, setEntityPermissions] = useState<string[]>([]);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loadingMore, setLoadingMore] = useState(true);
   const [hasMoreTransactions, setHasMoreTransactions] = useState(true);
   const [editedTransaction, setEditedTransaction] =
     useState<Transaction | null>(null);
-  const [
-    permissionsFetchedForTransaction,
-    setPermissionsFetchedForTransaction,
-  ] = useState<number | null>(null);
   const [isLoadingPermissions, setIsLoadingPermissions] = useState(false);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
-  const [hasEditPermission, setHasEditPermission] = useState<
-    boolean | undefined
-  >(false);
-  const [hasReadPermission, setHasReadPermission] = useState<
-    boolean | undefined
-  >(false);
-  const [hasDeletePermission, setHasDeletePermission] = useState<
-    boolean | undefined
-  >(false);
-  const [startDate, setStartDate] = useState<string>("");
-  const [endDate, setEndDate] = useState<string>("");
-  const [minAmount, setMinAmount] = useState<string>("");
-  const [maxAmount, setMaxAmount] = useState<string>("");
-  const [route, setRoute] = useState<string>("");
   const [pageSize] = useState(20);
-  const [filterCriteria, setFilterCriteria] = useState({
+  const [filterCriteria, setFilterCriteria] = useState<{
+    startDate: string;
+    endDate: string;
+    minAmount: string;
+    maxAmount: string;
+    route: string;
+  }>({
     startDate: "",
     endDate: "",
     minAmount: "",
@@ -118,35 +106,31 @@ const FundsTransactions: React.FC<{
     }
   };
 
-  useEffect(() => {
-    fetchTransactions();
-  }, [filterCriteria]);
-
-  const handleFilterApplied = (filters) => {
-    setStartDate(filters.startDate);
-    setEndDate(filters.endDate);
-    setMinAmount(filters.minAmount);
-    setMaxAmount(filters.maxAmount);
-    setRoute(filters.route);
-    setCurrentPage(1);
-
-    setFilterCriteria(filters);
-  };
-
-  const fetchTransactions = async () => {
+  const fetchTransactions = useCallback(async () => {
     try {
       setLoadingMore(true);
 
-      let queryParams: any = {
+      const queryParams: {
+        offset: number;
+        limit: number;
+        start_date?: string;
+        end_date?: string;
+        min_amount?: string;
+        max_amount?: string;
+        route?: string;
+      } = {
         offset: (currentPage - 1) * pageSize,
         limit: pageSize,
       };
 
-      if (startDate) queryParams.start_date = startDate;
-      if (endDate) queryParams.end_date = endDate;
-      if (minAmount) queryParams.min_amount = minAmount;
-      if (maxAmount) queryParams.max_amount = maxAmount;
-      if (route) queryParams.route = route;
+      if (filterCriteria.startDate)
+        queryParams.start_date = filterCriteria.startDate;
+      if (filterCriteria.endDate) queryParams.end_date = filterCriteria.endDate;
+      if (filterCriteria.minAmount)
+        queryParams.min_amount = filterCriteria.minAmount;
+      if (filterCriteria.maxAmount)
+        queryParams.max_amount = filterCriteria.maxAmount;
+      if (filterCriteria.route) queryParams.route = filterCriteria.route;
 
       const response = await getPaymentsByInitiative(
         authToken,
@@ -190,21 +174,34 @@ const FundsTransactions: React.FC<{
     } finally {
       setLoadingMore(false);
     }
+  }, [authToken, initiativeId, currentPage, pageSize, filterCriteria]);
+
+  useEffect(() => {
+    fetchTransactions();
+  }, [filterCriteria, fetchTransactions]);
+
+  const handleFilterApplied = (filters: {
+    startDate?: string;
+    endDate?: string;
+    minAmount?: string;
+    maxAmount?: string;
+    route?: string;
+  }) => {
+    setFilterCriteria({
+      startDate: filters.startDate || "",
+      endDate: filters.endDate || "",
+      minAmount: filters.minAmount || "",
+      maxAmount: filters.maxAmount || "",
+      route: filters.route || "",
+    });
+    setCurrentPage(1);
   };
 
-  const handleLoadMore = () => {
+  const handleLoadMore = useCallback(() => {
     if (!loadingMore && hasMoreTransactions) {
       setCurrentPage((prevPage) => prevPage + 1);
-      setFilterCriteria((prevCriteria) => ({
-        ...prevCriteria,
-        startDate: "",
-        endDate: "",
-        minAmount: "",
-        maxAmount: "",
-        route: "",
-      }));
     }
-  };
+  }, [loadingMore, hasMoreTransactions]);
 
   const handleEyeIconClick = async (transactionId: number) => {
     setIsLoadingPermissions(true);
@@ -228,17 +225,9 @@ const FundsTransactions: React.FC<{
 
       console.log("Fetched user permissions:", userPermissions);
 
-      const hasEditPermission =
-        userPermissions && userPermissions.includes("edit");
-      setHasEditPermission(hasEditPermission);
-
-      const hasReadPermission =
-        userPermissions && userPermissions.includes("read");
-      setHasReadPermission(hasReadPermission);
-
-      const hasDeletePermission =
-        userPermissions && userPermissions.includes("delete");
-      setHasDeletePermission(hasDeletePermission);
+      const hasEditPermission = userPermissions?.includes("edit") ?? false;
+      const hasReadPermission = userPermissions?.includes("read") ?? false;
+      const hasDeletePermission = userPermissions?.includes("delete") ?? false;
 
       console.log(
         "Permissions set - Edit:",
@@ -249,7 +238,7 @@ const FundsTransactions: React.FC<{
         hasDeletePermission,
       );
 
-      setPermissionsFetchedForTransaction(transactionId);
+      setSelectedTransactionId(transactionId);
 
       if (hasEditPermission) {
         handleTransactionEditClick(transactionId);
@@ -265,7 +254,6 @@ const FundsTransactions: React.FC<{
 
   const handleTransactionDetailsClick = (transactionId: number) => {
     setSelectedTransactionId(transactionId);
-
     setIsFetchPaymentDetailsModalOpen(true);
   };
 
@@ -341,7 +329,7 @@ const FundsTransactions: React.FC<{
     if (refreshTrigger > 0) {
       fetchTransactions();
     }
-  }, [refreshTrigger]);
+  }, [refreshTrigger, fetchTransactions]);
 
   const handlePaymentEdited = () => {
     setRefreshTrigger((prev) => prev + 1);
@@ -383,7 +371,7 @@ const FundsTransactions: React.FC<{
     if (isAtBottom) {
       handleLoadMore();
     }
-  }, [isAtBottom]);
+  }, [isAtBottom, handleLoadMore]);
 
   return (
     <>
@@ -563,7 +551,7 @@ const FundsTransactions: React.FC<{
           token={authToken}
           fieldPermissions={entityPermissions}
           fields={[]}
-          hasDeletePermission={hasDeletePermission}
+          hasDeletePermission={false}
           initiativeId={initiativeId}
           activityName={
             editedTransaction ? editedTransaction.activity_name : null

@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from "react";
-import { Activities } from "../../types/ActivitiesTypes";
+import { Activities, InitiativeData } from "../../types/ActivitiesTypes";
 import { fetchActivities } from "../middleware/Api";
 
 const useActivities = (
@@ -8,12 +8,14 @@ const useActivities = (
   setLoading: React.Dispatch<React.SetStateAction<boolean>>,
 ) => {
   const [activities, setActivities] = useState<Activities[]>([]);
-  const [initiativeData, setInitiativeData] = useState<any>(null);
+  const [initiativeData, setInitiativeData] = useState<InitiativeData | null>(
+    null,
+  );
   const [initiativeName, setInitiativeName] = useState<string>("");
   const [isActivitiesLoaded, setIsActivitiesLoaded] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const activitiesRef = useRef<Activities[]>([]);
-  const initiativeDataRef = useRef<any>(null);
+  const initiativeDataRef = useRef<InitiativeData | null>(null);
   const initiativeNameRef = useRef<string>("");
   const isLoadedRef = useRef(false);
 

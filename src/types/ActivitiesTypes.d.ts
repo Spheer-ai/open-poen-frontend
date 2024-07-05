@@ -14,6 +14,23 @@ export interface Activities {
   expenses: number;
   initiativeId: string;
   hidden?: boolean;
+  initiativeData: InitiativeData;
+}
+
+export interface InitiativeData {
+  id: number;
+  name: string;
+  budget: number;
+  income: number;
+  expenses: number;
+  hidden: boolean;
+  beschikbaar?: number;
+  grant: {
+    id: number;
+    name: string;
+    reference: string;
+    budget: number;
+  };
 }
 
 export interface ActivityDetails {

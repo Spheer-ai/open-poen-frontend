@@ -5,6 +5,10 @@ import {
   fetchGrantDetails,
   fetchRegulationDetails,
 } from "../../../middleware/Api";
+import {
+  GrantDetails,
+  RegulationDetails,
+} from "../../../../types/SponsorsType";
 
 interface FundsSponsorsProps {
   grantId?: number;
@@ -26,8 +30,9 @@ const FundsSponsors: React.FC<FundsSponsorsProps> = ({
     currency: "EUR",
   });
 
-  const [grantDetails, setGrantDetails] = useState<any>(null);
-  const [regulationDetails, setRegulationDetails] = useState<any>(null);
+  const [grantDetails, setGrantDetails] = useState<GrantDetails | null>(null);
+  const [regulationDetails, setRegulationDetails] =
+    useState<RegulationDetails | null>(null);
   const [loadingGrantDetails, setLoadingGrantDetails] = useState<boolean>(true);
   const [loadingRegulationDetails, setLoadingRegulationDetails] =
     useState<boolean>(true);

@@ -5,6 +5,10 @@ import {
   fetchGrantDetails,
   fetchRegulationDetails,
 } from "../../../middleware/Api";
+import {
+  GrantDetails,
+  RegulationDetails,
+} from "../../../../types/SponsorsType";
 
 interface ActivitySponsorsProps {
   grantId?: number;
@@ -25,8 +29,9 @@ const ActivitySponsors: React.FC<ActivitySponsorsProps> = ({
     style: "currency",
     currency: "EUR",
   });
-  const [grantDetails, setGrantDetails] = useState<any>(null);
-  const [regulationDetails, setRegulationDetails] = useState<any>(null);
+  const [grantDetails, setGrantDetails] = useState<GrantDetails | null>(null);
+  const [regulationDetails, setRegulationDetails] =
+    useState<RegulationDetails | null>(null);
   const [loadingGrantDetails, setLoadingGrantDetails] = useState<boolean>(true);
   const [loadingRegulationDetails, setLoadingRegulationDetails] =
     useState<boolean>(true);
@@ -132,4 +137,5 @@ const ActivitySponsors: React.FC<ActivitySponsorsProps> = ({
     </div>
   );
 };
+
 export default ActivitySponsors;

@@ -15,13 +15,13 @@ import DeleteFund from "../modals/DeleteFund";
 import LoadingDot from "../animation/LoadingDot";
 import Breadcrumb from "../ui/layout/BreadCrumbs";
 import { FundDetails } from "../../types/EditFundTypes";
-import { Activities } from "../../types/ActivitiesTypes";
+import { Activities, InitiativeData } from "../../types/ActivitiesTypes";
 import FundsSponsors from "../elements/tables/funds/FundsSponsors";
 
 interface FundDetailProps {
   initiativeId: string;
   authToken: string;
-  initiativeData: FundDetails;
+  initiativeData: InitiativeData | null;
   entityPermissions: string[];
   onFundEdited: () => void;
   activities: Activities[];
@@ -30,7 +30,6 @@ interface FundDetailProps {
 
 const FundDetail: React.FC<FundDetailProps> = ({
   initiativeId,
-  authToken,
   initiativeData: initialData,
   entityPermissions,
   onFundEdited,

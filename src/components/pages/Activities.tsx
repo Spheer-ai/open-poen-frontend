@@ -17,7 +17,7 @@ export default function ActivitiesPage() {
   const { user } = useAuth();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isBlockingInteraction, setIsBlockingInteraction] = useState(false);
-  const { permissions, fetchPermissions } = useFetchEntityPermissions();
+  const { fetchPermissions } = useFetchEntityPermissions();
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [entityPermissions, setEntityPermissions] = useState<string[]>([]);
   const hasPermission = entityPermissions.includes("create_activity");
@@ -86,6 +86,12 @@ export default function ActivitiesPage() {
       }
     }
   }, [activityId, location.pathname]);
+
+  useEffect(() => {
+    if (refreshTrigger > 0) {
+      loadActivities();
+    }
+  }, [refreshTrigger, loadActivities]);
 
   const handleBackClick = () => {
     navigate("/funds");

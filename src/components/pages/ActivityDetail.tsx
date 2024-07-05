@@ -10,7 +10,7 @@ import DeleteActivity from "../modals/DeleteActivity";
 import LoadingDot from "../animation/LoadingDot";
 import { ActivityOwner } from "../../types/ActivityOwners";
 import Breadcrumb from "../ui/layout/BreadCrumbs";
-import { Activities, FundDetails } from "../../types/ActivitiesTypes";
+import { Activities, InitiativeData } from "../../types/ActivitiesTypes";
 import TabbedActivitiesNavigation from "../ui/layout/navigation/TabbedActivitiesNavigation";
 import ActivityDetails from "../elements/tables/activities/ActivityDetails";
 import ActivityMedia from "../elements/tables/activities/ActivityMedia";
@@ -22,7 +22,7 @@ interface ActivityDetailProps {
   initiativeId: string;
   activityId: string;
   authToken: string;
-  initiativeData: FundDetails;
+  initiativeData: InitiativeData | null;
   entityPermissions: string[];
   onActivityEdited: (updatedActivity: Activities) => void;
   onActivityDeleted: (activityId: string) => void;
@@ -58,7 +58,7 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
     useState<ActivityDetails | null>(null);
   const activityOwners: ActivityOwner[] =
     activityDetails?.activity_owners || [];
-  const [initiativeData, setInitiativeData] = useState<FundDetails | null>(
+  const [initiativeData, setInitiativeData] = useState<InitiativeData | null>(
     initialData,
   );
 
@@ -102,10 +102,10 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
     if (activityId) {
       fetchActivityDetails(authToken, initiativeId, activityId)
         .then((data) => {
-          console.log("Fetched activity details:", data); // Add this line
+          console.log("Fetched activity details:", data);
           setActivityDetails(data);
           setCurrentActivityData(data);
-          setRefreshTrigger((prev) => prev + 1); // Trigger refresh
+          setRefreshTrigger((prev) => prev + 1);
           if (data && data.grant) {
             console.log("Grant ID:", data.grant.id);
           } else {
