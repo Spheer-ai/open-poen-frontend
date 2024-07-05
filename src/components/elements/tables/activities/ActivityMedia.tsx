@@ -84,14 +84,16 @@ const ActivityMedia: React.FC<ActivityMediaProps> = ({
   };
 
   return (
-    <div>
+    <div className={styles["media-section"]}>
       {isLoading ? (
-        <div className={styles["loading-dots"]}>
-          <LoadingDot delay={0} />
-          <LoadingDot delay={0.1} />
-          <LoadingDot delay={0.1} />
-          <LoadingDot delay={0.2} />
-          <LoadingDot delay={0.2} />
+        <div className={styles["loading-container"]}>
+          <div className={styles["loading-dots"]}>
+            <LoadingDot delay={0} />
+            <LoadingDot delay={0.1} />
+            <LoadingDot delay={0.1} />
+            <LoadingDot delay={0.2} />
+            <LoadingDot delay={0.2} />
+          </div>
         </div>
       ) : (
         <div className={styles["media-container"]}>

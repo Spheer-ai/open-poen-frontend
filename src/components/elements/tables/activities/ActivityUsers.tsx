@@ -89,14 +89,12 @@ const ActivityUsers: React.FC<{
       ) : null}
       <div className={styles["user-list-container"]}>
         {isLoading ? (
-          <div className={styles["loading-parent"]}>
-            <div className={styles["loading-container"]}>
-              <LoadingDot delay={0} />
-              <LoadingDot delay={0.1} />
-              <LoadingDot delay={0.1} />
-              <LoadingDot delay={0.2} />
-              <LoadingDot delay={0.2} />
-            </div>
+          <div className={styles["loading-container"]}>
+            <LoadingDot delay={0} />
+            <LoadingDot delay={0.1} />
+            <LoadingDot delay={0.1} />
+            <LoadingDot delay={0.2} />
+            <LoadingDot delay={0.2} />
           </div>
         ) : (
           <>

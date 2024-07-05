@@ -207,7 +207,7 @@ const FundDetail: React.FC<FundDetailProps> = ({
                       alt="Initiatief Afbeelding"
                     />
                   ) : (
-                    <p>Geen afbeelding gevonden</p>
+                    <></>
                   )}
                 </div>
                 <div className={styles["fund-info"]}>

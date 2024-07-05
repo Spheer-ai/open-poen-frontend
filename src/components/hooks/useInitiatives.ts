@@ -23,8 +23,6 @@ const useInitiatives = (
         setIsLoadingMoreInitiatives(true);
       }
       try {
-        await new Promise((resolve) => setTimeout(resolve, 2000));
-
         const initiativesData = await fetchInitiatives(
           token || "",
           onlyMine,

@@ -69,7 +69,7 @@ const FundsTransactions: React.FC<{
   const [currentPage, setCurrentPage] = useState(1);
   const [entityPermissions, setEntityPermissions] = useState<string[]>([]);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const [loadingMore, setLoadingMore] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(true);
   const [hasMoreTransactions, setHasMoreTransactions] = useState(true);
   const [editedTransaction, setEditedTransaction] =
     useState<Transaction | null>(null);

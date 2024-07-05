@@ -226,7 +226,7 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
                       alt="Fund Image"
                     />
                   ) : (
-                    <p>Geen afbeelding gevonden</p>
+                    <></>
                   )}
                 </div>
                 <div className={styles["fund-info"]}>

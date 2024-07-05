@@ -62,6 +62,8 @@ export default function ActivitiesPage() {
       };
 
       loadPermissions();
+    } else {
+      setArePermissionsLoading(false);
     }
   }, [initiativeId, user?.token, fetchPermissions]);
 

@@ -92,7 +92,7 @@ const ActivityTransactions: React.FC<{
   const [editedTransaction, setEditedTransaction] =
     useState<Transaction | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [loadingMore, setLoadingMore] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(true);
   const [hasMoreTransactions, setHasMoreTransactions] = useState(true);
   const [startDate, setStartDate] = useState<string>("");
   const [endDate, setEndDate] = useState<string>("");
@@ -502,7 +502,7 @@ const ActivityTransactions: React.FC<{
                   <LoadingDot delay={0.2} />
                 </div>
               ) : (
-                <></>
+                "Load More"
               )}
             </button>
           </div>
