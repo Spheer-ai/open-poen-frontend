@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import styles from "../../assets/scss/pages/FundDetail.module.scss";
-import EditIcon from "/edit-icon.svg";
-import DeleteIcon from "/bin-icon.svg";
+import useCachedImage from "../hooks/useCachedImage";
 import { useAuth } from "../../contexts/AuthContext";
 import { fetchActivityDetails } from "../middleware/Api";
 import EditActivity from "../modals/EditActivity";
@@ -66,6 +65,9 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
     console.log("Received initiativeData:", initialData);
     setInitiativeData(initialData);
   }, [initialData]);
+
+  const editIconSrc = useCachedImage("/assets/images/icons/icon-edit.svg");
+  const deleteIconSrc = useCachedImage("/assets/images/icons/icon-delete.svg");
 
   const handleTabChange = (tabName) => {
     setActiveTab(tabName);
@@ -196,7 +198,7 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
               className={styles["edit-button"]}
               onClick={handleToggleEditActivitydModal}
             >
-              <img src={EditIcon} alt="Edit" className={styles["icon"]} />
+              <img src={editIconSrc} alt="Edit" className={styles["icon"]} />
               <span>Beheer activiteit</span>
             </button>
           )}
@@ -205,7 +207,11 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
               className={styles["edit-button"]}
               onClick={handleToggleDeleteActivitydModal}
             >
-              <img src={DeleteIcon} alt="Delete" className={styles["icon"]} />
+              <img
+                src={deleteIconSrc}
+                alt="Delete"
+                className={styles["icon"]}
+              />
               <span>Verwijder activiteit</span>
             </button>
           )}

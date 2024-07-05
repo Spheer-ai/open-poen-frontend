@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import styles from "../../../assets/scss/TopNavigationBar.module.scss";
 import Search from "../../elements/search/Search";
 import { TopNavigationBarProps } from "../../../types/TopNavigationBarType";
+import useCachedImage from "../../hooks/useCachedImage";
 
 const TopNavigationBar: React.FC<TopNavigationBarProps> = ({
   title,
@@ -40,6 +41,16 @@ const TopNavigationBar: React.FC<TopNavigationBarProps> = ({
     };
   }, []);
 
+  const homeLogoSrc = useCachedImage(
+    "/assets/images/logos/logo-openpoenmobile.svg",
+  );
+  const backArrowSrc = useCachedImage("/assets/images/icons/icon-return.svg");
+  const settingsIconSrc = useCachedImage(
+    "/assets/images/icons/icon-setting.svg",
+  );
+
+  console.log("Back Arrow Source:", backArrowSrc);
+
   return (
     <div className={styles["top-navigation-bar"]}>
       {windowWidth <= 768 && (
@@ -49,7 +60,7 @@ const TopNavigationBar: React.FC<TopNavigationBarProps> = ({
               <Link to="/funds">
                 <img
                   className={styles["logo"]}
-                  src="/open-poen-logo-blue-mobile.svg"
+                  src={homeLogoSrc}
                   alt="Home Logo"
                 />
               </Link>
@@ -57,7 +68,7 @@ const TopNavigationBar: React.FC<TopNavigationBarProps> = ({
             <div className={styles["back-arrow-section"]}>
               {onBackArrowClick && (
                 <button onClick={onBackArrowClick} className={styles.backArrow}>
-                  <img src="/arrow-left.svg" alt="Terug" />
+                  <img src={backArrowSrc} alt="Terug" />
                 </button>
               )}
               {showTitleOnSmallScreen && (
@@ -90,7 +101,7 @@ const TopNavigationBar: React.FC<TopNavigationBarProps> = ({
         <div className={styles["bar-items"]}>
           {onBackArrowClick && (
             <button onClick={onBackArrowClick} className={styles.backArrow}>
-              <img src="/arrow-left.svg" alt="Terug" />
+              <img src={backArrowSrc} alt="Terug" />
             </button>
           )}
           <div
@@ -112,7 +123,7 @@ const TopNavigationBar: React.FC<TopNavigationBarProps> = ({
                 className={styles["settings-icon"]}
                 onClick={onSettingsClick}
               >
-                <img src="/profile-settings.svg" alt="Profile Settings" />
+                <img src={settingsIconSrc} alt="Profile Settings" />
               </div>
             )}
             {showCta && hasPermission && (

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import styles from "../../../assets/scss/SidebarMenu.module.scss";
 import { useAuth } from "../../../contexts/AuthContext";
+import useCachedImage from "../../hooks/useCachedImage";
 
 const SidebarMenu = () => {
   const location = useLocation();
@@ -25,13 +26,29 @@ const SidebarMenu = () => {
   };
 
   const linkData = [
-    { name: "Funds", icon: "funds.svg", tooltip: "Initiatieven" },
-    { name: "Contacts", icon: "contacts.svg", tooltip: "Gebruikers" },
+    {
+      name: "Funds",
+      icon: useCachedImage("/assets/images/icons/icon-funds.svg"),
+      tooltip: "Initiatieven",
+    },
+    {
+      name: "Contacts",
+      icon: useCachedImage("/assets/images/icons/icon-users.svg"),
+      tooltip: "Gebruikers",
+    },
   ];
 
   const authenticatedLinks = [
-    { name: "Transactions", icon: "transactions.svg", tooltip: "Transacties" },
-    { name: "Sponsors", icon: "sponsors.svg", tooltip: "Sponsors" },
+    {
+      name: "Transactions",
+      icon: useCachedImage("/assets/images/icons/icon-transactions.svg"),
+      tooltip: "Transacties",
+    },
+    {
+      name: "Sponsors",
+      icon: useCachedImage("/assets/images/icons/icon-sponsors.svg"),
+      tooltip: "Sponsors",
+    },
   ];
 
   const isAuthenticated = !!user;
@@ -53,7 +70,7 @@ const SidebarMenu = () => {
                 <Link to={`/${linkInfo.name.toLowerCase()}`}>
                   <img
                     className={styles["sidebar-icon"]}
-                    src={`/${linkInfo.icon}`}
+                    src={linkInfo.icon}
                     alt={`${linkInfo.name} Icon`}
                   />
                   <span className={styles["tooltip-text"]}>
@@ -69,7 +86,9 @@ const SidebarMenu = () => {
                 <Link to="/transactions">
                   <img
                     className={styles["sidebar-icon"]}
-                    src="/transactions.svg"
+                    src={useCachedImage(
+                      "/assets/images/icons/icon-transactions.svg",
+                    )}
                     alt="Transactions Icon"
                   />
                   <span className={styles["tooltip-text"]}>Transacties</span>
@@ -81,7 +100,9 @@ const SidebarMenu = () => {
                 <Link to="/sponsors">
                   <img
                     className={styles["sidebar-icon"]}
-                    src="/sponsors.svg"
+                    src={useCachedImage(
+                      "/assets/images/icons/icon-sponsors.svg",
+                    )}
                     alt="Sponsors Icon"
                   />
                   <span className={styles["tooltip-text"]}>Sponsors</span>
@@ -92,7 +113,11 @@ const SidebarMenu = () => {
               <Link to={isAuthenticated ? "/" : "/login"}>
                 <img
                   className={styles["hamburger-icon"]}
-                  src={isAuthenticated ? "/logout.svg" : "/login.svg"}
+                  src={useCachedImage(
+                    isAuthenticated
+                      ? "/assets/images/icons/icon-logout.svg"
+                      : "/assets/images/icons/icon-login.svg",
+                  )}
                   alt={isAuthenticated ? "Logout Icon" : "Login Icon"}
                   onClick={logout}
                 />
@@ -111,7 +136,7 @@ const SidebarMenu = () => {
             <Link to="/funds">
               <img
                 className={styles["logo"]}
-                src="/open-poen-logo-blue.svg"
+                src={useCachedImage("/assets/images/logos/logo-openpoen.svg")}
                 alt="Home Logo"
               />
             </Link>
@@ -131,7 +156,7 @@ const SidebarMenu = () => {
                   <Link to={`/${linkInfo.name.toLowerCase()}`}>
                     <img
                       className={styles["sidebar-icon"]}
-                      src={`/${linkInfo.icon}`}
+                      src={linkInfo.icon}
                       alt={`${linkInfo.name} Icon`}
                     />
                   </Link>
@@ -151,7 +176,7 @@ const SidebarMenu = () => {
                     <Link to={`/${linkInfo.name.toLowerCase()}`}>
                       <img
                         className={styles["sidebar-icon"]}
-                        src={`/${linkInfo.icon}`}
+                        src={linkInfo.icon}
                         alt={`${linkInfo.name} Icon`}
                       />
                     </Link>
@@ -163,7 +188,11 @@ const SidebarMenu = () => {
             <Link to={isAuthenticated ? "/" : "/login"}>
               <img
                 className={styles["hamburger-icon"]}
-                src={isAuthenticated ? "/logout.svg" : "/login.svg"}
+                src={useCachedImage(
+                  isAuthenticated
+                    ? "/assets/images/icons/icon-logout.svg"
+                    : "/assets/images/icons/icon-login.svg",
+                )}
                 alt={isAuthenticated ? "Logout Icon" : "Login Icon"}
                 onClick={logout}
               />

@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import styles from "../../assets/scss/pages/FundDetail.module.scss";
-import EditIcon from "/edit-icon.svg";
-import DeleteIcon from "/bin-icon.svg";
 import EditFund from "../modals/EditFund";
 import { useAuth } from "../../contexts/AuthContext";
 import TabbedFundNavigation from "../ui/layout/navigation/TabbedFundNavigation";
@@ -17,6 +15,7 @@ import Breadcrumb from "../ui/layout/BreadCrumbs";
 import { FundDetails } from "../../types/EditFundTypes";
 import { Activities, InitiativeData } from "../../types/ActivitiesTypes";
 import FundsSponsors from "../elements/tables/funds/FundsSponsors";
+import useCachedImage from "../hooks/useCachedImage";
 
 interface FundDetailProps {
   initiativeId: string;
@@ -52,6 +51,9 @@ const FundDetail: React.FC<FundDetailProps> = ({
   const [initiativeData, setInitiativeData] = useState<FundDetails | null>(
     initialData,
   );
+
+  const editIconSrc = useCachedImage("/assets/images/icons/icon-edit.svg");
+  const deleteIconSrc = useCachedImage("/assets/images/icons/icon-delete.svg");
 
   const handleTabChange = (tabName: string) => {
     setActiveTab(tabName);
@@ -176,7 +178,7 @@ const FundDetail: React.FC<FundDetailProps> = ({
               className={styles["edit-button"]}
               onClick={handleToggleEditFundModal}
             >
-              <img src={EditIcon} alt="Edit" className={styles["icon"]} />
+              <img src={editIconSrc} alt="Edit" className={styles["icon"]} />
               <span>Beheer initiatief</span>
             </button>
           )}
@@ -185,7 +187,11 @@ const FundDetail: React.FC<FundDetailProps> = ({
               className={styles["edit-button"]}
               onClick={handleToggleDeleteFundModal}
             >
-              <img src={DeleteIcon} alt="Delete" className={styles["icon"]} />
+              <img
+                src={deleteIconSrc}
+                alt="Delete"
+                className={styles["icon"]}
+              />
               <span>Verwijder initiatief</span>
             </button>
           )}
