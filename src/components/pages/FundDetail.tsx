@@ -14,7 +14,7 @@ import FundsUsers from "../elements/tables/funds/FundsUsers";
 import DeleteFund from "../modals/DeleteFund";
 import LoadingDot from "../animation/LoadingDot";
 import Breadcrumb from "../ui/layout/BreadCrumbs";
-import { FundDetails, InitiativeOwner } from "../../types/EditFundTypes";
+import { FundDetails } from "../../types/EditFundTypes";
 import { Activities } from "../../types/ActivitiesTypes";
 import FundsSponsors from "../elements/tables/funds/FundsSponsors";
 

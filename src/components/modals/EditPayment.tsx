@@ -12,6 +12,7 @@ import {
 } from "../middleware/Api";
 import CloseIson from "/close-icon.svg";
 import PaymentMediaPreview from "./PaymentMediaPreview";
+import { useFieldPermissions } from "../../contexts/FieldPermissionContext";
 
 interface Attachment {
   attachment_id: number;
@@ -62,7 +63,6 @@ const EditPayment: React.FC<EditPaymentProps> = ({
   paymentId,
   paymentData,
   token,
-  fieldPermissions,
   hasDeletePermission,
   initiativeId,
   activityName,
@@ -72,6 +72,7 @@ const EditPayment: React.FC<EditPaymentProps> = ({
   const [displayDate, setDisplayDate] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [apiDate, setApiDate] = useState("");
+  const { fieldPermissions, fetchFieldPermissions } = useFieldPermissions();
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [attachments, setAttachments] = useState<Attachment[]>([]);
@@ -161,6 +162,12 @@ const EditPayment: React.FC<EditPaymentProps> = ({
       setApiDate(paymentData.booking_date);
     }
   }, [paymentData]);
+
+  useEffect(() => {
+    if (isOpen && paymentId !== null && token) {
+      fetchFieldPermissions("Payment", paymentId, token);
+    }
+  }, [isOpen, paymentId, token, fetchFieldPermissions]);
 
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newDate = e.target.value;

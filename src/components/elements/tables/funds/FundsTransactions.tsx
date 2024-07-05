@@ -6,8 +6,7 @@ import ViewIcon from "/eye.svg";
 import { useNavigate } from "react-router-dom";
 import EditPayment from "../../../modals/EditPayment";
 import AddPayment from "../../../modals/AddPayment";
-import { usePermissions } from "../../../../contexts/PermissionContext";
-import { useFieldPermissions } from "../../../../contexts/FieldPermissionContext";
+import { useFetchEntityPermissions } from "../../../hooks/useFetchPermissions";
 import { useAuth } from "../../../../contexts/AuthContext";
 import LoadingDot from "../../../animation/LoadingDot";
 import LoadingCircle from "../../../animation/LoadingCircle";
@@ -55,7 +54,7 @@ const FundsTransactions: React.FC<{
   hasCreatePaymentPermission,
 }) => {
   const { user } = useAuth();
-  const { fetchPermissions } = usePermissions();
+  const { permissions, fetchPermissions } = useFetchEntityPermissions();
   const navigate = useNavigate();
   const [selectedTransactionId, setSelectedTransactionId] = useState<
     number | null
@@ -67,7 +66,6 @@ const FundsTransactions: React.FC<{
   const [isFilterPaymentModalOpen, setIsFilterPaymentModalOpen] =
     useState(false);
   const [isEditPaymentModalOpen, setIsEditPaymentModalOpen] = useState(false);
-  const { fetchFieldPermissions } = useFieldPermissions();
   const [currentPage, setCurrentPage] = useState(1);
   const [entityPermissions, setEntityPermissions] = useState<string[]>([]);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -213,12 +211,22 @@ const FundsTransactions: React.FC<{
 
     try {
       const userToken = user && user.token ? user.token : authToken;
+      const entityClass = "Payment";
+      console.log("Fetching permissions with token:", userToken);
+      console.log(
+        "Fetching permissions for entityClass:",
+        entityClass,
+        "and transactionId:",
+        transactionId,
+      );
 
       const userPermissions: string[] | undefined = await fetchPermissions(
-        "Payment",
+        entityClass,
         transactionId,
         userToken,
       );
+
+      console.log("Fetched user permissions:", userPermissions);
 
       const hasEditPermission =
         userPermissions && userPermissions.includes("edit");
@@ -231,6 +239,15 @@ const FundsTransactions: React.FC<{
       const hasDeletePermission =
         userPermissions && userPermissions.includes("delete");
       setHasDeletePermission(hasDeletePermission);
+
+      console.log(
+        "Permissions set - Edit:",
+        hasEditPermission,
+        "Read:",
+        hasReadPermission,
+        "Delete:",
+        hasDeletePermission,
+      );
 
       setPermissionsFetchedForTransaction(transactionId);
 
@@ -370,7 +387,6 @@ const FundsTransactions: React.FC<{
 
   return (
     <>
-      {" "}
       <AddPayment
         isOpen={isAddPaymentModalOpen}
         onClose={handleToggleAddPaymentModal}

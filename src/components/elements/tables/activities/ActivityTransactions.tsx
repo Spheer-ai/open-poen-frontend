@@ -6,11 +6,10 @@ import ViewIcon from "/eye.svg";
 import { useNavigate } from "react-router-dom";
 import EditPayment from "../../../modals/EditPayment";
 import AddPayment from "../../../modals/AddPayment";
-import { usePermissions } from "../../../../contexts/PermissionContext";
+import { useFetchEntityPermissions } from "../../../hooks/useFetchPermissions";
 import { useAuth } from "../../../../contexts/AuthContext";
 import LoadingDot from "../../../animation/LoadingDot";
 import LoadingCircle from "../../../animation/LoadingCircle";
-import { useFieldPermissions } from "../../../../contexts/FieldPermissionContext";
 import FilterPayment from "../../../modals/FilterPayment";
 
 export interface Transaction {
@@ -59,7 +58,7 @@ const ActivityTransactions: React.FC<{
   hasCreatePaymentPermission,
 }) => {
   const { user } = useAuth();
-  const { fetchPermissions } = usePermissions();
+  const { permissions, fetchPermissions } = useFetchEntityPermissions();
   const [hasEditPermission, setHasEditPermission] = useState<
     boolean | undefined
   >(false);
@@ -77,7 +76,6 @@ const ActivityTransactions: React.FC<{
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [isBlockingInteraction, setIsBlockingInteraction] = useState(false);
   const [isLoadingPermissions, setIsLoadingPermissions] = useState(false);
-  const { fetchFieldPermissions } = useFieldPermissions();
   const [
     permissionsFetchedForTransaction,
     setPermissionsFetchedForTransaction,

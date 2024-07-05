@@ -23,6 +23,11 @@ const FieldPermissionProvider: React.FC<FieldPermissionProviderProps> = ({
       entityId: number,
       token: string,
     ): Promise<FieldPermissions | undefined> => {
+      console.log("fetchPermissions called with:", {
+        entityClass,
+        entityId,
+        token,
+      });
       try {
         console.log(
           `Fetching field permissions for ${entityClass} with ID ${entityId}`,

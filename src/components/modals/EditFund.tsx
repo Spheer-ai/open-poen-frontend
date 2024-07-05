@@ -19,7 +19,21 @@ const EditFund: React.FC<EditFundProps> = ({
   const [isHiddenSponsors, setIsHiddenSponsors] = useState(false);
   const [isHidden, setIsHidden] = useState(false);
   const [apiError, setApiError] = useState("");
-  const [formData, setFormData] = useState<FundDetails | null>(null);
+  const [formData, setFormData] = useState<FundDetails>({
+    grant: fundData?.grant || {},
+    id: fundData?.id,
+    name: fundData?.name || "",
+    description: fundData?.description || "",
+    budget: fundData?.budget,
+    income: fundData?.income,
+    expenses: fundData?.expenses,
+    purpose: fundData?.purpose,
+    target_audience: fundData?.target_audience,
+    kvk_registration: fundData?.kvk_registration,
+    location: fundData?.location,
+    profile_picture: fundData?.profile_picture,
+    initiative_owners: fundData?.initiative_owners,
+  });
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [charCount, setCharCount] = useState(0);
   const [purposeCount, setPurposeCount] = useState(0);
@@ -52,7 +66,22 @@ const EditFund: React.FC<EditFundProps> = ({
 
   useEffect(() => {
     if (isOpen && fundData) {
-      setFormData(fundData);
+      setFormData({
+        ...formData,
+        grant: fundData.grant || {},
+        id: fundData.id,
+        name: fundData.name || "",
+        description: fundData.description || "",
+        budget: fundData.budget,
+        income: fundData.income,
+        expenses: fundData.expenses,
+        purpose: fundData.purpose,
+        target_audience: fundData.target_audience,
+        kvk_registration: fundData.kvk_registration,
+        location: fundData.location,
+        profile_picture: fundData.profile_picture,
+        initiative_owners: fundData.initiative_owners,
+      });
       setCharCount(fundData.description ? fundData.description.length : 0);
     }
   }, [isOpen, fundData]);
@@ -267,7 +296,6 @@ const EditFund: React.FC<EditFundProps> = ({
                     ...formData,
                     target_audience: newTargetAudience,
                   });
-                  setCharCount(newTargetAudience.length);
                 }}
               />
               {isSaveClicked && targetAudienceError && (
@@ -288,7 +316,6 @@ const EditFund: React.FC<EditFundProps> = ({
                 value={formData?.kvk_registration || ""}
                 onChange={(e) => {
                   const newKvkRegistration = e.target.value;
-                  // TO DO: Validation and state update logic
                   setFormData({
                     ...formData,
                     kvk_registration: newKvkRegistration,
@@ -309,7 +336,6 @@ const EditFund: React.FC<EditFundProps> = ({
                 value={formData?.location || ""}
                 onChange={(e) => {
                   const newLocation = e.target.value;
-                  // Validation and state update logic
                   setFormData({ ...formData, location: newLocation });
                 }}
               />
