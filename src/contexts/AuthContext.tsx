@@ -8,7 +8,7 @@ import jwtDecode from "jwt-decode";
 
 interface JwtPayload {
   exp: number;
-  userId: string;
+  sub: string; // Changed from userId to sub to match the JWT standard
   username: string;
 }
 
@@ -65,13 +65,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         if (decodedToken) {
           setUser({
             token,
-            userId: Number(decodedToken.userId),
+            userId: Number(decodedToken.sub),
             username: decodedToken.username,
           });
         }
       }
     }
-    setIsTokenLoaded(true); // Markeer de token als geladen
+    setIsTokenLoaded(true);
   }, []);
 
   useEffect(() => {
@@ -113,7 +113,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       if (decodedToken) {
         setUser({
           token,
-          userId: Number(decodedToken.userId),
+          userId: Number(decodedToken.sub),
           username: decodedToken.username,
         });
 

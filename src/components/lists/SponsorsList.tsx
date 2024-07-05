@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import styles from "../../assets/scss/Sponsors.module.scss";
-import { usePermissions } from "../../contexts/PermissionContext";
+import { useFetchEntityPermissions } from "../hooks/useFetchPermissions";
 import { fetchSponsors, getFunderById } from "../middleware/Api";
 import { useAuth } from "../../contexts/AuthContext";
 import SponsorDropdown from "../elements/dropdown-menu/SponsorDropDown";
@@ -25,7 +25,7 @@ const SponsorList = () => {
   const [isBlockingInteraction, setIsBlockingInteraction] = useState(false);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [activeSponsorId] = useState<string | null>(null);
-  const { fetchPermissions } = usePermissions();
+  const { permissions, fetchPermissions } = useFetchEntityPermissions();
   const [permissionsFetched, setPermissionsFetched] = useState(false);
   const [entityPermissions, setEntityPermissions] = useState<string[]>([]);
   const hasPermission = entityPermissions.includes("create");

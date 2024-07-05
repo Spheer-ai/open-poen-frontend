@@ -6,7 +6,7 @@ import { fetchFunderRegulations, getFunderById } from "../middleware/Api";
 import { useAuth } from "../../contexts/AuthContext";
 import RegulationDetail from "../pages/RegulationDetail";
 import AddRegulationDesktop from "../modals/AddRegulationDesktop";
-import { usePermissions } from "../../contexts/PermissionContext";
+import { useFetchEntityPermissions } from "../hooks/useFetchPermissions";
 import LoadingDot from "../animation/LoadingDot";
 
 type Regulation = {
@@ -28,7 +28,7 @@ const RegulationList = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isBlockingInteraction, setIsBlockingInteraction] = useState(false);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
-  const { fetchPermissions } = usePermissions();
+  const { permissions, fetchPermissions } = useFetchEntityPermissions();
   const [permissionsFetched, setPermissionsFetched] = useState(false);
   const [entityPermissions, setEntityPermissions] = useState<string[]>([]);
   const hasPermission = entityPermissions.includes("create");

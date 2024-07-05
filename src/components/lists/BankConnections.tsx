@@ -34,8 +34,7 @@ const BankConnections = () => {
   const { user } = useAuth();
   const userId = user?.userId ? user.userId.toString() : null;
   const token = user?.token ? user.token.toString() : null;
-  const userIdAsNumber = user?.userId || 0;
-  const userIdAsString = userIdAsNumber.toString();
+
   const [modalTitle, setModalTitle] = useState("Bank account toevoegen");
   const [ownedBankConnections, setOwnedBankConnections] = useState<
     BankConnection[]
@@ -66,17 +65,19 @@ const BankConnections = () => {
   };
 
   useEffect(() => {
+    console.log("User or token changed", { user, token });
     const fetchData = async () => {
-      if (user && user.userId && user.token) {
+      if (userId && token) {
         try {
-          const data = await fetchBankConnections(user.userId, user.token);
+          console.log("Fetching bank connections");
+          const data = await fetchBankConnections(userId, token);
+          console.log("Fetched bank connections data:", data);
           const ownedAccounts = data.ownedBankAccounts || [];
           const usedAccounts = data.usedBankAccounts || [];
 
           const filteredOwnedAccounts = ownedAccounts.filter(
             (account) => !account.is_revoked,
           );
-
           const filteredUsedAccounts = usedAccounts.filter(
             (account) => !account.is_revoked,
           );
@@ -88,11 +89,13 @@ const BankConnections = () => {
         } catch (error) {
           console.error("Error fetching bank connections:", error);
         }
+      } else {
+        console.log("User or token is missing");
       }
     };
 
     fetchData();
-  }, [user, refreshTrigger]);
+  }, [userId, token, refreshTrigger]);
 
   useEffect(() => {
     if (location.pathname === "/transactions/bankconnections/add-bank") {
@@ -177,9 +180,7 @@ const BankConnections = () => {
                       <li
                         key={`${connection.id}-${index}`}
                         className={`${styles["bank-item"]} ${styles["row-fade-in"]}`}
-                        style={{
-                          animationDelay: `${index * 0.1}s`,
-                        }}
+                        style={{ animationDelay: `${index * 0.1}s` }}
                       >
                         <div className={styles["bank-details"]}>
                           {connection.institution_logo !== null ? (
@@ -253,7 +254,6 @@ const BankConnections = () => {
                           >
                             Personen uitnodigen
                           </button>
-
                           <button
                             onClick={() =>
                               handleToggleRevokeBankModal(connection.id)
@@ -328,20 +328,22 @@ const BankConnections = () => {
                 </ul>
               </section>
 
-              <InviteBankUsersModal
-                isOpen={isInviteBankUsersModalOpen}
-                onClose={() => handleToggleInviteBankUsersModal(null)}
-                isBlockingInteraction={isBlockingInteraction}
-                bankAccountId={selectedBankId}
-                userId={userId as any}
-                token={token || ""}
-              />
+              {userId && (
+                <InviteBankUsersModal
+                  isOpen={isInviteBankUsersModalOpen}
+                  onClose={() => handleToggleInviteBankUsersModal(null)}
+                  isBlockingInteraction={isBlockingInteraction}
+                  bankAccountId={selectedBankId}
+                  userId={parseInt(userId)} // Ensure userId is a number
+                  token={token || ""}
+                />
+              )}
               <DeleteBankAccountModal
                 isOpen={isRevokeBankModalOpen}
                 onClose={() => handleToggleRevokeBankModal}
                 isBlockingInteraction={isBlockingInteraction}
-                userId={userId as any}
-                token={token ? token.toString() : ""}
+                userId={userId}
+                token={token || ""}
                 bankAccountId={selectedBankId}
                 onBankRevoked={handleBankRevoked}
               />

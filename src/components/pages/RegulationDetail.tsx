@@ -12,21 +12,12 @@ import AddOfficerDesktop from "../modals/AddOfficerDesktop";
 import { Officer } from "../../types/AddOfficerType";
 import Breadcrumb from "../ui/layout/BreadCrumbs";
 import AddEmployeeToRegulation from "../modals/AddEmployeeToRegulation";
-import { usePermissions } from "../../contexts/PermissionContext";
+import { useFetchEntityPermissions } from "../hooks/useFetchPermissions";
 import GrantList from "../lists/GrantList";
 import DeleteGrant from "../modals/DeleteGrant";
 import DeleteRegulation from "../modals/DeleteRegulation";
 import AddFundDesktop from "../modals/AddFundDesktop";
-
-type Grant = {
-  id: number;
-  name: string;
-  reference: string;
-  budget: number;
-  income: number;
-  expenses: number;
-  permissions: string[];
-};
+import { Grant } from "../../types/GranListType";
 
 type RegulationDetailType = {
   name: string;
@@ -75,7 +66,7 @@ const RegulationDetail: React.FC<RegulationDetailProps> = ({
   const [selectedGrantId, setSelectedGrantId] = useState<number | null>(null);
   const [availableOfficers, setAvailableOfficers] = useState<Officer[]>([]);
   const token = user?.token;
-  const { fetchPermissions } = usePermissions();
+  const { permissions, fetchPermissions } = useFetchEntityPermissions();
   const [hasEditPermission, setHasEditPermission] = useState(false);
   const [hasDeletePermission, setHasDeletePermission] = useState(false);
   const [hasCreateGrantPermission, setHasCreateGrantPermission] =
