@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import styles from "../../../assets/scss/Contacts.module.scss";
-import ProfileIcon from "../../../assets/profile-icon.svg";
 import { Link, useNavigate } from "react-router-dom";
 import jwtDecode from "jwt-decode";
 import { getUserById } from "../../middleware/Api";
+import useCachedImages from "../../utils/images";
 
 interface DecodedToken {
   sub: string;
@@ -33,6 +33,7 @@ const MyProfile: React.FC<MyProfileProps> = ({
   const [myProfileData, setMyProfileData] = useState<UserProfile | null>(null);
   const [userItemId, setUserItemId] = useState<string | null>(null);
   const navigate = useNavigate();
+  const images = useCachedImages();
 
   useEffect(() => {
     if (user && user.token) {
@@ -96,7 +97,7 @@ const MyProfile: React.FC<MyProfileProps> = ({
             )}
             {!myProfileData.profile_picture && (
               <img
-                src="../../../profile-placeholder.png"
+                src={images.placeholderProfile}
                 alt="Profile"
                 className={styles["profile-image"]}
               />
@@ -112,7 +113,7 @@ const MyProfile: React.FC<MyProfileProps> = ({
             </div>
             <div>
               <img
-                src={ProfileIcon}
+                src={images.profile}
                 alt="Profile Icon"
                 className={styles["profile-icon"]}
               />

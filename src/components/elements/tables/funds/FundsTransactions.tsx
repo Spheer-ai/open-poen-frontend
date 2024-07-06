@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useState, useCallback } from "react";
 import { getPaymentsByInitiative } from "../../../middleware/Api";
 import styles from "../../../../assets/scss/TransactionOverview.module.scss";
 import PaymentDetails from "../../../modals/PaymentDetails";
-import ViewIcon from "/eye.svg";
 import { useNavigate } from "react-router-dom";
 import EditPayment from "../../../modals/EditPayment";
 import AddPayment from "../../../modals/AddPayment";
@@ -11,6 +10,7 @@ import { useAuth } from "../../../../contexts/AuthContext";
 import LoadingDot from "../../../animation/LoadingDot";
 import LoadingCircle from "../../../animation/LoadingCircle";
 import FilterPayment from "../../../modals/FilterPayment";
+import useCachedImages from "../../../utils/images";
 
 export interface Transaction {
   id: number;
@@ -67,6 +67,8 @@ const FundsTransactions: React.FC<{
   const [isFilterPaymentModalOpen, setIsFilterPaymentModalOpen] =
     useState(false);
   const [isEditPaymentModalOpen, setIsEditPaymentModalOpen] = useState(false);
+  const images = useCachedImages();
+
   const [currentPage, setCurrentPage] = useState(1);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loadingMore, setLoadingMore] = useState(true);
@@ -502,7 +504,7 @@ const FundsTransactions: React.FC<{
                     <LoadingCircle />
                   ) : (
                     <img
-                      src={ViewIcon}
+                      src={images.view}
                       alt="Eye Icon"
                       onClick={() => handleEyeIconClick(transaction.id)}
                       style={{ cursor: "pointer" }}

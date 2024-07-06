@@ -6,6 +6,7 @@ import LinkActivityOwners from "../../../modals/LinkActivityOwners";
 import { ActivityOwner } from "../../../../types/ActivityOwners";
 import LoadingDot from "../../../animation/LoadingDot";
 import { fetchActivityDetails } from "../../../middleware/Api";
+import useCachedImages from "../../../utils/images";
 
 const ActivityUsers: React.FC<{
   activityOwners: ActivityOwner[];
@@ -20,6 +21,7 @@ const ActivityUsers: React.FC<{
     useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [owners, setOwners] = useState<ActivityOwner[]>(initialOwners);
+  const images = useCachedImages();
 
   useEffect(() => {
     const fetchOwners = async () => {
@@ -80,7 +82,7 @@ const ActivityUsers: React.FC<{
           onClick={handleToggleLinkActivityOwnerModal}
         >
           <img
-            src="../../../../link-owner.svg"
+            src={images.linkOwner}
             alt="Link owner"
             className={styles["link-owner"]}
           />
@@ -119,13 +121,12 @@ const ActivityUsers: React.FC<{
                             `Failed to load image for ${owner.email}`,
                             e,
                           );
-                          e.currentTarget.src =
-                            "../../../../profile-placeholder.png";
+                          e.currentTarget.src = `${images.placeholderProfile}`;
                         }}
                       />
                     ) : (
                       <img
-                        src="../../../../profile-placeholder.png"
+                        src={images.placeholderProfile}
                         alt="Profile"
                         className={styles["profile-image"]}
                       />

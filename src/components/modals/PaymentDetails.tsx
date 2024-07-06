@@ -3,7 +3,7 @@ import styles from "../../assets/scss/layout/AddFundDesktop.module.scss";
 import { fetchPaymentDetails } from "../middleware/Api";
 import format from "date-fns/format";
 import nlLocale from "date-fns/locale/nl";
-import CloseIson from "/close-icon.svg";
+import useCachedImages from "../utils/images";
 
 export interface Transaction {
   id: number;
@@ -38,6 +38,7 @@ const FetchPayment: React.FC<FetchPaymentProps> = ({
 }) => {
   const [modalIsOpen, setModalIsOpen] = useState(isOpen);
   const [paymentData, setPaymentData] = useState<Transaction>();
+  const images = useCachedImages();
 
   useEffect(() => {
     if (isOpen) {
@@ -78,7 +79,7 @@ const FetchPayment: React.FC<FetchPaymentProps> = ({
         <div className={styles.formTop}>
           <h2 className={styles.title}>Transactie details</h2>
           <button onClick={handleClose} className={styles.closeBtn}>
-            <img src={CloseIson} alt="" />
+            <img src={images.close} alt="Close Icon" />
           </button>
         </div>
         <hr></hr>

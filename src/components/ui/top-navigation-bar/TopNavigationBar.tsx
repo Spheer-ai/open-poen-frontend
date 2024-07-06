@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import styles from "../../../assets/scss/TopNavigationBar.module.scss";
 import Search from "../../elements/search/Search";
 import { TopNavigationBarProps } from "../../../types/TopNavigationBarType";
-import useCachedImage from "../../hooks/useCachedImage";
+import useCachedImages from "../../utils/images";
 
 const TopNavigationBar: React.FC<TopNavigationBarProps> = ({
   title,
@@ -22,6 +22,7 @@ const TopNavigationBar: React.FC<TopNavigationBarProps> = ({
   showTitleOnSmallScreen = true,
 }) => {
   const hasBackArrow = Boolean(onBackArrowClick);
+  const images = useCachedImages(["logoMobile", "return", "home", "search"]);
   const handleTitleClick = () => {
     if (onTitleClick && typeof onTitleClick === "function") {
       onTitleClick();
@@ -41,16 +42,6 @@ const TopNavigationBar: React.FC<TopNavigationBarProps> = ({
     };
   }, []);
 
-  const homeLogoSrc = useCachedImage(
-    "/assets/images/logos/logo-openpoenmobile.svg",
-  );
-  const backArrowSrc = useCachedImage("/assets/images/icons/icon-return.svg");
-  const settingsIconSrc = useCachedImage(
-    "/assets/images/icons/icon-setting.svg",
-  );
-
-  console.log("Back Arrow Source:", backArrowSrc);
-
   return (
     <div className={styles["top-navigation-bar"]}>
       {windowWidth <= 768 && (
@@ -60,7 +51,7 @@ const TopNavigationBar: React.FC<TopNavigationBarProps> = ({
               <Link to="/funds">
                 <img
                   className={styles["logo"]}
-                  src={homeLogoSrc}
+                  src={images.logoMobile}
                   alt="Home Logo"
                 />
               </Link>
@@ -68,7 +59,7 @@ const TopNavigationBar: React.FC<TopNavigationBarProps> = ({
             <div className={styles["back-arrow-section"]}>
               {onBackArrowClick && (
                 <button onClick={onBackArrowClick} className={styles.backArrow}>
-                  <img src={backArrowSrc} alt="Terug" />
+                  <img src={images.return} alt="Terug" />
                 </button>
               )}
               {showTitleOnSmallScreen && (
@@ -101,7 +92,7 @@ const TopNavigationBar: React.FC<TopNavigationBarProps> = ({
         <div className={styles["bar-items"]}>
           {onBackArrowClick && (
             <button onClick={onBackArrowClick} className={styles.backArrow}>
-              <img src={backArrowSrc} alt="Terug" />
+              <img src={images.return} alt="Terug" />
             </button>
           )}
           <div
@@ -123,7 +114,7 @@ const TopNavigationBar: React.FC<TopNavigationBarProps> = ({
                 className={styles["settings-icon"]}
                 onClick={onSettingsClick}
               >
-                <img src={settingsIconSrc} alt="Profile Settings" />
+                <img src={images.settings} alt="Profile Settings" />
               </div>
             )}
             {showCta && hasPermission && (

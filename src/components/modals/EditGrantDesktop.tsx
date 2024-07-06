@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import styles from "../../assets/scss/layout/AddFundDesktop.module.scss";
 import { editGrant } from "../middleware/Api";
-import CloseIson from "/close-icon.svg";
+import useCachedImages from "../utils/images";
 
 type Grant = {
   name: string;
@@ -52,6 +52,7 @@ const EditGrantDesktop: React.FC<EditGrantDesktopProps> = ({
   const [apiError, setApiError] = useState<string | null>(null);
   const [referenceError, setReferenceError] = useState<string | null>(null);
   const [budgetError, setBudgetError] = useState<string | null>(null);
+  const images = useCachedImages();
 
   useEffect(() => {
     if (isOpen) {
@@ -166,7 +167,7 @@ const EditGrantDesktop: React.FC<EditGrantDesktopProps> = ({
         <div className={styles.formTop}>
           <h2 className={styles.title}>Beschikking bewerken</h2>
           <button onClick={handleClose} className={styles.closeBtn}>
-            <img src={CloseIson} alt="" />
+            <img src={images.close} alt="Close Icon" />
           </button>
         </div>
         <hr></hr>

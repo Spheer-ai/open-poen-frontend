@@ -2,9 +2,9 @@ import React, { useEffect, useState } from "react";
 import styles from "../../assets/scss/layout/AddFundDesktop.module.scss";
 import FundImageUploader from "../elements/uploadder/FundImageUploader";
 import { editFund, uploadFundPicture } from "../middleware/Api";
-import CloseIson from "/close-icon.svg";
 import { useFieldPermissions } from "../../contexts/FieldPermissionContext";
 import { EditFundProps, FundDetails } from "../../types/EditFundTypes";
+import useCachedImages from "../utils/images";
 
 const EditFund: React.FC<EditFundProps> = ({
   isOpen,
@@ -42,7 +42,7 @@ const EditFund: React.FC<EditFundProps> = ({
   const [descriptionError, setDescriptionError] = useState("");
   const [purposeError, setPurposeError] = useState("");
   const [targetAudienceError, setTargetAudienceError] = useState("");
-
+  const images = useCachedImages();
   const { fieldPermissions, fetchFieldPermissions } = useFieldPermissions();
 
   useEffect(() => {
@@ -170,7 +170,7 @@ const EditFund: React.FC<EditFundProps> = ({
         <div className={styles.formTop}>
           <h2 className={styles.title}>Beheer initiatief</h2>
           <button onClick={handleClose} className={styles.closeBtn}>
-            <img src={CloseIson} alt="" />
+            <img src={images.close} alt="Close Icon" />
           </button>
         </div>
         <hr></hr>

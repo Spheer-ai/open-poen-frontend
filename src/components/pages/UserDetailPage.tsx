@@ -3,20 +3,16 @@ import { useParams, useNavigate } from "react-router-dom";
 import jwtDecode from "jwt-decode";
 import { useAuth } from "../../contexts/AuthContext";
 import UserDetails from "../../types/UserTypes";
-import ProfilePlaceholder from "/profile-placeholder.png";
 import styles from "../../assets/scss/UserDetailPage.module.scss";
 import LoadingDot from "../animation/LoadingDot";
 import ChangePasswordForm from "../modals/ChangePassword";
 import EditUserProfileForm from "../modals/EditUserProfile";
-import EditIcon from "/edit-icon.svg";
-import DeleteIcon from "/bin-icon.svg";
-import SettingsIcon from "/setting-icon.svg";
-import ChangePasswordIcon from "/change-password-icon.svg";
 import { fetchUserDetails } from "../middleware/Api";
 import { useFetchEntityPermissions } from "../hooks/useFetchPermissions";
 import { useFieldPermissions } from "../../contexts/FieldPermissionContext";
 import EditUserForm from "../modals/EditUser";
 import DeleteUser from "../modals/DeleteUser";
+import useCachedImages from "../utils/images";
 
 const roleLabels = {
   administrator: "Beheerder",
@@ -69,6 +65,7 @@ export default function UserDetailsPage({
   const [hasDeletePermission, setHasDeletePermission] = useState(false);
   const [initiativeId, setInitiativeId] = useState(null);
   const [activityId, setActivityId] = useState(null);
+  const images = useCachedImages();
 
   if (initiativeId !== null) {
     navigate(`/funds/${initiativeId}/activities`);
@@ -247,7 +244,7 @@ export default function UserDetailsPage({
               className={styles["top-right-button"]}
               onClick={handleToggleEditUserProfileModal}
             >
-              <img src={EditIcon} alt="Profiel" className={styles["icon"]} />
+              <img src={images.edit} alt="Profiel" className={styles["icon"]} />
               <span>Profiel</span>
             </div>
           )}
@@ -257,7 +254,7 @@ export default function UserDetailsPage({
               onClick={handleToggleEditUserModal}
             >
               <img
-                src={SettingsIcon}
+                src={images.settings}
                 alt="Instellingen"
                 className={styles["icon"]}
               />
@@ -271,7 +268,7 @@ export default function UserDetailsPage({
               onClick={handleToggleChangePasswordModal}
             >
               <img
-                src={ChangePasswordIcon}
+                src={images.changePassword}
                 alt="Change Password"
                 className={styles["icon"]}
               />
@@ -286,7 +283,7 @@ export default function UserDetailsPage({
               <img
                 alt="Delete User"
                 className={styles["icon"]}
-                src={DeleteIcon}
+                src={images.delete}
               />
               <span>Verwijderen</span>
             </div>
@@ -311,7 +308,7 @@ export default function UserDetailsPage({
                     sizes="(max-width: 768px) 128px, 256px"
                     src={
                       userDetails?.profile_picture?.attachment_url ||
-                      ProfilePlaceholder
+                      images.placeholderProfile
                     }
                     alt="Profile"
                     className={`${styles["user-image"]} ${styles["circular"]}`}

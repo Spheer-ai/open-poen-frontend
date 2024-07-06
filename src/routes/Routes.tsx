@@ -16,11 +16,13 @@ import RegulationList from "../components/lists/RegulationList";
 import SponsorList from "../components/lists/SponsorsList";
 import Activities from "../components/pages/Activities";
 import RequestPasswordRequest from "../components/pages/account-recovery/RequestPasswordReset";
+import useCachedImages from "../components/utils/images";
 
 export default function AppRoutes() {
   const navigate = useNavigate();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [, setShowLoginModal] = useState(false);
+  const images = useCachedImages();
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -38,7 +40,12 @@ export default function AppRoutes() {
   };
 
   return (
-    <div className={styles["app-container"]}>
+    <div
+      className={styles["app-container"]}
+      style={{
+        backgroundImage: `url(${images.signupBg})`,
+      }}
+    >
       <SidebarMenu />
       <div className={styles["page-content"]}>
         <Routes>

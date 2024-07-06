@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
 import styles from "../../assets/scss/layout/AddFundDesktop.module.scss";
 import { updateInitiativeOwners, searchUsersByEmail } from "../middleware/Api";
-import deleteIcon from "/delete-icon.svg";
-import CloseIcon from "/close-icon.svg";
 import { InitiativeOwner } from "../../types/EditFundTypes";
+import useCachedImages from "../utils/images";
 
 interface User {
   id: string;
@@ -35,6 +34,7 @@ const LinkFundOwner: React.FC<LinkFundOwnerProps> = ({
   const [searchedUsers, setSearchedUsers] = useState<User[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedUsers, setSelectedUsers] = useState<InitiativeOwner[]>([]);
+  const images = useCachedImages();
 
   const resetModalState = () => {
     setSelectedUsers([]);
@@ -162,7 +162,7 @@ const LinkFundOwner: React.FC<LinkFundOwnerProps> = ({
         <div className={styles.formTop}>
           <h2 className={styles.title}>Initiatiefnemer toevoegen</h2>
           <button onClick={handleClose} className={styles.closeBtn}>
-            <img src={CloseIcon} alt="" />
+            <img src={images.close} alt="Close Icon" />
           </button>
         </div>
         <hr />
@@ -203,7 +203,7 @@ const LinkFundOwner: React.FC<LinkFundOwnerProps> = ({
                   className={styles.removeButton}
                 >
                   \
-                  <img src={deleteIcon} alt="Delete" />
+                  <img src={images.deleteRed} alt="Delete" />
                 </button>
               </li>
             ))}
@@ -214,7 +214,7 @@ const LinkFundOwner: React.FC<LinkFundOwnerProps> = ({
                   onClick={() => handleRemoveUser(user.id)}
                   className={styles.removeButton}
                 >
-                  <img src={deleteIcon} alt="Delete" />
+                  <img src={images.deleteRed} alt="Delete" />
                 </button>
               </li>
             ))}

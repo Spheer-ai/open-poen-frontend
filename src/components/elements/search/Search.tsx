@@ -1,9 +1,10 @@
 import React, { useState } from "react";
-import SearchIcon from "/search-icon.svg";
 import styles from "../../../assets/scss/Search.module.scss";
+import useCachedImages from "../../utils/images";
 
 const Search = ({ onSearch }) => {
   const [query, setQuery] = useState("");
+  const images = useCachedImages();
 
   const handleInputChange = (e) => {
     const value = e.target.value;
@@ -14,7 +15,7 @@ const Search = ({ onSearch }) => {
   return (
     <div className={styles["search-bar"]}>
       <div className={styles["search-icon"]}>
-        <img src={SearchIcon} alt="Search Icon" />
+        <img src={images.search} alt="Search Icon" />
       </div>
 
       <input

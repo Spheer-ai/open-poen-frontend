@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "../../assets/scss/layout/AddFundDesktop.module.scss";
 import { deleteActivity } from "../middleware/Api";
-import CloseIson from "/close-icon.svg";
+import useCachedImages from "../utils/images";
 
 interface DeleteActivityProps {
   isOpen: boolean;
@@ -26,6 +26,7 @@ const DeleteActivity: React.FC<DeleteActivityProps> = ({
   const [modalIsOpen, setModalIsOpen] = useState(isOpen);
   const [apiError, setApiError] = useState("");
   const navigate = useNavigate();
+  const images = useCachedImages();
 
   useEffect(() => {
     if (isOpen) {
@@ -82,7 +83,7 @@ const DeleteActivity: React.FC<DeleteActivityProps> = ({
             onClick={() => handleClose(false)}
             className={styles.closeBtn}
           >
-            <img src={CloseIson} alt="Close" />
+            <img src={images.close} alt="Close Icon" />
           </button>
         </div>
         <hr></hr>

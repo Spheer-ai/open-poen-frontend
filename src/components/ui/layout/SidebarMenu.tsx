@@ -2,12 +2,13 @@ import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import styles from "../../../assets/scss/SidebarMenu.module.scss";
 import { useAuth } from "../../../contexts/AuthContext";
-import useCachedImage from "../../hooks/useCachedImage";
+import useCachedImages from "../../utils/images"; // Adjust the path as needed
 
 const SidebarMenu = () => {
   const location = useLocation();
   const { user, logout } = useAuth();
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+  const images = useCachedImages();
 
   useEffect(() => {
     const handleResize = () => {
@@ -28,12 +29,12 @@ const SidebarMenu = () => {
   const linkData = [
     {
       name: "Funds",
-      icon: useCachedImage("/assets/images/icons/icon-funds.svg"),
+      icon: images.funds,
       tooltip: "Initiatieven",
     },
     {
       name: "Contacts",
-      icon: useCachedImage("/assets/images/icons/icon-users.svg"),
+      icon: images.users,
       tooltip: "Gebruikers",
     },
   ];
@@ -41,12 +42,12 @@ const SidebarMenu = () => {
   const authenticatedLinks = [
     {
       name: "Transactions",
-      icon: useCachedImage("/assets/images/icons/icon-transactions.svg"),
+      icon: images.transactions,
       tooltip: "Transacties",
     },
     {
       name: "Sponsors",
-      icon: useCachedImage("/assets/images/icons/icon-sponsors.svg"),
+      icon: images.sponsors,
       tooltip: "Sponsors",
     },
   ];
@@ -86,9 +87,7 @@ const SidebarMenu = () => {
                 <Link to="/transactions">
                   <img
                     className={styles["sidebar-icon"]}
-                    src={useCachedImage(
-                      "/assets/images/icons/icon-transactions.svg",
-                    )}
+                    src={images.transactions}
                     alt="Transactions Icon"
                   />
                   <span className={styles["tooltip-text"]}>Transacties</span>
@@ -100,9 +99,7 @@ const SidebarMenu = () => {
                 <Link to="/sponsors">
                   <img
                     className={styles["sidebar-icon"]}
-                    src={useCachedImage(
-                      "/assets/images/icons/icon-sponsors.svg",
-                    )}
+                    src={images.sponsors}
                     alt="Sponsors Icon"
                   />
                   <span className={styles["tooltip-text"]}>Sponsors</span>
@@ -113,11 +110,7 @@ const SidebarMenu = () => {
               <Link to={isAuthenticated ? "/" : "/login"}>
                 <img
                   className={styles["hamburger-icon"]}
-                  src={useCachedImage(
-                    isAuthenticated
-                      ? "/assets/images/icons/icon-logout.svg"
-                      : "/assets/images/icons/icon-login.svg",
-                  )}
+                  src={isAuthenticated ? images.login : images.logout}
                   alt={isAuthenticated ? "Logout Icon" : "Login Icon"}
                   onClick={logout}
                 />
@@ -136,7 +129,7 @@ const SidebarMenu = () => {
             <Link to="/funds">
               <img
                 className={styles["logo"]}
-                src={useCachedImage("/assets/images/logos/logo-openpoen.svg")}
+                src={images.logoMain}
                 alt="Home Logo"
               />
             </Link>
@@ -188,11 +181,7 @@ const SidebarMenu = () => {
             <Link to={isAuthenticated ? "/" : "/login"}>
               <img
                 className={styles["hamburger-icon"]}
-                src={useCachedImage(
-                  isAuthenticated
-                    ? "/assets/images/icons/icon-logout.svg"
-                    : "/assets/images/icons/icon-login.svg",
-                )}
+                src={isAuthenticated ? images.login : images.logout}
                 alt={isAuthenticated ? "Logout Icon" : "Login Icon"}
                 onClick={logout}
               />

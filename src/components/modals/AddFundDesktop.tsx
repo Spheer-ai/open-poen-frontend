@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import styles from "../../assets/scss/layout/AddFundDesktop.module.scss";
 import LoadingDot from "../animation/LoadingDot";
-import CloseIson from "/close-icon.svg";
+import useCachedImage from "../hooks/useCachedImage";
 import { addFund, fetchGrantDetails } from "../middleware/Api";
+import useCachedImages from "../utils/images";
 
 const initialFormData = {
   name: "",
@@ -39,6 +40,7 @@ const AddFundDesktop: React.FC<AddFundDesktopProps> = ({
   grantId,
 }) => {
   const [modalIsOpen, setModalIsOpen] = useState(isOpen);
+  const images = useCachedImages();
   const [grantDetails, setGrantDetails] = useState(null);
   const [fundData, setFundData] = useState(initialFormData);
   const [isLoading, setIsLoading] = useState(false);
@@ -50,6 +52,7 @@ const AddFundDesktop: React.FC<AddFundDesktopProps> = ({
     target_audience: "",
     budget: "",
   });
+  const closeIconSrc = useCachedImage("/assets/images/icons/icon-close.svg");
 
   useEffect(() => {
     const fetchDetails = async () => {
@@ -291,7 +294,7 @@ const AddFundDesktop: React.FC<AddFundDesktopProps> = ({
             <div className={styles.formTop}>
               <h2 className={styles.title}>Initiatief toevoegen</h2>
               <button onClick={handleClose} className={styles.closeBtn}>
-                <img src={CloseIson} alt="" />
+                <img src={images.close} alt="Close Icon" />
               </button>
             </div>
             <hr></hr>

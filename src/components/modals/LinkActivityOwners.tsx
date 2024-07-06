@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
 import styles from "../../assets/scss/layout/AddFundDesktop.module.scss";
 import { updateActivityOwners, searchUsersByEmail } from "../middleware/Api";
-import deleteIcon from "/delete-icon.svg";
-import CloseIson from "/close-icon.svg";
 import { ActivityOwner } from "../../types/ActivityOwners";
+import useCachedImages from "../utils/images";
 
 interface User {
   id: string;
@@ -37,6 +36,7 @@ const LinkActivityOwner: React.FC<LinkActivityOwnerProps> = ({
   const [searchedUsers, setSearchedUsers] = useState<User[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedUsers, setSelectedUsers] = useState<ActivityOwner[]>([]);
+  const images = useCachedImages();
 
   const resetModalState = () => {
     setSelectedUsers([]);
@@ -172,7 +172,7 @@ const LinkActivityOwner: React.FC<LinkActivityOwnerProps> = ({
         <div className={styles.formTop}>
           <h2 className={styles.title}>Activiteitnemers toevoegen</h2>
           <button onClick={handleClose} className={styles.closeBtn}>
-            <img src={CloseIson} alt="" />
+            <img src={images.close} alt="Close Icon" />
           </button>
         </div>
         <hr></hr>
@@ -212,7 +212,7 @@ const LinkActivityOwner: React.FC<LinkActivityOwnerProps> = ({
                   onClick={() => handleRemoveUser(owner.id)}
                   className={styles.removeButton}
                 >
-                  <img src={deleteIcon} alt="Delete" />
+                  <img src={images.deleteRed} alt="Delete" />
                 </button>
               </li>
             ))}
@@ -223,7 +223,7 @@ const LinkActivityOwner: React.FC<LinkActivityOwnerProps> = ({
                   onClick={() => handleRemoveUser(user.id)}
                   className={styles.removeButton}
                 >
-                  <img src={deleteIcon} alt="Delete" />
+                  <img src={images.deleteRed} alt="Delete" />
                 </button>
               </li>
             ))}

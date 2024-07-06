@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styles from "../../assets/scss/layout/AddFundDesktop.module.scss";
 import { revokeBankConnection } from "../middleware/Api";
-import CloseIson from "/close-icon.svg";
+import useCachedImages from "../utils/images";
 
 interface DeleteBankAccountModalProps {
   isOpen: boolean;
@@ -23,6 +23,7 @@ const DeleteBankAccountModal: React.FC<DeleteBankAccountModalProps> = ({
   onBankRevoked,
 }) => {
   const [modalIsOpen, setModalIsOpen] = useState(isOpen);
+  const images = useCachedImages();
 
   useEffect(() => {
     if (isOpen) {
@@ -67,7 +68,7 @@ const DeleteBankAccountModal: React.FC<DeleteBankAccountModalProps> = ({
         <div className={styles.formTop}>
           <h2 className={styles.title}>Bank account verwijderen</h2>
           <button onClick={handleClose} className={styles.closeBtn}>
-            <img src={CloseIson} alt="" />
+            <img src={images.close} alt="Close Icon" />
           </button>
         </div>
         <hr></hr>

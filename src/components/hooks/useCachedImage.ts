@@ -15,6 +15,7 @@ const loadImage = (src) => {
 };
 
 const useCachedImage = (src) => {
+  console.log(`Initializing hook for: ${src}`);
   const cachedSrc = useMemo(() => loadImage(src), [src]);
   return cachedSrc;
 };

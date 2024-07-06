@@ -7,7 +7,7 @@ import {
   EditActivityProps,
   ActivityDetails,
 } from "../../types/EditActivitiesTypes";
-import CloseIson from "/close-icon.svg";
+import useCachedImages from "../utils/images";
 
 const EditActivity: React.FC<EditActivityProps> = ({
   isOpen,
@@ -20,6 +20,7 @@ const EditActivity: React.FC<EditActivityProps> = ({
   activityData,
 }) => {
   const [modalIsOpen, setModalIsOpen] = useState(isOpen);
+  const images = useCachedImages();
   const [isHidden, setIsHidden] = useState(false);
   const [apiError, setApiError] = useState("");
   const [formData, setFormData] = useState<ActivityDetails>({
@@ -144,7 +145,7 @@ const EditActivity: React.FC<EditActivityProps> = ({
         <div className={styles.formTop}>
           <h2 className={styles.title}>Beheer activiteit</h2>
           <button onClick={handleClose} className={styles.closeBtn}>
-            <img src={CloseIson} alt="Close" />
+            <img src={images.close} alt="Close Icon" />
           </button>
         </div>
         <hr />

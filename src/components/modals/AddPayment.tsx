@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import styles from "../../assets/scss/layout/AddFundDesktop.module.scss";
 import Select from "react-select";
 import { createPayment } from "../middleware/Api";
-import CloseIson from "/close-icon.svg";
+import useCachedImages from "../utils/images";
 
 interface AddPaymentProps {
   isOpen: boolean;
@@ -39,6 +39,7 @@ const AddPayment: React.FC<AddPaymentProps> = ({
   const [modalIsOpen, setModalIsOpen] = useState(isOpen);
   const [errorMessage, setErrorMessage] = useState("");
   const [paymentData, setPaymentData] = useState(initialPaymentData);
+  const images = useCachedImages();
   const routeOptions = [
     { value: "inkomen", label: "Inkomen" },
     { value: "uitgaven", label: "Uitgaven" },
@@ -120,7 +121,7 @@ const AddPayment: React.FC<AddPaymentProps> = ({
         <div className={styles.formTop}>
           <h2 className={styles.title}>Transacties aanmaken</h2>
           <button onClick={handleClose} className={styles.closeBtn}>
-            <img src={CloseIson} alt="" />
+            <img src={images.close} alt="Close Icon" />
           </button>
         </div>
         <hr></hr>

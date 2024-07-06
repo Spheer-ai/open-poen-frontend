@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styles from "../../assets/scss/layout/AddFundDesktop.module.scss";
 import { editSponsor } from "../middleware/Api";
-import CloseIson from "/close-icon.svg";
+import useCachedImages from "../utils/images";
 
 interface EditSponsorProps {
   isOpen: boolean;
@@ -30,6 +30,7 @@ const EditSponsor: React.FC<EditSponsorProps> = ({
   const [nameError, setNameError] = useState(false);
   const [urlError, setUrlError] = useState(false);
   const [maxNameLength] = useState(128);
+  const images = useCachedImages();
 
   useEffect(() => {
     if (isOpen) {
@@ -128,7 +129,7 @@ const EditSponsor: React.FC<EditSponsorProps> = ({
         <div className={styles.formTop}>
           <h2 className={styles.title}>Sponsor aanpassen</h2>
           <button onClick={handleClose} className={styles.closeBtn}>
-            <img src={CloseIson} alt="" />
+            <img src={images.close} alt="Close Icon" />
           </button>
         </div>
         <hr></hr>

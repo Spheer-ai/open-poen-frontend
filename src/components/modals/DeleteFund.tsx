@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import styles from "../../assets/scss/layout/AddFundDesktop.module.scss";
 import { useNavigate } from "react-router-dom";
 import { deleteInitiative } from "../middleware/Api";
-import CloseIcon from "/close-icon.svg";
+import useCachedImages from "../utils/images";
 
 interface DeleteFundProps {
   isOpen: boolean;
@@ -23,6 +23,7 @@ const DeleteFund: React.FC<DeleteFundProps> = ({
   const [modalIsOpen, setModalIsOpen] = useState(isOpen);
   const navigate = useNavigate();
   const [apiError, setApiError] = useState("");
+  const images = useCachedImages();
 
   useEffect(() => {
     if (isOpen) {
@@ -78,7 +79,7 @@ const DeleteFund: React.FC<DeleteFundProps> = ({
             onClick={() => handleClose(false)}
             className={styles.closeBtn}
           >
-            <img src={CloseIcon} alt="" />
+            <img src={images.close} alt="Close Icon" />
           </button>
         </div>
         <hr></hr>

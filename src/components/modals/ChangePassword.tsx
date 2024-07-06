@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useAuth } from "../../contexts/AuthContext";
 import { updateUser } from "../middleware/Api";
 import styles from "../../assets/scss/layout/AddFundDesktop.module.scss";
-import CloseIson from "/close-icon.svg";
+import useCachedImages from "../utils/images";
 
 const ChangePasswordForm = ({
   onClose,
@@ -17,6 +17,7 @@ const ChangePasswordForm = ({
   const [error, setError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [modalIsOpen, setModalIsOpen] = useState(isOpen);
+  const images = useCachedImages();
 
   useEffect(() => {
     if (isOpen) {
@@ -78,7 +79,7 @@ const ChangePasswordForm = ({
         <div className={styles.formTop}>
           <h2 className={styles.title}>Wachtwoord wijzigen</h2>
           <button onClick={handleClose} className={styles.closeBtn}>
-            <img src={CloseIson} alt="" />
+            <img src={images.close} alt="Close Icon" />
           </button>
         </div>
         <hr></hr>
@@ -102,9 +103,7 @@ const ChangePasswordForm = ({
                 onClick={togglePasswordVisibility}
               >
                 <img
-                  src={
-                    showPassword ? "/eye-open-icon.svg" : "/eye-closed-icon.svg"
-                  }
+                  src={showPassword ? images.show : images.hide}
                   alt="Toggle Password Visibility"
                   className={styles["eye-icon"]}
                 />
@@ -131,9 +130,7 @@ const ChangePasswordForm = ({
                 onClick={togglePasswordVisibility}
               >
                 <img
-                  src={
-                    showPassword ? "/eye-open-icon.svg" : "/eye-closed-icon.svg"
-                  }
+                  src={showPassword ? images.show : images.hide}
                   alt="Toggle Password Visibility"
                   className={styles["eye-icon"]}
                 />

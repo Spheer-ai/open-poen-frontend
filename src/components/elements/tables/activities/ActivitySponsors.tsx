@@ -9,6 +9,7 @@ import {
   GrantDetails,
   RegulationDetails,
 } from "../../../../types/SponsorsType";
+import useCachedImages from "../../../utils/images";
 
 interface ActivitySponsorsProps {
   grantId?: number;
@@ -35,6 +36,7 @@ const ActivitySponsors: React.FC<ActivitySponsorsProps> = ({
   const [loadingGrantDetails, setLoadingGrantDetails] = useState<boolean>(true);
   const [loadingRegulationDetails, setLoadingRegulationDetails] =
     useState<boolean>(true);
+  const images = useCachedImages();
 
   useEffect(() => {
     if (grantId) {
@@ -89,7 +91,7 @@ const ActivitySponsors: React.FC<ActivitySponsorsProps> = ({
       {regulationDetails && regulationDetails.funder && (
         <div className={styles["funder-details-container"]}>
           <div className={styles["blue-circle"]}>
-            <img src="/blue-circle.svg" alt="Blue Circle" />
+            <img src={images.sponsor} alt="Sponsor logo" />
           </div>
           <div className={styles["funder-details"]}>
             <div className={styles["details-item"]}>

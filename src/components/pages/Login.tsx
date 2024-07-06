@@ -3,6 +3,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
 import { useIntl } from "react-intl";
 import styles from "../../assets/scss/Login.module.scss";
+import useCachedImages from "../utils/images";
 
 export default function Login({ onLogin }: { onLogin: () => void }) {
   const { login, isLoading } = useAuth();
@@ -14,6 +15,7 @@ export default function Login({ onLogin }: { onLogin: () => void }) {
   const navigate = useNavigate();
   const intl = useIntl();
   const [showPassword, setShowPassword] = useState(false);
+  const images = useCachedImages();
 
   const handleLogin = async () => {
     try {
@@ -85,16 +87,16 @@ export default function Login({ onLogin }: { onLogin: () => void }) {
         <div className={styles["login-container"]}>
           <div className={styles["login-box"]}>
             <div className={styles["logo"]}>
-              <img src="/open-poen-logo-gradient.svg" alt="Project Logo" />
+              <img src={images.logoGradient} alt="Project Logo" />
             </div>
             <div className={styles["project-title"]}>
-              <img src="/login-openpoen-logo.svg" alt="Project Name" />
+              <img src={images.logoLogin} alt="Project Name" />
             </div>
             <form onSubmit={handleSubmit}>
               <div className={styles["input-container"]}>
                 <span className={styles["icon"]}>
                   <img
-                    src="/input-username.svg"
+                    src={images.inputUsername}
                     alt="Username"
                     width="20"
                     height="20"
@@ -110,7 +112,7 @@ export default function Login({ onLogin }: { onLogin: () => void }) {
               <div className={styles["input-container"]}>
                 <span className={styles["icon"]}>
                   <img
-                    src="/input-password.svg"
+                    src={images.inputPassword}
                     alt="Wachtwoord"
                     width="20"
                     height="20"
@@ -127,11 +129,7 @@ export default function Login({ onLogin }: { onLogin: () => void }) {
                   onClick={togglePasswordVisibility}
                 >
                   <img
-                    src={
-                      showPassword
-                        ? "/eye-closed-icon.svg"
-                        : "/eye-open-icon.svg"
-                    }
+                    src={showPassword ? `${images.hide}` : `${images.show}`}
                     alt="Toggle Password Visibility"
                   />
                 </span>

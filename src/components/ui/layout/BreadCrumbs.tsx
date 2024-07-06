@@ -1,21 +1,20 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import styles from "../../../assets/scss/layout/BreadCrumbs.module.scss";
-import useCachedImage from "../../hooks/useCachedImage";
+import useCachedImages from "../../utils/images";
 
 const Breadcrumb = ({ customBreadcrumbs }) => {
+  const images = useCachedImages();
   const location = useLocation();
   const pathnames = location.pathname.split("/").filter((x) => x);
   const isRootRoute = pathnames.length === 0;
-
-  const homeIconSrc = useCachedImage("/assets/images/icons/icon-home.svg");
 
   return (
     <nav>
       <ul className={styles.breadcrumbList}>
         <li className={styles.breadcrumbItem}>
           <Link to="/">
-            <img src={homeIconSrc} alt="Home" />
+            <img src={images.home} alt="Home" />
           </Link>
         </li>
         {customBreadcrumbs

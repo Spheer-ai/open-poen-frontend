@@ -1,6 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "../../../../assets/scss/layout/Step1BankList.module.scss";
+import useCachedImages from "../../../utils/images";
 
 interface Step3BankConfirmationProps {
   onClose: () => void;
@@ -12,6 +13,7 @@ const Step3BankConfirmation: React.FC<Step3BankConfirmationProps> = ({
   message,
 }) => {
   const navigate = useNavigate();
+  const images = useCachedImages();
 
   const handleBackToOverview = () => {
     onClose();
@@ -25,7 +27,7 @@ const Step3BankConfirmation: React.FC<Step3BankConfirmationProps> = ({
   if (message === "success") {
     title = "Koppelen voltooid!";
     description = "We hebben met succes verbinding gemaakt met jouw bank.";
-    iconSrc = "/succes.svg";
+    iconSrc = `${images.succes}`;
   } else if (message === "third-party-error") {
     title = "Fout bij Externe Dienst";
     description =

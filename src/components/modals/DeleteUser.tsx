@@ -3,7 +3,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import { DeleteUserFormProps } from "../../types/DeleteUserForm";
 import { deleteUser } from "../middleware/Api";
 import styles from "../../assets/scss/layout/AddFundDesktop.module.scss";
-import CloseIson from "/close-icon.svg";
+import useCachedImages from "../utils/images";
 
 const DeleteUserForm: React.FC<DeleteUserFormProps> = ({
   userId,
@@ -14,6 +14,7 @@ const DeleteUserForm: React.FC<DeleteUserFormProps> = ({
 }) => {
   const { user } = useAuth();
   const [modalIsOpen, setModalIsOpen] = useState(isOpen);
+  const images = useCachedImages();
 
   useEffect(() => {
     if (isOpen) {
@@ -57,7 +58,7 @@ const DeleteUserForm: React.FC<DeleteUserFormProps> = ({
         <div className={styles.formTop}>
           <h2 className={styles.title}>Gebruiker verwijderen</h2>
           <button onClick={handleClose} className={styles.closeBtn}>
-            <img src={CloseIson} alt="" />
+            <img src={images.close} alt="Close Icon" />
           </button>
         </div>
         <hr></hr>

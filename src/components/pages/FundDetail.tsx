@@ -15,7 +15,7 @@ import Breadcrumb from "../ui/layout/BreadCrumbs";
 import { FundDetails } from "../../types/EditFundTypes";
 import { Activities, InitiativeData } from "../../types/ActivitiesTypes";
 import FundsSponsors from "../elements/tables/funds/FundsSponsors";
-import useCachedImage from "../hooks/useCachedImage";
+import useCachedImages from "../utils/images";
 
 interface FundDetailProps {
   initiativeId: string;
@@ -51,9 +51,7 @@ const FundDetail: React.FC<FundDetailProps> = ({
   const [initiativeData, setInitiativeData] = useState<FundDetails | null>(
     initialData,
   );
-
-  const editIconSrc = useCachedImage("/assets/images/icons/icon-edit.svg");
-  const deleteIconSrc = useCachedImage("/assets/images/icons/icon-delete.svg");
+  const images = useCachedImages();
 
   const handleTabChange = (tabName: string) => {
     setActiveTab(tabName);
@@ -178,7 +176,7 @@ const FundDetail: React.FC<FundDetailProps> = ({
               className={styles["edit-button"]}
               onClick={handleToggleEditFundModal}
             >
-              <img src={editIconSrc} alt="Edit" className={styles["icon"]} />
+              <img src={images.edit} alt="Edit" className={styles["icon"]} />
               <span>Beheer initiatief</span>
             </button>
           )}
@@ -188,7 +186,7 @@ const FundDetail: React.FC<FundDetailProps> = ({
               onClick={handleToggleDeleteFundModal}
             >
               <img
-                src={deleteIconSrc}
+                src={images.delete}
                 alt="Delete"
                 className={styles["icon"]}
               />

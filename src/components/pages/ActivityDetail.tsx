@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import styles from "../../assets/scss/pages/FundDetail.module.scss";
-import useCachedImage from "../hooks/useCachedImage";
 import { useAuth } from "../../contexts/AuthContext";
 import { fetchActivityDetails } from "../middleware/Api";
 import EditActivity from "../modals/EditActivity";
@@ -16,6 +15,7 @@ import ActivityMedia from "../elements/tables/activities/ActivityMedia";
 import ActivitySponsors from "../elements/tables/activities/ActivitySponsors";
 import ActivityTransactions from "../elements/tables/activities/ActivityTransactions";
 import ActivityUsers from "../elements/tables/activities/ActivityUsers";
+import useCachedImages from "../utils/images";
 
 interface ActivityDetailProps {
   initiativeId: string;
@@ -60,14 +60,12 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
   const [initiativeData, setInitiativeData] = useState<InitiativeData | null>(
     initialData,
   );
+  const images = useCachedImages();
 
   useEffect(() => {
     console.log("Received initiativeData:", initialData);
     setInitiativeData(initialData);
   }, [initialData]);
-
-  const editIconSrc = useCachedImage("/assets/images/icons/icon-edit.svg");
-  const deleteIconSrc = useCachedImage("/assets/images/icons/icon-delete.svg");
 
   const handleTabChange = (tabName) => {
     setActiveTab(tabName);
@@ -198,7 +196,7 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
               className={styles["edit-button"]}
               onClick={handleToggleEditActivitydModal}
             >
-              <img src={editIconSrc} alt="Edit" className={styles["icon"]} />
+              <img src={images.edit} alt="Edit" className={styles["icon"]} />
               <span>Beheer activiteit</span>
             </button>
           )}
@@ -208,7 +206,7 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
               onClick={handleToggleDeleteActivitydModal}
             >
               <img
-                src={deleteIconSrc}
+                src={images.delete}
                 alt="Delete"
                 className={styles["icon"]}
               />

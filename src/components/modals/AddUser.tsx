@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styles from "../../assets/scss/layout/AddFundDesktop.module.scss";
-import CloseIson from "/close-icon.svg";
 import { createUser } from "../middleware/Api";
+import useCachedImages from "../utils/images";
 
 const roleLabels = {
   administrator: "Beheerder",
@@ -35,6 +35,7 @@ const AddUser: React.FC<AddUserProps> = ({
     hidden: false,
   });
   const [error, setError] = useState<string | null>(null);
+  const images = useCachedImages();
 
   useEffect(() => {
     if (isOpen) {
@@ -148,7 +149,7 @@ const AddUser: React.FC<AddUserProps> = ({
         <div className={styles.formTop}>
           <h2 className={styles.title}>Gebruiker aanmaken</h2>
           <button onClick={handleClose} className={styles.closeBtn}>
-            <img src={CloseIson} alt="" />
+            <img src={images.close} alt="Close Icon" />
           </button>
         </div>
         <hr></hr>

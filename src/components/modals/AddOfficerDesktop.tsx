@@ -6,8 +6,7 @@ import {
   getGrantOverseers,
 } from "../middleware/Api";
 import { Officer } from "../../types/AddOfficerType";
-import deleteIcon from "/delete-icon.svg";
-import CloseIson from "/close-icon.svg";
+import useCachedImages from "../utils/images";
 
 interface AddOfficerDesktopProps {
   isOpen: boolean;
@@ -37,6 +36,7 @@ const AddOfficerDesktop: React.FC<AddOfficerDesktopProps> = ({
   const [allUsers, setAllUsers] = useState<Officer[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [addedOfficers, setAddedOfficers] = useState<Officer[]>([]);
+  const images = useCachedImages();
 
   useEffect(() => {
     if (isOpen) {
@@ -180,7 +180,7 @@ const AddOfficerDesktop: React.FC<AddOfficerDesktopProps> = ({
         <div className={styles.formTop}>
           <h2 className={styles.title}>Penvoerder aanmaken</h2>
           <button onClick={handleClose} className={styles.closeBtn}>
-            <img src={CloseIson} alt="" />
+            <img src={images.close} alt="Close Icon" />
           </button>
         </div>
         <hr></hr>
@@ -191,7 +191,7 @@ const AddOfficerDesktop: React.FC<AddOfficerDesktopProps> = ({
               <li key={officer.id}>
                 {officer.email}
                 <img
-                  src={deleteIcon}
+                  src={images.deleteRed}
                   alt="Delete"
                   className={styles.deleteIcon}
                   onClick={() => handleRemoveOfficer(officer.id)}

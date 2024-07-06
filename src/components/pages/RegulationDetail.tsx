@@ -5,8 +5,6 @@ import { useAuth } from "../../contexts/AuthContext";
 import styles from "../../assets/scss/RegulationDetail.module.scss";
 import EditRegulationDesktop from "../modals/EditRegulationDesktop";
 import AddGrantDesktop from "../modals/AddGrantDesktop";
-import EditIcon from "/edit-icon.svg";
-import DeleteIcon from "/delete-icon.svg";
 import EditGrantDesktop from "../modals/EditGrantDesktop";
 import AddOfficerDesktop from "../modals/AddOfficerDesktop";
 import { Officer } from "../../types/AddOfficerType";
@@ -18,6 +16,7 @@ import DeleteGrant from "../modals/DeleteGrant";
 import DeleteRegulation from "../modals/DeleteRegulation";
 import AddFundDesktop from "../modals/AddFundDesktop";
 import { Grant } from "../../types/GranListType";
+import useCachedImages from "../utils/images";
 
 type RegulationDetailType = {
   name: string;
@@ -71,6 +70,7 @@ const RegulationDetail: React.FC<RegulationDetailProps> = ({
   const [hasDeletePermission, setHasDeletePermission] = useState(false);
   const [hasCreateGrantPermission, setHasCreateGrantPermission] =
     useState(false);
+  const images = useCachedImages();
 
   useParams();
 
@@ -331,7 +331,7 @@ const RegulationDetail: React.FC<RegulationDetailProps> = ({
                 className={styles["edit-button"]}
                 onClick={handleToggleEditRegulationModal}
               >
-                <img src={EditIcon} alt="Edit" className={styles["icon"]} />
+                <img src={images.edit} alt="Edit" className={styles["icon"]} />
               </button>
             </>
           )}
@@ -341,7 +341,11 @@ const RegulationDetail: React.FC<RegulationDetailProps> = ({
                 className={styles["delete-button"]}
                 onClick={handleToggleDeleteRegulationModal}
               >
-                <img src={DeleteIcon} alt="Delete" className={styles["icon"]} />
+                <img
+                  src={images.deleteRed}
+                  alt="Delete"
+                  className={styles["icon"]}
+                />
               </button>
             </>
           )}

@@ -10,9 +10,9 @@ import {
   fetchPaymentAttachments,
   uploadPaymentAttachment,
 } from "../middleware/Api";
-import CloseIson from "/close-icon.svg";
 import PaymentMediaPreview from "./PaymentMediaPreview";
 import { useFieldPermissions } from "../../contexts/FieldPermissionContext";
+import useCachedImages from "../utils/images";
 
 interface Attachment {
   attachment_id: number;
@@ -79,6 +79,7 @@ const EditPayment: React.FC<EditPaymentProps> = ({
   const [deletedAttachmentIds, setDeletedAttachmentIds] = useState<Set<number>>(
     new Set(),
   );
+  const images = useCachedImages();
   const [selectedMediaUrl, setSelectedMediaUrl] = useState<string | null>(null);
   const [isPdfPreview, setIsPdfPreview] = useState<boolean>(false);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
@@ -379,7 +380,7 @@ const EditPayment: React.FC<EditPaymentProps> = ({
         <div className={styles.formTop}>
           <h2 className={styles.title}>Transacties bewerken</h2>
           <button onClick={handleClose} className={styles.closeBtn}>
-            <img src={CloseIson} alt="" />
+            <img src={images.close} alt="Close Icon" />
           </button>
         </div>
         <hr></hr>
@@ -435,7 +436,7 @@ const EditPayment: React.FC<EditPaymentProps> = ({
                               className={styles.closeButton}
                               onClick={() => handleDeleteImage(attachment.id)}
                             >
-                              <img src="/close-preview.svg" alt="Close" />
+                              <img src={images.closePreview} alt="Close Icon" />
                             </button>
                           </div>
                         </div>
@@ -476,7 +477,7 @@ const EditPayment: React.FC<EditPaymentProps> = ({
                           className={styles.closeButton}
                           onClick={() => handleCancelImage(index)}
                         >
-                          <img src="/close-preview.svg" alt="Close" />
+                          <img src={images.closePreview} alt="Close Icon" />
                         </button>
                       </div>
                     </div>
@@ -488,7 +489,7 @@ const EditPayment: React.FC<EditPaymentProps> = ({
                 <label htmlFor="fileInput" className={styles.customFileInput}>
                   <div>
                     {" "}
-                    <img src="/upload-image.svg" alt="Upload Image" />
+                    <img src={images.upload} alt="Upload Image" />
                   </div>
                   <span>
                     Sleep en zet neer of blader om bestanden te uploaden

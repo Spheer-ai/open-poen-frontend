@@ -6,6 +6,8 @@ import { useAuth } from "../../../../contexts/AuthContext";
 import LinkFundOwners from "../../../modals/LinkFundOwners";
 import { fetchFundDetails } from "../../../middleware/Api";
 import { InitiativeOwner } from "../../../../types/EditFundTypes";
+import images from "../../../utils/images";
+import useCachedImages from "../../../utils/images";
 
 const FundsUsers: React.FC<{
   initiativeId: string;
@@ -20,6 +22,7 @@ const FundsUsers: React.FC<{
     useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [owners, setOwners] = useState<InitiativeOwner[]>(initiativeOwners);
+  const images = useCachedImages();
 
   const handleToggleLinkFundOwnerModal = () => {
     if (isLinkFundOwnerModalOpen) {
@@ -70,7 +73,7 @@ const FundsUsers: React.FC<{
           onClick={handleToggleLinkFundOwnerModal}
         >
           <img
-            src="../../../../link-owner.svg"
+            src={images.linkOwner}
             alt="Link owner"
             className={styles["link-owner"]}
           />
@@ -107,7 +110,7 @@ const FundsUsers: React.FC<{
                       />
                     ) : (
                       <img
-                        src="../../../profile-placeholder.png"
+                        src={images.placeholderProfile}
                         alt="Profile"
                         className={styles["profile-image"]}
                       />

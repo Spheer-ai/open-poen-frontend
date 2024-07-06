@@ -3,7 +3,7 @@ import styles from "../../assets/scss/layout/AddFundDesktop.module.scss";
 import { useAuth } from "../../contexts/AuthContext";
 import { EditUserFormProps } from "../../types/EditUserFormType";
 import { fetchUserData, updateUserProfile } from "../middleware/Api";
-import CloseIson from "/close-icon.svg";
+import useCachedImages from "../utils/images";
 
 const EditUserForm: React.FC<EditUserFormProps> = ({
   userId,
@@ -23,6 +23,7 @@ const EditUserForm: React.FC<EditUserFormProps> = ({
   const [emailError, setEmailError] = useState("");
   const [hasSubmitted, setHasSubmitted] = useState(false);
   const [modalIsOpen, setModalIsOpen] = useState(isOpen);
+  const images = useCachedImages();
 
   useEffect(() => {
     if (isOpen) {
@@ -132,7 +133,7 @@ const EditUserForm: React.FC<EditUserFormProps> = ({
         <div className={styles.formTop}>
           <h2 className={styles.title}>Gebruiker bewerken</h2>
           <button onClick={handleClose} className={styles.closeBtn}>
-            <img src={CloseIson} alt="" />
+            <img src={images.close} alt="Close Icon" />
           </button>
         </div>
         <hr></hr>

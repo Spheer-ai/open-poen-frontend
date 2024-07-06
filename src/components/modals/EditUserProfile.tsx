@@ -8,7 +8,7 @@ import {
   updateUserProfile,
   uploadProfileImage,
 } from "../middleware/Api";
-import CloseIson from "/close-icon.svg";
+import useCachedImages from "../utils/images";
 
 const EditUserProfileForm: React.FC<EditUserProfileFormProps> = ({
   userId,
@@ -36,6 +36,7 @@ const EditUserProfileForm: React.FC<EditUserProfileFormProps> = ({
   const [bioCharCount, setBioCharCount] = useState<number>(0);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [modalIsOpen, setModalIsOpen] = useState(isOpen);
+  const images = useCachedImages();
 
   useEffect(() => {
     if (isOpen) {
@@ -155,7 +156,7 @@ const EditUserProfileForm: React.FC<EditUserProfileFormProps> = ({
         <div className={styles.formTop}>
           <h2 className={styles.title}>Gebruiker bewerken</h2>
           <button onClick={handleClose} className={styles.closeBtn}>
-            <img src={CloseIson} alt="" />
+            <img src={images.close} alt="Close Icon" />
           </button>
         </div>
         <hr></hr>
