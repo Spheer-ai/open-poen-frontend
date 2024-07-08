@@ -74,7 +74,6 @@ const FundDetail: React.FC<FundDetailProps> = ({
   };
 
   useEffect(() => {
-    console.log("Received initiativeData:", initialData);
     setInitiativeData(initialData);
   }, [initialData]);
 

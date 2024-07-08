@@ -65,13 +65,10 @@ const BankConnections = () => {
   };
 
   useEffect(() => {
-    console.log("User or token changed", { user, token });
     const fetchData = async () => {
       if (userId && token) {
         try {
-          console.log("Fetching bank connections");
           const data = await fetchBankConnections(userId, token);
-          console.log("Fetched bank connections data:", data);
           const ownedAccounts = data.ownedBankAccounts || [];
           const usedAccounts = data.usedBankAccounts || [];
 
@@ -89,8 +86,6 @@ const BankConnections = () => {
         } catch (error) {
           console.error("Error fetching bank connections:", error);
         }
-      } else {
-        console.log("User or token is missing");
       }
     };
 
@@ -334,7 +329,7 @@ const BankConnections = () => {
                   onClose={() => handleToggleInviteBankUsersModal(null)}
                   isBlockingInteraction={isBlockingInteraction}
                   bankAccountId={selectedBankId}
-                  userId={parseInt(userId)} // Ensure userId is a number
+                  userId={parseInt(userId)}
                   token={token || ""}
                 />
               )}

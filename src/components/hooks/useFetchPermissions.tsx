@@ -13,16 +13,12 @@ export const useFetchEntityPermissions = () => {
       if (fetchedRef.current[key])
         return permissionsRef.current[entityClass] || [];
       try {
-        console.log(
-          `Fetching permissions for entityClass: ${entityClass}, entityId: ${entityId}, with token: ${token}`,
-        );
         setLoading(true);
         const perms = await fetchEntityPermissions(
           entityClass,
           entityId,
           token,
         );
-        console.log("Permissions fetched: ", perms);
         permissionsRef.current[entityClass] = perms;
         fetchedRef.current[key] = true;
         setPermissions((prevPermissions) => ({

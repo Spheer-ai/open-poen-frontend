@@ -7,9 +7,6 @@ const loadImage = (src: string, caller: string | undefined) => {
     const img = new Image();
     img.src = src;
     imageCache[src] = img.src;
-    console.log(`Initializing hook for: ${src} by ${caller}`);
-  } else {
-    console.log(`Using cached image: ${src} by ${caller}`);
   }
   return imageCache[src];
 };

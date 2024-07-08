@@ -57,9 +57,6 @@ const EditFund: React.FC<EditFundProps> = ({
 
   useEffect(() => {
     if (isOpen) {
-      console.log(
-        `EditFund: Fetching field permissions for initiative ID ${initiativeId}`,
-      );
       fetchFieldPermissions("Initiative", parseInt(initiativeId), authToken);
     }
   }, [isOpen, initiativeId, authToken, fetchFieldPermissions]);
@@ -86,9 +83,7 @@ const EditFund: React.FC<EditFundProps> = ({
     }
   }, [isOpen, fundData]);
 
-  useEffect(() => {
-    console.log("EditFund: Current field permissions:", fieldPermissions);
-  }, [fieldPermissions]);
+  useEffect(() => {}, [fieldPermissions]);
 
   const handleSave = async () => {
     setIsSaveClicked(true);

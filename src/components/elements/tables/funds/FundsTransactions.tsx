@@ -211,21 +211,12 @@ const FundsTransactions: React.FC<{
     try {
       const userToken = user && user.token ? user.token : authToken;
       const entityClass = "Payment";
-      console.log("Fetching permissions with token:", userToken);
-      console.log(
-        "Fetching permissions for entityClass:",
-        entityClass,
-        "and transactionId:",
-        transactionId,
-      );
 
       const userPermissions: string[] | undefined = await fetchPermissions(
         entityClass,
         transactionId,
         userToken,
       );
-
-      console.log("Fetched user permissions:", userPermissions);
 
       const hasEditPermission = userPermissions?.includes("edit") ?? false;
       const hasReadPermission = userPermissions?.includes("read") ?? false;

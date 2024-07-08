@@ -16,9 +16,6 @@ const useInitiatives = (
 
   const fetchAndDisplayInitiatives = useCallback(
     async (offset: number, limit: number, reset: boolean = false) => {
-      console.log(
-        `Fetching initiatives: offset=${offset}, limit=${limit}, onlyMine=${onlyMine}`,
-      );
       if (!reset) {
         setIsLoadingMoreInitiatives(true);
       }
@@ -69,7 +66,6 @@ const useInitiatives = (
   const loadMoreInitiatives = useCallback(() => {
     if (hasMoreInitiatives && !isLoadingMoreInitiatives) {
       const newOffset = offset + limit;
-      console.log(`Loading more initiatives: newOffset=${newOffset}`);
       setOffset(newOffset);
       fetchAndDisplayInitiatives(newOffset, limit);
     }

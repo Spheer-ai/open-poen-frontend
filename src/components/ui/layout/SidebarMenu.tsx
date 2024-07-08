@@ -18,9 +18,6 @@ const SidebarMenu = () => {
     "logoMain",
   ]);
 
-  console.log("Login image URL:", images.login);
-  console.log("Logout image URL:", images.logout);
-
   useEffect(() => {
     const handleResize = () => {
       setWindowWidth(window.innerWidth);

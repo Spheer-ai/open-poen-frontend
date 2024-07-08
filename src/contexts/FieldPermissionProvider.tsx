@@ -23,15 +23,7 @@ const FieldPermissionProvider: React.FC<FieldPermissionProviderProps> = ({
       entityId: number,
       token: string,
     ): Promise<FieldPermissions | undefined> => {
-      console.log("fetchPermissions called with:", {
-        entityClass,
-        entityId,
-        token,
-      });
       try {
-        console.log(
-          `Fetching field permissions for ${entityClass} with ID ${entityId}`,
-        );
         const permissions = await getEditFieldsForEntity(
           entityClass,
           entityId,
@@ -39,10 +31,8 @@ const FieldPermissionProvider: React.FC<FieldPermissionProviderProps> = ({
         );
         const permissionsObject = permissions || { fields: [] };
         setFieldPermissions(permissionsObject);
-        console.log("Fetched permissions:", permissionsObject);
         return permissionsObject;
       } catch (error) {
-        console.error("Error fetching field permissions:", error);
         return undefined;
       }
     },

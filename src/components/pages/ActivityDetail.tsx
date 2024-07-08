@@ -63,7 +63,6 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
   const images = useCachedImages(["edit", "delete"]);
 
   useEffect(() => {
-    console.log("Received initiativeData:", initialData);
     setInitiativeData(initialData);
   }, [initialData]);
 
@@ -102,15 +101,9 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
     if (activityId) {
       fetchActivityDetails(authToken, initiativeId, activityId)
         .then((data) => {
-          console.log("Fetched activity details:", data);
           setActivityDetails(data);
           setCurrentActivityData(data);
           setRefreshTrigger((prev) => prev + 1);
-          if (data && data.grant) {
-            console.log("Grant ID:", data.grant.id);
-          } else {
-            console.log("No grant information available.");
-          }
         })
         .catch((error) => {
           console.error("Error fetching activity details:", error);
@@ -148,13 +141,11 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
   };
 
   const handleActivityEdited = (updatedActivity: Activities) => {
-    console.log("Activity edited:", updatedActivity);
     setRefreshTrigger((prev) => prev + 1);
     onActivityEdited(updatedActivity);
   };
 
   const handleActivityDeleted = () => {
-    console.log("Activity deleted, navigating to fund detail");
     onActivityDeleted(activityId);
     navigate(`/funds/${initiativeId}`);
   };

@@ -115,7 +115,6 @@ export default function Contacts() {
         setIsLoading(false);
       } catch (error) {
         if (error.name === "AbortError") {
-          console.log("Fetch aborted:", error.message);
         } else {
           setError(error);
         }

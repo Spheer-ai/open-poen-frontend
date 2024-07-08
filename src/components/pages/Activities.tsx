@@ -42,16 +42,12 @@ export default function ActivitiesPage() {
   useEffect(() => {
     if (initiativeId && user?.token) {
       const loadPermissions = async () => {
-        console.log("Fetching permissions for initiativeId:", initiativeId);
-        console.log("User token:", user.token);
-
         try {
           const permissions = await fetchPermissions(
             "Initiative",
             Number(initiativeId),
             user?.token,
           );
-          console.log("Fetched permissions:", permissions);
 
           setEntityPermissions(permissions || []);
         } catch (error) {
@@ -121,7 +117,6 @@ export default function ActivitiesPage() {
   };
 
   const handleActivityEdited = (updatedActivity: Activities) => {
-    console.log("handleActivityEdited called with:", updatedActivity);
     updateActivityInList(updatedActivity);
   };
 
@@ -131,7 +126,6 @@ export default function ActivitiesPage() {
   };
 
   const handleActivityDeleted = (activityId: string) => {
-    console.log("Activity deleted, navigating to fund detail");
     setSelectedActivity(null);
     removeActivityFromList(activityId);
     navigate(`/funds/${initiativeId}`);

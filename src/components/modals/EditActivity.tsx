@@ -109,7 +109,6 @@ const EditActivity: React.FC<EditActivityProps> = ({
       );
 
       setApiError("");
-      console.log("Activity saved:", updatedActivityData);
       handleClose();
       onActivityEdited(updatedActivityData);
     } catch (error) {

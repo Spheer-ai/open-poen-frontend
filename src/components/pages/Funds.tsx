@@ -39,10 +39,8 @@ export default function Funds() {
   useEffect(() => {
     const sidePanel = sidePanelRef.current;
     if (sidePanel) {
-      console.log("Adding scroll event listener to side panel");
       sidePanel.addEventListener("scroll", checkBottom);
       return () => {
-        console.log("Removing scroll event listener from side panel");
         sidePanel.removeEventListener("scroll", checkBottom);
       };
     }
@@ -52,16 +50,12 @@ export default function Funds() {
     initiativeId: number,
     initiativeName: string,
   ) => {
-    console.log(
-      `Navigating to activities of initiative ${initiativeId} named ${initiativeName}`,
-    );
     navigate(`/funds/${initiativeId}/${initiativeName}`, {
       state: { initiativeName },
     });
   };
 
   const toggleFilter = (filter: boolean) => {
-    console.log("Toggling filter", filter);
     setOnlyMine(filter);
   };
 

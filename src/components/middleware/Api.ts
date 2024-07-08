@@ -482,20 +482,10 @@ export const fetchEntityPermissions = async (
     if (token) {
       headers["Authorization"] = `Bearer ${token}`;
     }
-
-    console.log(
-      "Sending request to /auth/entity-access/actions with params: ",
-      params,
-      " and headers: ",
-      headers,
-    );
-
     const response = await api.get("/auth/entity-access/actions", {
       params,
       headers,
     });
-
-    console.log("Response received: ", response.data);
 
     return response.data.actions;
   } catch (error) {
