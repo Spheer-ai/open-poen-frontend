@@ -22,7 +22,7 @@ export default function AppRoutes() {
   const navigate = useNavigate();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [, setShowLoginModal] = useState(false);
-  const images = useCachedImages();
+  const images = useCachedImages(["mainBg"]);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -43,7 +43,7 @@ export default function AppRoutes() {
     <div
       className={styles["app-container"]}
       style={{
-        backgroundImage: `url(${images.signupBg})`,
+        backgroundImage: `url(${images.mainBg})`,
       }}
     >
       <SidebarMenu />

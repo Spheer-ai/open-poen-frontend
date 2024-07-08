@@ -1,5 +1,3 @@
-// utils/calculations.js
-
 export const calculateBarWidth = (budget, expenses) => {
   const available = Math.max(budget + expenses, 0);
   const spent = Math.abs(expenses);

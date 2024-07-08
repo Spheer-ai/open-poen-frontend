@@ -7,7 +7,7 @@ function ResetPasswordRequest() {
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
-  const images = useCachedImages();
+  const images = useCachedImages(["signupBg", "logoGradient", "logoLogin"]);
 
   const handleEmailChange = (e) => {
     setEmail(e.target.value);

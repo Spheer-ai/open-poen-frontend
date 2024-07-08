@@ -30,7 +30,7 @@ const EditSponsor: React.FC<EditSponsorProps> = ({
   const [nameError, setNameError] = useState(false);
   const [urlError, setUrlError] = useState(false);
   const [maxNameLength] = useState(128);
-  const images = useCachedImages();
+  const images = useCachedImages(["close"]);
 
   useEffect(() => {
     if (isOpen) {

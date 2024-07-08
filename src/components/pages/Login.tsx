@@ -15,7 +15,13 @@ export default function Login({ onLogin }: { onLogin: () => void }) {
   const navigate = useNavigate();
   const intl = useIntl();
   const [showPassword, setShowPassword] = useState(false);
-  const images = useCachedImages();
+  const images = useCachedImages([
+    "logoGradient",
+    "logoLogin",
+    "inputUsername",
+    "inputPassword",
+    "hidePass",
+  ]);
 
   const handleLogin = async () => {
     try {

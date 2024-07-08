@@ -1,4 +1,3 @@
-// src/utils/cachedImages.js
 import useCachedImage from "../hooks/useCachedImage";
 import imagePaths from "./imagePaths";
 

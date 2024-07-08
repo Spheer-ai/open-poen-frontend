@@ -1,4 +1,3 @@
-// src/utils/images.ts
 import imageHooks from "../hooks/imageHook";
 
 const useCachedImages = (keys: Array<keyof typeof imageHooks>) => {

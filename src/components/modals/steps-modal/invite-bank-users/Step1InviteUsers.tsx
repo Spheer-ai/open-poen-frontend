@@ -35,7 +35,7 @@ const Step1InviteUsers: React.FC<Step1InviteUsersProps> = ({
   const [alreadyAddedEmails, setAlreadyAddedEmails] = useState<UserProfile[]>(
     [],
   );
-  const images = useCachedImages();
+  const images = useCachedImages(["sandboxLogo", "placeholderProfile"]);
 
   const [searchResults, setSearchResults] = useState<
     {

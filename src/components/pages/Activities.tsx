@@ -227,10 +227,7 @@ export default function ActivitiesPage() {
                           Beschikbaar:
                         </label>
                         <span>
-                          €
-                          {formatCurrency(
-                            Math.max(activity.budget + activity.expenses, 0),
-                          )}
+                          €{formatCurrency(activity.budget + activity.expenses)}
                         </span>
                       </div>
                     </li>

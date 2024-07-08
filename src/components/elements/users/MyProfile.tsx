@@ -33,7 +33,7 @@ const MyProfile: React.FC<MyProfileProps> = ({
   const [myProfileData, setMyProfileData] = useState<UserProfile | null>(null);
   const [userItemId, setUserItemId] = useState<string | null>(null);
   const navigate = useNavigate();
-  const images = useCachedImages();
+  const images = useCachedImages(["placeholderProfile", "profile"]);
 
   useEffect(() => {
     if (user && user.token) {

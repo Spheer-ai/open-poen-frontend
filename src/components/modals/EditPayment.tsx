@@ -71,6 +71,8 @@ const EditPayment: React.FC<EditPaymentProps> = ({
   const [modalIsOpen, setModalIsOpen] = useState(isOpen);
   const [displayDate, setDisplayDate] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const [shortDescError, setShortDescError] = useState("");
+  const [longDescError, setLongDescError] = useState("");
   const [apiDate, setApiDate] = useState("");
   const { fieldPermissions, fetchFieldPermissions } = useFieldPermissions();
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -79,7 +81,7 @@ const EditPayment: React.FC<EditPaymentProps> = ({
   const [deletedAttachmentIds, setDeletedAttachmentIds] = useState<Set<number>>(
     new Set(),
   );
-  const images = useCachedImages();
+  const images = useCachedImages(["close", "closePreview", "upload"]);
   const [selectedMediaUrl, setSelectedMediaUrl] = useState<string | null>(null);
   const [isPdfPreview, setIsPdfPreview] = useState<boolean>(false);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
@@ -186,6 +188,20 @@ const EditPayment: React.FC<EditPaymentProps> = ({
   };
 
   const handleSave = async () => {
+    if (transactionData.short_user_description.length > 128) {
+      setShortDescError(
+        "Korte beschrijving mag niet meer dan 128 tekens bevatten.",
+      );
+      return;
+    }
+
+    if (transactionData.long_user_description.length > 512) {
+      setLongDescError(
+        "Lange beschrijving mag niet meer dan 512 tekens bevatten.",
+      );
+      return;
+    }
+
     try {
       setIsLoading(true);
       if (!token) {
@@ -282,6 +298,9 @@ const EditPayment: React.FC<EditPaymentProps> = ({
     setSelectedFile(null);
     setSelectedFiles([]);
     setDeletedAttachmentIds(new Set());
+    setErrorMessage("");
+    setShortDescError("");
+    setLongDescError("");
   };
 
   const handleClose = () => {
@@ -694,12 +713,19 @@ const EditPayment: React.FC<EditPaymentProps> = ({
               <input
                 type="text"
                 value={transactionData.short_user_description}
-                onChange={(e) =>
+                onChange={(e) => {
                   setTransactionData({
                     ...transactionData,
                     short_user_description: e.target.value,
-                  })
-                }
+                  });
+                  if (e.target.value.length > 128) {
+                    setShortDescError(
+                      "Korte beschrijving mag niet meer dan 128 tekens bevatten.",
+                    );
+                  } else {
+                    setShortDescError("");
+                  }
+                }}
                 disabled={
                   !(
                     fieldPermissions &&
@@ -708,18 +734,32 @@ const EditPayment: React.FC<EditPaymentProps> = ({
                   )
                 }
               />
+              {shortDescError && (
+                <span
+                  style={{ color: "red", display: "block", marginTop: "5px" }}
+                >
+                  {shortDescError}
+                </span>
+              )}
             </div>
             <div className={styles.formGroup}>
-              <label className={styles.labelField}>lange beschrijving</label>
+              <label className={styles.labelField}>Lange beschrijving</label>
               <input
                 type="text"
                 value={transactionData.long_user_description}
-                onChange={(e) =>
+                onChange={(e) => {
                   setTransactionData({
                     ...transactionData,
                     long_user_description: e.target.value,
-                  })
-                }
+                  });
+                  if (e.target.value.length > 512) {
+                    setLongDescError(
+                      "Lange beschrijving mag niet meer dan 512 tekens bevatten.",
+                    );
+                  } else {
+                    setLongDescError("");
+                  }
+                }}
                 disabled={
                   !(
                     fieldPermissions &&
@@ -728,6 +768,13 @@ const EditPayment: React.FC<EditPaymentProps> = ({
                   )
                 }
               />
+              {longDescError && (
+                <span
+                  style={{ color: "red", display: "block", marginTop: "5px" }}
+                >
+                  {longDescError}
+                </span>
+              )}
             </div>
             <div className={styles.formGroup}>
               <div className={styles.roleOptions}>

@@ -1,4 +1,3 @@
-// src/utils/imagePaths.ts
 const imagePaths = {
   mainBg: "/assets/images/backgrounds/background-open-poen.png",
   signupBg: "/assets/images/backgrounds/background-sign-up.jpg",
@@ -23,8 +22,8 @@ const imagePaths = {
   profile: "/assets/images/icons/icon-profile.svg",
   sponsor: "/assets/images/icons/icon-sponsor-blue.svg",
   upload: "/assets/images/icons/icon-upload.svg",
+  hidePass: "/assets/images/icons/icon-closed-eye.svg",
   show: "/assets/images/icons/icon-open-eye.svg",
-  hide: "/assets/images/icons/icon-closed-eye.svg",
   succes: "/assets/images/icons/icon-succes.svg",
   linkOwner: "/assets/images/icons/icon-link-owner.svg",
   inputPassword: "/assets/images/icons/icon-input-password.svg",
@@ -33,7 +32,7 @@ const imagePaths = {
   logoGradient: "/assets/images/logos/logo-openpoen-gradient.svg",
   logoLogin: "/assets/images/logos/logo-openpoen-login.svg",
   logoMain: "/assets/images/logos/logo-openpoen.svg",
-  logoMobile: "/assets/images/logos/logo-openpoenmobile.svg",
+  logoMobile: "/assets/images/logos/logo-openpoen-mobile.svg",
   placeholderProfile: "/assets/images/placeholders/placeholder-profile.png",
   sandboxLogo: "/assets/images/logos/logo-sandbox-bank.png",
 };

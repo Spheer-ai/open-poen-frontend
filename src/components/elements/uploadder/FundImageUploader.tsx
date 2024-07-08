@@ -16,7 +16,7 @@ const FundImageUploader: React.FC<ImageUploaderProps> = ({
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [isUploading, setIsUploading] = useState(false);
-  const images = useCachedImages();
+  const images = useCachedImages(["upload"]);
 
   const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];

@@ -27,7 +27,7 @@ const DeleteRegulation: React.FC<DeleteRegulationProps> = ({
 }) => {
   const [modalIsOpen, setModalIsOpen] = useState(isOpen);
   const [regulationName, setRegulationName] = useState(currentName);
-  const images = useCachedImages();
+  const images = useCachedImages(["close"]);
   const [regulationDescription, setRegulationDescription] =
     useState(currentDescription);
 

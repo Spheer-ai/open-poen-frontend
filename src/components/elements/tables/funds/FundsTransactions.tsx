@@ -67,7 +67,7 @@ const FundsTransactions: React.FC<{
   const [isFilterPaymentModalOpen, setIsFilterPaymentModalOpen] =
     useState(false);
   const [isEditPaymentModalOpen, setIsEditPaymentModalOpen] = useState(false);
-  const images = useCachedImages();
+  const images = useCachedImages(["view"]);
 
   const [currentPage, setCurrentPage] = useState(1);
   const [transactions, setTransactions] = useState<Transaction[]>([]);

@@ -4,7 +4,7 @@ import useCachedImages from "../../utils/images";
 
 const Search = ({ onSearch }) => {
   const [query, setQuery] = useState("");
-  const images = useCachedImages();
+  const images = useCachedImages(["search"]);
 
   const handleInputChange = (e) => {
     const value = e.target.value;

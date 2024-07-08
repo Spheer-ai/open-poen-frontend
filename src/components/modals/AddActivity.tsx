@@ -25,7 +25,7 @@ const AddActivity: React.FC<AddActivityProps> = ({
   const [activityBudget, setActivityBudget] = useState<number | string>("");
   const [purpose, setPurpose] = useState("");
   const [targetAudience, setTargetAudience] = useState("");
-  const images = useCachedImages();
+  const images = useCachedImages(["close"]);
   const [hidden, setHidden] = useState(false);
   const [errors, setErrors] = useState({
     name: "",

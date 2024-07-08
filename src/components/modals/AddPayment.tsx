@@ -36,10 +36,13 @@ const AddPayment: React.FC<AddPaymentProps> = ({
     initiative_id: Number(initiativeId),
     activity_id: activityId ? Number(activityId) : null,
   };
+
   const [modalIsOpen, setModalIsOpen] = useState(isOpen);
   const [errorMessage, setErrorMessage] = useState("");
   const [paymentData, setPaymentData] = useState(initialPaymentData);
-  const images = useCachedImages();
+  const [shortDescError, setShortDescError] = useState("");
+  const [longDescError, setLongDescError] = useState("");
+  const images = useCachedImages(["close"]);
   const routeOptions = [
     { value: "inkomen", label: "Inkomen" },
     { value: "uitgaven", label: "Uitgaven" },
@@ -47,6 +50,10 @@ const AddPayment: React.FC<AddPaymentProps> = ({
 
   useEffect(() => {
     if (isOpen) {
+      setPaymentData(initialPaymentData);
+      setErrorMessage("");
+      setShortDescError("");
+      setLongDescError("");
       setModalIsOpen(true);
     } else {
       setTimeout(() => {
@@ -56,6 +63,20 @@ const AddPayment: React.FC<AddPaymentProps> = ({
   }, [isOpen]);
 
   const handleSave = async () => {
+    if (paymentData.short_user_description.length > 128) {
+      setShortDescError(
+        "Korte beschrijving mag niet meer dan 128 tekens bevatten.",
+      );
+      return;
+    }
+
+    if (paymentData.long_user_description.length > 512) {
+      setLongDescError(
+        "Lange beschrijving mag niet meer dan 512 tekens bevatten.",
+      );
+      return;
+    }
+
     try {
       const token = localStorage.getItem("token");
       if (!token) {
@@ -75,10 +96,9 @@ const AddPayment: React.FC<AddPaymentProps> = ({
       onPaymentAdded();
 
       handleClose();
-      setPaymentData(initialPaymentData);
     } catch (error) {
       if (error.response && error.response.status === 422) {
-        const errorMessage = "Ongeldige invoer. Vul een correct bedrag in";
+        const errorMessage = "Ongeldige invoer. Vul een correct bedrag in.";
         setErrorMessage(errorMessage);
       } else {
         console.error("Error creating payment:", error);
@@ -91,6 +111,9 @@ const AddPayment: React.FC<AddPaymentProps> = ({
       setModalIsOpen(false);
       onClose();
       setPaymentData(initialPaymentData);
+      setErrorMessage("");
+      setShortDescError("");
+      setLongDescError("");
     }
   };
 
@@ -157,7 +180,7 @@ const AddPayment: React.FC<AddPaymentProps> = ({
                 });
               }
             }}
-          />{" "}
+          />
           {errorMessage && (
             <span style={{ color: "red", display: "block", marginTop: "5px" }}>
               {errorMessage}
@@ -256,26 +279,50 @@ const AddPayment: React.FC<AddPaymentProps> = ({
           <input
             type="text"
             value={paymentData.short_user_description}
-            onChange={(e) =>
+            onChange={(e) => {
               setPaymentData({
                 ...paymentData,
                 short_user_description: e.target.value,
-              })
-            }
+              });
+              if (e.target.value.length > 128) {
+                setShortDescError(
+                  "Korte beschrijving mag niet meer dan 128 tekens bevatten.",
+                );
+              } else {
+                setShortDescError("");
+              }
+            }}
           />
+          {shortDescError && (
+            <span style={{ color: "red", display: "block", marginTop: "5px" }}>
+              {shortDescError}
+            </span>
+          )}
         </div>
         <div className={styles.formGroup}>
-          <label className={styles.labelField}>lange beschrijving</label>
+          <label className={styles.labelField}>Lange beschrijving</label>
           <input
             type="text"
             value={paymentData.long_user_description}
-            onChange={(e) =>
+            onChange={(e) => {
               setPaymentData({
                 ...paymentData,
                 long_user_description: e.target.value,
-              })
-            }
+              });
+              if (e.target.value.length > 512) {
+                setLongDescError(
+                  "Lange beschrijving mag niet meer dan 512 tekens bevatten.",
+                );
+              } else {
+                setLongDescError("");
+              }
+            }}
           />
+          {longDescError && (
+            <span style={{ color: "red", display: "block", marginTop: "5px" }}>
+              {longDescError}
+            </span>
+          )}
         </div>
         <div className={styles.buttonContainer}>
           <button onClick={handleClose} className={styles.cancelButton}>

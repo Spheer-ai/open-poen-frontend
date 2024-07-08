@@ -37,7 +37,7 @@ const FundsSponsors: React.FC<FundsSponsorsProps> = ({
   const [loadingGrantDetails, setLoadingGrantDetails] = useState<boolean>(true);
   const [loadingRegulationDetails, setLoadingRegulationDetails] =
     useState<boolean>(true);
-  const images = useCachedImages();
+  const images = useCachedImages(["sponsor"]);
 
   useEffect(() => {
     if (grantId) {

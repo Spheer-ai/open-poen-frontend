@@ -23,7 +23,7 @@ const EditUserForm: React.FC<EditUserFormProps> = ({
   const [emailError, setEmailError] = useState("");
   const [hasSubmitted, setHasSubmitted] = useState(false);
   const [modalIsOpen, setModalIsOpen] = useState(isOpen);
-  const images = useCachedImages();
+  const images = useCachedImages(["close"]);
 
   useEffect(() => {
     if (isOpen) {

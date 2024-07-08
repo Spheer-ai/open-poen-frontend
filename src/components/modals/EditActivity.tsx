@@ -20,7 +20,7 @@ const EditActivity: React.FC<EditActivityProps> = ({
   activityData,
 }) => {
   const [modalIsOpen, setModalIsOpen] = useState(isOpen);
-  const images = useCachedImages();
+  const images = useCachedImages(["close"]);
   const [isHidden, setIsHidden] = useState(false);
   const [apiError, setApiError] = useState("");
   const [formData, setFormData] = useState<ActivityDetails>({

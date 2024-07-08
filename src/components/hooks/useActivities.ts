@@ -40,7 +40,7 @@ const useActivities = (
 
       activitiesRef.current = updatedActivities.map((activity) => ({
         ...activity,
-        initiativeId, // Ensure initiativeId is included
+        initiativeId,
         initiativeName: fetchedInitiativeData.name,
         beschikbaar: Math.max(activity.budget + activity.expenses, 0),
       }));

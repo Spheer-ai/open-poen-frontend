@@ -13,7 +13,7 @@ const Step3BankConfirmation: React.FC<Step3BankConfirmationProps> = ({
   message,
 }) => {
   const navigate = useNavigate();
-  const images = useCachedImages();
+  const images = useCachedImages(["succes"]);
 
   const handleBackToOverview = () => {
     onClose();

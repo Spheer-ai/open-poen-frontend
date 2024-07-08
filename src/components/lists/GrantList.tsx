@@ -41,7 +41,7 @@ const GrantList: React.FC<GrantListProps> = ({
   const [firstInitiativeIdMap, setFirstInitiativeIdMap] = useState<
     Record<number, number | null>
   >({});
-  const images = useCachedImages();
+  const images = useCachedImages(["edit", "deleteRed"]);
   const navigate = useNavigate();
 
   useEffect(() => {

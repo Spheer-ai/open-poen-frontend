@@ -52,7 +52,7 @@ const EditGrantDesktop: React.FC<EditGrantDesktopProps> = ({
   const [apiError, setApiError] = useState<string | null>(null);
   const [referenceError, setReferenceError] = useState<string | null>(null);
   const [budgetError, setBudgetError] = useState<string | null>(null);
-  const images = useCachedImages();
+  const images = useCachedImages(["close"]);
 
   useEffect(() => {
     if (isOpen) {

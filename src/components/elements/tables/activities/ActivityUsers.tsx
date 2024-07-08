@@ -21,7 +21,7 @@ const ActivityUsers: React.FC<{
     useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [owners, setOwners] = useState<ActivityOwner[]>(initialOwners);
-  const images = useCachedImages();
+  const images = useCachedImages(["linkOwner", "placeholderProfile"]);
 
   useEffect(() => {
     const fetchOwners = async () => {

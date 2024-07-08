@@ -42,7 +42,7 @@ const EditFund: React.FC<EditFundProps> = ({
   const [descriptionError, setDescriptionError] = useState("");
   const [purposeError, setPurposeError] = useState("");
   const [targetAudienceError, setTargetAudienceError] = useState("");
-  const images = useCachedImages();
+  const images = useCachedImages(["close"]);
   const { fieldPermissions, fetchFieldPermissions } = useFieldPermissions();
 
   useEffect(() => {

@@ -36,7 +36,7 @@ const AddOfficerDesktop: React.FC<AddOfficerDesktopProps> = ({
   const [allUsers, setAllUsers] = useState<Officer[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [addedOfficers, setAddedOfficers] = useState<Officer[]>([]);
-  const images = useCachedImages();
+  const images = useCachedImages(["close", "deleteRed"]);
 
   useEffect(() => {
     if (isOpen) {

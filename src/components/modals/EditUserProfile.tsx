@@ -36,7 +36,7 @@ const EditUserProfileForm: React.FC<EditUserProfileFormProps> = ({
   const [bioCharCount, setBioCharCount] = useState<number>(0);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [modalIsOpen, setModalIsOpen] = useState(isOpen);
-  const images = useCachedImages();
+  const images = useCachedImages(["close"]);
 
   useEffect(() => {
     if (isOpen) {

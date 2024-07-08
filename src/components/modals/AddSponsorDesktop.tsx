@@ -23,7 +23,7 @@ const AddSponsorDesktop: React.FC<AddSponsorDesktopProps> = ({
   const [nameError, setNameError] = useState<string | null>(null);
   const [urlError, setUrlError] = useState<string | null>(null);
   const [maxNameLength] = useState(128);
-  const images = useCachedImages();
+  const images = useCachedImages(["close"]);
 
   useEffect(() => {
     if (isOpen) {

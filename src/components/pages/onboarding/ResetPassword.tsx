@@ -13,7 +13,12 @@ function ResetPassword() {
   const [step, setStep] = useState("request");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const images = useCachedImages();
+  const images = useCachedImages([
+    "signupBg",
+    "logoGradient",
+    "logoLogin",
+    "hidePass",
+  ]);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -138,7 +143,7 @@ function ResetPassword() {
                   onClick={togglePasswordVisibility}
                 >
                   <img
-                    src={showPassword ? "{images.hide}" : "{images.show}"}
+                    src={showPassword ? "{images.hidePass}" : "{images.show}"}
                     alt="Toggle Password Visibility"
                   />
                 </span>

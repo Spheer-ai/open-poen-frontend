@@ -17,7 +17,7 @@ const ChangePasswordForm = ({
   const [error, setError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [modalIsOpen, setModalIsOpen] = useState(isOpen);
-  const images = useCachedImages();
+  const images = useCachedImages(["close", "show", "hidePass"]);
 
   useEffect(() => {
     if (isOpen) {
@@ -103,7 +103,7 @@ const ChangePasswordForm = ({
                 onClick={togglePasswordVisibility}
               >
                 <img
-                  src={showPassword ? images.show : images.hide}
+                  src={showPassword ? images.show : images.hidePass}
                   alt="Toggle Password Visibility"
                   className={styles["eye-icon"]}
                 />
@@ -130,7 +130,7 @@ const ChangePasswordForm = ({
                 onClick={togglePasswordVisibility}
               >
                 <img
-                  src={showPassword ? images.show : images.hide}
+                  src={showPassword ? images.show : images.hidePass}
                   alt="Toggle Password Visibility"
                   className={styles["eye-icon"]}
                 />

@@ -60,7 +60,7 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
   const [initiativeData, setInitiativeData] = useState<InitiativeData | null>(
     initialData,
   );
-  const images = useCachedImages();
+  const images = useCachedImages(["edit", "delete"]);
 
   useEffect(() => {
     console.log("Received initiativeData:", initialData);

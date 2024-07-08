@@ -14,7 +14,7 @@ const DeleteUserForm: React.FC<DeleteUserFormProps> = ({
 }) => {
   const { user } = useAuth();
   const [modalIsOpen, setModalIsOpen] = useState(isOpen);
-  const images = useCachedImages();
+  const images = useCachedImages(["close"]);
 
   useEffect(() => {
     if (isOpen) {

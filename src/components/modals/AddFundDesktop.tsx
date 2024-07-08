@@ -40,7 +40,7 @@ const AddFundDesktop: React.FC<AddFundDesktopProps> = ({
   grantId,
 }) => {
   const [modalIsOpen, setModalIsOpen] = useState(isOpen);
-  const images = useCachedImages();
+  const images = useCachedImages(["close"]);
   const [grantDetails, setGrantDetails] = useState(null);
   const [fundData, setFundData] = useState(initialFormData);
   const [isLoading, setIsLoading] = useState(false);

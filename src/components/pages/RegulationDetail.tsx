@@ -70,7 +70,7 @@ const RegulationDetail: React.FC<RegulationDetailProps> = ({
   const [hasDeletePermission, setHasDeletePermission] = useState(false);
   const [hasCreateGrantPermission, setHasCreateGrantPermission] =
     useState(false);
-  const images = useCachedImages();
+  const images = useCachedImages(["edit", "deleteRed"]);
 
   useParams();
 

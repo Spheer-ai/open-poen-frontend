@@ -35,7 +35,7 @@ const AddUser: React.FC<AddUserProps> = ({
     hidden: false,
   });
   const [error, setError] = useState<string | null>(null);
-  const images = useCachedImages();
+  const images = useCachedImages(["close"]);
 
   useEffect(() => {
     if (isOpen) {

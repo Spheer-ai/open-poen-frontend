@@ -23,7 +23,7 @@ const DeleteFund: React.FC<DeleteFundProps> = ({
   const [modalIsOpen, setModalIsOpen] = useState(isOpen);
   const navigate = useNavigate();
   const [apiError, setApiError] = useState("");
-  const images = useCachedImages();
+  const images = useCachedImages(["close"]);
 
   useEffect(() => {
     if (isOpen) {

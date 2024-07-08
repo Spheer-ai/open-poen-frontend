@@ -34,7 +34,7 @@ const EditRegulationDesktop: React.FC<EditRegulationDesktopProps> = ({
   const [charCount, setCharCount] = useState(currentDescription.length);
   const [apiError, setApiError] = useState("");
   const [maxNameLength] = useState(128);
-  const images = useCachedImages();
+  const images = useCachedImages(["close"]);
 
   useEffect(() => {
     if (isOpen) {

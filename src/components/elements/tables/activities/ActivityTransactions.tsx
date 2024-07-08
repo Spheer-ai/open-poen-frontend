@@ -82,7 +82,7 @@ const ActivityTransactions: React.FC<{
   const [currentPage, setCurrentPage] = useState(1);
   const [loadingMore, setLoadingMore] = useState(true);
   const [hasMoreTransactions, setHasMoreTransactions] = useState(true);
-  const images = useCachedImages();
+  const images = useCachedImages(["view"]);
   const [pageSize] = useState(20);
   const [filterCriteria, setFilterCriteria] = useState<{
     startDate: string;

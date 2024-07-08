@@ -36,7 +36,7 @@ const LinkActivityOwner: React.FC<LinkActivityOwnerProps> = ({
   const [searchedUsers, setSearchedUsers] = useState<User[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedUsers, setSelectedUsers] = useState<ActivityOwner[]>([]);
-  const images = useCachedImages();
+  const images = useCachedImages(["close", "deleteRed"]);
 
   const resetModalState = () => {
     setSelectedUsers([]);

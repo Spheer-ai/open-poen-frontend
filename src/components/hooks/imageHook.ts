@@ -1,4 +1,3 @@
-// src/hooks/imageHooks.ts
 import useCachedImage from "./useCachedImage";
 import imagePaths from "../utils/imagePaths";
 
@@ -27,7 +26,7 @@ const imageHooks = {
   sponsor: () => useCachedImage(imagePaths.sponsor),
   upload: () => useCachedImage(imagePaths.upload),
   show: () => useCachedImage(imagePaths.show),
-  hide: () => useCachedImage(imagePaths.hide),
+  hidePass: () => useCachedImage(imagePaths.hidePass),
   succes: () => useCachedImage(imagePaths.succes),
   linkOwner: () => useCachedImage(imagePaths.linkOwner),
   inputPassword: () => useCachedImage(imagePaths.inputPassword),

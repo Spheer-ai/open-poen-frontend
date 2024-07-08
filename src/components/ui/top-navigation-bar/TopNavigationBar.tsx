@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import styles from "../../../assets/scss/TopNavigationBar.module.scss";
 import Search from "../../elements/search/Search";

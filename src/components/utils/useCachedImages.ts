@@ -1,4 +1,3 @@
-// src/utils/useCachedImages.ts
 import { useMemo } from "react";
 import useCachedImage from "../hooks/useCachedImage";
 import imagePaths, { ImagePaths } from "./imagePaths";

@@ -2,13 +2,24 @@ import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import styles from "../../../assets/scss/SidebarMenu.module.scss";
 import { useAuth } from "../../../contexts/AuthContext";
-import useCachedImages from "../../utils/images"; // Adjust the path as needed
+import useCachedImages from "../../utils/images";
 
 const SidebarMenu = () => {
   const location = useLocation();
   const { user, logout } = useAuth();
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
-  const images = useCachedImages();
+  const images = useCachedImages([
+    "funds",
+    "users",
+    "transactions",
+    "sponsors",
+    "login",
+    "logout",
+    "logoMain",
+  ]);
+
+  console.log("Login image URL:", images.login);
+  console.log("Logout image URL:", images.logout);
 
   useEffect(() => {
     const handleResize = () => {

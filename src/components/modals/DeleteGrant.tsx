@@ -45,7 +45,7 @@ const DeleteGrant: React.FC<DeleteGrantProps> = ({
   }
 
   const [modalIsOpen, setModalIsOpen] = useState(isOpen);
-  const images = useCachedImages();
+  const images = useCachedImages(["close"]);
 
   useEffect(() => {
     if (isOpen) {

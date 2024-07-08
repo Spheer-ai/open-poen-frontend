@@ -10,14 +10,8 @@ import { calculateBarWidth, formatCurrency } from "../utils/calculations";
 export default function Funds() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const [onlyMine, setOnlyMine] = useState(false);
+  const [onlyMine, setOnlyMine] = useState(true);
   const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    console.log("Funds component rendering");
-    console.log("Current user:", user);
-    console.log("Only mine filter:", onlyMine);
-  }, [user, onlyMine]);
 
   const limit = 20;
   const {
@@ -165,7 +159,9 @@ export default function Funds() {
                     <label className={styles["value-income"]}>
                       Beschikbaar:
                     </label>
-                    <span>€{formatCurrency(initiative?.beschikbaar ?? 0)}</span>
+                    <span>
+                      €{formatCurrency(initiative.budget + initiative.expenses)}
+                    </span>
                   </div>
                 </li>
                 {initiative?.hidden && (

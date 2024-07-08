@@ -27,7 +27,7 @@ const AddRegulationDesktop: React.FC<AddRegulationDesktopProps> = ({
   const [descriptionError, setDescriptionError] = useState(false);
   const [charCount, setCharCount] = useState(regulationDescription.length);
   const [maxNameLength] = useState(128);
-  const images = useCachedImages();
+  const images = useCachedImages(["close"]);
 
   useEffect(() => {
     if (isOpen) {

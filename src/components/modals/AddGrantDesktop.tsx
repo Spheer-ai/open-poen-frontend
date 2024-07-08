@@ -28,7 +28,7 @@ const AddGrantDesktop: React.FC<AddGrantDesktopProps> = ({
   const [nameError, setNameError] = useState("");
   const [referenceError, setReferenceError] = useState("");
   const [budgetError, setBudgetError] = useState("");
-  const images = useCachedImages();
+  const images = useCachedImages(["close"]);
 
   useEffect(() => {
     if (isOpen) {

@@ -65,7 +65,13 @@ export default function UserDetailsPage({
   const [hasDeletePermission, setHasDeletePermission] = useState(false);
   const [initiativeId, setInitiativeId] = useState(null);
   const [activityId, setActivityId] = useState(null);
-  const images = useCachedImages();
+  const images = useCachedImages([
+    "edit",
+    "settings",
+    "changePassword",
+    "delete",
+    "placeholderProfile",
+  ]);
 
   if (initiativeId !== null) {
     navigate(`/funds/${initiativeId}/activities`);

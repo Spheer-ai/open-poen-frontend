@@ -26,7 +26,7 @@ const DeleteActivity: React.FC<DeleteActivityProps> = ({
   const [modalIsOpen, setModalIsOpen] = useState(isOpen);
   const [apiError, setApiError] = useState("");
   const navigate = useNavigate();
-  const images = useCachedImages();
+  const images = useCachedImages(["close"]);
 
   useEffect(() => {
     if (isOpen) {

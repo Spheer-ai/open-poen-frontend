@@ -17,7 +17,7 @@ const Step2BankApproval: React.FC<Step2BankApprovalProps> = ({
   const token = user?.token;
   const [approvalInfo, setApprovalInfo] = useState<string | null>(null);
   const navigate = useNavigate();
-  const images = useCachedImages();
+  const images = useCachedImages(["connector"]);
 
   useEffect(() => {
     async function initiateGocardlessRequest() {

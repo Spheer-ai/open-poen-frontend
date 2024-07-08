@@ -17,7 +17,7 @@ const ActivityImageUploader: React.FC<ImageUploaderProps> = ({
 }) => {
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const images = useCachedImages();
+  const images = useCachedImages(["upload"]);
   const [isUploading, setIsUploading] = useState(false);
 
   const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {

@@ -38,7 +38,7 @@ const FetchPayment: React.FC<FetchPaymentProps> = ({
 }) => {
   const [modalIsOpen, setModalIsOpen] = useState(isOpen);
   const [paymentData, setPaymentData] = useState<Transaction>();
-  const images = useCachedImages();
+  const images = useCachedImages(["close"]);
 
   useEffect(() => {
     if (isOpen) {

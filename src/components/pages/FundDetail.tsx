@@ -51,7 +51,7 @@ const FundDetail: React.FC<FundDetailProps> = ({
   const [initiativeData, setInitiativeData] = useState<FundDetails | null>(
     initialData,
   );
-  const images = useCachedImages();
+  const images = useCachedImages(["edit", "delete"]);
 
   const handleTabChange = (tabName: string) => {
     setActiveTab(tabName);
