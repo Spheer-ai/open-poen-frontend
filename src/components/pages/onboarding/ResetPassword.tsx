@@ -143,7 +143,7 @@ function ResetPassword() {
                   onClick={togglePasswordVisibility}
                 >
                   <img
-                    src={showPassword ? "{images.hidePass}" : "{images.show}"}
+                    src={showPassword ? `${images.hidePass}` : `${images.show}`}
                     alt="Toggle Password Visibility"
                   />
                 </span>
@@ -165,7 +165,9 @@ function ResetPassword() {
                 >
                   <img
                     src={
-                      showConfirmPassword ? "{images.hide}" : "{images.show}"
+                      showConfirmPassword
+                        ? `${images.hidePass}`
+                        : `${images.show}`
                     }
                     alt="Toggle Password Visibility"
                   />

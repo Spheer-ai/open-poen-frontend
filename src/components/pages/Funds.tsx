@@ -10,7 +10,7 @@ import { calculateBarWidth, formatCurrency } from "../utils/calculations";
 export default function Funds() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const [onlyMine, setOnlyMine] = useState(true);
+  const [onlyMine, setOnlyMine] = useState(!!user);
   const [loading, setLoading] = useState(true);
 
   const limit = 20;
@@ -45,6 +45,13 @@ export default function Funds() {
       };
     }
   }, [checkBottom]);
+
+  useEffect(() => {
+    if (!user) {
+      setLoading(true);
+      setOnlyMine(false);
+    }
+  }, [user]);
 
   const navigateToActivities = (
     initiativeId: number,

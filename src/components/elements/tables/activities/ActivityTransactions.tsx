@@ -231,7 +231,6 @@ const ActivityTransactions: React.FC<{
       );
 
       const hasEditPermission = userPermissions?.includes("edit") ?? false;
-      const hasReadPermission = userPermissions?.includes("read") ?? false;
       const hasDeletePermission = userPermissions?.includes("delete") ?? false;
 
       setHasDeletePermission(hasDeletePermission);

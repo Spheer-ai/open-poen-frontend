@@ -21,6 +21,7 @@ export default function Login({ onLogin }: { onLogin: () => void }) {
     "inputUsername",
     "inputPassword",
     "hidePass",
+    "show",
   ]);
 
   const handleLogin = async () => {
@@ -135,7 +136,7 @@ export default function Login({ onLogin }: { onLogin: () => void }) {
                   onClick={togglePasswordVisibility}
                 >
                   <img
-                    src={showPassword ? `${images.hide}` : `${images.show}`}
+                    src={showPassword ? `${images.hidePass}` : `${images.show}`}
                     alt="Toggle Password Visibility"
                   />
                 </span>
