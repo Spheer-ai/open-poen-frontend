@@ -5,8 +5,13 @@ import {
   fetchGrantDetails,
   fetchRegulationDetails,
 } from "../../../middleware/Api";
+import {
+  GrantDetails,
+  RegulationDetails,
+} from "../../../../types/SponsorsType";
+import useCachedImages from "../../../utils/images";
 
-interface FundsSponsorsProps {
+interface ActivitySponsorsProps {
   grantId?: number;
   grantName?: string;
   grantReference?: string;
@@ -14,7 +19,7 @@ interface FundsSponsorsProps {
   token: string;
 }
 
-const FundsSponsors: React.FC<FundsSponsorsProps> = ({
+const ActivitySponsors: React.FC<ActivitySponsorsProps> = ({
   grantId,
   grantName,
   grantReference,
@@ -25,11 +30,13 @@ const FundsSponsors: React.FC<FundsSponsorsProps> = ({
     style: "currency",
     currency: "EUR",
   });
-  const [grantDetails, setGrantDetails] = useState<any>(null);
-  const [regulationDetails, setRegulationDetails] = useState<any>(null);
+  const [grantDetails, setGrantDetails] = useState<GrantDetails | null>(null);
+  const [regulationDetails, setRegulationDetails] =
+    useState<RegulationDetails | null>(null);
   const [loadingGrantDetails, setLoadingGrantDetails] = useState<boolean>(true);
   const [loadingRegulationDetails, setLoadingRegulationDetails] =
     useState<boolean>(true);
+  const images = useCachedImages(["sponsor"]);
 
   useEffect(() => {
     if (grantId) {
@@ -84,7 +91,7 @@ const FundsSponsors: React.FC<FundsSponsorsProps> = ({
       {regulationDetails && regulationDetails.funder && (
         <div className={styles["funder-details-container"]}>
           <div className={styles["blue-circle"]}>
-            <img src="/blue-circle.svg" alt="Blue Circle" />
+            <img src={images.sponsor} alt="Sponsor logo" />
           </div>
           <div className={styles["funder-details"]}>
             <div className={styles["details-item"]}>
@@ -132,4 +139,5 @@ const FundsSponsors: React.FC<FundsSponsorsProps> = ({
     </div>
   );
 };
-export default FundsSponsors;
+
+export default ActivitySponsors;

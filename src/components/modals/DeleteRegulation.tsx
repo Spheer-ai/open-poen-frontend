@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styles from "../../assets/scss/layout/AddFundDesktop.module.scss";
 import { deleteRegulation } from "../middleware/Api";
-import CloseIson from "/close-icon.svg";
+import useCachedImages from "../utils/images";
 
 interface DeleteRegulationProps {
   isOpen: boolean;
@@ -27,6 +27,7 @@ const DeleteRegulation: React.FC<DeleteRegulationProps> = ({
 }) => {
   const [modalIsOpen, setModalIsOpen] = useState(isOpen);
   const [regulationName, setRegulationName] = useState(currentName);
+  const images = useCachedImages(["close"]);
   const [regulationDescription, setRegulationDescription] =
     useState(currentDescription);
 
@@ -88,7 +89,7 @@ const DeleteRegulation: React.FC<DeleteRegulationProps> = ({
         <div className={styles.formTop}>
           <h2 className={styles.title}>Regeling Verwijderen</h2>
           <button onClick={handleClose} className={styles.closeBtn}>
-            <img src={CloseIson} alt="" />
+            <img src={images.close} alt="Close Icon" />
           </button>
         </div>
         <hr></hr>

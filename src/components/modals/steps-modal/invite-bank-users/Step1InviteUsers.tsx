@@ -4,6 +4,7 @@ import {
   linkUsersToBankAccount,
   fetchBankAccount,
 } from "../../../middleware/Api";
+import useCachedImages from "../../../utils/images";
 import AddedEmailsList from "./added-users/AddedEmailList";
 import SearchUsers from "./added-users/SearchUsers";
 
@@ -34,6 +35,8 @@ const Step1InviteUsers: React.FC<Step1InviteUsersProps> = ({
   const [alreadyAddedEmails, setAlreadyAddedEmails] = useState<UserProfile[]>(
     [],
   );
+  const images = useCachedImages(["sandboxLogo", "placeholderProfile"]);
+
   const [searchResults, setSearchResults] = useState<
     {
       email: string;
@@ -144,7 +147,7 @@ const Step1InviteUsers: React.FC<Step1InviteUsersProps> = ({
             {bankInfo.institution_name === "Sandbox" ? (
               <div className={styles.bankLogo}>
                 <img
-                  src="/sandbox-bank.png"
+                  src={images.sandboxLogo}
                   alt="Sandbox Bank Logo"
                   width="80"
                   height="80"
@@ -180,7 +183,7 @@ const Step1InviteUsers: React.FC<Step1InviteUsersProps> = ({
                     <img
                       src={
                         user.profile_picture.attachment_thumbnail_url_128 ||
-                        "/profile-placeholder.png"
+                        `${images.placeholderProfile}`
                       }
                       alt={`${user.email} Profile Picture`}
                       width="40"
@@ -189,7 +192,7 @@ const Step1InviteUsers: React.FC<Step1InviteUsersProps> = ({
                     />
                   ) : (
                     <img
-                      src="/profile-placeholder.png"
+                      src={images.placeholderProfile}
                       alt="Profile Placeholder"
                       width="40"
                       height="40"

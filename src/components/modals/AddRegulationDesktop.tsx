@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styles from "../../assets/scss/layout/AddFundDesktop.module.scss";
 import { addRegulation } from "../middleware/Api";
-import CloseIson from "/close-icon.svg";
+import useCachedImages from "../utils/images";
 
 interface AddRegulationDesktopProps {
   isOpen: boolean;
@@ -27,6 +27,7 @@ const AddRegulationDesktop: React.FC<AddRegulationDesktopProps> = ({
   const [descriptionError, setDescriptionError] = useState(false);
   const [charCount, setCharCount] = useState(regulationDescription.length);
   const [maxNameLength] = useState(128);
+  const images = useCachedImages(["close"]);
 
   useEffect(() => {
     if (isOpen) {
@@ -150,7 +151,7 @@ const AddRegulationDesktop: React.FC<AddRegulationDesktopProps> = ({
         <div className={styles.formTop}>
           <h2 className={styles.title}>Regeling Aanmaken</h2>
           <button onClick={handleClose} className={styles.closeBtn}>
-            <img src={CloseIson} alt="" />
+            <img src={images.close} alt="Close Icon" />
           </button>
         </div>
         <hr></hr>

@@ -3,20 +3,16 @@ import { useParams, useNavigate } from "react-router-dom";
 import jwtDecode from "jwt-decode";
 import { useAuth } from "../../contexts/AuthContext";
 import UserDetails from "../../types/UserTypes";
-import ProfilePlaceholder from "/profile-placeholder.png";
 import styles from "../../assets/scss/UserDetailPage.module.scss";
 import LoadingDot from "../animation/LoadingDot";
 import ChangePasswordForm from "../modals/ChangePassword";
 import EditUserProfileForm from "../modals/EditUserProfile";
-import EditIcon from "/edit-icon.svg";
-import DeleteIcon from "/bin-icon.svg";
-import SettingsIcon from "/setting-icon.svg";
-import ChangePasswordIcon from "/change-password-icon.svg";
 import { fetchUserDetails } from "../middleware/Api";
-import { usePermissions } from "../../contexts/PermissionContext";
+import { useFetchEntityPermissions } from "../hooks/useFetchPermissions";
 import { useFieldPermissions } from "../../contexts/FieldPermissionContext";
 import EditUserForm from "../modals/EditUser";
 import DeleteUser from "../modals/DeleteUser";
+import useCachedImages from "../utils/images";
 
 const roleLabels = {
   administrator: "Beheerder",
@@ -62,13 +58,20 @@ export default function UserDetailsPage({
   const [isChangePasswordModalOpen, setIsChangePasswordModalOpen] =
     useState(false);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
-  const { fetchFieldPermissions } = useFieldPermissions();
-  const { fetchPermissions } = usePermissions();
+  const { fieldPermissions, fetchFieldPermissions } = useFieldPermissions();
+  const { permissions, fetchPermissions } = useFetchEntityPermissions();
   const [entityPermissions, setEntityPermissions] = useState<string[]>([]);
   const [hasEditPermission, setHasEditPermission] = useState(false);
   const [hasDeletePermission, setHasDeletePermission] = useState(false);
   const [initiativeId, setInitiativeId] = useState(null);
   const [activityId, setActivityId] = useState(null);
+  const images = useCachedImages([
+    "edit",
+    "settings",
+    "changePassword",
+    "delete",
+    "placeholderProfile",
+  ]);
 
   if (initiativeId !== null) {
     navigate(`/funds/${initiativeId}/activities`);
@@ -112,11 +115,14 @@ export default function UserDetailsPage({
     async function fetchFieldPermissionsOnMount() {
       try {
         if (user && user.token && userId) {
-          const fieldPermissions: string[] | undefined =
-            await fetchFieldPermissions("User", parseInt(userId), user.token);
+          const fieldPermissionsResponse = await fetchFieldPermissions(
+            "User",
+            parseInt(userId),
+            user.token,
+          );
 
-          if (fieldPermissions) {
-            setEntityPermissions(fieldPermissions);
+          if (fieldPermissionsResponse) {
+            setEntityPermissions(fieldPermissionsResponse.fields || []);
           }
         }
       } catch (error) {
@@ -244,7 +250,7 @@ export default function UserDetailsPage({
               className={styles["top-right-button"]}
               onClick={handleToggleEditUserProfileModal}
             >
-              <img src={EditIcon} alt="Profiel" className={styles["icon"]} />
+              <img src={images.edit} alt="Profiel" className={styles["icon"]} />
               <span>Profiel</span>
             </div>
           )}
@@ -254,7 +260,7 @@ export default function UserDetailsPage({
               onClick={handleToggleEditUserModal}
             >
               <img
-                src={SettingsIcon}
+                src={images.settings}
                 alt="Instellingen"
                 className={styles["icon"]}
               />
@@ -268,7 +274,7 @@ export default function UserDetailsPage({
               onClick={handleToggleChangePasswordModal}
             >
               <img
-                src={ChangePasswordIcon}
+                src={images.changePassword}
                 alt="Change Password"
                 className={styles["icon"]}
               />
@@ -283,7 +289,7 @@ export default function UserDetailsPage({
               <img
                 alt="Delete User"
                 className={styles["icon"]}
-                src={DeleteIcon}
+                src={images.delete}
               />
               <span>Verwijderen</span>
             </div>
@@ -308,7 +314,7 @@ export default function UserDetailsPage({
                     sizes="(max-width: 768px) 128px, 256px"
                     src={
                       userDetails?.profile_picture?.attachment_url ||
-                      ProfilePlaceholder
+                      images.placeholderProfile
                     }
                     alt="Profile"
                     className={`${styles["user-image"]} ${styles["circular"]}`}
@@ -407,7 +413,7 @@ export default function UserDetailsPage({
         last_name={""}
         biography={""}
         hidden={true}
-        fieldPermissions={entityPermissions}
+        fieldPermissions={fieldPermissions}
         fields={[]}
         isOpen={isEditUserProfileModalOpen}
         onClose={handleToggleEditUserProfileModal}
@@ -417,7 +423,7 @@ export default function UserDetailsPage({
 
       <EditUserForm
         userId={userId || ""}
-        fieldPermissions={entityPermissions}
+        fieldPermissions={fieldPermissions}
         fields={[]}
         isOpen={isEditUserModalOpen}
         onClose={handleToggleEditUserModal}

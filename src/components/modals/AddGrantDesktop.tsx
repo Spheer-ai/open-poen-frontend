@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styles from "../../assets/scss/layout/AddFundDesktop.module.scss";
 import { addGrant } from "../middleware/Api";
-import CloseIson from "/close-icon.svg";
+import useCachedImages from "../utils/images";
 
 interface AddGrantDesktopProps {
   isOpen: boolean;
@@ -28,6 +28,7 @@ const AddGrantDesktop: React.FC<AddGrantDesktopProps> = ({
   const [nameError, setNameError] = useState("");
   const [referenceError, setReferenceError] = useState("");
   const [budgetError, setBudgetError] = useState("");
+  const images = useCachedImages(["close"]);
 
   useEffect(() => {
     if (isOpen) {
@@ -154,7 +155,7 @@ const AddGrantDesktop: React.FC<AddGrantDesktopProps> = ({
         <div className={styles.formTop}>
           <h2 className={styles.title}>Beschikking aanmaken</h2>
           <button onClick={handleClose} className={styles.closeBtn}>
-            <img src={CloseIson} alt="" />
+            <img src={images.close} alt="Close Icon" />
           </button>
         </div>
         <hr></hr>

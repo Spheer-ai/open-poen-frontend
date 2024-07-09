@@ -1,17 +1,16 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import { getPaymentsByActivity } from "../../../middleware/Api";
 import styles from "../../../../assets/scss/TransactionOverview.module.scss";
 import PaymentDetails from "../../../modals/PaymentDetails";
-import ViewIcon from "/eye.svg";
 import { useNavigate } from "react-router-dom";
 import EditPayment from "../../../modals/EditPayment";
 import AddPayment from "../../../modals/AddPayment";
-import { usePermissions } from "../../../../contexts/PermissionContext";
+import { useFetchEntityPermissions } from "../../../hooks/useFetchPermissions";
 import { useAuth } from "../../../../contexts/AuthContext";
 import LoadingDot from "../../../animation/LoadingDot";
 import LoadingCircle from "../../../animation/LoadingCircle";
-import { useFieldPermissions } from "../../../../contexts/FieldPermissionContext";
 import FilterPayment from "../../../modals/FilterPayment";
+import useCachedImages from "../../../utils/images";
 
 export interface Transaction {
   id: number;
@@ -41,30 +40,26 @@ const formatDate = (dateString: string) => {
     return "";
   }
 };
+
 const ActivityTransactions: React.FC<{
   authToken: string;
   initiativeId: string;
   activityId: string;
   activity_name: string;
   onRefreshTrigger: () => void;
-  entityPermissions;
-  hasCreatePaymentPermission;
+  entityPermissions: string[];
+  hasCreatePaymentPermission: boolean;
 }> = ({
   authToken,
   initiativeId,
   activityId,
   activity_name,
   onRefreshTrigger,
+  entityPermissions,
   hasCreatePaymentPermission,
 }) => {
   const { user } = useAuth();
-  const { fetchPermissions } = usePermissions();
-  const [hasEditPermission, setHasEditPermission] = useState<
-    boolean | undefined
-  >(false);
-  const [hasReadPermission, setHasReadPermission] = useState<
-    boolean | undefined
-  >(false);
+  const { fetchPermissions } = useFetchEntityPermissions();
   const [hasDeletePermission, setHasDeletePermission] = useState<
     boolean | undefined
   >(false);
@@ -75,33 +70,27 @@ const ActivityTransactions: React.FC<{
   >(null);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [isBlockingInteraction, setIsBlockingInteraction] = useState(false);
-  const [entityPermissions, setEntityPermissions] = useState<string[]>([]);
   const [isLoadingPermissions, setIsLoadingPermissions] = useState(false);
-  const { fetchFieldPermissions } = useFieldPermissions();
-  const [
-    permissionsFetchedForTransaction,
-    setPermissionsFetchedForTransaction,
-  ] = useState<number | null>(null);
   const [isFetchPaymentDetailsModalOpen, setIsFetchPaymentDetailsModalOpen] =
     useState(false);
   const [isAddPaymentModalOpen, setIsAddPaymentModalOpen] = useState(false);
   const [isFilterPaymentModalOpen, setIsFilterPaymentModalOpen] =
     useState(false);
   const [isEditPaymentModalOpen, setIsEditPaymentModalOpen] = useState(false);
-  const [selectedTransaction, setSelectedTransaction] =
-    useState<Transaction | null>(null);
   const [editedTransaction, setEditedTransaction] =
     useState<Transaction | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [loadingMore, setLoadingMore] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(true);
   const [hasMoreTransactions, setHasMoreTransactions] = useState(true);
-  const [startDate, setStartDate] = useState<string>("");
-  const [endDate, setEndDate] = useState<string>("");
-  const [minAmount, setMinAmount] = useState<string>("");
-  const [maxAmount, setMaxAmount] = useState<string>("");
-  const [route, setRoute] = useState<string>("");
+  const images = useCachedImages(["view"]);
   const [pageSize] = useState(20);
-  const [filterCriteria, setFilterCriteria] = useState({
+  const [filterCriteria, setFilterCriteria] = useState<{
+    startDate: string;
+    endDate: string;
+    minAmount: string;
+    maxAmount: string;
+    route: string;
+  }>({
     startDate: "",
     endDate: "",
     minAmount: "",
@@ -125,35 +114,31 @@ const ActivityTransactions: React.FC<{
     }
   };
 
-  useEffect(() => {
-    fetchTransactions();
-  }, [filterCriteria]);
-
-  const handleFilterApplied = (filters) => {
-    setStartDate(filters.startDate);
-    setEndDate(filters.endDate);
-    setMinAmount(filters.minAmount);
-    setMaxAmount(filters.maxAmount);
-    setRoute(filters.route);
-    setCurrentPage(1);
-
-    setFilterCriteria(filters);
-  };
-
-  const fetchTransactions = async () => {
+  const fetchTransactions = useCallback(async () => {
     try {
       setLoadingMore(true);
 
-      let queryParams: any = {
+      const queryParams: {
+        offset: number;
+        limit: number;
+        start_date?: string;
+        end_date?: string;
+        min_amount?: string;
+        max_amount?: string;
+        route?: string;
+      } = {
         offset: (currentPage - 1) * pageSize,
         limit: pageSize,
       };
 
-      if (startDate) queryParams.start_date = startDate;
-      if (endDate) queryParams.end_date = endDate;
-      if (minAmount) queryParams.min_amount = minAmount;
-      if (maxAmount) queryParams.max_amount = maxAmount;
-      if (route) queryParams.route = route;
+      if (filterCriteria.startDate)
+        queryParams.start_date = filterCriteria.startDate;
+      if (filterCriteria.endDate) queryParams.end_date = filterCriteria.endDate;
+      if (filterCriteria.minAmount)
+        queryParams.min_amount = filterCriteria.minAmount;
+      if (filterCriteria.maxAmount)
+        queryParams.max_amount = filterCriteria.maxAmount;
+      if (filterCriteria.route) queryParams.route = filterCriteria.route;
 
       const response = await getPaymentsByActivity(
         authToken,
@@ -198,21 +183,41 @@ const ActivityTransactions: React.FC<{
     } finally {
       setLoadingMore(false);
     }
+  }, [
+    authToken,
+    initiativeId,
+    activityId,
+    currentPage,
+    pageSize,
+    filterCriteria,
+  ]);
+
+  useEffect(() => {
+    fetchTransactions();
+  }, [filterCriteria, fetchTransactions]);
+
+  const handleFilterApplied = (filters: {
+    startDate?: string;
+    endDate?: string;
+    minAmount?: string;
+    maxAmount?: string;
+    route?: string;
+  }) => {
+    setFilterCriteria({
+      startDate: filters.startDate || "",
+      endDate: filters.endDate || "",
+      minAmount: filters.minAmount || "",
+      maxAmount: filters.maxAmount || "",
+      route: filters.route || "",
+    });
+    setCurrentPage(1);
   };
 
-  const handleLoadMore = () => {
+  const handleLoadMore = useCallback(() => {
     if (!loadingMore && hasMoreTransactions) {
       setCurrentPage((prevPage) => prevPage + 1);
-      setFilterCriteria((prevCriteria) => ({
-        ...prevCriteria,
-        startDate: "",
-        endDate: "",
-        minAmount: "",
-        maxAmount: "",
-        route: "",
-      }));
     }
-  };
+  }, [loadingMore, hasMoreTransactions]);
 
   const handleEyeIconClick = async (transactionId: number) => {
     setIsLoadingPermissions(true);
@@ -225,19 +230,10 @@ const ActivityTransactions: React.FC<{
         userToken,
       );
 
-      const hasEditPermission =
-        userPermissions && userPermissions.includes("edit");
-      setHasEditPermission(hasEditPermission);
+      const hasEditPermission = userPermissions?.includes("edit") ?? false;
+      const hasDeletePermission = userPermissions?.includes("delete") ?? false;
 
-      const hasReadPermission =
-        userPermissions && userPermissions.includes("read");
-      setHasReadPermission(hasReadPermission);
-
-      const hasDeletePermission =
-        userPermissions && userPermissions.includes("delete");
       setHasDeletePermission(hasDeletePermission);
-
-      setPermissionsFetchedForTransaction(transactionId);
 
       if (hasEditPermission) {
         handleTransactionEditClick(transactionId);
@@ -245,6 +241,7 @@ const ActivityTransactions: React.FC<{
         handleTransactionDetailsClick(transactionId);
       }
     } catch (error) {
+      console.error("Failed to fetch user permissions:", error);
     } finally {
       setIsLoadingPermissions(false);
     }
@@ -252,7 +249,6 @@ const ActivityTransactions: React.FC<{
 
   const handleTransactionDetailsClick = (transactionId: number) => {
     setSelectedTransactionId(transactionId);
-
     setIsFetchPaymentDetailsModalOpen(true);
   };
 
@@ -281,29 +277,6 @@ const ActivityTransactions: React.FC<{
       }
     }
   };
-
-  useEffect(() => {
-    async function fetchFieldPermissionsOnMount() {
-      try {
-        if (user && user.token && selectedTransactionId) {
-          const fieldPermissions: string[] | undefined =
-            await fetchFieldPermissions(
-              "Payment",
-              selectedTransactionId,
-              user.token,
-            );
-
-          if (fieldPermissions) {
-            setEntityPermissions(fieldPermissions);
-          }
-        }
-      } catch (error) {
-        console.error("Failed to fetch field permissions:", error);
-      }
-    }
-
-    fetchFieldPermissionsOnMount();
-  }, [user, selectedTransactionId, fetchFieldPermissions]);
 
   const handleToggleFetchPaymentDetailsModal = () => {
     if (isFetchPaymentDetailsModalOpen) {
@@ -353,7 +326,7 @@ const ActivityTransactions: React.FC<{
     if (refreshTrigger > 0) {
       fetchTransactions();
     }
-  }, [refreshTrigger]);
+  }, [refreshTrigger, fetchTransactions]);
 
   const handlePaymentEdited = () => {
     setRefreshTrigger((prev) => prev + 1);
@@ -397,11 +370,10 @@ const ActivityTransactions: React.FC<{
     if (isAtBottom) {
       handleLoadMore();
     }
-  }, [isAtBottom]);
+  }, [isAtBottom, handleLoadMore]);
 
   return (
     <>
-      {" "}
       <AddPayment
         isOpen={isAddPaymentModalOpen}
         onClose={handleToggleAddPaymentModal}
@@ -499,7 +471,7 @@ const ActivityTransactions: React.FC<{
                     <LoadingCircle />
                   ) : (
                     <img
-                      src={ViewIcon}
+                      src={images.view}
                       alt="Eye Icon"
                       onClick={() => handleEyeIconClick(transaction.id)}
                       style={{ cursor: "pointer" }}
@@ -526,7 +498,7 @@ const ActivityTransactions: React.FC<{
                   <LoadingDot delay={0.2} />
                 </div>
               ) : (
-                <></>
+                "Load More"
               )}
             </button>
           </div>

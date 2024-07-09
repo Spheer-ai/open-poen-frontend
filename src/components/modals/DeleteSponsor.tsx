@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styles from "../../assets/scss/layout/AddFundDesktop.module.scss";
 import { deleteSponsor } from "../middleware/Api";
-import CloseIson from "/close-icon.svg";
+import useCachedImages from "../utils/images";
 
 interface DeleteSponsorProps {
   isOpen: boolean;
@@ -19,6 +19,7 @@ const DeleteSponsor: React.FC<DeleteSponsorProps> = ({
   sponsorId,
 }) => {
   const [modalIsOpen, setModalIsOpen] = useState(isOpen);
+  const images = useCachedImages(["close"]);
 
   useEffect(() => {
     if (isOpen) {
@@ -70,7 +71,7 @@ const DeleteSponsor: React.FC<DeleteSponsorProps> = ({
         <div className={styles.formTop}>
           <h2 className={styles.title}>Sponsor Verwijderen</h2>
           <button onClick={handleClose} className={styles.closeBtn}>
-            <img src={CloseIson} alt="" />
+            <img src={images.close} alt="Close Icon" />
           </button>
         </div>
         <hr />

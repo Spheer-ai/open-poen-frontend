@@ -2,32 +2,9 @@ import React, { useEffect, useState } from "react";
 import styles from "../../assets/scss/layout/AddFundDesktop.module.scss";
 import FundImageUploader from "../elements/uploadder/FundImageUploader";
 import { editFund, uploadFundPicture } from "../middleware/Api";
-import CloseIson from "/close-icon.svg";
-
-interface FundDetails {
-  id?: number;
-  name?: string;
-  description?: string;
-  budget?: number;
-  income?: number;
-  expenses?: number;
-  purpose?: string;
-  target_audience?: string;
-  kvk_registration?: string;
-  location?: string;
-}
-
-interface EditFundProps {
-  isOpen: boolean;
-  onClose: () => void;
-  isBlockingInteraction: boolean;
-  onFundEdited: () => void;
-  initiativeId: string;
-  authToken: string;
-  fundData: FundDetails | null;
-  fieldPermissions;
-  fields: string[];
-}
+import { useFieldPermissions } from "../../contexts/FieldPermissionContext";
+import { EditFundProps, FundDetails } from "../../types/EditFundTypes";
+import useCachedImages from "../utils/images";
 
 const EditFund: React.FC<EditFundProps> = ({
   isOpen,
@@ -37,13 +14,26 @@ const EditFund: React.FC<EditFundProps> = ({
   initiativeId,
   authToken,
   fundData,
-  fieldPermissions,
 }) => {
   const [modalIsOpen, setModalIsOpen] = useState(isOpen);
   const [isHiddenSponsors, setIsHiddenSponsors] = useState(false);
   const [isHidden, setIsHidden] = useState(false);
   const [apiError, setApiError] = useState("");
-  const [formData, setFormData] = useState<FundDetails | null>(null);
+  const [formData, setFormData] = useState<FundDetails>({
+    grant: fundData?.grant || {},
+    id: fundData?.id,
+    name: fundData?.name || "",
+    description: fundData?.description || "",
+    budget: fundData?.budget,
+    income: fundData?.income,
+    expenses: fundData?.expenses,
+    purpose: fundData?.purpose,
+    target_audience: fundData?.target_audience,
+    kvk_registration: fundData?.kvk_registration,
+    location: fundData?.location,
+    profile_picture: fundData?.profile_picture,
+    initiative_owners: fundData?.initiative_owners,
+  });
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [charCount, setCharCount] = useState(0);
   const [purposeCount, setPurposeCount] = useState(0);
@@ -52,6 +42,8 @@ const EditFund: React.FC<EditFundProps> = ({
   const [descriptionError, setDescriptionError] = useState("");
   const [purposeError, setPurposeError] = useState("");
   const [targetAudienceError, setTargetAudienceError] = useState("");
+  const images = useCachedImages(["close"]);
+  const { fieldPermissions, fetchFieldPermissions } = useFieldPermissions();
 
   useEffect(() => {
     if (isOpen) {
@@ -64,11 +56,34 @@ const EditFund: React.FC<EditFundProps> = ({
   }, [isOpen]);
 
   useEffect(() => {
+    if (isOpen) {
+      fetchFieldPermissions("Initiative", parseInt(initiativeId), authToken);
+    }
+  }, [isOpen, initiativeId, authToken, fetchFieldPermissions]);
+
+  useEffect(() => {
     if (isOpen && fundData) {
-      setFormData(fundData);
+      setFormData({
+        ...formData,
+        grant: fundData.grant || {},
+        id: fundData.id,
+        name: fundData.name || "",
+        description: fundData.description || "",
+        budget: fundData.budget,
+        income: fundData.income,
+        expenses: fundData.expenses,
+        purpose: fundData.purpose,
+        target_audience: fundData.target_audience,
+        kvk_registration: fundData.kvk_registration,
+        location: fundData.location,
+        profile_picture: fundData.profile_picture,
+        initiative_owners: fundData.initiative_owners,
+      });
       setCharCount(fundData.description ? fundData.description.length : 0);
     }
   }, [isOpen, fundData]);
+
+  useEffect(() => {}, [fieldPermissions]);
 
   const handleSave = async () => {
     setIsSaveClicked(true);
@@ -107,7 +122,7 @@ const EditFund: React.FC<EditFundProps> = ({
 
       setApiError("");
       handleClose();
-      onFundEdited();
+      onFundEdited(updatedFundData);
     } catch (error) {
       console.error("Failed to edit fund:", error);
       if (error.response && error.response.status === 409) {
@@ -138,6 +153,8 @@ const EditFund: React.FC<EditFundProps> = ({
     setSelectedImage(file);
   };
 
+  const fields = fieldPermissions.fields || [];
+
   return (
     <>
       <div
@@ -148,13 +165,13 @@ const EditFund: React.FC<EditFundProps> = ({
         <div className={styles.formTop}>
           <h2 className={styles.title}>Beheer initiatief</h2>
           <button onClick={handleClose} className={styles.closeBtn}>
-            <img src={CloseIson} alt="" />
+            <img src={images.close} alt="Close Icon" />
           </button>
         </div>
         <hr></hr>
         <div className={styles.formGroup}>
           <h4>Algemene initiatiefinstellingen</h4>
-          {fieldPermissions.fields.includes("name") && (
+          {fields.includes("name") && (
             <>
               <label className={styles.label}>Naam:</label>
               <input
@@ -187,7 +204,7 @@ const EditFund: React.FC<EditFundProps> = ({
           )}
         </div>
         <div className={styles.formGroup}>
-          {fieldPermissions.fields.includes("description") && (
+          {fields.includes("description") && (
             <>
               <label className={styles.label}>Beschrijving:</label>
               <textarea
@@ -219,7 +236,7 @@ const EditFund: React.FC<EditFundProps> = ({
           )}
         </div>
         <div className={styles.formGroup}>
-          {fieldPermissions.fields.includes("purpose") && (
+          {fields.includes("purpose") && (
             <>
               <label className={styles.label}>Doel:</label>
               <textarea
@@ -251,7 +268,7 @@ const EditFund: React.FC<EditFundProps> = ({
           )}
         </div>
         <div className={styles.formGroup}>
-          {fieldPermissions.fields.includes("target_audience") && (
+          {fields.includes("target_audience") && (
             <>
               <label className={styles.label}>Doelgroep:</label>
               <input
@@ -274,7 +291,6 @@ const EditFund: React.FC<EditFundProps> = ({
                     ...formData,
                     target_audience: newTargetAudience,
                   });
-                  setCharCount(newTargetAudience.length);
                 }}
               />
               {isSaveClicked && targetAudienceError && (
@@ -286,7 +302,7 @@ const EditFund: React.FC<EditFundProps> = ({
           )}
         </div>
         <div className={styles.formGroup}>
-          {fieldPermissions.fields.includes("kvk_registration") && (
+          {fields.includes("kvk_registration") && (
             <>
               <label className={styles.label}>KVK Registratie:</label>
               <input
@@ -295,7 +311,6 @@ const EditFund: React.FC<EditFundProps> = ({
                 value={formData?.kvk_registration || ""}
                 onChange={(e) => {
                   const newKvkRegistration = e.target.value;
-                  // TO DO: Validation and state update logic
                   setFormData({
                     ...formData,
                     kvk_registration: newKvkRegistration,
@@ -307,7 +322,7 @@ const EditFund: React.FC<EditFundProps> = ({
           )}
         </div>
         <div className={styles.formGroup}>
-          {fieldPermissions.fields.includes("location") && (
+          {fields.includes("location") && (
             <>
               <label className={styles.label}>Locatie:</label>
               <input
@@ -316,7 +331,6 @@ const EditFund: React.FC<EditFundProps> = ({
                 value={formData?.location || ""}
                 onChange={(e) => {
                   const newLocation = e.target.value;
-                  // Validation and state update logic
                   setFormData({ ...formData, location: newLocation });
                 }}
               />
@@ -326,7 +340,7 @@ const EditFund: React.FC<EditFundProps> = ({
         </div>
         <div className={styles.formGroup}>
           <div className={styles.roleOptions}>
-            {fieldPermissions.fields.includes("hidden") && (
+            {fields.includes("hidden") && (
               <label className={styles.roleLabel}>
                 <input
                   type="checkbox"
@@ -336,7 +350,7 @@ const EditFund: React.FC<EditFundProps> = ({
                 Initiatief verbergen
               </label>
             )}
-            {fieldPermissions.fields.includes("hidden_sponsors") && (
+            {fields.includes("hidden_sponsors") && (
               <label className={styles.roleLabel}>
                 <input
                   type="checkbox"
@@ -349,7 +363,7 @@ const EditFund: React.FC<EditFundProps> = ({
           </div>
         </div>
         <div className={styles.formGroup}>
-          {fieldPermissions.fields.includes("budget") && (
+          {fields.includes("budget") && (
             <div className={styles.budgetContainer}>
               <label className={styles.labelField}> Begroting: </label>
               <input

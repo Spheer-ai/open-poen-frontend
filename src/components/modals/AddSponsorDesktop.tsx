@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styles from "../../assets/scss/layout/AddFundDesktop.module.scss";
 import { addSponsor } from "../middleware/Api";
-import CloseIson from "/close-icon.svg";
+import useCachedImages from "../utils/images";
 
 interface AddSponsorDesktopProps {
   isOpen: boolean;
@@ -23,6 +23,7 @@ const AddSponsorDesktop: React.FC<AddSponsorDesktopProps> = ({
   const [nameError, setNameError] = useState<string | null>(null);
   const [urlError, setUrlError] = useState<string | null>(null);
   const [maxNameLength] = useState(128);
+  const images = useCachedImages(["close"]);
 
   useEffect(() => {
     if (isOpen) {
@@ -132,7 +133,7 @@ const AddSponsorDesktop: React.FC<AddSponsorDesktopProps> = ({
         <div className={styles.formTop}>
           <h2 className={styles.title}>Sponsor Aanmaken</h2>
           <button onClick={handleClose} className={styles.closeBtn}>
-            <img src={CloseIson} alt="" />
+            <img src={images.close} alt="Close Icon" />
           </button>
         </div>
         <hr></hr>

@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import styles from "../../../assets/scss/TopNavigationBar.module.scss";
 import Search from "../../elements/search/Search";
 import { TopNavigationBarProps } from "../../../types/TopNavigationBarType";
+import useCachedImages from "../../utils/images";
 
 const TopNavigationBar: React.FC<TopNavigationBarProps> = ({
   title,
@@ -21,6 +22,7 @@ const TopNavigationBar: React.FC<TopNavigationBarProps> = ({
   showTitleOnSmallScreen = true,
 }) => {
   const hasBackArrow = Boolean(onBackArrowClick);
+  const images = useCachedImages(["logoMobile", "return", "home", "search"]);
   const handleTitleClick = () => {
     if (onTitleClick && typeof onTitleClick === "function") {
       onTitleClick();
@@ -49,7 +51,7 @@ const TopNavigationBar: React.FC<TopNavigationBarProps> = ({
               <Link to="/funds">
                 <img
                   className={styles["logo"]}
-                  src="/open-poen-logo-blue-mobile.svg"
+                  src={images.logoMobile}
                   alt="Home Logo"
                 />
               </Link>
@@ -57,7 +59,7 @@ const TopNavigationBar: React.FC<TopNavigationBarProps> = ({
             <div className={styles["back-arrow-section"]}>
               {onBackArrowClick && (
                 <button onClick={onBackArrowClick} className={styles.backArrow}>
-                  <img src="/arrow-left.svg" alt="Terug" />
+                  <img src={images.return} alt="Terug" />
                 </button>
               )}
               {showTitleOnSmallScreen && (
@@ -90,7 +92,7 @@ const TopNavigationBar: React.FC<TopNavigationBarProps> = ({
         <div className={styles["bar-items"]}>
           {onBackArrowClick && (
             <button onClick={onBackArrowClick} className={styles.backArrow}>
-              <img src="/arrow-left.svg" alt="Terug" />
+              <img src={images.return} alt="Terug" />
             </button>
           )}
           <div
@@ -112,7 +114,7 @@ const TopNavigationBar: React.FC<TopNavigationBarProps> = ({
                 className={styles["settings-icon"]}
                 onClick={onSettingsClick}
               >
-                <img src="/profile-settings.svg" alt="Profile Settings" />
+                <img src={images.settings} alt="Profile Settings" />
               </div>
             )}
             {showCta && hasPermission && (

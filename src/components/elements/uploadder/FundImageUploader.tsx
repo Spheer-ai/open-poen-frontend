@@ -1,6 +1,7 @@
 import React, { useState, useRef } from "react";
 import styles from "../../../assets/scss/ImageUploader.module.scss";
 import { uploadFundPicture } from "../../../components/middleware/Api";
+import useCachedImages from "../../utils/images";
 
 interface ImageUploaderProps {
   initiativeId: string;
@@ -15,6 +16,7 @@ const FundImageUploader: React.FC<ImageUploaderProps> = ({
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const images = useCachedImages(["upload"]);
 
   const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -39,7 +41,7 @@ const FundImageUploader: React.FC<ImageUploaderProps> = ({
 
   return (
     <div className={styles["image-uploader-container"]} onClick={openFileInput}>
-      <img src="/upload-image.svg" alt="Upload Image" />
+      <img src={images.upload} alt="Upload image" />
       <h4>Zet uw bestanden hier neer</h4>
       <p>Blader door het bestand vanaf uw computer</p>
       <input

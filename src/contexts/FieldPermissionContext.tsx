@@ -1,12 +1,16 @@
 import { createContext, useContext } from "react";
 
+interface FieldPermissions {
+  fields: string[];
+}
+
 interface FieldPermissionContextType {
-  fieldPermissions: string[];
+  fieldPermissions: FieldPermissions;
   fetchFieldPermissions: (
     entityClass: string,
     entityId: number,
     token: string,
-  ) => Promise<string[] | undefined>;
+  ) => Promise<FieldPermissions | undefined>;
 }
 
 const FieldPermissionContext = createContext<
@@ -23,4 +27,5 @@ export const useFieldPermissions = () => {
   return context;
 };
 
+export type { FieldPermissions };
 export default FieldPermissionContext;

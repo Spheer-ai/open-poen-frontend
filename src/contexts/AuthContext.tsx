@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { getUserData, login as apiLogin } from "../components/middleware/Api";
+import { login as apiLogin } from "../components/middleware/Api";
 import { UserData, AuthContextValue } from "../types/AuthContextTypes";
 import { IntlProvider, createIntl, IntlShape } from "react-intl";
 import { messages, defaultLocale } from "../locale/messages";
@@ -8,7 +8,7 @@ import jwtDecode from "jwt-decode";
 
 interface JwtPayload {
   exp: number;
-  userId: string;
+  sub: string; // Changed from userId to sub to match the JWT standard
   username: string;
 }
 
@@ -33,6 +33,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const [user, setUser] = useState<UserData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isTokenLoaded, setIsTokenLoaded] = useState(false);
   const locale = getLocale();
   const intl: IntlShape = createIntl({ locale, messages: messages[locale] });
 
@@ -60,28 +61,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       if (isTokenExpired(token)) {
         logout();
       } else {
-        const decodedToken = decodeToken(token) as JwtPayload | null;
+        const decodedToken = decodeToken(token);
         if (decodedToken) {
-          const userId: number | undefined =
-            Number(decodedToken?.userId) || undefined;
-
-          const fetchUserData = async () => {
-            try {
-              const userData = await getUserData(token);
-              setUser({
-                token,
-                userId: userData.id,
-                username: userData.username,
-              });
-            } catch (error) {
-              console.error("Error fetching user data:", error);
-            }
-          };
-
-          fetchUserData();
+          setUser({
+            token,
+            userId: Number(decodedToken.sub),
+            username: decodedToken.username,
+          });
         }
       }
     }
+    setIsTokenLoaded(true);
   }, []);
 
   useEffect(() => {
@@ -119,15 +109,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       const response = await apiLogin(username, password);
       const token = response.access_token;
 
-      const userData = await getUserData(token);
+      const decodedToken = decodeToken(token);
+      if (decodedToken) {
+        setUser({
+          token,
+          userId: Number(decodedToken.sub),
+          username: decodedToken.username,
+        });
 
-      setUser({
-        token,
-        userId: userData.id,
-        username: userData.username,
-      });
-
-      localStorage.setItem("token", token);
+        localStorage.setItem("token", token);
+      }
 
       setIsLoading(false);
       return true;
@@ -156,7 +147,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         locale={intl.locale}
         messages={messages[intl.locale] || messages[defaultLocale]}
       >
-        {children}
+        {isTokenLoaded ? children : <div>Loading...</div>}
       </IntlProvider>
     </AuthContext.Provider>
   );

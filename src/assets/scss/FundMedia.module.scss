@@ -2,8 +2,8 @@
   display: flex;
   flex-wrap: wrap;
   max-width: 100%;
-  min-height: 150px;
-  align-items: center;
+
+  padding-bottom: 175px;
 
   .media-item {
     flex-basis: calc(25% - 10px);
@@ -81,4 +81,17 @@
   align-items: center;
   background-color: #e9eef1;
   border-radius: 4px;
+}
+
+.loading-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  max-height: 55%;
+}
+
+.media-section {
+  display: flex;
+  height: 100%;
 }

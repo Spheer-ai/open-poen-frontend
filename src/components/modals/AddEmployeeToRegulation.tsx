@@ -6,8 +6,7 @@ import {
   fetchRegulationDetails,
 } from "../middleware/Api";
 import { Officer } from "../../types/AddOfficerType";
-import CloseIson from "/close-icon.svg";
-import deleteIcon from "/delete-icon.svg";
+import useCachedImages from "../utils/images";
 
 interface AddEmployeeToRegulationProps {
   isOpen: boolean;
@@ -27,7 +26,7 @@ const AddEmployeeToRegulation: React.FC<AddEmployeeToRegulationProps> = ({
   regulationId = "",
 }) => {
   const [modalIsOpen, setModalIsOpen] = useState(isOpen);
-  const [allUsers, setAllUsers] = useState<Officer[]>([]);
+  const images = useCachedImages(["close", "deleteRed"]);
   const [searchTermGrantOfficer, setSearchTermGrantOfficer] = useState("");
   const [searchTermPolicyOfficer, setSearchTermPolicyOfficer] = useState("");
   const [filteredGrantOfficers, setFilteredGrantOfficers] = useState<Officer[]>(
@@ -199,7 +198,7 @@ const AddEmployeeToRegulation: React.FC<AddEmployeeToRegulationProps> = ({
         <div className={styles.formTop}>
           <h2 className={styles.title}>Medewerker aanmaken</h2>
           <button onClick={handleClose} className={styles.closeBtn}>
-            <img src={CloseIson} alt="" />
+            <img src={images.close} alt="Close Icon" />
           </button>
         </div>
         <hr></hr>
@@ -210,7 +209,7 @@ const AddEmployeeToRegulation: React.FC<AddEmployeeToRegulationProps> = ({
               <li key={employee.id}>
                 {employee.email}
                 <img
-                  src={deleteIcon}
+                  src={images.deleteRed}
                   alt="Delete"
                   onClick={() => handleDeleteGrantOfficer(employee)}
                 />
@@ -254,7 +253,7 @@ const AddEmployeeToRegulation: React.FC<AddEmployeeToRegulationProps> = ({
               <li key={employee.id}>
                 {employee.email}
                 <img
-                  src={deleteIcon}
+                  src={images.deleteRed}
                   alt="Delete"
                   onClick={() => handleDeletePolicyOfficer(employee)}
                 />

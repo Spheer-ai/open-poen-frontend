@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import EditIcon from "/edit-icon.svg";
-import DeleteIcon from "/delete-icon.svg";
 import { Grant } from "../../types/GranListType";
 import { usePermissions } from "../../contexts/PermissionContext";
 import { useAuth } from "../../contexts/AuthContext";
 import styles from "../../assets/scss/RegulationDetail.module.scss";
 import { fetchGrantDetails } from "../middleware/Api";
+import useCachedImages from "../utils/images";
 
 interface GrantListProps {
   grants: Grant[];
@@ -42,6 +41,7 @@ const GrantList: React.FC<GrantListProps> = ({
   const [firstInitiativeIdMap, setFirstInitiativeIdMap] = useState<
     Record<number, number | null>
   >({});
+  const images = useCachedImages(["edit", "deleteRed"]);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -153,7 +153,11 @@ const GrantList: React.FC<GrantListProps> = ({
                     className={styles["edit-button"]}
                     onClick={() => onEditGrantClick(grant)}
                   >
-                    <img src={EditIcon} alt="Edit" className={styles["icon"]} />
+                    <img
+                      src={images.edit}
+                      alt="Edit"
+                      className={styles["icon"]}
+                    />
                   </button>
                 )}
               {grantPermissions[grant.id] &&
@@ -163,7 +167,7 @@ const GrantList: React.FC<GrantListProps> = ({
                     onClick={() => onDeleteGrantClick(grant.id)}
                   >
                     <img
-                      src={DeleteIcon}
+                      src={images.deleteRed}
                       alt="Delete"
                       className={styles["icon"]}
                     />

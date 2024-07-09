@@ -2,24 +2,26 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "../../../../assets/scss/FundsUsers.module.scss";
 import LoadingDot from "../../../animation/LoadingDot";
-import { fetchFundDetails } from "../../../middleware/Api";
 import { useAuth } from "../../../../contexts/AuthContext";
-
 import LinkFundOwners from "../../../modals/LinkFundOwners";
+import { fetchFundDetails } from "../../../middleware/Api";
+import { InitiativeOwner } from "../../../../types/EditFundTypes";
+import useCachedImages from "../../../utils/images";
 
 const FundsUsers: React.FC<{
   initiativeId: string;
   token: string;
-}> = ({ initiativeId, token }) => {
+  initiativeOwners: InitiativeOwner[];
+  refreshTrigger: number;
+}> = ({ initiativeId, token, initiativeOwners, refreshTrigger }) => {
   const { user } = useAuth();
-
   const navigate = useNavigate();
   const [isBlockingInteraction, setIsBlockingInteraction] = useState(false);
   const [isLinkFundOwnerModalOpen, setIsLinkFundOwnerModalOpen] =
     useState(false);
-  const [refreshTrigger, setRefreshTrigger] = useState(0);
-  const [initiativeOwners, setInitiativeOwners] = useState<any[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+  const [owners, setOwners] = useState<InitiativeOwner[]>(initiativeOwners);
+  const images = useCachedImages(["linkOwner", "placeholderProfile"]);
 
   const handleToggleLinkFundOwnerModal = () => {
     if (isLinkFundOwnerModalOpen) {
@@ -35,24 +37,22 @@ const FundsUsers: React.FC<{
     }
   };
 
+  const handleFundOwnerLinked = (newOwners: InitiativeOwner[]) => {
+    setOwners(newOwners);
+  };
+
   useEffect(() => {
     setIsLoading(true);
-    if (initiativeId) {
-      fetchFundDetails(token, initiativeId)
-        .then((data) => {
-          setInitiativeOwners(data.initiative_owners);
-          setIsLoading(false);
-        })
-        .catch((error) => {
-          console.error("Error fetching fund details:", error);
-          setIsLoading(false);
-        });
-    }
-  }, [initiativeId, token, refreshTrigger]);
-
-  const handleFundOwnerLinked = () => {
-    setRefreshTrigger((prev) => prev + 1);
-  };
+    fetchFundDetails(token, initiativeId)
+      .then((data) => {
+        setOwners(data.initiative_owners);
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        console.error("Error fetching fund owners:", error);
+        setIsLoading(false);
+      });
+  }, [refreshTrigger, initiativeId, token]);
 
   return (
     <div className={styles["users-container"]}>
@@ -61,10 +61,10 @@ const FundsUsers: React.FC<{
         onClose={handleToggleLinkFundOwnerModal}
         isBlockingInteraction={isBlockingInteraction}
         onFundOwnerLinked={handleFundOwnerLinked}
-        onUpdateInitiativeOwners={setInitiativeOwners}
+        onUpdateInitiativeOwners={setOwners}
         initiativeId={initiativeId}
         token={token}
-        initiativeOwners={initiativeOwners}
+        initiativeOwners={owners}
       />
       {user && token ? (
         <button
@@ -72,11 +72,11 @@ const FundsUsers: React.FC<{
           onClick={handleToggleLinkFundOwnerModal}
         >
           <img
-            src="../../../../link-owner.svg"
+            src={images.linkOwner}
             alt="Link owner"
             className={styles["link-owner"]}
           />
-          Initatiefnemer toevoegen
+          Initiatiefnemer toevoegen
         </button>
       ) : null}
       <div className={styles["user-list-container"]}>
@@ -90,12 +90,12 @@ const FundsUsers: React.FC<{
           </div>
         ) : (
           <>
-            {initiativeOwners.length === 0 ? (
+            {owners.length === 0 ? (
               <p className={styles["no-users"]}>
                 Geen initiatiefnemers gevonden
               </p>
             ) : (
-              initiativeOwners.map((owner, index) => (
+              owners.map((owner) => (
                 <div
                   className={`${styles["user-container"]} ${styles["fundusers-fade-in"]}`}
                   key={owner.id}
@@ -109,13 +109,13 @@ const FundsUsers: React.FC<{
                       />
                     ) : (
                       <img
-                        src="../../../profile-placeholder.png"
+                        src={images.placeholderProfile}
                         alt="Profile"
                         className={styles["profile-image"]}
                       />
                     )}
                   </div>
-                  <div className={styles["user-card"]} key={index}>
+                  <div className={styles["user-card"]}>
                     <span>
                       {owner.first_name} {owner.last_name}
                     </span>

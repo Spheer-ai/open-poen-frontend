@@ -1,103 +1,62 @@
 import React, { useState, useEffect } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import styles from "../../assets/scss/pages/FundDetail.module.scss";
-import EditIcon from "/edit-icon.svg";
-import DeleteIcon from "/bin-icon.svg";
-import { fetchFundDetails } from "../middleware/Api";
 import EditFund from "../modals/EditFund";
 import { useAuth } from "../../contexts/AuthContext";
-import DeleteFund from "../modals/DeleteFund";
+import { fetchFundDetails } from "../middleware/Api";
 import TabbedFundNavigation from "../ui/layout/navigation/TabbedFundNavigation";
 import FundsActivities from "../elements/tables/funds/FundsActivities";
 import FundsTransactions from "../elements/tables/funds/FundsTransactions";
 import FundsMedia from "../elements/tables/funds/FundsMedia";
 import FundsDetails from "../elements/tables/funds/FundsDetails";
-import FundsSponsors from "../elements/tables/funds/FundsSponsors";
 import FundsUsers from "../elements/tables/funds/FundsUsers";
+import DeleteFund from "../modals/DeleteFund";
 import LoadingDot from "../animation/LoadingDot";
-import { InitiativeOwner } from "../../types/InitiativeOwners";
-import { usePermissions } from "../../contexts/PermissionContext";
-import { useFieldPermissions } from "../../contexts/FieldPermissionContext";
 import Breadcrumb from "../ui/layout/BreadCrumbs";
+import { FundDetails } from "../../types/EditFundTypes";
+import { Activities, InitiativeData } from "../../types/ActivitiesTypes";
+import FundsSponsors from "../elements/tables/funds/FundsSponsors";
+import useCachedImages from "../utils/images";
 
 interface FundDetailProps {
   initiativeId: string;
   authToken: string;
-  onFundEdited: () => void;
-}
-
-interface FundDetails {
-  id: number;
-  name: string;
-  description: string;
-  purpose: string;
-  target_audience: string;
-  kvk_registration: string;
-  location: string;
-  budget: number;
-  income: number;
-  expenses: number;
-  onFundEdited: () => void;
-  profile_picture: {
-    attachment_thumbnail_url_512: string;
-  };
-  initiative_owners: InitiativeOwner[];
+  initiativeData: InitiativeData | null;
   entityPermissions: string[];
-  grant: {
-    id: number;
-    name: string;
-    reference: string;
-    budget: number;
-  };
+  onFundEdited: () => void;
+  activities: Activities[];
+  isLoading: boolean;
+  refreshData: () => void;
 }
 
-const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
+const FundDetail: React.FC<FundDetailProps> = ({
+  initiativeId,
+  initiativeData: initialData,
+  entityPermissions,
+  onFundEdited,
+  activities,
+  isLoading,
+  authToken,
+}) => {
   const [activeTab, setActiveTab] = useState("transactieoverzicht");
-  const location = useLocation();
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { fetchPermissions } = usePermissions();
   const [hasEditPermission, setHasEditPermission] = useState(false);
   const [hasDeletePermission, setHasDeletePermission] = useState(false);
   const [hasCreatePaymentPermission, setHasCreatePaymentPermission] =
     useState(false);
-  const { fetchFieldPermissions } = useFieldPermissions();
-  const [entityPermissions, setEntityPermissions] = useState<string[]>([]);
-  const [fundDetails, setFundDetails] = useState<FundDetails | null>(null);
+  const [showFullDescription, setShowFullDescription] = useState(false);
+  const [availableBudget, setAvailableBudget] = useState<number | null>(null);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [isBlockingInteraction, setIsBlockingInteraction] = useState(false);
   const [isEditFundModalOpen, setIsEditFundModalOpen] = useState(false);
   const [isDeleteFundModalOpen, setIsDeleteFundModalOpen] = useState(false);
-  const [showFullDescription, setShowFullDescription] = useState(false);
-  const [availableBudget, setAvailableBudget] = useState<number | null>(null);
-  const [currentFundData, setCurrentFundData] = useState<FundDetails | null>(
-    null,
+  const [initiativeData, setInitiativeData] = useState<FundDetails | null>(
+    initialData,
   );
-  const [initiativeOwners, setInitiativeOwners] = useState<InitiativeOwner[]>(
-    [],
-  );
+  const images = useCachedImages(["edit", "delete"]);
 
-  useEffect(() => {
-    if (initiativeId) {
-      fetchFundDetails(authToken, initiativeId)
-        .then((data) => {
-          setFundDetails(data);
-          setCurrentFundData(data);
-          setInitiativeOwners(data.initiative_owners);
-        })
-        .catch((error) => {
-          console.error("Error fetching fund details:", error);
-        });
-    }
-  }, [initiativeId, authToken, refreshTrigger]);
-
-  useEffect(() => {
-    if (location.pathname.includes("/funds/${initiativeId}")) {
-      setActiveTab("transactieoverzicht");
-    }
-  }, [location.pathname]);
-
-  const handleTabChange = (tabName) => {
+  const handleTabChange = (tabName: string) => {
     setActiveTab(tabName);
 
     if (tabName === "transactieoverzicht") {
@@ -109,9 +68,6 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
     if (tabName === "details") {
       navigate(`/funds/${initiativeId}/details`);
     }
-    if (tabName === "sponsoren") {
-      navigate(`/funds/${initiativeId}/sponsors`);
-    }
     if (tabName === "media") {
       navigate(`/funds/${initiativeId}/media`);
     }
@@ -121,66 +77,43 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
   };
 
   useEffect(() => {
-    async function fetchUserPermissions() {
-      try {
-        let userToken = authToken;
-
-        if (user && user.token && initiativeId) {
-          userToken = user.token;
-          const userPermissions: string[] | undefined = await fetchPermissions(
-            "Initiative",
-            parseInt(initiativeId),
-            userToken,
-          );
-
-          if (userPermissions && userPermissions.includes("edit")) {
-            setHasEditPermission(true);
-          } else {
-            setHasEditPermission(false);
-          }
-
-          if (userPermissions && userPermissions.includes("delete")) {
-            setHasDeletePermission(true);
-          } else {
-            setHasDeletePermission(false);
-          }
-
-          if (userPermissions && userPermissions.includes("create_payment")) {
-            setHasCreatePaymentPermission(true);
-          } else {
-            setHasCreatePaymentPermission(false);
-          }
-        }
-      } catch (error) {
-        console.error("Failed to fetch user permissions:", error);
-      }
+    if (initiativeId && authToken) {
+      fetchFundDetails(authToken, initiativeId)
+        .then((data) => {
+          setInitiativeData(data);
+        })
+        .catch((error) => {
+          console.error("Error fetching activity details:", error);
+        });
     }
-
-    fetchUserPermissions();
-  }, [user, initiativeId]);
+  }, [initiativeId, authToken]);
 
   useEffect(() => {
-    async function fetchFieldPermissionsOnMount() {
-      try {
-        if (user && user.token && initiativeId) {
-          const fieldPermissions: string[] | undefined =
-            await fetchFieldPermissions(
-              "Initiative",
-              parseInt(initiativeId),
-              user.token,
-            );
-
-          if (fieldPermissions) {
-            setEntityPermissions(fieldPermissions);
-          }
-        }
-      } catch (error) {
-        console.error("Failed to fetch field permissions:", error);
-      }
+    if (refreshTrigger > 0 && initiativeId && authToken) {
+      fetchFundDetails(authToken, initiativeId)
+        .then((data) => {
+          setInitiativeData(data);
+        })
+        .catch((error) => {
+          console.error("Error fetching activity details:", error);
+        });
     }
+  }, [refreshTrigger, initiativeId, authToken]);
 
-    fetchFieldPermissionsOnMount();
-  }, [user, initiativeId, fetchFieldPermissions]);
+  useEffect(() => {
+    setHasEditPermission(entityPermissions.includes("edit"));
+    setHasDeletePermission(entityPermissions.includes("delete"));
+    setHasCreatePaymentPermission(entityPermissions.includes("create_payment"));
+  }, [entityPermissions]);
+
+  useEffect(() => {
+    if (initiativeData) {
+      const spentBudget = initiativeData.expenses || 0;
+      const totalBudget = initiativeData.budget || 0;
+      const availableBudgetValue = totalBudget + spentBudget;
+      setAvailableBudget(availableBudgetValue);
+    }
+  }, [initiativeData, refreshTrigger]);
 
   const handleToggleEditFundModal = () => {
     if (isEditFundModalOpen) {
@@ -196,8 +129,10 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
     }
   };
 
-  const handleFundEdited = () => {
+  const handleFundEdited = (updatedFundData: FundDetails) => {
     setRefreshTrigger((prev) => prev + 1);
+    setInitiativeData(updatedFundData);
+    onFundEdited();
   };
 
   const handleToggleDeleteFundModal = () => {
@@ -206,7 +141,6 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
       setTimeout(() => {
         setIsBlockingInteraction(false);
         setIsDeleteFundModalOpen(false);
-        navigate(`/funds`);
       }, 300);
     } else {
       setIsDeleteFundModalOpen(true);
@@ -218,19 +152,30 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
     setRefreshTrigger((prev) => prev);
   };
 
-  useEffect(() => {
-    if (fundDetails) {
-      const receivedBudget = fundDetails.income || 0;
-      const spentBudget = fundDetails.expenses || 0;
-      const totalBudget = fundDetails.budget || 0;
-      const availableBudgetValue = totalBudget + spentBudget;
-      setAvailableBudget(availableBudgetValue);
-    }
-  }, [fundDetails, refreshTrigger]);
-
   const handleRefreshTrigger = () => {
     setRefreshTrigger((prev) => prev + 1);
   };
+
+  if (!initiativeData) {
+    return (
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          height: "200px",
+          marginTop: "120px",
+        }}
+      >
+        <div className={styles["loading-container"]}>
+          <LoadingDot delay={0} />
+          <LoadingDot delay={0.1} />
+          <LoadingDot delay={0.1} />
+          <LoadingDot delay={0.2} />
+          <LoadingDot delay={0.2} />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -242,72 +187,75 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
                 Initiatieven
               </Link>,
               <Link key="funds" to={`/funds/${initiativeId}`}>
-                {fundDetails?.name}
+                {initiativeData?.name || "Naam onbekend"}
               </Link>,
             ]}
           />
         </div>
-        <>
-          <div className={styles["top-right-button-container"]}>
-            {hasEditPermission && (
-              <button
-                className={styles["edit-button"]}
-                onClick={handleToggleEditFundModal}
-              >
-                <img src={EditIcon} alt="Edit" className={styles["icon"]} />
-                <span>Beheer initiatief</span>
-              </button>
-            )}
-            {hasDeletePermission && (
-              <button
-                className={styles["edit-button"]}
-                onClick={handleToggleDeleteFundModal}
-              >
-                <img src={DeleteIcon} alt="Delete" className={styles["icon"]} />
-                <span>Verwijder initiatief</span>
-              </button>
-            )}
-          </div>
-        </>
+        <div className={styles["top-right-button-container"]}>
+          {hasEditPermission && (
+            <button
+              className={styles["edit-button"]}
+              onClick={handleToggleEditFundModal}
+            >
+              <img src={images.edit} alt="Edit" className={styles["icon"]} />
+              <span>Beheer initiatief</span>
+            </button>
+          )}
+          {hasDeletePermission && (
+            <button
+              className={styles["edit-button"]}
+              onClick={handleToggleDeleteFundModal}
+            >
+              <img
+                src={images.delete}
+                alt="Delete"
+                className={styles["icon"]}
+              />
+              <span>Verwijder initiatief</span>
+            </button>
+          )}
+        </div>
       </div>
       <div className={styles["fund-detail-container"]}>
         <div className={styles["content-wrapper"]}>
-          {fundDetails ? (
+          {initiativeData ? (
             <>
               <div className={styles["content-container"]}>
                 <div className={styles["fund-image"]}>
-                  {fundDetails.profile_picture ? (
+                  {initiativeData.profile_picture ? (
                     <img
                       src={
-                        fundDetails.profile_picture.attachment_thumbnail_url_512
+                        initiativeData.profile_picture
+                          .attachment_thumbnail_url_512
                       }
-                      alt=""
+                      alt="Initiatief Afbeelding"
                     />
                   ) : (
-                    <p>Geen afbeelding gevonden</p>
+                    <></>
                   )}
                 </div>
                 <div className={styles["fund-info"]}>
                   <div className={styles["fund-name"]}>
-                    {fundDetails.name ? (
-                      <h1>{fundDetails.name}</h1>
+                    {initiativeData.name ? (
+                      <h1>{initiativeData.name}</h1>
                     ) : (
                       <p>Geen naam gevonden</p>
                     )}
                   </div>
                   <div className={styles["fund-description"]}>
-                    {fundDetails.description ? (
+                    {initiativeData.description ? (
                       <div>
                         <p>
                           {showFullDescription
-                            ? fundDetails.description
-                            : `${fundDetails.description.slice(0, 250)}${
-                                fundDetails.description.length > 250
+                            ? initiativeData.description
+                            : `${initiativeData.description.slice(0, 250)}${
+                                initiativeData.description.length > 250
                                   ? "..."
                                   : ""
                               }`}
                         </p>
-                        {fundDetails.description.length > 250 && (
+                        {initiativeData.description.length > 250 && (
                           <button
                             onClick={() =>
                               setShowFullDescription(!showFullDescription)
@@ -326,12 +274,12 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
               </div>
               <div className={styles["statistics-container"]}>
                 <div className={styles["fund-budget"]}>
-                  {fundDetails.budget !== null ? (
+                  {initiativeData.budget !== undefined ? (
                     <>
                       <p>Toegekend budget:</p>
                       <span>
                         €{" "}
-                        {fundDetails.budget.toLocaleString("nl-NL", {
+                        {initiativeData.budget?.toLocaleString("nl-NL", {
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 2,
                         })}
@@ -339,7 +287,7 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
                       <div className={styles["tooltip"]}>
                         <span className={styles["tooltip-text"]}>
                           Waarvan ontvangen: €{" "}
-                          {fundDetails.income.toLocaleString("nl-NL", {
+                          {initiativeData.income?.toLocaleString("nl-NL", {
                             minimumFractionDigits: 2,
                             maximumFractionDigits: 2,
                           })}
@@ -351,12 +299,12 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
                   )}
                 </div>
                 <div className={styles["fund-expenses"]}>
-                  {fundDetails.expenses !== null ? (
+                  {initiativeData.expenses !== undefined ? (
                     <>
                       <p>Besteed:</p>
                       <span style={{ color: "#B82466" }}>
                         €{" "}
-                        {Math.abs(fundDetails.expenses).toLocaleString(
+                        {Math.abs(initiativeData.expenses)?.toLocaleString(
                           "nl-NL",
                           {
                             minimumFractionDigits: 2,
@@ -371,20 +319,16 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
                 </div>
                 {availableBudget !== null && (
                   <div className={styles["fund-available-budget"]}>
-                    {availableBudget !== null ? (
-                      <>
-                        <p>Beschikbaar budget:</p>
-                        <span style={{ color: "#008000" }}>
-                          €{" "}
-                          {availableBudget.toLocaleString("nl-NL", {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                          })}
-                        </span>
-                      </>
-                    ) : (
-                      <p>Available budget not found</p>
-                    )}
+                    <>
+                      <p>Beschikbaar budget:</p>
+                      <span style={{ color: "#008000" }}>
+                        €{" "}
+                        {availableBudget.toLocaleString("nl-NL", {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })}
+                      </span>
+                    </>
                   </div>
                 )}
               </div>
@@ -415,9 +359,7 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
           onFundEdited={handleFundEdited}
           initiativeId={initiativeId}
           authToken={user?.token || ""}
-          fundData={currentFundData}
-          fieldPermissions={entityPermissions}
-          fields={[]}
+          fundData={initiativeData}
         />
         <DeleteFund
           isOpen={isDeleteFundModalOpen}
@@ -442,26 +384,27 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
         )}
         {activeTab === "activiteiten" && (
           <FundsActivities
+            activities={activities}
+            isLoading={isLoading}
             initiativeId={initiativeId}
-            authToken={user?.token || ""}
           />
         )}
         {activeTab === "details" && (
           <FundsDetails
-            name={fundDetails?.name}
-            description={fundDetails?.description}
-            purpose={fundDetails?.purpose}
-            target_audience={fundDetails?.target_audience}
-            kvk_registration={fundDetails?.kvk_registration}
-            location={fundDetails?.location}
+            name={initiativeData?.name}
+            description={initiativeData?.description}
+            purpose={initiativeData?.purpose}
+            target_audience={initiativeData?.target_audience}
+            kvk_registration={initiativeData?.kvk_registration}
+            location={initiativeData?.location}
           />
         )}
         {activeTab === "sponsoren" && (
           <FundsSponsors
-            grantId={fundDetails?.grant?.id}
-            grantName={fundDetails?.grant?.name}
-            grantReference={fundDetails?.grant?.reference}
-            grantBudget={fundDetails?.grant?.budget}
+            grantId={initiativeData?.grant?.id}
+            grantName={initiativeData?.grant?.name}
+            grantReference={initiativeData?.grant?.reference}
+            grantBudget={initiativeData?.grant?.budget}
             token={user?.token || ""}
           />
         )}
@@ -472,7 +415,12 @@ const FundDetail: React.FC<FundDetailProps> = ({ initiativeId, authToken }) => {
           />
         )}
         {activeTab === "gebruikers" && (
-          <FundsUsers initiativeId={initiativeId} token={user?.token || ""} />
+          <FundsUsers
+            initiativeId={initiativeId}
+            token={user?.token || ""}
+            initiativeOwners={initiativeData.initiative_owners || []}
+            refreshTrigger={0}
+          />
         )}
       </div>
     </>

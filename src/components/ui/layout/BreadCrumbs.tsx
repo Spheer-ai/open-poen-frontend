@@ -1,8 +1,10 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import styles from "../../../assets/scss/layout/BreadCrumbs.module.scss";
+import useCachedImages from "../../utils/images";
 
 const Breadcrumb = ({ customBreadcrumbs }) => {
+  const images = useCachedImages(["home"]);
   const location = useLocation();
   const pathnames = location.pathname.split("/").filter((x) => x);
   const isRootRoute = pathnames.length === 0;
@@ -12,7 +14,7 @@ const Breadcrumb = ({ customBreadcrumbs }) => {
       <ul className={styles.breadcrumbList}>
         <li className={styles.breadcrumbItem}>
           <Link to="/">
-            <img src="/home-icon.svg" alt="Home" />
+            <img src={images.home} alt="Home" />
           </Link>
         </li>
         {customBreadcrumbs

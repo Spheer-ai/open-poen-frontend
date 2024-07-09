@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import styles from "../../assets/scss/layout/AddFundDesktop.module.scss";
 import { deleteActivity } from "../middleware/Api";
-import CloseIson from "/close-icon.svg";
+import useCachedImages from "../utils/images";
 
 interface DeleteActivityProps {
   isOpen: boolean;
@@ -24,6 +25,8 @@ const DeleteActivity: React.FC<DeleteActivityProps> = ({
 }) => {
   const [modalIsOpen, setModalIsOpen] = useState(isOpen);
   const [apiError, setApiError] = useState("");
+  const navigate = useNavigate();
+  const images = useCachedImages(["close"]);
 
   useEffect(() => {
     if (isOpen) {
@@ -39,7 +42,7 @@ const DeleteActivity: React.FC<DeleteActivityProps> = ({
     try {
       await deleteActivity(authToken, initiativeId, activityId);
       setApiError("");
-      handleClose();
+      handleClose(true);
       onActivityDeleted();
     } catch (error) {
       console.error("Failed to delete activity:", error);
@@ -51,10 +54,15 @@ const DeleteActivity: React.FC<DeleteActivityProps> = ({
     }
   };
 
-  const handleClose = () => {
+  const handleClose = (wasDeleted: boolean = false) => {
     if (!isBlockingInteraction) {
       setModalIsOpen(false);
       onClose();
+      if (wasDeleted) {
+        navigate(`/funds/${initiativeId}`);
+      } else {
+        navigate(`/funds/${initiativeId}/activities/${activityId}`);
+      }
     }
   };
 
@@ -66,13 +74,16 @@ const DeleteActivity: React.FC<DeleteActivityProps> = ({
     <>
       <div
         className={`${styles.backdrop} ${modalIsOpen ? styles.open : ""}`}
-        onClick={handleClose}
+        onClick={() => handleClose(false)}
       ></div>
       <div className={`${styles.modal} ${modalIsOpen ? styles.open : ""}`}>
         <div className={styles.formTop}>
           <h2 className={styles.title}>Activiteit verwijderen</h2>
-          <button onClick={handleClose} className={styles.closeBtn}>
-            <img src={CloseIson} alt="" />
+          <button
+            onClick={() => handleClose(false)}
+            className={styles.closeBtn}
+          >
+            <img src={images.close} alt="Close Icon" />
           </button>
         </div>
         <hr></hr>
@@ -81,7 +92,10 @@ const DeleteActivity: React.FC<DeleteActivityProps> = ({
         </div>
         {apiError && <p className={styles.error}>{apiError}</p>}
         <div className={styles.buttonContainer}>
-          <button onClick={handleClose} className={styles.cancelButton}>
+          <button
+            onClick={() => handleClose(false)}
+            className={styles.cancelButton}
+          >
             Annuleren
           </button>
           <button onClick={handleDelete} className={styles.deleteButton}>

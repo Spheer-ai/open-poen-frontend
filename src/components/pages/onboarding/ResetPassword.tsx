@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { resetPassword, requestPasswordReset } from "../../middleware/Api";
 import styles from "../../../assets/scss/layout/ResetPasswordLayout.module.scss";
+import useCachedImages from "../../utils/images";
 
 function ResetPassword() {
   const location = useLocation();
@@ -12,6 +13,12 @@ function ResetPassword() {
   const [step, setStep] = useState("request");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const images = useCachedImages([
+    "signupBg",
+    "logoGradient",
+    "logoLogin",
+    "hidePass",
+  ]);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -86,13 +93,18 @@ function ResetPassword() {
 
   return (
     <div className={styles["reset-password-container"]}>
-      <div className={styles["modal-background"]}></div>
+      <div
+        className={styles["modal-background"]}
+        style={{
+          backgroundImage: `url(${images.signupBg})`,
+        }}
+      ></div>
       <div className={styles["modal-content"]}>
         <div className={styles["logo"]}>
-          <img src="/open-poen-logo-gradient.svg" alt="Project Logo" />
+          <img src={images.logoGradient} alt="Project Logo" />
         </div>
         <div className={styles["project-title"]}>
-          <img src="/login-openpoen-logo.svg" alt="Project Name" />
+          <img src={images.logoLogin} alt="Project Name" />
         </div>
         <h3>Account aanmaken</h3>
         {step === "request" && (
@@ -131,11 +143,7 @@ function ResetPassword() {
                   onClick={togglePasswordVisibility}
                 >
                   <img
-                    src={
-                      showPassword
-                        ? "/eye-closed-icon.svg"
-                        : "/eye-open-icon.svg"
-                    }
+                    src={showPassword ? `${images.hidePass}` : `${images.show}`}
                     alt="Toggle Password Visibility"
                   />
                 </span>
@@ -158,8 +166,8 @@ function ResetPassword() {
                   <img
                     src={
                       showConfirmPassword
-                        ? "/eye-closed-icon.svg"
-                        : "/eye-open-icon.svg"
+                        ? `${images.hidePass}`
+                        : `${images.show}`
                     }
                     alt="Toggle Password Visibility"
                   />

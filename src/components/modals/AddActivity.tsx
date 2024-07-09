@@ -1,14 +1,14 @@
 import React, { useEffect, useState, useRef } from "react";
 import styles from "../../assets/scss/layout/AddFundDesktop.module.scss";
+import { Activities } from "../../types/ActivitiesTypes";
 import { AddActivity as addActivityApi } from "../middleware/Api";
-import CloseIson from "/close-icon.svg";
+import useCachedImages from "../utils/images";
 
 interface AddActivityProps {
   isOpen: boolean;
   onClose: () => void;
   isBlockingInteraction: boolean;
-  onActivityAdded: () => void;
-  refreshTrigger: number;
+  onActivityAdded: (newActivity: Activities) => void;
   initiativeId: number;
 }
 
@@ -25,6 +25,7 @@ const AddActivity: React.FC<AddActivityProps> = ({
   const [activityBudget, setActivityBudget] = useState<number | string>("");
   const [purpose, setPurpose] = useState("");
   const [targetAudience, setTargetAudience] = useState("");
+  const images = useCachedImages(["close"]);
   const [hidden, setHidden] = useState(false);
   const [errors, setErrors] = useState({
     name: "",
@@ -121,8 +122,12 @@ const AddActivity: React.FC<AddActivityProps> = ({
         hidden: hidden,
       };
 
-      await addActivityApi(initiativeId, token, activityData);
-      onActivityAdded();
+      const newActivity = await addActivityApi(
+        initiativeId,
+        token,
+        activityData,
+      );
+      onActivityAdded(newActivity);
       handleClose();
     } catch (error) {
       if (error.response) {
@@ -178,7 +183,7 @@ const AddActivity: React.FC<AddActivityProps> = ({
         <div className={styles.formTop}>
           <h2 className={styles.title}>Activiteit aanmaken</h2>
           <button onClick={handleClose} className={styles.closeBtn}>
-            <img src={CloseIson} alt="" />
+            <img src={images.close} alt="Close Icon" />
           </button>
         </div>
         <hr></hr>

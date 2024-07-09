@@ -3,6 +3,7 @@ import { initiateGocardless } from "../../../middleware/Api";
 import { useAuth } from "../../../../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import styles from "../../../../assets/scss/layout/Step1BankList.module.scss";
+import useCachedImages from "../../../utils/images";
 
 interface Step2BankApprovalProps {
   institutionId: string;
@@ -16,6 +17,7 @@ const Step2BankApproval: React.FC<Step2BankApprovalProps> = ({
   const token = user?.token;
   const [approvalInfo, setApprovalInfo] = useState<string | null>(null);
   const navigate = useNavigate();
+  const images = useCachedImages(["connector"]);
 
   useEffect(() => {
     async function initiateGocardlessRequest() {
@@ -69,7 +71,7 @@ const Step2BankApproval: React.FC<Step2BankApprovalProps> = ({
           src="/open-poen-logo-blue.svg"
           alt="Home Logo"
         />
-        <img className={styles["connector"]} src="/connector.svg" alt="" />
+        <img className={styles["connector"]} src={images.connector} alt="" />
         <img
           className={styles["logo"]}
           src="/open-poen-logo-blue.svg"

@@ -1,48 +1,44 @@
-import React, { useEffect, useState } from "react";
-import PermissionContext from "./PermissionContext";
-import { useFetchPermissions } from "../components/hooks/useFetchPermissions";
+import React, { createContext, useContext, useState } from "react";
 import { useAuth } from "./AuthContext";
+
+interface PermissionContextType {
+  globalPermissions: string[];
+  fetchGlobalPermissions: (token: string) => Promise<string[]>;
+}
+
+const PermissionContext = createContext<PermissionContextType | undefined>(
+  undefined,
+);
+
+export const usePermissions = () => {
+  const context = useContext(PermissionContext);
+  if (!context) {
+    throw new Error("usePermissions must be used within a PermissionProvider");
+  }
+  return context;
+};
 
 interface PermissionProviderProps {
   children: React.ReactNode;
-  entityClasses: string[]; // Add this prop
 }
 
 const PermissionProvider: React.FC<PermissionProviderProps> = ({
   children,
 }) => {
-  const { permissions, fetchPermissions } = useFetchPermissions();
   const { user } = useAuth();
-  const [entityClassPermissions, setEntityClassPermissions] = useState<
-    Record<string, string[]>
-  >({});
+  const [globalPermissions, setGlobalPermissions] = useState<string[]>([]);
 
-  useEffect(() => {
-    if (user && user.token) {
-      const entities = ["User", "Funder", "Regulation", "Grant"];
-      entities.forEach(async (entityClass) => {
-        const perms = await fetchPermissions(
-          entityClass,
-          undefined,
-          user.token,
-        );
-        setEntityClassPermissions((prev) => ({
-          ...prev,
-          [entityClass]: perms || [],
-        }));
-      });
-    }
-  }, []);
+  const fetchGlobalPermissions = async (token: string) => {
+    const perms = [];
+    setGlobalPermissions(perms);
+    return perms;
+  };
 
   return (
     <PermissionContext.Provider
       value={{
-        permissions,
-        fetchPermissions,
-        globalPermissions: [],
-        fetchGlobalPermissions: async () => [],
-        entityClassPermissions,
-        fetchEntityClassPermissions: async () => {},
+        globalPermissions,
+        fetchGlobalPermissions,
       }}
     >
       {children}

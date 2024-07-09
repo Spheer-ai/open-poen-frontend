@@ -1,12 +1,13 @@
-import React, { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import React, { useState } from "react";
 import { requestPasswordReset } from "../../middleware/Api";
 import styles from "../../../assets/scss/layout/ResetPasswordLayout.module.scss";
+import useCachedImages from "../../utils/images";
 
 function RequestPasswordRequest() {
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
+  const images = useCachedImages(["signupBg", "logoGradient", "logoLogin"]);
 
   const handleEmailChange = (e) => {
     setEmail(e.target.value);
@@ -26,13 +27,18 @@ function RequestPasswordRequest() {
 
   return (
     <div className={styles["reset-password-container"]}>
-      <div className={styles["modal-background"]}></div>
+      <div
+        className={styles["modal-background"]}
+        style={{
+          backgroundImage: `url(${images.signupBg})`,
+        }}
+      ></div>
       <div className={styles["modal-content"]}>
         <div className={styles["logo"]}>
-          <img src="/open-poen-logo-gradient.svg" alt="Project Logo" />
+          <img src={images.logoGradient} alt="Project Logo" />
         </div>
         <div className={styles["project-title"]}>
-          <img src="/login-openpoen-logo.svg" alt="Project Name" />
+          <img src={images.logoLogin} alt="Project Name" />
         </div>
         <h3>Wachtwoord herstellen</h3>
         {!success && (

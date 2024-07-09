@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import styles from "../../assets/scss/layout/AddFundDesktop.module.scss";
 import { FaPlus, FaMinus } from "react-icons/fa";
-import CloseIson from "/close-icon.svg";
+import useCachedImages from "../utils/images";
 
 interface FilterPaymentProps {
   isOpen: boolean;
@@ -34,6 +34,7 @@ const FilterPayment: React.FC<FilterPaymentProps> = ({
   const [maxAmount, setMaxAmount] = useState("");
   const [selectedRoute, setSelectedRoute] = useState<string[]>([]);
   const [route, setRoute] = useState("");
+  const images = useCachedImages(["edit"]);
 
   useEffect(() => {
     if (isOpen) {
@@ -118,7 +119,7 @@ const FilterPayment: React.FC<FilterPaymentProps> = ({
         <div className={styles.formTop}>
           <h2 className={styles.title}>Resultaten filteren op</h2>
           <button onClick={handleClose} className={styles.closeBtn}>
-            <img src={CloseIson} alt="" />
+            <img src={images.edit} alt="" />
           </button>
         </div>
         <hr />

@@ -1,174 +1,104 @@
-import React, { useEffect, useState, useCallback, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import TopNavigationBar from "../ui/top-navigation-bar/TopNavigationBar";
 import styles from "../../assets/scss/Funds.module.scss";
-import { usePermissions } from "../../contexts/PermissionContext";
+import { useFetchEntityPermissions } from "../hooks/useFetchPermissions";
 import { useAuth } from "../../contexts/AuthContext";
-import { fetchActivities } from "../middleware/Api";
 import AddActivity from "../modals/AddActivity";
 import LoadingDot from "../animation/LoadingDot";
 import FundDetail from "./FundDetail";
 import ActivityDetail from "./ActivityDetail";
-
-interface Activities {
-  id: number;
-  name: string;
-  budget: number;
-  income: number;
-  expenses: number;
-  initiativeName: string;
-  hidden: boolean;
-  beschikbaar?: number;
-}
+import { calculateBarWidth, formatCurrency } from "../utils/calculations";
+import useActivities from "../hooks/useActivities";
+import { Activities } from "../../types/ActivitiesTypes";
 
 export default function ActivitiesPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isBlockingInteraction, setIsBlockingInteraction] = useState(false);
+  const { fetchPermissions } = useFetchEntityPermissions();
   const [refreshTrigger, setRefreshTrigger] = useState(0);
-  const { fetchPermissions } = usePermissions();
-  const [permissionsFetched, setPermissionsFetched] = useState(false);
-  const permissionsRef = useRef(false);
   const [entityPermissions, setEntityPermissions] = useState<string[]>([]);
   const hasPermission = entityPermissions.includes("create_activity");
-  const [activities, setActivities] = useState<Activities[]>([]);
-  const [initiativeName, setInitiativeName] = useState("");
   const [selectedActivity, setSelectedActivity] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [isActivitiesLoaded, setIsActivitiesLoaded] = useState(false);
   const { initiativeId, activityId } = useParams();
   const location = useLocation();
+  const [arePermissionsLoading, setArePermissionsLoading] = useState(true);
   const isMobile = window.innerWidth <= 768;
 
-  const loadActivities = useCallback(async () => {
-    setIsLoading(true);
-
-    if (!initiativeId) {
-      setIsLoading(false);
-      return;
-    }
-
-    console.log("Fetching activities for initiativeId:", initiativeId);
-
-    try {
-      const initiativeData = await fetchActivities(
-        Number(initiativeId),
-        user?.token ?? "",
-      );
-      console.log("Fetched initiative data:", initiativeData);
-
-      const updatedActivities = initiativeData.activities || [];
-      setInitiativeName(initiativeData.name);
-
-      const activitiesWithInitiativeNames = updatedActivities.map(
-        (activity) => ({
-          ...activity,
-          initiativeName: initiativeData.name,
-          beschikbaar: activity.budget + activity.expenses,
-        }),
-      );
-      console.log(
-        "Updated activities with initiative names:",
-        activitiesWithInitiativeNames,
-      );
-
-      setActivities(activitiesWithInitiativeNames);
-      setIsLoading(false);
-      setIsActivitiesLoaded(true);
-    } catch (error) {
-      console.error("Error fetching activities:", error);
-      setIsLoading(false);
-    }
-  }, [initiativeId, user?.token]);
+  const {
+    activities,
+    initiativeName,
+    isActivitiesLoaded,
+    loadActivities,
+    addActivityToList,
+    initiativeData,
+    updateActivityInList,
+    removeActivityFromList,
+  } = useActivities(Number(initiativeId), user?.token, setIsLoading);
 
   useEffect(() => {
-    console.log("useEffect for loading activities triggered");
-    loadActivities();
-  }, [loadActivities, refreshTrigger]);
-
-  useEffect(() => {
-    if (
-      isActivitiesLoaded &&
-      initiativeId &&
-      user?.token &&
-      !permissionsRef.current
-    ) {
+    if (initiativeId && user?.token) {
       const loadPermissions = async () => {
-        console.log("Fetching permissions for initiativeId:", initiativeId);
-
         try {
           const permissions = await fetchPermissions(
             "Initiative",
-            parseInt(initiativeId),
-            user.token,
+            Number(initiativeId),
+            user?.token,
           );
-          console.log("Fetched permissions:", permissions);
 
           setEntityPermissions(permissions || []);
-          setPermissionsFetched(true);
-          permissionsRef.current = true;
         } catch (error) {
           console.error("Failed to fetch permissions:", error);
-          setPermissionsFetched(true);
+        } finally {
+          setArePermissionsLoading(false);
         }
       };
 
       loadPermissions();
+    } else {
+      setArePermissionsLoading(false);
     }
-  }, [isActivitiesLoaded, initiativeId, user?.token, fetchPermissions]);
+  }, [initiativeId, user?.token, fetchPermissions]);
+
+  useEffect(() => {
+    if (!arePermissionsLoading && !isActivitiesLoaded) {
+      loadActivities();
+    }
+  }, [arePermissionsLoading, isActivitiesLoaded, loadActivities]);
 
   useEffect(() => {
     if (activityId) {
-      console.log("Setting selectedActivity:", activityId);
       setSelectedActivity(activityId);
     } else if (
       location.pathname.includes("/funds/") &&
       location.pathname.includes("/activities/")
     ) {
       const activityIdFromPath = location.pathname.split("/").pop();
-
       if (activityIdFromPath) {
-        console.log("Setting selectedActivity from path:", activityIdFromPath);
         setSelectedActivity(activityIdFromPath);
       }
     }
   }, [activityId, location.pathname]);
 
-  const calculateBarWidth = (beschikbaar, besteed) => {
-    const total = Math.abs(beschikbaar) + Math.abs(besteed);
-    if (total === 0) {
-      return {
-        beschikbaarWidth: "50%",
-        besteedWidth: "50%",
-      };
+  useEffect(() => {
+    if (refreshTrigger > 0) {
+      loadActivities();
     }
-    const beschikbaarWidth = `${(Math.abs(beschikbaar) / total) * 100}%`;
-    const besteedWidth = `${(Math.abs(besteed) / total) * 100}%`;
-    return {
-      beschikbaarWidth,
-      besteedWidth,
-    };
-  };
-
-  const handleSearch = (query) => {
-    console.log("Search query:", query);
-  };
+  }, [refreshTrigger, loadActivities]);
 
   const handleBackClick = () => {
-    console.log("Back button clicked");
     navigate("/funds");
   };
 
   const handleTitleClick = () => {
-    console.log("Title clicked");
     setSelectedActivity(null);
     navigate(`/funds/${initiativeId}`);
   };
 
   const handleToggleAddActivityModal = () => {
-    console.log("Toggling add activity modal, isModalOpen:", isModalOpen);
-
     if (isModalOpen) {
       setIsBlockingInteraction(true);
       setTimeout(() => {
@@ -182,20 +112,29 @@ export default function ActivitiesPage() {
     }
   };
 
-  const handleActivityAdded = () => {
-    console.log("Activity added");
+  const handleActivityAdded = (newActivity: Activities) => {
+    addActivityToList(newActivity);
     setRefreshTrigger((prev) => prev + 1);
   };
 
-  const handleActivityEdited = () => {
-    console.log("Activity edited");
+  const handleActivityEdited = (updatedActivity: Activities) => {
+    updateActivityInList(updatedActivity);
     setRefreshTrigger((prev) => prev + 1);
   };
 
-  const handleActivityClick = (activityId) => {
-    console.log("Activity clicked:", activityId);
+  const handleActivityClick = (activityId: string) => {
     setSelectedActivity(activityId);
     navigate(`/funds/${initiativeId}/activities/${activityId}`);
+  };
+
+  const handleActivityDeleted = (activityId: string) => {
+    setSelectedActivity(null);
+    removeActivityFromList(activityId);
+    navigate(`/funds/${initiativeId}`);
+  };
+
+  const handleFundEdited = () => {
+    setRefreshTrigger((prev) => prev + 1);
   };
 
   return (
@@ -210,7 +149,7 @@ export default function ActivitiesPage() {
           onBackArrowClick={handleBackClick}
           onSettingsClick={() => {}}
           onCtaClick={handleToggleAddActivityModal}
-          onSearch={handleSearch}
+          onSearch={() => {}}
           hasPermission={hasPermission}
           showSearch={false}
           showHomeLink={false}
@@ -218,7 +157,7 @@ export default function ActivitiesPage() {
         />
         {!isMobile && (
           <>
-            {isLoading ? (
+            {isLoading || arePermissionsLoading ? (
               <div className={styles["loading-container"]}>
                 <LoadingDot delay={0} />
                 <LoadingDot delay={0.1} />
@@ -239,7 +178,7 @@ export default function ActivitiesPage() {
                     className={`${styles["shared-styling"]} ${styles["initiative-fade-in"]}`}
                     key={`${activity?.id}-${index}`}
                     style={{ animationDelay: `${index * 0.2}s` }}
-                    onClick={() => handleActivityClick(activity.id)}
+                    onClick={() => handleActivityClick(activity.id.toString())}
                   >
                     <li className={styles["shared-name"]}>
                       <strong>{activity.name}</strong>
@@ -250,9 +189,9 @@ export default function ActivitiesPage() {
                         className={styles["expenses-bar"]}
                         style={{
                           width: calculateBarWidth(
-                            activity.budget + activity.expenses,
+                            activity.budget,
                             activity.expenses,
-                          ).besteedWidth,
+                          ).spentWidth,
                         }}
                       ></div>
                       <div
@@ -260,33 +199,23 @@ export default function ActivitiesPage() {
                         className={styles["income-bar"]}
                         style={{
                           width: calculateBarWidth(
-                            activity.budget + activity.expenses,
+                            activity.budget,
                             activity.expenses,
-                          ).beschikbaarWidth,
+                          ).availableWidth,
                         }}
                       ></div>
                     </div>
                     <li key={activity.id} className={styles["shared-list"]}>
                       <div className={styles["shared-values"]}>
                         <label>Toegekend:</label>
-                        <span>
-                          €
-                          {activity.budget.toLocaleString("nl-NL", {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                          })}
-                        </span>
+                        <span>€{formatCurrency(activity.budget)}</span>
                       </div>
                       <div className={styles["shared-values"]}>
                         <label className={styles["value-expenses"]}>
                           Besteed:
                         </label>
                         <span>
-                          €
-                          {Math.abs(activity.expenses).toLocaleString("nl-NL", {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                          })}
+                          €{formatCurrency(Math.abs(activity.expenses))}
                         </span>
                       </div>
                       <div className={styles["shared-values"]}>
@@ -294,14 +223,7 @@ export default function ActivitiesPage() {
                           Beschikbaar:
                         </label>
                         <span>
-                          €
-                          {(activity.budget + activity.expenses).toLocaleString(
-                            "nl-NL",
-                            {
-                              minimumFractionDigits: 2,
-                              maximumFractionDigits: 2,
-                            },
-                          )}
+                          €{formatCurrency(activity.budget + activity.expenses)}
                         </span>
                       </div>
                     </li>
@@ -320,7 +242,6 @@ export default function ActivitiesPage() {
         onClose={handleToggleAddActivityModal}
         isBlockingInteraction={isBlockingInteraction}
         onActivityAdded={handleActivityAdded}
-        refreshTrigger={refreshTrigger}
         initiativeId={Number(initiativeId)}
       />
       <div className={styles["detail-panel"]}>
@@ -330,12 +251,21 @@ export default function ActivitiesPage() {
             authToken={user?.token || ""}
             initiativeId={initiativeId || ""}
             onActivityEdited={handleActivityEdited}
+            onActivityDeleted={handleActivityDeleted}
+            entityPermissions={entityPermissions}
+            initiativeData={initiativeData}
+            refreshData={() => setRefreshTrigger((prev) => prev + 1)}
           />
         ) : initiativeId !== null ? (
           <FundDetail
             initiativeId={initiativeId || ""}
             authToken={user?.token || ""}
-            onFundEdited={() => {}}
+            initiativeData={initiativeData}
+            onFundEdited={handleFundEdited}
+            entityPermissions={entityPermissions}
+            activities={activities}
+            isLoading={isLoading}
+            refreshData={() => setRefreshTrigger((prev) => prev + 1)}
           />
         ) : (
           <p>Select a fund or activity to view details.</p>

@@ -163,6 +163,12 @@
     margin-bottom: 20px;
   }
 
+  .loadMoreButtonContainer {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+  }
+
   .fundTransactionTable {
     width: 100%;
     max-height: 900px;
@@ -185,6 +191,10 @@
           font-size: 14px;
         }
       }
+    }
+
+    .loading-container {
+      align-items: center;
     }
 
     tbody {

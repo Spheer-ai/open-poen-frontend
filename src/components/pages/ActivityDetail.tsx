@@ -1,98 +1,71 @@
 import React, { useState, useEffect } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import styles from "../../assets/scss/pages/FundDetail.module.scss";
-import EditIcon from "/edit-icon.svg";
-import DeleteIcon from "/bin-icon.svg";
 import { useAuth } from "../../contexts/AuthContext";
-import { fetchActivityDetails, fetchFundDetails } from "../middleware/Api";
+import { fetchActivityDetails } from "../middleware/Api";
 import EditActivity from "../modals/EditActivity";
 import DeleteActivity from "../modals/DeleteActivity";
-import TabbedActivitiesNavigation from "../ui/layout/navigation/TabbedActivitiesNavigation";
-import ActivityTransactions from "../elements/tables/activities/ActivityTransactions";
-import ActivityDetails from "../elements/tables/activities/ActivityDetails";
-import ActivitySponsors from "../elements/tables/activities/ActivitySponsors";
-import ActivityMedia from "../elements/tables/activities/ActivityMedia";
-import ActivityUsers from "../elements/tables/activities/ActivityUsers";
 import LoadingDot from "../animation/LoadingDot";
 import { ActivityOwner } from "../../types/ActivityOwners";
-import { usePermissions } from "../../contexts/PermissionContext";
-import { useFieldPermissions } from "../../contexts/FieldPermissionContext";
 import Breadcrumb from "../ui/layout/BreadCrumbs";
+import { Activities, InitiativeData } from "../../types/ActivitiesTypes";
+import TabbedActivitiesNavigation from "../ui/layout/navigation/TabbedActivitiesNavigation";
+import ActivityDetails from "../elements/tables/activities/ActivityDetails";
+import ActivityMedia from "../elements/tables/activities/ActivityMedia";
+import ActivitySponsors from "../elements/tables/activities/ActivitySponsors";
+import ActivityTransactions from "../elements/tables/activities/ActivityTransactions";
+import ActivityUsers from "../elements/tables/activities/ActivityUsers";
+import useCachedImages from "../utils/images";
 
 interface ActivityDetailProps {
   initiativeId: string;
   activityId: string;
   authToken: string;
-  onActivityEdited: () => void;
-}
-
-interface ActivityDetails {
-  id: number;
-  name: string;
-  description: string;
-  purpose: string;
-  target_audience: string;
-  budget: number;
-  income: number;
-  expenses: number;
-  profile_picture: {
-    attachment_thumbnail_url_512: string;
-  };
-  activity_owners: ActivityOwner[];
+  initiativeData: InitiativeData | null;
   entityPermissions: string[];
-  grant: {
-    id: number;
-    name: string;
-    reference: string;
-    budget: number;
-  };
-  initiative: {
-    kvk_registration: string;
-    location: string;
-  };
-}
-
-interface FundDetails {
-  grant: {
-    id: number;
-    name: string;
-    reference: string;
-    budget: number;
-  };
+  onActivityEdited: (updatedActivity: Activities) => void;
+  onActivityDeleted: (activityId: string) => void;
+  refreshData: () => void;
 }
 
 const ActivityDetail: React.FC<ActivityDetailProps> = ({
   initiativeId,
   activityId,
+  initiativeData: initialData,
   authToken,
+  entityPermissions,
   onActivityEdited,
+  onActivityDeleted,
+  refreshData,
 }) => {
   const [activeTab, setActiveTab] = useState("transactieoverzicht");
-  const location = useLocation();
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { fetchPermissions } = usePermissions();
-  const { fetchFieldPermissions } = useFieldPermissions();
-  const [entityPermissions, setEntityPermissions] = useState<string[]>([]);
   const [activityDetails, setActivityDetails] =
     useState<ActivityDetails | null>(null);
   const [isBlockingInteraction, setIsBlockingInteraction] = useState(false);
-  const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [isEditActivityModalOpen, setIsEditActivityModalOpen] = useState(false);
   const [isDeleteActivityModalOpen, setIsDeleteActivityModalOpen] =
     useState(false);
-  const [isAddPaymentModalOpen, setIsAddPaymentModalOpen] = useState(false);
-  const [fundDetails, setFundDetails] = useState<FundDetails | null>(null);
   const [hasEditPermission, setHasEditPermission] = useState(false);
   const [hasDeletePermission, setHasDeletePermission] = useState(false);
   const [hasCreatePaymentPermission, setHasCreatePaymentPermission] =
     useState(false);
+
   const [showFullDescription, setShowFullDescription] = useState(false);
   const [availableBudget, setAvailableBudget] = useState<number | null>(null);
   const [currentActivityData, setCurrentActivityData] =
     useState<ActivityDetails | null>(null);
   const activityOwners: ActivityOwner[] =
     activityDetails?.activity_owners || [];
+  const [initiativeData, setInitiativeData] = useState<InitiativeData | null>(
+    initialData,
+  );
+  const images = useCachedImages(["edit", "delete"]);
+
+  useEffect(() => {
+    setInitiativeData(initialData);
+  }, [initialData]);
 
   const handleTabChange = (tabName) => {
     setActiveTab(tabName);
@@ -120,65 +93,10 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
   };
 
   useEffect(() => {
-    async function fetchUserPermissions() {
-      try {
-        let userToken = authToken;
-        if (user && user.token && activityId) {
-          userToken = user.token;
-          const userPermissions: string[] | undefined = await fetchPermissions(
-            "Activity",
-            parseInt(activityId),
-            userToken,
-          );
-
-          if (userPermissions && userPermissions.includes("edit")) {
-            setHasEditPermission(true);
-          } else {
-            setHasEditPermission(false);
-          }
-
-          if (userPermissions && userPermissions.includes("delete")) {
-            setHasDeletePermission(true);
-          } else {
-            setHasDeletePermission(false);
-          }
-
-          if (userPermissions && userPermissions.includes("create_payment")) {
-            setHasCreatePaymentPermission(true);
-          } else {
-            setHasCreatePaymentPermission(false);
-          }
-        }
-      } catch (error) {
-        console.error("Failed to fetch user permissions:", error);
-      }
-    }
-
-    fetchUserPermissions();
-  }, [user, activityId]);
-
-  useEffect(() => {
-    async function fetchFieldPermissionsOnMount() {
-      try {
-        if (user && user.token && initiativeId) {
-          const fieldPermissions: string[] | undefined =
-            await fetchFieldPermissions(
-              "Initiative",
-              parseInt(initiativeId),
-              user.token,
-            );
-
-          if (fieldPermissions) {
-            setEntityPermissions(fieldPermissions);
-          }
-        }
-      } catch (error) {
-        console.error("Failed to fetch field permissions:", error);
-      }
-    }
-
-    fetchFieldPermissionsOnMount();
-  }, [user, initiativeId, fetchFieldPermissions]);
+    setHasEditPermission(entityPermissions.includes("edit"));
+    setHasDeletePermission(entityPermissions.includes("delete"));
+    setHasCreatePaymentPermission(entityPermissions.includes("create_payment"));
+  }, [entityPermissions]);
 
   useEffect(() => {
     if (activityId) {
@@ -191,9 +109,9 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
           console.error("Error fetching activity details:", error);
         });
     }
-  }, [activityId, initiativeId, authToken, refreshTrigger]);
+  }, [activityId, initiativeId, authToken, refreshData]);
 
-  const handleToggleEditActivitydModal = () => {
+  const handleToggleEditActivityModal = () => {
     if (isEditActivityModalOpen) {
       setIsBlockingInteraction(true);
       setTimeout(() => {
@@ -207,13 +125,12 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
     }
   };
 
-  const handleToggleDeleteActivitydModal = () => {
+  const handleToggleDeleteActivityModal = () => {
     if (isDeleteActivityModalOpen) {
       setIsBlockingInteraction(true);
       setTimeout(() => {
         setIsBlockingInteraction(false);
         setIsDeleteActivityModalOpen(false);
-        navigate(`/funds`);
       }, 300);
     } else {
       setIsDeleteActivityModalOpen(true);
@@ -223,40 +140,24 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
     }
   };
 
-  const handleActivityEdited = () => {
-    setRefreshTrigger((prev) => prev + 1);
-    onActivityEdited();
+  const handleActivityEdited = (updatedActivity: Activities) => {
+    onActivityEdited(updatedActivity);
+    refreshData(); // Trigger refresh
   };
 
-  useEffect(() => {
-    if (initiativeId && authToken) {
-      fetchFundDetails(authToken, initiativeId)
-        .then((data) => {
-          setFundDetails(data);
-        })
-        .catch((error) => {
-          console.error("Error fetching fund details:", error);
-        });
-    }
-  }, [initiativeId, authToken]);
-
   const handleActivityDeleted = () => {
-    setRefreshTrigger((prev) => prev + 1);
+    onActivityDeleted(activityId);
+    navigate(`/funds/${initiativeId}`);
   };
 
   useEffect(() => {
     if (activityDetails) {
-      const receivedBudget = activityDetails.income || 0;
       const spentBudget = activityDetails.expenses || 0;
       const totalBudget = activityDetails.budget || 0;
       const availableBudgetValue = totalBudget + spentBudget;
       setAvailableBudget(availableBudgetValue);
     }
-  }, [activityDetails, refreshTrigger]);
-
-  const handleRefreshTrigger = () => {
-    setRefreshTrigger((prev) => prev + 1);
-  };
+  }, [activityDetails, refreshData]);
 
   return (
     <>
@@ -280,18 +181,22 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
           {hasEditPermission && (
             <button
               className={styles["edit-button"]}
-              onClick={handleToggleEditActivitydModal}
+              onClick={handleToggleEditActivityModal}
             >
-              <img src={EditIcon} alt="Edit" className={styles["icon"]} />
+              <img src={images.edit} alt="Edit" className={styles["icon"]} />
               <span>Beheer activiteit</span>
             </button>
           )}
           {hasDeletePermission && (
             <button
               className={styles["edit-button"]}
-              onClick={handleToggleDeleteActivitydModal}
+              onClick={handleToggleDeleteActivityModal}
             >
-              <img src={DeleteIcon} alt="Delete" className={styles["icon"]} />
+              <img
+                src={images.delete}
+                alt="Delete"
+                className={styles["icon"]}
+              />
               <span>Verwijder activiteit</span>
             </button>
           )}
@@ -312,7 +217,7 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
                       alt="Fund Image"
                     />
                   ) : (
-                    <p>Geen afbeelding gevonden</p>
+                    <></>
                   )}
                 </div>
                 <div className={styles["fund-info"]}>
@@ -398,7 +303,7 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
                     {availableBudget !== null ? (
                       <>
                         <p>
-                          Beschikbaar budget: <br />
+                          Beschikbaar: <br />
                         </p>
                         <span style={{ color: "#008000" }}>
                           €{" "}
@@ -438,19 +343,17 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
         </div>
         <EditActivity
           isOpen={isEditActivityModalOpen}
-          onClose={handleToggleEditActivitydModal}
+          onClose={handleToggleEditActivityModal}
           isBlockingInteraction={isBlockingInteraction}
           onActivityEdited={handleActivityEdited}
           initiativeId={initiativeId}
           authToken={user?.token || ""}
           activityId={activityId}
           activityData={currentActivityData}
-          fieldPermissions={entityPermissions}
-          fields={[]}
         />
         <DeleteActivity
           isOpen={isDeleteActivityModalOpen}
-          onClose={handleToggleDeleteActivitydModal}
+          onClose={handleToggleDeleteActivityModal}
           isBlockingInteraction={isBlockingInteraction}
           onActivityDeleted={handleActivityDeleted}
           initiativeId={initiativeId}
@@ -468,10 +371,11 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
             initiativeId={initiativeId}
             authToken={user?.token || ""}
             activityId={activityId}
-            onRefreshTrigger={handleRefreshTrigger}
+            onRefreshTrigger={refreshData}
             entityPermissions={entityPermissions}
             activity_name={activityDetails?.name || ""}
             hasCreatePaymentPermission={hasCreatePaymentPermission}
+            key={activityId}
           />
         )}
         {activeTab === "details" && (
@@ -486,11 +390,12 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
         )}
         {activeTab === "sponsoren" && (
           <ActivitySponsors
-            grantId={fundDetails?.grant?.id}
-            grantName={fundDetails?.grant?.name}
-            grantReference={fundDetails?.grant?.reference}
-            grantBudget={fundDetails?.grant?.budget}
+            grantId={initiativeData?.grant?.id}
+            grantName={initiativeData?.grant?.name}
+            grantReference={initiativeData?.grant?.reference}
+            grantBudget={initiativeData?.grant?.budget}
             token={user?.token || ""}
+            key={activeTab}
           />
         )}
         {activeTab === "media" && (
@@ -506,6 +411,7 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
             initiativeId={initiativeId}
             activityId={activityId}
             token={user?.token || ""}
+            key={activeTab}
           />
         )}
       </div>

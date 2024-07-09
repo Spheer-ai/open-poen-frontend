@@ -3,14 +3,15 @@ import { Link } from "react-router-dom";
 import ProfileIcon from "../../../assets/profile-icon.svg";
 import styles from "../../../assets/scss/Contacts.module.scss";
 import { useAuth } from "../../../contexts/AuthContext";
+import useCachedImages from "../../utils/images";
 
 const UserItem = ({ user, isActive, handleUserClick }) => {
   const userItemId = user.id;
   const { user: authUser } = useAuth();
   const isUserHidden = user.hidden === true;
   const isUserInactive = user.is_active === false;
-
   const fullName = `${user.first_name || "Voornaam"} ${user.last_name || ""}`;
+  const images = useCachedImages(["placeholderProfile"]);
 
   return (
     <div
@@ -39,7 +40,7 @@ const UserItem = ({ user, isActive, handleUserClick }) => {
           )}
           {!user.profile_picture && (
             <img
-              src="../../../profile-placeholder.png"
+              src={images.placeholderProfile}
               alt="Profile"
               className={styles["profile-image"]}
             />

@@ -5,7 +5,7 @@ import { getUsersOrdered } from "../middleware/Api";
 import TopNavigationBar from "../ui/top-navigation-bar/TopNavigationBar";
 import styles from "../../assets/scss/Contacts.module.scss";
 import { UserData } from "../../types/ContactsTypes";
-import { usePermissions } from "../../contexts/PermissionContext";
+import { useFetchEntityPermissions } from "../hooks/useFetchPermissions";
 import { useAuth } from "../../contexts/AuthContext";
 import UserItem from "../elements/users/UserItem";
 import AddUser from "../modals/AddUser";
@@ -21,7 +21,7 @@ export default function Contacts() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [error, setError] = useState<Error | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const { fetchPermissions } = usePermissions();
+  const { permissions, fetchPermissions } = useFetchEntityPermissions();
   const [entityPermissions, setEntityPermissions] = useState<string[]>([]);
   const hasPermission = entityPermissions.includes("create");
   const [userList, setUserList] = useState<UserData[]>([]);
@@ -115,7 +115,6 @@ export default function Contacts() {
         setIsLoading(false);
       } catch (error) {
         if (error.name === "AbortError") {
-          console.log("Fetch aborted:", error.message);
         } else {
           setError(error);
         }
