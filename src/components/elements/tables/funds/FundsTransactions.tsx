@@ -56,6 +56,9 @@ const FundsTransactions: React.FC<{
 }) => {
   const { user } = useAuth();
   const { fetchPermissions } = useFetchEntityPermissions();
+  const [hasDeletePermission, setHasDeletePermission] = useState<
+    boolean | undefined
+  >(false);
   const navigate = useNavigate();
   const [selectedTransactionId, setSelectedTransactionId] = useState<
     number | null
@@ -219,17 +222,9 @@ const FundsTransactions: React.FC<{
       );
 
       const hasEditPermission = userPermissions?.includes("edit") ?? false;
-      const hasReadPermission = userPermissions?.includes("read") ?? false;
       const hasDeletePermission = userPermissions?.includes("delete") ?? false;
 
-      console.log(
-        "Permissions set - Edit:",
-        hasEditPermission,
-        "Read:",
-        hasReadPermission,
-        "Delete:",
-        hasDeletePermission,
-      );
+      setHasDeletePermission(hasDeletePermission);
 
       setSelectedTransactionId(transactionId);
 
@@ -544,7 +539,7 @@ const FundsTransactions: React.FC<{
           token={authToken}
           fieldPermissions={entityPermissions}
           fields={[]}
-          hasDeletePermission={false}
+          hasDeletePermission={hasDeletePermission}
           initiativeId={initiativeId}
           activityName={
             editedTransaction ? editedTransaction.activity_name : null

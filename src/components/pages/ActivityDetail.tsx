@@ -25,6 +25,7 @@ interface ActivityDetailProps {
   entityPermissions: string[];
   onActivityEdited: (updatedActivity: Activities) => void;
   onActivityDeleted: (activityId: string) => void;
+  refreshData: () => void;
 }
 
 const ActivityDetail: React.FC<ActivityDetailProps> = ({
@@ -35,6 +36,7 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
   entityPermissions,
   onActivityEdited,
   onActivityDeleted,
+  refreshData,
 }) => {
   const [activeTab, setActiveTab] = useState("transactieoverzicht");
   const navigate = useNavigate();
@@ -42,7 +44,6 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
   const [activityDetails, setActivityDetails] =
     useState<ActivityDetails | null>(null);
   const [isBlockingInteraction, setIsBlockingInteraction] = useState(false);
-  const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [isEditActivityModalOpen, setIsEditActivityModalOpen] = useState(false);
   const [isDeleteActivityModalOpen, setIsDeleteActivityModalOpen] =
     useState(false);
@@ -103,15 +104,14 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
         .then((data) => {
           setActivityDetails(data);
           setCurrentActivityData(data);
-          setRefreshTrigger((prev) => prev + 1);
         })
         .catch((error) => {
           console.error("Error fetching activity details:", error);
         });
     }
-  }, [activityId, initiativeId, authToken]);
+  }, [activityId, initiativeId, authToken, refreshData]);
 
-  const handleToggleEditActivitydModal = () => {
+  const handleToggleEditActivityModal = () => {
     if (isEditActivityModalOpen) {
       setIsBlockingInteraction(true);
       setTimeout(() => {
@@ -125,7 +125,7 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
     }
   };
 
-  const handleToggleDeleteActivitydModal = () => {
+  const handleToggleDeleteActivityModal = () => {
     if (isDeleteActivityModalOpen) {
       setIsBlockingInteraction(true);
       setTimeout(() => {
@@ -141,8 +141,8 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
   };
 
   const handleActivityEdited = (updatedActivity: Activities) => {
-    setRefreshTrigger((prev) => prev + 1);
     onActivityEdited(updatedActivity);
+    refreshData(); // Trigger refresh
   };
 
   const handleActivityDeleted = () => {
@@ -157,11 +157,7 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
       const availableBudgetValue = totalBudget + spentBudget;
       setAvailableBudget(availableBudgetValue);
     }
-  }, [activityDetails, refreshTrigger]);
-
-  const handleRefreshTrigger = () => {
-    setRefreshTrigger((prev) => prev + 1);
-  };
+  }, [activityDetails, refreshData]);
 
   return (
     <>
@@ -185,7 +181,7 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
           {hasEditPermission && (
             <button
               className={styles["edit-button"]}
-              onClick={handleToggleEditActivitydModal}
+              onClick={handleToggleEditActivityModal}
             >
               <img src={images.edit} alt="Edit" className={styles["icon"]} />
               <span>Beheer activiteit</span>
@@ -194,7 +190,7 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
           {hasDeletePermission && (
             <button
               className={styles["edit-button"]}
-              onClick={handleToggleDeleteActivitydModal}
+              onClick={handleToggleDeleteActivityModal}
             >
               <img
                 src={images.delete}
@@ -307,7 +303,7 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
                     {availableBudget !== null ? (
                       <>
                         <p>
-                          Beschikbaar budget: <br />
+                          Beschikbaar: <br />
                         </p>
                         <span style={{ color: "#008000" }}>
                           €{" "}
@@ -347,7 +343,7 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
         </div>
         <EditActivity
           isOpen={isEditActivityModalOpen}
-          onClose={handleToggleEditActivitydModal}
+          onClose={handleToggleEditActivityModal}
           isBlockingInteraction={isBlockingInteraction}
           onActivityEdited={handleActivityEdited}
           initiativeId={initiativeId}
@@ -357,7 +353,7 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
         />
         <DeleteActivity
           isOpen={isDeleteActivityModalOpen}
-          onClose={handleToggleDeleteActivitydModal}
+          onClose={handleToggleDeleteActivityModal}
           isBlockingInteraction={isBlockingInteraction}
           onActivityDeleted={handleActivityDeleted}
           initiativeId={initiativeId}
@@ -375,7 +371,7 @@ const ActivityDetail: React.FC<ActivityDetailProps> = ({
             initiativeId={initiativeId}
             authToken={user?.token || ""}
             activityId={activityId}
-            onRefreshTrigger={handleRefreshTrigger}
+            onRefreshTrigger={refreshData}
             entityPermissions={entityPermissions}
             activity_name={activityDetails?.name || ""}
             hasCreatePaymentPermission={hasCreatePaymentPermission}

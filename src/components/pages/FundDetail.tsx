@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import styles from "../../assets/scss/pages/FundDetail.module.scss";
 import EditFund from "../modals/EditFund";
 import { useAuth } from "../../contexts/AuthContext";
+import { fetchFundDetails } from "../middleware/Api";
 import TabbedFundNavigation from "../ui/layout/navigation/TabbedFundNavigation";
 import FundsActivities from "../elements/tables/funds/FundsActivities";
 import FundsTransactions from "../elements/tables/funds/FundsTransactions";
@@ -25,6 +26,7 @@ interface FundDetailProps {
   onFundEdited: () => void;
   activities: Activities[];
   isLoading: boolean;
+  refreshData: () => void;
 }
 
 const FundDetail: React.FC<FundDetailProps> = ({
@@ -34,6 +36,7 @@ const FundDetail: React.FC<FundDetailProps> = ({
   onFundEdited,
   activities,
   isLoading,
+  authToken,
 }) => {
   const [activeTab, setActiveTab] = useState("transactieoverzicht");
   const navigate = useNavigate();
@@ -74,8 +77,28 @@ const FundDetail: React.FC<FundDetailProps> = ({
   };
 
   useEffect(() => {
-    setInitiativeData(initialData);
-  }, [initialData]);
+    if (initiativeId && authToken) {
+      fetchFundDetails(authToken, initiativeId)
+        .then((data) => {
+          setInitiativeData(data);
+        })
+        .catch((error) => {
+          console.error("Error fetching activity details:", error);
+        });
+    }
+  }, [initiativeId, authToken]);
+
+  useEffect(() => {
+    if (refreshTrigger > 0 && initiativeId && authToken) {
+      fetchFundDetails(authToken, initiativeId)
+        .then((data) => {
+          setInitiativeData(data);
+        })
+        .catch((error) => {
+          console.error("Error fetching activity details:", error);
+        });
+    }
+  }, [refreshTrigger, initiativeId, authToken]);
 
   useEffect(() => {
     setHasEditPermission(entityPermissions.includes("edit"));

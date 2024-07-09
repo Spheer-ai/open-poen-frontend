@@ -2,6 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "../../../../assets/scss/Funds.module.scss";
 import LoadingDot from "../../../animation/LoadingDot";
+import { calculateBarWidth, formatCurrency } from "../../../utils/calculations";
 
 interface Activities {
   id: number;
@@ -21,22 +22,6 @@ const FundsActivities: React.FC<{
 
   const handleActivityClick = (activityId) => {
     navigate(`/funds/${initiativeId}/activities/${activityId}`);
-  };
-
-  const calculateBarWidth = (budget, expenses) => {
-    const total = Math.abs(budget) + Math.abs(expenses);
-    if (total === 0) {
-      return {
-        availableWidth: "50%",
-        spentWidth: "50%",
-      };
-    }
-    const availableWidth = `${(Math.abs(budget) / total) * 100}%`;
-    const spentWidth = `${(Math.abs(expenses) / total) * 100}%`;
-    return {
-      availableWidth,
-      spentWidth,
-    };
   };
 
   return (
@@ -90,35 +75,16 @@ const FundsActivities: React.FC<{
               <li key={activity.id} className={styles["shared-list"]}>
                 <div className={styles["shared-values"]}>
                   <label>Toegekend:</label>
-                  <span>
-                    €
-                    {activity.budget.toLocaleString("nl-NL", {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    })}
-                  </span>
+                  <span>€{formatCurrency(activity.budget)}</span>
                 </div>
                 <div className={styles["shared-values"]}>
                   <label className={styles["value-expenses"]}>Besteed:</label>
-                  <span>
-                    €
-                    {Math.abs(activity.expenses).toLocaleString("nl-NL", {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    })}
-                  </span>
+                  <span>€{formatCurrency(Math.abs(activity.expenses))}</span>
                 </div>
                 <div className={styles["shared-values"]}>
                   <label className={styles["value-income"]}>Beschikbaar:</label>
                   <span>
-                    €
-                    {(activity.budget + activity.expenses).toLocaleString(
-                      "nl-NL",
-                      {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      },
-                    )}
+                    €{formatCurrency(activity.budget + activity.expenses)}
                   </span>
                 </div>
               </li>

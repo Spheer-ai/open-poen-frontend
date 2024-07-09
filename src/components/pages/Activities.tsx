@@ -114,10 +114,12 @@ export default function ActivitiesPage() {
 
   const handleActivityAdded = (newActivity: Activities) => {
     addActivityToList(newActivity);
+    setRefreshTrigger((prev) => prev + 1);
   };
 
   const handleActivityEdited = (updatedActivity: Activities) => {
     updateActivityInList(updatedActivity);
+    setRefreshTrigger((prev) => prev + 1);
   };
 
   const handleActivityClick = (activityId: string) => {
@@ -252,6 +254,7 @@ export default function ActivitiesPage() {
             onActivityDeleted={handleActivityDeleted}
             entityPermissions={entityPermissions}
             initiativeData={initiativeData}
+            refreshData={() => setRefreshTrigger((prev) => prev + 1)}
           />
         ) : initiativeId !== null ? (
           <FundDetail
@@ -262,6 +265,7 @@ export default function ActivitiesPage() {
             entityPermissions={entityPermissions}
             activities={activities}
             isLoading={isLoading}
+            refreshData={() => setRefreshTrigger((prev) => prev + 1)}
           />
         ) : (
           <p>Select a fund or activity to view details.</p>
