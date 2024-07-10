@@ -77,25 +77,25 @@ const FundDetail: React.FC<FundDetailProps> = ({
   };
 
   useEffect(() => {
-    if (initiativeId && authToken) {
+    if (initiativeId) {
       fetchFundDetails(authToken, initiativeId)
         .then((data) => {
           setInitiativeData(data);
         })
         .catch((error) => {
-          console.error("Error fetching activity details:", error);
+          console.error("Error fetching fund details:", error);
         });
     }
   }, [initiativeId, authToken]);
 
   useEffect(() => {
-    if (refreshTrigger > 0 && initiativeId && authToken) {
+    if (refreshTrigger > 0 && initiativeId) {
       fetchFundDetails(authToken, initiativeId)
         .then((data) => {
           setInitiativeData(data);
         })
         .catch((error) => {
-          console.error("Error fetching activity details:", error);
+          console.error("Error fetching fund details:", error);
         });
     }
   }, [refreshTrigger, initiativeId, authToken]);
